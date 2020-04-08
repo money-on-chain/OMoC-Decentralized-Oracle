@@ -1,0 +1,6 @@
+CurrencyPair="BTCUSD;RIFBTC"
+roundLockPeriodInBlocks="86400;86400"
+minOracleOwnerStake="10000000000;10000000000"
+maxOraclesPerRound="10;10"
+bootstrapPrice="1000000000000000;1000000000000000"
+numIdleRounds="2;2"
