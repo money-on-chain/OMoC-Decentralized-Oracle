@@ -1,11 +1,9 @@
 // Most of the functionallity is tested via Supporters.js !!!
-
-const {BN, expectRevert} = require("@openzeppelin/test-helpers")
+const {BN, expectRevert, constants} = require("@openzeppelin/test-helpers")
 const {expect} = require("chai")
-const helpers = require("./helpers")
-
 const Supporters = artifacts.require("SupportersWhitelisted")
 const TestMOC = artifacts.require("TestMOC")
+const MockGovernor = artifacts.require("MockGovernor")
 
 
 contract('SupportersWhitelisted', (accounts) => {
@@ -121,6 +119,98 @@ contract('SupportersWhitelisted', (accounts) => {
 
             mocs = await token.balanceOf(user1)
             expect(mocs, "Final user MOC balance").to.be.bignumber.equal(INITIAL_BALANCE)
-        })
+        });
+    });
+
+    describe('IterableWhiteList', () => {
+        beforeEach(async () => {
+            this.governor = await MockGovernor.new(GOVERNOR);
+            this.token = await TestMOC.new();
+            this.supporters = await Supporters.new();
+            await this.supporters.initialize(this.governor.address, [], this.token.address, new BN(10));
+        });
+
+
+        it('add and remove', async () => {
+            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR});
+            await this.supporters.addToWhitelist(accounts[5], {from: GOVERNOR});
+            expect(await this.supporters.isWhitelisted(accounts[1])).to.be.false;
+            expect(await this.supporters.isWhitelisted(accounts[4])).to.be.true;
+            expect(await this.supporters.isWhitelisted(accounts[5])).to.be.true;
+            await this.supporters.removeFromWhitelist(accounts[4], {from: GOVERNOR});
+            expect(await this.supporters.isWhitelisted(accounts[1])).to.be.false;
+            expect(await this.supporters.isWhitelisted(accounts[4])).to.be.false;
+            expect(await this.supporters.isWhitelisted(accounts[5])).to.be.true;
+        });
+
+        it('should fail to check address zero', async () => {
+            await expectRevert(
+                this.supporters.isWhitelisted(constants.ZERO_ADDRESS),
+                "Account must not be 0x0"
+            );
+        });
+
+        it('should fail to add address zero', async () => {
+            await expectRevert(
+                this.supporters.addToWhitelist(constants.ZERO_ADDRESS, {from: GOVERNOR}),
+                "Account must not be 0x0"
+            )
+        });
+
+        it('should fail to remove address zero', async () => {
+            await expectRevert(
+                this.supporters.removeFromWhitelist(constants.ZERO_ADDRESS, {from: GOVERNOR}),
+                "Account must not be 0x0"
+            );
+        });
+
+        it('should fail if added twice', async () => {
+            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR});
+            await expectRevert(
+                this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR}),
+                "Account not allowed to add accounts into white list"
+            );
+        });
+
+        // require(!isWhitelisted(account), "Account not allowed to add accounts into white list");
+
+        it('iterate', async () => {
+            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR});
+            await this.supporters.addToWhitelist(accounts[5], {from: GOVERNOR});
+            await this.supporters.addToWhitelist(accounts[6], {from: GOVERNOR});
+            await this.supporters.addToWhitelist(accounts[7], {from: GOVERNOR});
+            expect(await this.supporters.getWhiteListLen()).to.be.bignumber.equal(new BN(4));
+            expect(await this.supporters.getWhiteListAtIndex(0)).to.be.equal(accounts[4]);
+            expect(await this.supporters.getWhiteListAtIndex(1)).to.be.equal(accounts[5]);
+            expect(await this.supporters.getWhiteListAtIndex(2)).to.be.equal(accounts[6]);
+            expect(await this.supporters.getWhiteListAtIndex(3)).to.be.equal(accounts[7]);
+            await expectRevert(
+                this.supporters.getWhiteListAtIndex(4),
+                "Illegal index"
+            );
+        });
+    });
+
+
+    describe('Governance', () => {
+        beforeEach(async () => {
+            this.governor = await MockGovernor.new(GOVERNOR);
+            this.token = await TestMOC.new();
+            this.supporters = await Supporters.new();
+            await this.supporters.initialize(this.governor.address, [], this.token.address, new BN(10));
+        });
+
+        it('should fail in if not a governor call', async () => {
+            await expectRevert(
+                this.supporters.addToWhitelist(constants.ZERO_ADDRESS, {from: accounts[0]}),
+                "Invalid changer"
+            )
+        });
+
+        it('should set period', async () => {
+            expect(await this.supporters.period()).to.be.bignumber.equal(new BN(10))
+            await this.supporters.setPeriod(123, {from: GOVERNOR});
+            expect(await this.supporters.period()).to.be.bignumber.equal(new BN(123))
+        });
     })
 })
