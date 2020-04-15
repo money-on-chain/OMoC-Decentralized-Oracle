@@ -1,8 +1,12 @@
 import React from 'react';
 import './index.css';
 import { ethers } from 'ethers';
-import { bigNumberifyAndFormatInt, isValid, HL, Grey, obj_get_props, TT, M, Adr, formatEther} from './helpers.js';
+import { bigNumberifyAndFormatInt, isValid, isValidNS, HL, Grey, obj_get_props, TT, M, Adr, formatEther} from './helpers.js';
 import {on_tx_ok, on_tx_err } from "./helpers.js";
+import {null_href, Tabs} from "./helpers";
+
+
+const ALLOW_MINT = process.env.REACT_APP_AllowMint;
 
 
 export class MyBase {
@@ -46,6 +50,9 @@ export class Address extends MyBase {
         this.setState({value});
     }
 
+    set_val(value) {
+        this.on_change({target:{value: value}})
+    }
     get_value() {
         let f = this.opts["get_value"]? this.opts["get_value"] : (x)=> x ;
         return f(this.get_state()["value"]);
@@ -91,6 +98,7 @@ export class Stake extends MyBase {
             allowance: x,
             tokenBalance: x,
             gen_amount: "0",
+            view: 0,
         }
     }
 
@@ -109,95 +117,88 @@ export class Stake extends MyBase {
     }
 
     token() {
-        return this.parent_state().token;
+        return this.parent.token;
     }
     sup_contract() {
         return this.contract;
     }
 
-    dump_display(state) {
-        return <div className="card mb-4 shadow-sm">
-        <div className="card-body">
-            <h5 className="card-title">Your token state </h5>
-            <p className="card-text">
-                <span>Allowance: {formatEther(state.allowance)} tokens for {this.contract_name}</span> <br/>
-                <span>Balance: {formatEther(state.tokenBalance)} tokens</span>
-            </p>
 
-            <p className="card-text">
-                <label>New value&nbsp; 
-                    <input type="text" value={state.gen_amount}
-                           onChange={(e) => this.gen_amount_chg(e)} name="gen_amount"/>
-                </label> tokens.
-            </p>
-
-            <div className="d-flex justify-content-between align-items-center">
-                <div className="btn-group">
-                    <button type="button" className="btn btn-sm btn-outline-secondary"
-                            onClick={(e) => this.new_allow(e)}>Allow
-                    </button>
-                    {this.dump_mint()}
-                </div>
-            </div>
-        </div>
-    </div>
-    }
-
-    dump_mint(){
-        const ALLOW_MINT = process.env.REACT_APP_AllowMint;
-        if(!ALLOW_MINT) {
-            return <></> 
+    _dump_input_amount(state, label){
+        if (!label) {
+            label = "Amount";
         }
-        return <button type="button" className="btn btn-sm btn-outline-secondary"
-        onClick={(e) => this.new_mint(e)}>Mint
-        </button>
+        return <span className="card-text">
+        <label>{label}&nbsp; 
+            <input type="text" value={state.gen_amount}
+                   onChange={(e) => this.gen_amount_chg(e)} name="gen_amount"/>
+        </label> tokens.
+    </span>
     }
 
-    dump_contract_info(state) {
+    _dump_g_button(text, cb) {
+        return <a href={null_href()} onClick={(e)=>cb(e)}
+                className="btn btn-primary">{text}</a>
+    }
+
+    dump_allowance_info(state) {
+        if (!state) return <></>;
+        return <>           
+        <span className="card-subtitle mb-2 text-muted">
+        Address <span {... TT(this.parent_state().address)}>{Adr(this.parent_state().address)}</span> balance:
+                    {HL(formatEther(state.tokenBalance))} tokens</span>
+    </>;
+    }
+
+
+    _dump_mint() {
+        const state = this.get_state();
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">{this.dump_allowance_info(state)}<br/>
+          {this._dump_input_amount(state, "Amount to mint")}
+          </p>
+          {this._dump_g_button("mint", (e)=>this.new_mint(e))}
+        </div>
+    }
+
+    _dump_allow() {
+        const state = this.get_state();
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">
+              {this.dump_allowance_info(state)}<br/>
+              {this._dump_input_amount(state, "Amount to allow")}
+        </p>
+          {this._dump_g_button("allow", (e)=>this.new_allow(e))}
+        </div>
+    }
+    
+    views() {
+        let mint = {name: "Mint", fn:this._dump_mint};
+        let views = this.Views;
+        if (ALLOW_MINT) {
+            views = [mint].concat(views);
+        }
+        for (let v of views) {
+            v.fn = v.fn.bind(this);
+        }
+        return views;
+    }
+
+    dump_contract_info() {
         return <h6 className="card-subtitle mb-2 text-muted">
         Address <span {... TT(this.parent_state().address)}>{Adr(this.parent_state().address)}</span></h6>
     }
 
-    dump_buttons(state) {
-        return                 <div className="card mb-4 shadow-sm">
-        <div className="card-body">
-            <h5 className="card-title">{this.contract_name} Info</h5>
-            {this.dump_contract_info(state)}
-            <p></p>
-            {this.dump_button_group(state)}
-        </div>
-    </div>
-    }
-
-    dump_button_group(state) {
-        return <div className="d-flex justify-content-between align-items-center">
-        <div className="btn-group">
-            <button type="button" className="btn btn-sm btn-outline-secondary"
-                    onClick={(e) => this.new_stake(e)}>Stake
-            </button>
-            <button type="button" className="btn btn-sm btn-outline-secondary"
-                    onClick={(e) => this.new_stop(e)}>Stop
-            </button>
-            <button type="button" className="btn btn-sm btn-outline-secondary"
-                    onClick={(e) => this.new_withdraw(e)}>Withdraw
-            </button>
-        </div>
-        <div className="btn-group">
-            <button type="button" className="btn btn-sm btn-outline-secondary"
-                    onClick={(e) => this.distribute(e)}>Distribute
-            </button>
-        </div>
-    </div>
-    }
-
     dump() {
+        const cb = (new_state) => {
+            this.setState({view: new_state})
+        }
         let state = this.get_state();
-        return (
-            <>
-                {this.dump_display(state)}
-                {this.dump_buttons(state)}
-            </>
-        )
+        const T = new Tabs(this.views(), state.view,
+            cb.bind(this), true);
+        return T.dump();
     }
 
     distribute(event) {
@@ -276,6 +277,11 @@ export class Stake extends MyBase {
 }
 
 export class SupportersStake extends Stake {
+    constructor(name, parent, contract, contract_name) {
+        super(name, parent, contract, contract_name);
+        this.dump_allowance_info = this.dump_allowance_info.bind(this);
+    }
+
     init_state(st) {
         super.init_state(st);
         let x = ethers.utils.bigNumberify(-1);
@@ -286,6 +292,27 @@ export class SupportersStake extends Stake {
         xx.stoppedInBlock= x;
         xx.minStayBlocks= x;
         xx.minStopBlocks= x;
+    }
+
+    dump_allowance_info(state){
+        return <>
+            {super.dump_allowance_info(state)}
+            <span className="card-subtitle mb-2 text-muted">
+        Address <span {... TT(this.parent_state().address)}>{Adr(this.parent_state().address)}</span> staked:
+                    {HL(formatEther(state.stopped.add(state.staked)))} tokens</span>
+
+            {Grey(<>
+        Detailed Balance in contract at block {HL(this.parent_state().blocknr)}:
+        <br/>
+        Staked: {HL(formatEther(state.staked))} tokens at
+                block {bigNumberifyAndFormatInt(state.stakedInBlock)} you&quot;ll be abled to stop at block
+                    {" "+bigNumberifyAndFormatInt(state.stakedInBlock.add(state.minStayBlocks))}.        
+        <br/>        
+        Stopped: {HL(formatEther(state.stopped))} tokens at
+                block {bigNumberifyAndFormatInt(state.stoppedInBlock)} you&quot;ll be abled to withdraw
+                    {" "+bigNumberifyAndFormatInt(state.minStopBlocks)} blocks after stop.<br/>
+        </>)}
+        </>;
     }
 
     async update() {
@@ -307,30 +334,99 @@ export class SupportersStake extends Stake {
         }
     }
 
-    dump_contract_info(state) {
-        return <>                         
-    <h6 className="card-subtitle mb-2 text-muted">
-        Address <span {... TT(this.parent_state().address)}>{Adr(this.parent_state().address)}</span> balance:
-                    {HL(formatEther(state.stopped.add(state.staked)))} tokens</h6>
-
-    <p className="card-text"> {Grey(<>
-        Detailed Balance in contract at block {HL(this.parent_state().blocknr)}:
-        <br/>
-        Staked: {HL(formatEther(state.staked))} tokens at
-                block {bigNumberifyAndFormatInt(state.stakedInBlock)} you&quot;ll be abled to stop at block
-                    {" "+bigNumberifyAndFormatInt(state.stakedInBlock.add(state.minStayBlocks))}.        
-        <br/>        
-        Stopped: {HL(formatEther(state.stopped))} tokens at
-                block {bigNumberifyAndFormatInt(state.stoppedInBlock)} you&quot;ll be abled to withdraw
-                    {" "+bigNumberifyAndFormatInt(state.minStopBlocks)} blocks after stop.<br/>
-        </>)}
-    </p>
-    </>;
+    _dump_stop() {
+        const state = this.get_state();
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">{this.dump_allowance_info(state)}</p>
+          {this._dump_g_button("stop", (e)=>this.new_stop(e))}
+        </div>
     }
+
+    _dump_withdraw() {
+        const state = this.get_state();
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">
+              {this.dump_allowance_info(state)}<br/>
+              {this._dump_input_amount(state, "Amount to withdraw")}
+          </p>
+          {this._dump_g_button("withdraw", (e)=>this.new_withdraw(e))}
+        </div>
+    }
+
+    Views = [
+        {name: "Allow", fn: this._dump_allow},
+        {name: "Stop", fn: this._dump_stop},
+        {name: "Withdraw", fn: this._dump_withdraw}
+    ]
 }
 
 
 export class OracleStake extends Stake {
+    Views = [
+        {name: "Allow", fn: this._dump_allow},
+        {name: "Register", fn: this._dump_register},
+        // {name: "Coinpairs", fn: this._dump_coinpairs},
+        // {name: "Modify", fn: this._dump_modify},
+        // {name: "Remove", fn: this._dump_remove},
+    ];
+
+    _dump_register() {
+        const state = this.get_state();
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">
+                {this.address.dump()}<br/>
+                {this.iaddress.dump()}<br/>
+                {this._dump_input_amount(state, "Stake")}
+           </p>
+           {this._dump_g_button("register", 
+           (e)=>this.new_register(e))}
+        </div>
+    }
+
+    _dump_modify() {
+        const state = this.get_state();
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">
+                {this.address.dump()}<br/>
+                {this.iaddress.dump()}<br/>
+                {this._dump_input_amount(state, "Stake")} (to do)
+           </p>
+           {this._dump_g_button("Change", 
+           (e)=>this.new_iaddr(e))}
+        </div>
+    }
+
+    _dump_coinpairs(state) {
+        let cp = this.parent_state().cp;
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">
+                {this.address.dump()}<br/>
+                {cp? this.dump_options(cp): "(fetching)"}
+           </p>
+           {this._dump_g_button("subscribe", 
+           (e)=>this.new_suscribe_cp(e, true))}
+           {this._dump_g_button("unsubscribe", 
+           (e)=>this.new_suscribe_cp(e, false))}
+        </div>
+    }
+
+    _dump_remove(state) {
+        return <div className="card-body">
+          {/* <h5 className="card-title">Special title treatment</h5> */}
+          <p className="card-text">
+                {this.address.dump()}<br/>
+           </p>
+           {this._dump_g_button("remove", 
+           (e)=>this.new_remove(e))}
+        </div>
+    }
+    
+
     constructor(name, parent, contract, contract_name) {
         super(name, parent, contract, contract_name);
 
@@ -342,7 +438,7 @@ export class OracleStake extends Stake {
 
         this.iaddress = new Address("internet_address", this, {
             label:"Network address ",
-            chk: (x) => x.startsWith("http://")||x.startsWith("https://"),
+            chk: isValidNS,
             msg: () => "Must start with http or https://"});
     }
 
@@ -353,27 +449,18 @@ export class OracleStake extends Stake {
     dump_options(optlist) {
         let state = this.get_state();
         return optlist.map(x => (
-            <div className="form-check">
+            <span className="form-check">
                 <input className="form-check-input" type="radio" name="exampleRadios" onChange={this.setCP.bind(this, x.pair)} id="exampleRadios1" value="option1" checked={state.current_cp===x.pair}/>
                 <label className="form-check-label" htmlFor="exampleRadios1">{x.pair.toString()}</label>
-            </div>));
-    }
-
-    dump_contract_info(state) {
-        let cp = this.parent_state().cp;
-        return <>
-            <p className="card-text">
-                {this.address.dump()}<br/>
-                {this.iaddress.dump()}
-            </p>
-            {cp? this.dump_options(cp): "(fetching)"}
-        </>
+            </span>));
     }
 
     init_state(st) {
         super.init_state(st);
         let xx = st[this.name];
         xx["current_cp"] = "";
+        xx["oracle"] = null;
+        xx["oraclecp"] = [];
         this.address.init_state(xx);
         this.iaddress.init_state(xx);
     }
@@ -388,7 +475,7 @@ export class OracleStake extends Stake {
             return alert("Invalid info!");
         }
         let stake_bn = ethers.utils.parseEther(state.gen_amount);
-        this.parent_state().oracle_manager.registerOracle(
+        this.parent.oracle_mgr.registerOracle(
             this.address.get_value(), this.iaddress.get_value(), stake_bn, M())
             .then((tx)=>on_tx_ok(tx, "register oracle"))
             .catch((err)=>on_tx_err(err, "register oracle"));
@@ -399,7 +486,7 @@ export class OracleStake extends Stake {
         if (!this.address.is_ok()) {
             return alert("Invalid info!");
         }
-        this.parent_state().oracle_manager.removeOracle(
+        this.parent.mgr.removeOracle(
             this.address.get_value(), M())
             .then((tx)=>on_tx_ok(tx, "remove oracle"))
             .catch((err) =>on_tx_err(err, "remove oracle"));
@@ -420,7 +507,7 @@ export class OracleStake extends Stake {
         if (!this.address.is_ok() || state.current_cp==="") {
             return alert("Invalid info!");
         }
-        let mgr = this.parent_state().oracle_manager;
+        let mgr = this.parent.oracle_mgr;
         let rawcp = this.find_raw_cp(state.current_cp);
 
         let f = sub_or_unsub? mgr.suscribeCoinPair : mgr.unsuscribeCoinPair;
@@ -447,44 +534,19 @@ export class OracleStake extends Stake {
             .catch((err)=>on_tx_err(err, "oraccle add stake"));
     }
 
-    new_iaddr(e) {
+    new_iaddr(e, cb) {
         e.preventDefault();
         if (!this.iaddress.is_ok() || !this.address.is_ok()) {
             return alert("Invalid info!");
         }
         this.contract.setOracleName(
             this.address.get_value(), this.iaddress.get_value(), M())
-            .then((tx)=>on_tx_ok(tx, "oracle net-address change"))
+            .then((tx)=>{
+                on_tx_ok(tx, "oracle net-address change");
+                if (cb) {
+                    cb();
+                }
+            })
             .catch((err) => on_tx_err(err, "oracle net-address change"));
-    }
-
-    dump_button_group(state) {
-        return  <div className="d-flex justify-content-between align-items-center">
-            <div className="btn-group btn-group-sm">
-                <button type="button" className="btn btn-sm btn-outline-secondary"  onClick={(e) => this.new_register(e)}>Register
-                </button>
-                <button type="button" className="btn btn-sm btn-outline-secondary"
-                            onClick={(e) => this.new_remove(e)}>Remove
-                </button>
-            </div>
-
-            <div className="btn-group btn-group-sm">
-                <button type="button" className="btn btn-sm btn-outline-secondary"
-                        onClick={(e) => this.new_suscribe_cp(e, true)}>Suscribe
-                </button>
-                <button type="button" className="btn btn-sm btn-outline-secondary"
-                        onClick={(e) => this.new_suscribe_cp(e, false)}>Unsuscribe
-                </button>
-            </div>
-
-            <div className="btn-group btn-group-sm">
-                <button type="button" className="btn btn-sm btn-outline-secondary"
-                            onClick={(e) => this.new_stake(e)}>Stake
-                    </button>
-                    <button type="button" className="btn btn-sm btn-outline-secondary"
-                            onClick={(e) => this.new_iaddr(e)}>Update net address
-                </button>
-            </div>
-        </div>
     }
 }

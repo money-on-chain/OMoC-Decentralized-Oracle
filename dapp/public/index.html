@@ -56,6 +56,59 @@
                 font-size: 3.5rem;
             }
         }
+
+        a.disabled{
+            pointer-events: none;
+            cursor: default;
+        }
+
+        /*spinner */
+section {
+  width: 200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.spinner {
+  animation: rotate 1.4s linear infinite;
+  -webkit-animation: rotate 1.4s linear infinite;
+  -moz-animation: rotate 1.4s linear infinite;
+  width:174px;
+  height:174px;
+  position: relative;
+}
+
+.spinner-dot {
+  width:274px;
+  height:274px;
+  position: relative;
+  top: 0;
+}
+
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes rotate {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-moz-keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.path {
+  stroke-dasharray: 170;
+  stroke-dashoffset: 20;
+}
+
     </style>
         <!-- Custom styles for this template -->
         <link href="https://getbootstrap.com/docs/4.4/examples/album/album.css"
@@ -95,12 +148,12 @@
                         </svg> -->
                         <strong>MOC Decentralized Oracles</strong>
                     </a>
-                    <button class="navbar-toggler" type="button"
-                        data-toggle="collapse" data-target="#navbarHeader"
-                        aria-controls="navbarHeader" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+<!--                    <button class="navbar-toggler" type="button"-->
+<!--                        data-toggle="collapse" data-target="#navbarHeader"-->
+<!--                        aria-controls="navbarHeader" aria-expanded="false"-->
+<!--                        aria-label="Toggle navigation">-->
+<!--                        <span class="navbar-toggler-icon"></span>-->
+<!--                    </button>-->
                 </div>
             </div>
         </header>
@@ -125,7 +178,7 @@
             crossorigin="anonymous"></script>
 
         <script>
-let s1='<script '; let s='</sc'+'ript>';
+let s1='<script '; let s2='</sc'+'ript>';
 window.jQuery || document.write(s1+'src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">'+s2)</script>
         <script>window.jQuery || document.write('<script src="https://getbootstrap.com/docs/4.4/assets/js/vendor/jquery.slim.min.js"><\/script>')</script>
         <script src="./bootstrap.bundle.min.js"

@@ -36,9 +36,10 @@ cd ..
 
 
 echo "////////////////////////////////"
-echo "setup & Run dapp"
+echo "setup & run dapp"
 echo "////////////////////////////////"
 
+mkdir -p ./dapp/src/contracts
 cp -r ./contracts/build/contracts ./dapp/src
 cd dapp
 

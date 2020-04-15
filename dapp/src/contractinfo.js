@@ -2,6 +2,7 @@ import React from 'react';
 import './index.css';
 import { Table, get_props, SC, Grey, HL, bigNumberifyAndFormatInt, formatEther, parseBytes32String, isValid, spantt} from './helpers.js';
 import {MyBase} from './stake.js';
+import {spanColor} from "./helpers";
 
 
 export
@@ -244,7 +245,7 @@ class CoinPairPriceAllInfo extends ContractInfo {
     _funcs() {
         return [
             {fn:"getAvailableRewardFees", pf: (x)=>formatEther(x)},
-            {fn:"getPrice", pf: (x)=>formatEther(x)},
+            {fn:"getPrice", pf: (x)=>spanColor(formatEther(x), "#00d717")},
             {fn:"getCoinPair", pf: (x)=>parseBytes32String(x)},
             {fn:"getLastPublicationBlock"},
 
