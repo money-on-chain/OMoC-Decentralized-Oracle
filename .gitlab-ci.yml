@@ -1,0 +1,32 @@
+image: node:10.15.0
+
+before_script:
+  - pwd
+  - ls -la 
+  - cd contracts 
+  - npm install
+  - npm install -g truffle
+  - cd ../dapp
+  - npm install
+  - cd ..
+
+pages:
+  script:
+    - cd contracts 
+    - pwd
+    - ls -la 
+    - truffle compile
+    - mkdir ../dapp/src/contracts
+    - cp build/contracts/*.json ../dapp/src/contracts
+    - cd ../dapp
+    - SKIP_PREFLIGHT_CHECK=true CI=true npm run build
+    - rm -rf ../public
+    - mv build ../public 
+
+  artifacts:
+    paths:
+      - public
+
+  only:
+    - develop   #  develop branch
+

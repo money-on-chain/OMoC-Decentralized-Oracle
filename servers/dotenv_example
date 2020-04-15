@@ -1,0 +1,107 @@
+# Don't commit this to source control.
+# Eg. Include ".env" in your `.gitignore` file.
+
+############################################ BLOCKCHAIN
+# Block chain network id, Block chain server url,  Block chain chain id must be configured !!!
+
+# ganache cli
+NETWORK_ID=12341234
+NODE_URL = "http://localhost:8545"
+
+# rsk regtest
+#NODE_URL = "http://localhost:4444"
+#NETWORK_ID=33
+#CHAIN_ID=33
+
+# rsk testnet
+# NODE_URL = "http://rsknodes:4446"
+# NETWORK_ID=31
+# CHAIN_ID=31
+
+# The server expect to find in this folder the *.json files with the abi an addresses of contracts
+# CONTRACT_FOLDER = "../build/contracts"
+
+# Timeout used when connection to the blockchain node
+# WEB3_TIMEOUT = "30 secs"
+
+############################################### SCHEDULER
+
+# Account used to manage rounds (start/close)
+SCHEDULER_SIGNING_ADDR = "MUST BE CONFIGURED"
+SCHEDULER_SIGNING_KEY = "MUST BE CONFIGURED"
+
+# Delay in which the scheduler checks for round change conditions
+# SCHEDULER_POOL_DELAY = "10 secs"
+# Delay in which the scheduler checks for round change after a round was closed
+# SCHEDULER_ROUND_DELAY = "1 days"
+# Run the oracle round scheduler?
+# SCHEDULER_RUN_ORACLE_SCHEDULER = True
+# Run the supporters round scheduler?
+# SCHEDULER_RUN_SUPPORTERS_SCHEDULER = True
+
+
+############################################### ORACLE
+# Run the oracle server (sign api and publisher).
+# ORACLE_RUN = True
+
+# Port in which the oracle listen for sign request
+# ORACLE_PORT = 5556
+
+# Flag that indicates if the monitor (a module that store information in logfiles) must be run
+# ORACLE_MONITOR = True
+
+# Oracle-only parameters.
+# Account used to publish prices
+ORACLE_ADDR="0x..."
+ORACLE_PRIVATE_KEY="0x..."
+
+# Main Oracle loop scanning interval, in which we get the coinpair list
+# ORACLE_MAIN_LOOP_TASK_INTERVAL = "120 secs"
+
+# Per coin pair loop scanning interval, in which we try to publish
+# ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL = "3 secs"
+
+# This loop collect a lot of information needed for validation (like last pub block) from the block chain
+# ORACLE_BLOCKCHAIN_INFO_INTERVAL = "3 secs"
+
+# Exchange price- etch rate in seconds, all the exchanges are queried at the same time.
+# ORACLE_PRICE_FETCH_RATE = "5 secs"
+
+# If the price delta percentage is grater than this we reject by not signing
+# ORACLE_PRICE_REJECT_DELTA_PCT = 50
+
+# If the price delta percentage has changed and more than ORACLE_PRICE_FALLBACK_BLOCKS pass we act as fallbacks.
+# ORACLE_PRICE_FALLBACK_DELTA_PCT = 0.05
+
+# Selected oracle publishes after ORACLE_PRICE_PUBLISH_BLOCKS  blocks of a price change.
+# ORACLE_PRICE_PUBLISH_BLOCKS = 1
+
+# Fallback oracle try to publish ORACLE_PRICE_FALLBACK_BLOCKS blocks after price change.
+# ORACLE_PRICE_FALLBACK_BLOCKS = 3
+
+# Timeout used when requesting signatures fom other oracles
+# ORACLE_GATHER_SIGNATURE_TIMEOUT = "2 secs"
+
+# This is used to limit the difference in participation between selected oracles, the maximum stake used
+# is the minimum multiplied by this factor (even if some oracle has more stake participating)
+# ORACLE_STAKE_LIMIT_MULTIPLICATOR = 2
+
+# If configured (json array of strings) only publish for those coinpairs in the list
+# ORACLE_COIN_PAIR_FILTER =[ "", "" ]
+
+
+
+############################################### ONLY FOR DEVELOPMENT
+
+# Turn on debug?
+# DEBUG = False
+# UVICOIN_DEBUG = False
+# LOG_LEVEL = "info"
+# Add some development endpoints
+# DEBUG_ENDPOINTS = False
+# Reload on source code change, used for development
+# RELOAD = False
+# Print stack trace of errors, used for development
+# ON_ERROR_PRINT_STACK_TRACE = False
+
+

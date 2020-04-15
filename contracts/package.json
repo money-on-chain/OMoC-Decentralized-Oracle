@@ -1,0 +1,32 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "MoC Contracts =============",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@openzeppelin/cli": "2.7.1",
+    "@openzeppelin/upgrades": "2.7.1",
+    "ganache-cli": "^6.9.1",
+    "truffle": "^5.1.20",
+    "truffle-hdwallet-provider-privkey": "^1.0.3",
+    "web3": "^1.2.4"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.4",
+    "dotenv": "^8.2.0",
+    "eth-gas-reporter": "^0.2.14",
+    "husky": "^4.2.3",
+    "solidity-coverage": "^0.7.1"
+  },
+  "scripts": {
+    "rsk_testnet": "truffle migrate --network rsk_testnet",
+    "rsk_regtest": "truffle migrate --network rsk_regtest",
+    "test_rsk": "truffle test --network rsk_testnet",
+    "test": "truffle test --network ganache_testing"
+  },
+  "author": "",
+  "license": "ISC"
+}
