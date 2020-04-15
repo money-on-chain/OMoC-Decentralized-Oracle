@@ -120,12 +120,12 @@ export async function awaitTx(provider, hash, msg) {
     }
 }
 
-export function check_or_ret(value, f) {
-    if (value === undefined)
-        return "";
-    if (value === null) {
-        return "null";
+export function check_or_ret(value, f, defvalue) {
+    if (!defvalue) {
+        defvalue = "-";
     }
+    if ((value === undefined)||(value === null))
+        return defvalue;
     try {
         return f(value);
     } catch (err) {
@@ -133,12 +133,22 @@ export function check_or_ret(value, f) {
     }
 }
 
+const loading = "(loading)";
+
 export function parseBytes32String(x) {
-    return check_or_ret(x, ethers.utils.parseBytes32String);
+    return check_or_ret(x, ethers.utils.parseBytes32String, loading);
 }
 
 export function formatEther(x) {
-    return check_or_ret(x, ethers.utils.formatEther);
+    return check_or_ret(x, ethers.utils.formatEther, loading);
+}
+
+export function bigNumberifyAndFormat(x) {
+    return check_or_ret(x, (y) => ethers.utils.formatEther(ethers.utils.bigNumberify(y)), loading);
+}
+
+export function bigNumberifyAndFormatInt(x) {
+    return check_or_ret(x, (y)=> ethers.utils.bigNumberify(y).toString(), loading);
 }
 
 export function get_props(contract_abi) {
@@ -176,31 +186,30 @@ export function Adr(addr) {
 export const id_f = (x) => x;
 
 export function spantt (addr, mode) {
-    let text_f, classes;
+    let text_f=id_f, classes="";
     let limit = false;
     if (mode===undefined) mode="auto";
     addr = addr==null? "" : addr;
     switch(mode) {
-        case "always":
-            text_f = Adr;
-            classes = "";
-            break
-        case "never":
-            text_f = id_f;
-            classes = "";
-	    break;
-        default: 
-            text_f = id_f;
-            classes = "text-truncate";
+    //     case "always":
+    //         text_f = Adr;
+    //         break
+    //     case "never":
+	//     break;
+        default:
+            //classes = "text-truncate";
             limit = "max-width: 30em;"
             break
     }
-    return <span {... TT(addr, classes, limit)}>
+    let tt = TT(addr, classes, limit);
+    tt['style'] = {fontWeight:'bold', 'color':'#000'};
+    return <span {... tt}>
             {text_f(addr)}
         </span>
 }
 
-const RefreshTime = process.env.REACT_APP_RefreshTime? process.env.REACT_APP_RefreshTime : 1000;
+const RefreshTime = process.env.REACT_APP_RefreshTime?
+                        process.env.REACT_APP_RefreshTime : 1000;
 
 const Networks = {
     30: { gas: "0x387ee40", update: RefreshTime },
@@ -243,20 +252,6 @@ export function spanColor(X, color) {
 
 export function Grey(X) {
     return spanColor(X, color22);
-}
-
-export function bigNumberifyAndFormat(x) {
-    if (x == null) {
-        return "---"
-    }
-    return ethers.utils.formatEther(ethers.utils.bigNumberify(x));
-}
-
-export function bigNumberifyAndFormatInt(x) {
-    if (x == null) {
-        return "---"
-    }
-    return ethers.utils.bigNumberify(x).toString();
 }
 
 export function isValid(address) {

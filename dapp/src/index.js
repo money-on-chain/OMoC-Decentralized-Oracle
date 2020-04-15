@@ -149,6 +149,7 @@ class Console extends React.Component {
             //temp
             latestblock: null,
             blocknr: "(fetching)",
+            tokenBalance: null,
             //tabs
             current_tab: "Oracles",
             //supporters vested
@@ -388,8 +389,19 @@ class Console extends React.Component {
         st["mgr_oracle_reg_info"] = [];
     }
 
+    async global_update() {
+        if (this.token!==null) {
+            let tokenBalance = await this.token.balanceOf(
+                                        this.state.address);
+            this.setState({tokenBalance});
+        }
+    }
+
     async _a_update() {
+        this.global_update = this.global_update.bind(this);
+
         let fs = [
+            {f: this.global_update, n:"global update"},
             {f: this._manager_update, n: "manager update"},
         ].concat((this.mgr_stake ? {f: this.mgr_stake.update, n: "mgr"} : []))
         .concat((this.sup_stake ? {f: this.sup_stake.update, n: "sup"} : []))
@@ -454,9 +466,7 @@ class Console extends React.Component {
         }
     }
 
-
     // newinfo---------------------------------------------------------
-
     switch_round(e, pair) {
         e.preventDefault();
         let contract = this.contracts[pair];
@@ -558,7 +568,8 @@ class Console extends React.Component {
             return <><span>(loading..)</span></>;
         }
 
-        return Table(["", `Oracle ${oracle_addr} info`], this.oracle_to_table(oracle).map((field, idx) => [OracleColumns.slice(1)[idx], field]
+        return Table(["", `Oracle ${oracle_addr} info`], this.oracle_to_table(oracle).map(
+                                                                    (field, idx) => [OracleColumns.slice(1)[idx], field]
         ), {nonresponsive: true, classes: " table-dark ", incidx: false});
     }
 
@@ -567,7 +578,8 @@ class Console extends React.Component {
             {this.XCard(6,
                 <p className="card-text"> {Grey(<>
                     Current block: {HL(this.state.blocknr)}.
-                    Your address is: {HL(spantt(this.state.address))}.
+                    Your address is: {spantt(this.state.address)}.
+                    Current (on chain) balance: {HL(formatEther(this.state.tokenBalance))} tokens.
                 </>)}
                 </p>, "")}
 
@@ -646,7 +658,6 @@ class Console extends React.Component {
     }
 
     XCard(size, content, title) {
-        //let klass = "col-sm-" + size.toString(); // temporarily ignore size
         let gentitle = ()=>title? <h5 className="card-title">{title}</h5> : <></>
         return (
                 <div className="card shadow p-3 mb-5 bg-white rounded">
@@ -656,8 +667,6 @@ class Console extends React.Component {
                     </div>
                 </div>
         );
-        // <div className={klass}>
-        // </div>
     }
 
     //------ oracle table -----
@@ -778,7 +787,6 @@ class Console extends React.Component {
         const new_value = e.target.checked;
         const addr = oracle.address;
         const mgr = this.oracle_mgr;
-        // console.log("cp:",e.target.value, e.target.checked, e.checked, new_value);
         const rawcp = this.__find_raw_cp(cp);
 
         let f = new_value ? mgr.suscribeCoinPair : mgr.unsuscribeCoinPair;
