@@ -71,13 +71,19 @@ The following are configurations parameters for the Supporters smart contract.
 - supportersMinStopBlocks: 10
   The minimum amount of blocks a supporter must stay stop before he can recover his stake.
 
+Tests
+==============
+
+```
+npm run test
+```
  
 
 Coverage Tests
 ==============
 
 ```
-npx truffle run coverage --network ganache_test --file="test/Oracle.js 
+npm run coverage
 ```
 
 
