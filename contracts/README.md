@@ -1,11 +1,12 @@
-MoC Contracts
-=============
+# MoC Contracts
 
-Requirments:
-===========
+## Requirements:
+
+```
 npm install -g ganache-cli
 node version 10.17.0
 npm install
+```
 
 how to deploy the SmartContract:
 ===============================

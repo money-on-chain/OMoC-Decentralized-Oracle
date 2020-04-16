@@ -1,12 +1,6 @@
-## Scheduler implementation
+# Oracle price feeder reference implementation
 
-- [Scheduler implementation](#scheduler-implementation)
-  * [Requirements](#requirements)
-  * [Instalation guide](#instalation-guide)
-
-*** 
-
-### Requirements 
+## Requirements 
 
 - First, run the following command to install dependencies and requirements:
 
@@ -18,7 +12,7 @@ sudo apt-get install python3 python-dev python3-dev \
      python-pip
 ```
 
-### Instalation guide
+## Instalation guide
 - Create a python virtualenv: 
 
       virtualenv -p /usr/bin/python3.7 venv

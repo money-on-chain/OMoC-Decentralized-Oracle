@@ -1,224 +1,90 @@
 # MONEY ON CHAIN
+
 **Descentralized Oracle System**
-Proof-Of-Concept.
-Revision 1.0
 
+## Overview
 
-#### Document Revisions
-Rev 1.0.        First revision.         Jan 7, 2020.
+This repository contains the source code for the Money On Chain Descentralized Oracle system.
 
-Overview
-========
+The objective of this system is to provide on-chain price for our tokens in a trustless decentralized manner. 
 
-This repository contains the POC-stage source code for the Money On Chain
-Descentralized Oracle system. The included components are:
+We describe the different components involved in this system and their interaction.
 
-* Solidity contract with interfaces to register and approve oracles, start and close rounds, and publish price information on-chain by approved oracles.
+## Components
 
-* Reference oracle implementation with the ability to query prices from  remote sources, determine the next price publisher, co-sign price publication messages, and call the smart contract interface to publish a new price.
+Smart Contracts
+:   Which interfaces to register and approve Price Providers, start and close rounds, and publish price information on-chain by approved Price Providers.
 
-* Scheduler implementation that triggers rounds for oracles to work. 
+Price Providers
+:   Reference server implementation which will feed the contacts with price retrieved from exchange systems. It can determine the next price publisher, co-sign price publication messages, and call the smart contract interface to publish a new price. It is also responsible to keep the contract system running (schedules periodic tasks). 
 
-Project Structure
-=================
+Supporters
+:   A member willing to participate in the system only with its stake. By locking their funds for a period of time they can participate from the system earnings, fees and subsidy distribution.
 
-```
-contracts               The source code of the Solidity contract, including a test MOC token.
-servers\oracle          The reference Oracle implementation.
-servers\scheduler       The scheduler implementation.
-servers\scripts         A set of scripts to test and evaluate system operation.
-dapp                    
-```
+WebDApp
+:   An browser side application which interacts with the contracts and let you configure, monitor and operate the system. 
 
-Requirements
-============
+Exchanges
+:   External dependency to retrieve required prices from.
 
-* Linux / macOS system.  Windows is not supported.
-* Python >= 3.7 
-* NodeJS >= 10.17.0
 
-You may want to setup a virtual environment for Python using `virtualenv` or similar package.
+## Project Structure
 
-How-To
-======
+* [development.md](./development.md): How to run a local development environment.
+* [contracts](./contracts): The source code of the Solidity contracts that support the system.
+* [contracts/README.md](./contracts/README.md): Documentation on how to build and deploy the contracts.
+* [contracts/scripts](./contracts/scripts): Allow to run helper processes on RSK network.
+* [servers](./servers): The reference Oracle implementation along with the schedulers.
+* [servers/README.md](./servers/README.md): Documentation on how to deploy and run a Price Provider.
+* [servers/scripts](./servers/scripts): Scripts to test servers and manually register, start round, etc... This is useful for the development environment.
+* [servers/delfos](./servers/delfos): Sets up a group of price feeders working together to test the system in a single machine.
+* [dapp](./dapp): Includes the code for the WebDApp which needs to be deployed to a web server.
+* [scripts](./scripts): Tools to monitor and interact with the system when running over RSK network.
 
-The system can be operated under Ethereum or RSK **testing** networks. The Ethereum community offers Ganache and ganache-cli as fast testing environment. In this document we'll show ganache-cli, the command line interface;  the version with graphical UI can be used in the same manner.
+## Smart Contracts Design
 
-The Truffle framework is also needed for effortless compilation and deployment of the smart contracts.
+![Architecture](docs/contracts.png)
 
-Truffle installation
---------------------
-Install the Truffle framework by issuing:
+OracleManager
+:    Allows any blockchain user to register an oracle in the system and subcribe it as a price-provider for different coinpairs.
 
-```
-npm install -g truffle
-```
+CoinPairPrice (one per coinpair)
+:    This contract keeps the price and is responsible to receive and validate price updates provided. Also tracks providers participation in order to provide rewards.
 
-Under the `contracts` folder, where `package.json` resides do a `npm install` to install necessary dependencies for this project compilation and deployment activities.
+Supporters
+:    Will track stake-period contributed by supporters and will provide a reward in compensation.
 
-Truffle must acknowledge in which network the contracts will be deployed. The relevant information is found in `truffle-config.js` under `networks` section. Each network entry name can be used later in the deployment stage.
+CoinPairRegister
+:    A contract to setup which coinpairs will the system accept.
 
-Read the *section below* as running in the RSK testnet is quite similar.
+Governance
+:    Control changes and upgrades over the contracts
 
-Running under Ethereum/Ganache
-------------------------------
 
-Install `ganache-cli` through npm:
+## Operation
 
-```
-npm install -g ganache-cli
-```
+Foundation will setup and deploy contracts and will provide theirs addresses for anyone willing to participate. When minimal participants join the contracts will be "started".
 
-The first step is to compile the smart contract code. Go to the `contracts` folder and execute the following command:
 
-```
-truffle compile
-```
+### Kickoff
 
-The compilation output should be similar, if successful, to the following:
+When a coinpair participants have reach a minimal number required to work, the 0-round will be manually started. 
 
-```
-Compiling your contracts...
-===========================
-> Compiling ./contracts/Context.sol
-> Compiling ./contracts/ERC20.sol
-> Compiling ./contracts/IERC20.sol
-> Compiling ./contracts/Migrations.sol 
-> Compiling ./contracts/Oracle.sol
-> Compiling ./contracts/SafeMath.sol
-> Compiling ./contracts/TestMOC.sol
+### Rounds
 
-    > compilation warnings encountered:
+The CoinPair contracts work on a round-basis. The top N price-provider which contribute more stake will be selected to work at the begining of each round. Each round lasts one month and it is expected for the selected providers to work to do their job the whole time of the round. 
+The round will end and a new round will be started automatically. When the new round begins a new provider selection will be made.
+During the round, each time a provider publish a pair-price to the contract, it will be accounted **one** point. At the same time, the contract will be receiving reward tokens which will be distributed at the end of the round proportionally to the points collected by each provider.
 
-/home/hernandp/src/mOcRACLE/contracts/contracts/Oracle.sol:2:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
-pragma experimental ABIEncoderV2;
-^-------------------------------^
+### Price publishing
 
-> Artifacts written to /home/hernandp/src/mOcRACLE/contracts/build/contracts
-> Compiled successfully using:
-   - solc: 0.5.16+commit.9c3226ce.Emscripten.clang
+The price publishing or posting is made by turns. The turns are selected proportionally to the stake of the participants and is determined by the previous publication-block's hash. Each hash determines a particular participants order for next publication.
 
-```
+When to publish a price is determined by the price change from previous publication. If the expected participant don't publish for a defined period of blocks, the following in the order defined will be allowed to publish. And this fallback scheme repeats allowing multiple providers to take fallback turn in case of being required.
 
-The compilation result is a set of JSON files in the `build` subdirectory containing the ABI for calling the contract, network information, etc. 
+To publish a price it is required the consensus from half plus one of the round-selected providers. To ask for consensus, providers connects off-chain. Willing to publish provider will create a "publish-message" including block number, price to publish, etc., and will deliver it to other providers who will validate its content and return their signature. When enough signatures is received, "publish-message" and signatures is sent to contract which will verify the agreement and set the price in accordance.
 
-Execute the `ganache-cli` testing environment. For this example we will run with a network ID of 12341234 and a fixed set of addresses which is generated automatically by the -d (_deterministic_) parameter, as follows:
+### Supporters
 
-```
-ganache-cli -d -i 12341234
-```
-
-Ganache will listen from the 127.0.0.1 loopback address at port 8545.
-
-### Deploying contracts
-
-Under the `contracts` directory, execute _truffle_ with the following parameters to deploy the contracts you compiled to the `ganache-cli` blockchain:
-
-```
-truffle deploy --network ganache_localhost
-```
-
-If deployment is successful, the command will yield a similar output to:
-
-```
-Summary
-=======
-> Total deployments:   3
-> Final cost:          0.10001312 ETH
-
-```
-
-### Python dependencies installation
-
-Under the `servers` directory you must install the required Python module dependencies that are listed in the requirements.txt file. Remember that a virtual-environment solution such as _virtualenv_ is required. Under your Python environment, execute:
-
-```
-pip install -r requirements.txt
-``` 
-
-
-## Running the Netsim script
-
-The Netsim script allows to run a simulation of the decentralized oracle system where a defined set of oracles publish prices on the testing environment. This way fundamental functionality such as round open, close, publisher selection and reward distribution can be quickly verified.
-
-### Configuration through .env file
-
-Servers must be configured accordingly in a `.env` file. We supply a `dotenv_example` file under the `servers` folder as a starting version; check NODE_URL and NETWORK_ID entries to match the `ganache-cli` settings, or of any node your are running:
-
-```
-# ganache cli
-NODE_URL = "http://localhost:8545"
-NETWORK_ID=12341234
-CHAIN_ID=1
-```
-
-Note that the default Netsim script will use the following addresses for the oracles:
-
-```
-0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0
-0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b
-0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d
-```
-
-While the contract owner at deployment will be set to the address: 
-
-```
-0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
-```
-
-Make sure the following entries are set in the `.env` file:
-
-```
-SCHEDULER_SIGNING_ADDR="0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0"
-SCHEDULER_SIGNING_KEY="6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1"
-SCHEDULER_POOL_DELAY="10 secs"
-SCHEDULER_ROUND_DELAY="60 secs"
-SCHEDULER_REWARD_BAG_ADDR="0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826"
-PRICE_FETCHER_OWNER_ADDR="0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
-PRICE_FETCHER_OWNER_KEY="4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
-REWARD_BAG_KEY="c85ef7d79691fe79573b1a7064c19c1a9819ebdbd1faaab1a8ec92344438aaf4"
-``` 
-
-### Execution of the netsim script
-
-Make sure you are at the `servers` directory and ganache-cli is running, execute the follow, preferably in a new window to monitor progress:
-
-```
-python -m scripts.netsim
-```
-
-The startup will show you configuration settings along with three (by default) oracles that will begin to fetch prices; the scheduler will wait for conditions to open a round. 
-
-Keep in mind that in this version rewards are distributed from a source address which must be feed with MOCs. To do this, execute the add_rewards scripts as follows:
-
-```
-python -m scripts.add_rewards
-```
-
-To start the initial round as an administrator would do, execute from the same `servers` directory:
-
-```
-python -m scripts.start_initial_round
-```
-
-The scheduler will call the smart contract interface to trigger the opening of the first round, so the oracles can publish prices.
-
-Use the list_oracles script to verify how many points each oracle has gained in the current round:
-
-```
-python -m scripts.list_oracles
-
- INFO FOR  0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d  : 
- {'internetName': 'http://127.0.0.1:24004', 
- 'points': 0, 'ownerStake': 14000000000000000000, 'approve': True}
- 
- INFO FOR  0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b  :  
- {'internetName': 'http://127.0.0.1:24002', '
- points': 1, 'ownerStake': 8000000000000000000, 'approve': True}
- 
- INFO FOR  0x28a8746e75304c0780E011BEd21C72cD78cd535E  :  
- {'internetName': 'http://127.0.0.1:24000', 
- 'points': 0, 'ownerStake': 2000000000000000000, 'approve': True}
-``` 
-
-
+Supporters do have a round-system too but it is transparent for the users. Reward is collected all during a certain period, and after that it is assigned to current supporters according to their stake and will be all available for the user at the end of the following round. If the user decides to retire before it will receive a part proportional to how long it stayed in the system.
+Each participant registering a price-provider will automatically also be registered as supporter and will receive proportional support-rewards as any other supporter no matter if is selected as price-provider 

@@ -8,13 +8,18 @@
 NETWORK_ID=12341234
 NODE_URL = "http://localhost:8545"
 
-# rsk regtest
+# RSK regtest
 #NODE_URL = "http://localhost:4444"
 #NETWORK_ID=33
 #CHAIN_ID=33
 
-# rsk testnet
+# RSK testnet CoinFabrik
 # NODE_URL = "http://rsknodes:4446"
+# NETWORK_ID=31
+# CHAIN_ID=31
+
+# RSK testnet
+# NODE_URL = "https://public-node.testnet.rsk.co:443"
 # NETWORK_ID=31
 # CHAIN_ID=31
 
