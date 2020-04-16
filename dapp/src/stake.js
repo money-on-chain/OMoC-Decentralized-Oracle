@@ -183,7 +183,7 @@ export class Stake extends MyBase {
     }
 
     views() {
-        let mint = {name: "Mint", fn:this._dump_mint};
+        let mint = {name: "0 Mint", fn:this._dump_mint};
         let views = this.Views;
         if (ALLOW_MINT) {
             views = [mint].concat(views);
@@ -351,8 +351,8 @@ export class SupportersStake extends Stake {
     }
 
     Views = [
-        {name: "Allow", fn: this._dump_allow},
-        {name: "Stake", fn: this._dump_stake},
+        {name: "1 Allow", fn: this._dump_allow},
+        {name: "2 Stake", fn: this._dump_stake},
         {name: "Stop", fn: this._dump_stop},
         {name: "Withdraw", fn: this._dump_withdraw}
     ]
@@ -361,8 +361,8 @@ export class SupportersStake extends Stake {
 
 export class OracleStake extends Stake {
     Views = [
-        {name: "Allow", fn: this._dump_allow},
-        {name: "Register", fn: this._dump_register},
+        {name: "1 Allow", fn: this._dump_allow},
+        {name: "2 Register", fn: this._dump_register},
     ];
 
     _dump_register() {
