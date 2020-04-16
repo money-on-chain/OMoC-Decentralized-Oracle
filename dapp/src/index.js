@@ -1065,7 +1065,7 @@ class Console extends React.Component {
                                     this._on_row_click(idx);
                                 }
                             }),
-                        "All")}
+                        "Registered oracles")}
                 </div>
                 </>
             };
