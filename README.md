@@ -2,6 +2,8 @@
 
 **Descentralized Oracle System**
 
+[TOC]
+
 ## Overview
 
 This repository contains the source code for the Money On Chain Descentralized Oracle system.
@@ -12,20 +14,15 @@ We describe the different components involved in this system and their interacti
 
 ## Components
 
-Smart Contracts
-:   Which interfaces to register and approve Price Providers, start and close rounds, and publish price information on-chain by approved Price Providers.
+**Smart Contracts**: Which interfaces to register and approve Price Providers, start and close rounds, and publish price information on-chain by approved Price Providers.
 
-Price Providers
-:   Reference server implementation which will feed the contacts with price retrieved from exchange systems. It can determine the next price publisher, co-sign price publication messages, and call the smart contract interface to publish a new price. It is also responsible to keep the contract system running (schedules periodic tasks). 
+**Price Providers**: Reference server implementation which will feed the contacts with price retrieved from exchange systems. It can determine the next price publisher, co-sign price publication messages, and call the smart contract interface to publish a new price. It is also responsible to keep the contract system running (schedules periodic tasks). 
 
-Supporters
-:   A member willing to participate in the system only with its stake. By locking their funds for a period of time they can participate from the system earnings, fees and subsidy distribution.
+**Supporters**: A member willing to participate in the system only with its stake. By locking their funds for a period of time they can participate from the system earnings, fees and subsidy distribution.
 
-WebDApp
-:   An browser side application which interacts with the contracts and let you configure, monitor and operate the system. 
+**WebDApp**: An browser side application which interacts with the contracts and let you configure, monitor and operate the system. 
 
-Exchanges
-:   External dependency to retrieve required prices from.
+**Exchanges**: External dependency to retrieve required prices from.
 
 
 ## Project Structure
@@ -45,26 +42,19 @@ Exchanges
 
 ![Architecture](docs/contracts.png)
 
-OracleManager
-:    Allows any blockchain user to register an oracle in the system and subcribe it as a price-provider for different coinpairs.
+**OracleManager**: Allows any blockchain user to register an oracle in the system and subcribe it as a price-provider for different coinpairs.
 
-CoinPairPrice (one per coinpair)
-:    This contract keeps the price and is responsible to receive and validate price updates provided. Also tracks providers participation in order to provide rewards.
+**CoinPairPrice** (one per coinpair): This contract keeps the price and is responsible to receive and validate price updates provided. Also tracks providers participation in order to provide rewards.
 
-Supporters
-:    Will track stake-period contributed by supporters and will provide a reward in compensation.
+**Supporters**: Will track stake-period contributed by supporters and will provide a reward in compensation.
 
-CoinPairRegister
-:    A contract to setup which coinpairs will the system accept.
+**CoinPairRegister**: A contract to setup which coinpairs will the system accept.
 
-Governance
-:    Control changes and upgrades over the contracts
-
+**Governance**: Control changes and upgrades over the contracts
 
 ## Operation
 
 Foundation will setup and deploy contracts and will provide theirs addresses for anyone willing to participate. When minimal participants join the contracts will be "started".
-
 
 ### Kickoff
 

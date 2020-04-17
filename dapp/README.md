@@ -7,13 +7,10 @@ For that reason we include here ***our*** the build instructions:
 
 In order to build this webpage it is required you provide files containing the contracts ABI.  
 
-Those files are generated when the contracts are compiled prior to its deployment following these steps:
+Those files are generated when the contracts are compiled prior to its deployment. To build the contracts follow the instructions on [contracts/README.md](../contracts/README.md) and then copy them to the DAPP src folder:
 
 ```bash
  $ cd contracts/
- $ npm install
- $ npm install -g truffle
- $ npm run build
  $ cp -r build/contracts ../dapp/src   # install contracts in DApp.
 ```
 
