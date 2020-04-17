@@ -1,12 +1,18 @@
-requierments
-############
+# This is used to run several oracles in a test environment
 
-the contracts' *.json must be at ./contracts/build/contracts/
+## Requirements
+
+Build the contracts following the instructions on [contracts/README.md](../contracts/README.md)
+
+```
 cp address.sh.example address.sh
-you can set the oracles configuration at ./servers/delfos/address.sh
+```
 
+Then you can set the oracles configuration at [./servers/delfos/address.sh](./address.sh)
 
-run
-###
+## run
+
+```
 cd ./servers
 ./run_delfos.sh
+```

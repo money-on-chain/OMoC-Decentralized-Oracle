@@ -2,8 +2,6 @@
 
 **Descentralized Oracle System**
 
-[TOC]
-
 ## Overview
 
 This repository contains the source code for the Money On Chain Descentralized Oracle system.
@@ -29,10 +27,8 @@ We describe the different components involved in this system and their interacti
 
 * [development.md](./development.md): How to run a local development environment.
 * [contracts](./contracts): The source code of the Solidity contracts that support the system.
-* [contracts/README.md](./contracts/README.md): Documentation on how to build and deploy the contracts.
 * [contracts/scripts](./contracts/scripts): Allow to run helper processes on RSK network.
 * [servers](./servers): The reference Oracle implementation along with the schedulers.
-* [servers/README.md](./servers/README.md): Documentation on how to deploy and run a Price Provider.
 * [servers/scripts](./servers/scripts): Scripts to test servers and manually register, start round, etc... This is useful for the development environment.
 * [servers/delfos](./servers/delfos): Sets up a group of price feeders working together to test the system in a single machine.
 * [dapp](./dapp): Includes the code for the WebDApp which needs to be deployed to a web server.
