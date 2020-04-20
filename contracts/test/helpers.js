@@ -100,3 +100,17 @@ async function createGovernor(owner) {
 }
 
 exports.createGovernor = createGovernor;
+
+function coinPairStr(hex) {
+    let str = "";
+    for (let n = 0; n < hex.length; n += 2) {
+        const ch = hex.substr(n, 2);
+        if (ch == "0x" || ch == "00") {
+            continue;
+        }
+        str += String.fromCharCode(parseInt(ch, 16));
+    }
+    return str;
+}
+
+module.exports.coinPairStr = coinPairStr;
