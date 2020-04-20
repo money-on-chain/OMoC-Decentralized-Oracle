@@ -60,12 +60,6 @@ class OracleCoinPairLoop(BgTaskExecutor):
 
         if self._oracle_turn.is_oracle_turn(blockchain_info, ORACLE_ACCOUNT.addr, exchange_price):
             logger.info("%r : ------------> Is my turn I'm chosen: %s" % (self._coin_pair, ORACLE_ACCOUNT.addr))
-            f_block = self._oracle_turn.price_changed_blocks(blockchain_info, exchange_price)
-            if f_block is None or f_block < oracle_settings.ORACLE_PRICE_PUBLISH_BLOCKS:
-                logger.warning("%r : I'm selected but still waiting for price change blocks %r < %r" %
-                               (self._coin_pair, f_block, oracle_settings.ORACLE_PRICE_PUBLISH_BLOCKS))
-                return oracle_settings.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL
-
             await self.publish(blockchain_info.selected_oracles, PublishPriceParams(oracle_settings.MESSAGE_VERSION,
                                                                                     self._coin_pair,
                                                                                     exchange_price,

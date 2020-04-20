@@ -90,7 +90,7 @@ class RequestValidation:
                         self.params.price, self.exchange_price.price), self.cp)
 
     def validate_turn(self):
-        is_turn, msg = self.oracle_turn.is_oracle_turn_with_msg(
+        is_turn, msg = self.oracle_turn.validate_turn(
             self.blockchain_info, self.params.oracle_addr, self.exchange_price)
         if not is_turn:
             raise InvalidTurn("is not oracle %s turn : %s" % (

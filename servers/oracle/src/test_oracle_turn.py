@@ -16,95 +16,95 @@ gg = PriceWithTimestamp
 
 def test_no_price_change():
     f = OracleTurn("BTCUSD")
-    ret = f.price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(1, 12, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 12, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(1, 14, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 14, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(2, 16, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 16, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(2, 18, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 18, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(2, 20, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 20, 11.1), gg(11.1, 0))
     assert ret is None
 
 
 def test_price_change():
     f = OracleTurn("BTCUSD")
-    ret = f.price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(1, 14, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 14, 11.1), gg(22.2, 0))
     assert ret == 2
-    ret = f.price_changed_blocks(g(1, 16, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 16, 11.1), gg(22.2, 0))
     assert ret == 4
-    ret = f.price_changed_blocks(g(1, 18, 11.1), gg(33.3, 0))
+    ret = f._price_changed_blocks(g(1, 18, 11.1), gg(33.3, 0))
     assert ret == 6
 
 
 def test_initial_price_change():
     f = OracleTurn("BTCUSD")
-    ret = f.price_changed_blocks(g(1, 10, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 10, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
     assert ret == 2
-    ret = f.price_changed_blocks(g(1, 14, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 14, 11.1), gg(22.2, 0))
     assert ret == 4
-    ret = f.price_changed_blocks(g(1, 16, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 16, 11.1), gg(22.2, 0))
     assert ret == 6
-    ret = f.price_changed_blocks(g(1, 18, 11.1), gg(33.2, 0))
+    ret = f._price_changed_blocks(g(1, 18, 11.1), gg(33.2, 0))
     assert ret == 8
 
 
 def test_price_change_2():
     f = OracleTurn("BTCUSD")
-    ret = f.price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(1, 14, 11.1), gg(33.3, 0))
+    ret = f._price_changed_blocks(g(1, 14, 11.1), gg(33.3, 0))
     assert ret == 2
 
 
 def test_new_pub_no_price_change():
     f = OracleTurn("BTCUSD")
-    ret = f.price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(2, 14, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 14, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(2, 16, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 16, 11.1), gg(11.1, 0))
     assert ret is None
 
 
 def test_new_pub_price_change():
     f = OracleTurn("BTCUSD")
-    ret = f.price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
-    ret = f.price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(2, 14, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(2, 14, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(2, 16, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 16, 11.1), gg(11.1, 0))
     assert ret == 2
 
 
 def test_new_pub_initial_price_change():
     f = OracleTurn("BTCUSD")
-    ret = f.price_changed_blocks(g(1, 10, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(1, 10, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(1, 12, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 12, 11.1), gg(11.1, 0))
     assert ret == 2
-    ret = f.price_changed_blocks(g(1, 14, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(1, 14, 11.1), gg(11.1, 0))
     assert ret == 4
-    ret = f.price_changed_blocks(g(2, 16, 11.1), gg(22.2, 0))
+    ret = f._price_changed_blocks(g(2, 16, 11.1), gg(22.2, 0))
     assert ret == 0
-    ret = f.price_changed_blocks(g(2, 18, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 18, 11.1), gg(11.1, 0))
     assert ret == 2
-    ret = f.price_changed_blocks(g(2, 20, 11.1), gg(11.1, 0))
+    ret = f._price_changed_blocks(g(2, 20, 11.1), gg(11.1, 0))
     assert ret == 4
 
 

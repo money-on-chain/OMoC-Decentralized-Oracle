@@ -14,11 +14,27 @@ class OracleTurn:
     def __init__(self, coin_pair: CoinPair):
         self._price_fallback_delta = oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT
         self._price_fallback_blocks = oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS
+        self._oracle_price_publish_blocks = oracle_settings.ORACLE_PRICE_PUBLISH_BLOCKS
         self._coin_pair = coin_pair
         self.price_change_block = -1
         self.price_change_pub_block = -1
 
-    def price_changed_blocks(self, block_chain: OracleBlockchainInfo, exchange_price: PriceWithTimestamp):
+    # Called by /sign endpoint
+    def validate_turn(self, vi: OracleBlockchainInfo, oracle_addr, exchange_price: PriceWithTimestamp):
+        return self._is_oracle_turn_with_msg(vi, oracle_addr, exchange_price)
+
+    # Called byt coin_pair_price_loop
+    def is_oracle_turn(self, vi: OracleBlockchainInfo, oracle_addr, exchange_price: PriceWithTimestamp):
+        (is_my_turn, msg) = self._is_oracle_turn_with_msg(vi, oracle_addr, exchange_price)
+        if is_my_turn:
+            f_block = self._price_changed_blocks(vi, exchange_price)
+            if f_block is None or f_block < self._oracle_price_publish_blocks:
+                logger.warning("%r : I'm selected but still waiting for price change blocks %r < %r" %
+                               (self._coin_pair, f_block, self._oracle_price_publish_blocks))
+            return True
+        return False
+
+    def _price_changed_blocks(self, block_chain: OracleBlockchainInfo, exchange_price: PriceWithTimestamp):
         if block_chain.last_pub_block < 0 or block_chain.block_num < 0:
             raise Exception("%r : Invalid block number", self._coin_pair)
 
@@ -30,7 +46,7 @@ class OracleTurn:
 
         delta = helpers.price_delta(block_chain.blockchain_price, exchange_price.price)
         if delta < self._price_fallback_delta:
-            logger.info("%r : We are not fallbacks and the price didn't change enough %r < %r,"
+            logger.info("%r : We are not fallbacks and/or the price didn't change enough %r < %r,"
                         " blockchain price %r exchange price %r" %
                         (self._coin_pair, delta, self._price_fallback_delta,
                          block_chain.blockchain_price, exchange_price.price))
@@ -48,10 +64,7 @@ class OracleTurn:
         logger.info("%r : The price has changed, right now" % self._coin_pair)
         return 0
 
-    def is_oracle_turn(self, vi: OracleBlockchainInfo, oracle_addr, exchange_price: PriceWithTimestamp):
-        return self.is_oracle_turn_with_msg(vi, oracle_addr, exchange_price)[0]
-
-    def is_oracle_turn_with_msg(self, vi: OracleBlockchainInfo, oracle_addr, exchange_price: PriceWithTimestamp):
+    def _is_oracle_turn_with_msg(self, vi: OracleBlockchainInfo, oracle_addr, exchange_price: PriceWithTimestamp):
         if len(vi.selected_oracles) == 0 or not \
                 any(x.addr == oracle_addr and x.selectedInCurrentRound for x in vi.selected_oracles):
             msg = "%r : is not %s turn we are not in the current round selected oracles" % \
@@ -68,7 +81,7 @@ class OracleTurn:
             logger.info(msg)
             return True, msg
 
-        f_block = self.price_changed_blocks(vi, exchange_price)
+        f_block = self._price_changed_blocks(vi, exchange_price)
         if f_block is None:
             msg = "%r : is not %s turn there was no price change" % (self._coin_pair, oracle_addr)
             logger.info(msg)
