@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"-->
+    <!--          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
+    <title>Monitor Page</title>
+
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .d-block {
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">CF Monitor</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
+
+<div class="container-md" id="tbody"/>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+
+<script src="ejs.min.js"></script>
+<script>
+    let interval = null;
+
+    function CODE(X) {
+        return '<% ' + X + ' %>';
+    }
+
+    function VAR(X) {
+        return '<%= ' + X + ' %>';
+    }
+
+    function HTML(X) {
+        return X;
+    }
+
+    function IF(COND, IFTRUE, IFFALSE) {
+        return CODE(`if (${COND}) {`) + HTML(IFTRUE) + (IFFALSE ?
+            CODE('} else {') + HTML(IFFALSE) : '') + CODE("}")
+    }
+
+    function FOREACH(ARRAY, FUNCDEF, _LOOP) {
+        return CODE(` ${ARRAY}.forEach(${FUNCDEF}{`) + HTML(_LOOP) + CODE('});');
+    }
+
+    const red = '#e83e8c';
+    const blue = '#007bff';
+
+    function item(title, desc, color = blue) {
+        return `<div class="media text-muted pt-3">
+  <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32"
+        xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+        focusable="false" role="img" aria-label="Placeholder: 32x32">
+    <title>${desc}</title>
+    <rect width="100%" height="100%" fill="${color}"/>
+<!--    <text x="50%" y="50%" fill="#007bff" dy=".3em"></text>-->
+  </svg>
+  <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+    <strong class="d-block text-gray-dark">${title}</strong>${desc}
+  </p>
+</div>`;
+    }
+
+    async function update() {
+        try {
+            const response = await fetch('/alerts');
+            const data = await response.json();
+            //console.log((new Date().toString())+" | Data received:", JSON.stringify(data))
+            const alerts = data["alerts"];
+            let template;
+
+            template = `
+<div class="my-3 p-3 bg-white rounded shadow">
+    <h6 class="border-bottom border-gray pb-2 mb-0">Alerts</h6>` +
+                IF("alerts.length>0",
+                    FOREACH('alerts', 'function(alert, idx)',
+                        HTML(item(VAR("alert.name"), VAR("alert.msg"),
+                            IF("alert.manual", red, blue)))),
+                    HTML(item("no-alerts", "No alerts received"))) + `
+    <small class="d-block text-right mt-3">
+      by <span id="info"></span>
+    </small>
+</div>`;
+            document.getElementById('tbody').innerHTML = ejs.render(template, {alerts});
+            document.getElementById('info').innerHTML = data["ts"].split('.')[0];
+        } catch (err) {
+            document.getElementById('tbody').innerHTML = err.toString();
+            clearInterval(interval);
+            interval = setInterval(update, 5000);
+        }
+    }
+
+    $(document).ready(function () {
+        update().finally(() => {
+            interval = setInterval(update, 1000)
+        });
+    });
+</script>
+
+</body>
+</html>
