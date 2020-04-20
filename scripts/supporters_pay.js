@@ -1,3 +1,11 @@
+/*
+This script was used during a demo and it is meant to be used with ganache, it
+    adds earnings to the supporters smart contract, mine blocks each second and rotates
+    the rounds when needed.
+    Example:  ```NETWORK=ganache node supporters_pay.js```
+
+ */
+
 const config = require('./CONFIG');
 const helpers = require('./helpers');
 const {time} = require("@openzeppelin/test-helpers")

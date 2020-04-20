@@ -1,3 +1,9 @@
+/*
+This is a basic blockchain indexer that saves transactions sent to a specific
+    smart contract address that must be passed as argument. It saves the results to a sqlite database (index.db)
+    the saved information is processes later with the index_query.js script.
+    Example: ```NETWORK=ganche node index_contract_calls.js 0xE2e9570d9f3E63Ca1b6dAf7D0966C5dC151b03DF```
+ */
 const config = require('./CONFIG');
 const txDecoder = require('ethereum-tx-decoder');
 const sqlite3 = require('sqlite-async');

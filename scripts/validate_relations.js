@@ -1,8 +1,13 @@
+/*
+This scripts check the deployed contract dependencies are ok. For example
+    that the governor for all contracts is the same, that the SupporterWhitelisted contract used by
+    SupportersVested and OracleManager is the same, etc.
+    Example:  ```NETWORK=ganache node validate_relations.js```
+
+ */
 const config = require('./CONFIG.js');
 const helpers = require('./helpers');
 const colors = require('colors/safe');
-
-const CONFIG = config.configRsk;
 
 const CONTRACTS = {
     governor: "Governor.json",

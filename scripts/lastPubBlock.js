@@ -1,3 +1,9 @@
+/*
+This script queries the OracleManager for all the CoinPairPrice addresses then
+    the block chain is searched for call to those contracts and transaction details are shown.
+    Example: ```NETWORK=ganche node lastPubBlock.js 0xE2e9570d9f3E63Ca1b6dAf7D0966C5dC151b03DF```
+
+ */
 const DEPTH_IN_BLOCKS = process.argv[2] ? parseInt(process.argv[2]) : 70;
 const config = require('./CONFIG');
 const helpers = require('./helpers');
