@@ -37,7 +37,9 @@ async function main() {
         process.exit();
     }
 
-    console.log("Old implementation: ", await upgradeDelegator.getProxyImplementation(proxyAddr));
+    const oldImpl = await upgradeDelegator.getProxyImplementation(proxyAddr);
+    console.log("Old implementation: ", oldImpl);
+    console.log("Old implementation Code sha3: ", web3.utils.sha3(await web3.eth.getCode(oldImpl)));
 
     console.log("Deploy changer smart contract", proxyAddr, upgradeDelegatorAddr, newImplementationAddr);
     const change = await artifacts.require('UpgraderTemplate').new(proxyAddr, upgradeDelegatorAddr, newImplementationAddr);
@@ -46,7 +48,9 @@ async function main() {
     const tx = await governor.executeChange(change.address, {from: governorOwner});
     console.log("Call governor result", tx.tx);
 
-    console.log("New implementation: ", await upgradeDelegator.getProxyImplementation(proxyAddr));
+    const newImpl = await upgradeDelegator.getProxyImplementation(proxyAddr);
+    console.log("New implementation: ", newImpl);
+    console.log("New implementation Code sha3: ", web3.utils.sha3(await web3.eth.getCode(newImpl)));
 }
 
 
