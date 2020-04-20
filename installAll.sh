@@ -1,12 +1,3 @@
-#prerequisits
-# apt-get install build-essential
-# python : 2.7.16
-# python3: 3.7.3
-# apt-get install python3-pip
-# apt-get install python3.7-dev
-# nvm
-# node --version: 10.17.0
-
 #global
 echo "///////////////////"
 echo "///// GLOBAL ////"
