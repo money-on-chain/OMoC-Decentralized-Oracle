@@ -13,7 +13,7 @@ SCHEDULER_ACCOUNT = BlockchainAccount(oracle_settings.SCHEDULER_SIGNING_ADDR,
                                       oracle_settings.SCHEDULER_SIGNING_KEY)
 
 
-class CoinPairLoop():
+class CoinPairLoop:
     def __init__(self, cps: CoinPairPriceService):
         self.cps = cps
         self._coin_pair = cps.coin_pair
