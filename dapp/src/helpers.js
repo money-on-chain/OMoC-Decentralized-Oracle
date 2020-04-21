@@ -1,13 +1,37 @@
 import React from 'react';
-import { ethers } from 'ethers';
+import {ethers} from 'ethers';
 import ReactTooltip from 'react-tooltip';
 
+
+export function in_(x, an_array) {
+    return -1!==an_array.indexOf(x);
+}
+
+export function addreq(a,b) {
+    return a.toLowerCase()===b.toLowerCase();
+}
+
+export function array_rm(arr, el) {
+    const index = arr.indexOf(el);
+    if (index > -1) {
+        arr.splice(index, 1);
+    }
+    return arr;
+}
+
+export function is_empty_obj(obj) {
+    return (Object.keys(obj).length === 0) && (obj.constructor === Object);
+}
+
+export function naive_copy(o) {
+    return JSON.parse(JSON.stringify(o));
+}
 
 export function on_tx_ok(tx, msg) {
     let provider = window.ethereum
     alert(`Tx: ${tx["hash"]} broadcasted.`)
     console.log(`Tx ${tx["hash"]} (${msg}) issued.`);
-    awaitTx(provider, tx["hash"], msg).catch(console.error);
+    return awaitTx(provider, tx["hash"], msg);
 }
 
 export function on_tx_err(_err, msg) {
@@ -26,6 +50,25 @@ export function get_err(err) {
     }catch (e) {
         return err.toString();
     }
+}
+
+export async function getBalance(address) {
+    const provider = window.ethereum;
+    return new Promise((resolve, reject) => {
+        try {
+            provider.sendAsync({
+                method: "eth_getBalance",
+                params: [address],
+            }, function (err, response) {
+                if (err || response.error) {
+                    reject(err || response.error);
+                }
+                resolve(ethers.utils.bigNumberify(response.result));
+            });
+        } catch(err) {
+            reject(err);
+        }
+    });
 }
 
 export async function sendAsync(provider, fname, params) {
@@ -61,26 +104,28 @@ export async function awaitTx(provider, hash, msg) {
     //const notYet = 'response has no error or result';
     let finished = false;
     while(!finished){
-        try {
-            let tx = await sendAsync(provider, 'eth_getTransactionByHash', [hash]);
-            if (tx.blockNumber!==null) {
-                console.log(`Tx ${hash} / ${msg} included in block: ${tx.blockNumber}.`);
-                finished=true;
+        let tx = await sendAsync(provider, 'eth_getTransactionByHash', [hash]);
+        if (tx.blockNumber!==null) {
+            console.log(`Tx ${hash} / ${msg} included in block: ${tx.blockNumber}.`);
+            let rec = await sendAsync(provider, 'eth_getTransactionReceipt', [hash]);
+            if (rec.status==="0x0") {
+                console.error(`Transaction ${hash} failed.`);
+                console.error(`Receipt ${JSON.stringify(rec)}`);
+                throw new Error("Transaction failed.")
             }
-            await asleep(500);
-        }catch(err) {
-            console.error("sendasync:", err);
             finished=true;
+        } else {
+            await asleep(500);
         }
     }
 }
 
-export function check_or_ret(value, f) {
-    if (value === undefined)
-        return "";
-    if (value === null) {
-        return "null";
+export function check_or_ret(value, f, defvalue) {
+    if (!defvalue) {
+        defvalue = "-";
     }
+    if ((value === undefined)||(value === null))
+        return defvalue;
     try {
         return f(value);
     } catch (err) {
@@ -88,12 +133,22 @@ export function check_or_ret(value, f) {
     }
 }
 
+const loading = "(loading)";
+
 export function parseBytes32String(x) {
-    return check_or_ret(x, ethers.utils.parseBytes32String);
+    return check_or_ret(x, ethers.utils.parseBytes32String, loading);
 }
 
 export function formatEther(x) {
-    return check_or_ret(x, ethers.utils.formatEther);
+    return check_or_ret(x, ethers.utils.formatEther, loading);
+}
+
+export function bigNumberifyAndFormat(x) {
+    return check_or_ret(x, (y) => ethers.utils.formatEther(ethers.utils.bigNumberify(y)), loading);
+}
+
+export function bigNumberifyAndFormatInt(x) {
+    return check_or_ret(x, (y)=> ethers.utils.bigNumberify(y).toString(), loading);
 }
 
 export function get_props(contract_abi) {
@@ -131,31 +186,30 @@ export function Adr(addr) {
 export const id_f = (x) => x;
 
 export function spantt (addr, mode) {
-    let text_f, classes;
+    let text_f=id_f, classes="";
     let limit = false;
     if (mode===undefined) mode="auto";
     addr = addr==null? "" : addr;
     switch(mode) {
-        case "always":
-            text_f = Adr;
-            classes = "";
-            break
-        case "never":
-            text_f = id_f;
-            classes = "";
-	    break;
-        default: 
-            text_f = id_f;
-            classes = "text-truncate";
+    //     case "always":
+    //         text_f = Adr;
+    //         break
+    //     case "never":
+	//     break;
+        default:
+            //classes = "text-truncate";
             limit = "max-width: 30em;"
             break
     }
-    return <span {... TT(addr, classes, limit)}>
+    let tt = TT(addr, classes, limit);
+    tt['style'] = {fontWeight:'bold', 'color':'#000'};
+    return <span {... tt}>
             {text_f(addr)}
         </span>
 }
 
-const RefreshTime = process.env.REACT_APP_RefreshTime? process.env.REACT_APP_RefreshTime : 1000;
+const RefreshTime = process.env.REACT_APP_RefreshTime?
+                        process.env.REACT_APP_RefreshTime : 1000;
 
 const Networks = {
     30: { gas: "0x387ee40", update: RefreshTime },
@@ -174,7 +228,6 @@ export function M(x) {
     if ((x===undefined)||(x===null)) {
         x = { };
     }
-
     const ethereum = window['ethereum'];
     const network = ethereum.networkVersion;
     const netinfo = Networks[network];
@@ -186,49 +239,27 @@ export function M(x) {
     return x;
 }
 
-
-export function myalert(x) {
-    console.log("---------------------");
-    console.log(x);
-    console.log(JSON.stringify(x));
-    console.log("---------------------");
-}
-
-export const color = "green";
 export const BS = {fontWeight: "bold", color: "#000"}
 export const color22 = "#6c757d";
-export const color2 = {
-    color: color22
-}
 
 export function HL(X) {
     return (<span style={BS}>{X}</span>);
 }
 
+export function spanColor(X, color) {
+    return <span style={{color: color}}>{X}</span>
+}
+
 export function Grey(X) {
-    return <span style={{color: color22}}>{X}</span>
-}
-
-export function Black(X) {
-    return <span style={{color: "#000"}}>{X}</span>
-}
-
-export function bigNumberifyAndFormat(x) {
-    if (x == null) {
-        return "---"
-    }
-    return ethers.utils.formatEther(ethers.utils.bigNumberify(x));
-}
-
-export function bigNumberifyAndFormatInt(x) {
-    if (x == null) {
-        return "---"
-    }
-    return ethers.utils.bigNumberify(x).toString();
+    return spanColor(X, color22);
 }
 
 export function isValid(address) {
     return ((address.length === 42) && (address.startsWith("0x")));
+}
+
+export function isValidNS(ns) {
+    return ns.startsWith("http://")||ns.startsWith("https://");
 }
 
 
@@ -265,6 +296,8 @@ export function Table(heads, data, opts) {
     let col_align = opts? (opts.alignf!==undefined? opts.alignf: all_center): all_center;
 
     let headalign = opts? (opts.headalignf!==undefined? opts.headalignf: all_center): all_center;
+    let rowclick = opts? (opts.rowclick? opts.rowclick : null) : null;
+    let rowattrs = opts? (opts.rowattrs? opts.rowattrs : null) : null;
 
     className += " "+extra_classes;
 
@@ -274,13 +307,27 @@ export function Table(heads, data, opts) {
         RESP = (x) => (<>{x}</>);
     }
 
-    function attrs(idx) {
+    function _attrs(idx) {
         if(odata && row2tt) {
             let row = odata[idx];
             let address = row.oracle;
             return {"data-tip": true, "data-for":st+address};
         }
         return {};
+    }
+
+    function attrs(idx) {
+        let temp = _attrs(idx);
+        if (rowclick) {
+            temp["onClick"] = (e)=>{
+                let tidx =  e.currentTarget.rowIndex-1;
+                let data = odata? odata[tidx] : null;
+                rowclick(e, tidx, data);}
+        }
+        if(rowattrs) {
+            temp = rowattrs(idx, temp);
+        }
+        return temp;
     }
 
     function gen_tooltips() {
@@ -300,7 +347,7 @@ export function Table(heads, data, opts) {
             </thead>
             <tbody>
                 {data.map((row, idx) => {
-                    let ini = incidx? idx.toString() :row[0];
+                    let ini = incidx? (1+idx).toString() :row[0];
                     if(!incidx) { row = row.slice(1) }
                     return (
                     <tr {... attrs(idx)}>
@@ -310,4 +357,76 @@ export function Table(heads, data, opts) {
                 })}
             </tbody>
         </table></>);
+}
+
+
+
+
+export class Tabs {
+    // {
+    //      name: str
+    //      data: jsx content
+    //      fn: dump jsx content
+    // }
+    constructor(tabs, current, cb_newstate, wrap) {
+        this.tabs = tabs;
+        this.current = current;
+        this.cb_newstate = cb_newstate;
+        this.wrap = wrap;
+    }
+
+    dump_header() {
+        if (!this.current) {
+            this.current = this.tabs[0].name;
+        }
+        const classes = (name) => name===this.current?
+                                    {className:"nav-link active"}:
+                                    {className:"nav-link"};
+        return (
+        <div className="card-header">
+          <ul className="nav nav-tabs card-header-tabs">
+            {this.tabs.map((tab,idx)=><>
+                <li className="nav-item">
+                  <a href={null_href()}
+                     onClick={(e) => {this.cb_newstate(tab.name)}}
+                   { ... classes(tab.name)}
+                  >{tab.name}</a>
+                </li>
+            </>)}
+          </ul>
+        </div>)
+    }
+
+    get_current() {
+        for(let tab of this.tabs) {
+            if (tab.name===this.current) {
+                return tab;
+            }
+        }
+        return this.tabs[0];
+    }
+
+    dump_view(state) {
+        let cur = this.get_current();
+        return cur.fn(state, cur);
+    }
+
+    dump() {
+        let f;
+        if (this.wrap) {
+            f = (x) => <div className="card">{x}</div>
+        } else {
+            f = (x) => x;
+        }
+        return f(<>
+            {this.dump_header()}
+            {this.dump_view()}
+            </>);
+    }
+}
+
+export function null_href() {
+    let f = (x)=> "ript:vo";
+
+    return "javasc"+f()+"id(0)";
 }

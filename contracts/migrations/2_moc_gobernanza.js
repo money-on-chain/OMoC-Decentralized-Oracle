@@ -65,7 +65,8 @@ async function deploy(options, owner, deployer) {
 
 async function truffle_main(deployer, networkName, accounts) {
     // don't run migrations for tests, all tests create their own environment.
-    if (process.argv.length > 2 && process.argv[2].indexOf('test') >= 0) {
+    if (process.argv.some(x => x.indexOf('test') >= 0)
+        || process.argv.some(x => x.indexOf('coverage') >= 0)) {
         console.log("SKIPING MIGRATIONS FOR TEST");
         return;
     }

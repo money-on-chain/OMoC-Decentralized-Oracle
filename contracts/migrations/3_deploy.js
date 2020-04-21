@@ -163,11 +163,9 @@ async function config(deployer, networkName, accounts) {
 
 async function truffle_main(deployer, networkName, accounts) {
     // don't run migrations for tests, all tests create their own environment.
-    if (process.argv.length > 2 && process.argv[2].indexOf('test') >= 0) {
-        console.log("SKIPING MIGRATIONS FOR TEST, BUT WE NEED TO USE SOME GAS, there is a bug in some library");
-        console.log("Deploying TestMOC");
-        const TestMOC = artifacts.require("TestMOC");
-        await deployer.deploy(TestMOC);
+    if (process.argv.some(x => x.indexOf('test') >= 0)
+        || process.argv.some(x => x.indexOf('coverage') >= 0)) {
+        console.log("SKIPING MIGRATIONS FOR TEST");
         return;
     }
     const configParams = await config(deployer, networkName, accounts);

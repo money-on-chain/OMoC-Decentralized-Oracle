@@ -1,12 +1,6 @@
-## Scheduler implementation
+# Oracle price feeder reference implementation
 
-- [Scheduler implementation](#scheduler-implementation)
-  * [Requirements](#requirements)
-  * [Instalation guide](#instalation-guide)
-
-*** 
-
-### Requirements 
+## Requirements 
 
 - First, run the following command to install dependencies and requirements:
 
@@ -18,7 +12,7 @@ sudo apt-get install python3 python-dev python3-dev \
      python-pip
 ```
 
-### Instalation guide
+## Instalation guide
 - Create a python virtualenv: 
 
       virtualenv -p /usr/bin/python3.7 venv
@@ -29,22 +23,31 @@ sudo apt-get install python3 python-dev python3-dev \
     - pip install -r requirements.txt
 - Rename the dotenv_example:
     - mv dotenv_example .env
-- Make a build directory inside the contracts folder: 
-    - mkdir ../contracts/build
-- Make a contracts directory inside the build folder: 
-    - mkdir ../contracts/build/contracts
-- Copy the contracts located in: **Add where the contracts are suposed to be**.
+- Build the contracts following the instructions on [contracts/README.md](../contracts/README.md)
 - For the next step you need an address and rsk funds in order to deploy the oracle: 
     - Open .env: 
         - Locate the commented line saying # rsk testnet and make sure the lines below match the following  text:
         
-        **NODE_URL = "http://10.0.0.73:4444"**
+        **NODE_URL = "https://public-node.testnet.rsk.co:443"**
+
         **NETWORK_ID=31**
+
         **CHAIN_ID=31**
+
+    - Configure/uncomment the server signing port:
+
+        **ORACLE_PORT=5556**
+
+        Even though default configuration is 5556 you can choose any port you like as this is flexible.
+
     - Now locate the commented line saying  *# oracle-only parameters*. Complete the following fields: 
-    **ORACLE_ADDR="Your address"**
-    **ORACLE_PRIVATE_KEY="Your private key"**
-    - Finally, uncomment the following lines: 
+
+        **ORACLE_ADDR="Your address"**
+
+        **ORACLE_PRIVATE_KEY="Your private key"**
+
+    - And finally, uncomment the following lines: 
+
 ```
 # Main Oracle loop scanning interval, in which we get the coinpair list
 ORACLE_MAIN_LOOP_TASK_INTERVAL = "120 secs"
@@ -79,8 +82,7 @@ ORACLE_STAKE_LIMIT_MULTIPLICATOR = 2
 ```
 
 - Start the oracle: 
-    - To run in detached mode: 
-        - tmux
-        - ./run_oracle.sh
-        - ctrl+b then d
-    - Or you could just simple type ./run_oracle.sh 
+
+```
+./run_oracle.sh
+```

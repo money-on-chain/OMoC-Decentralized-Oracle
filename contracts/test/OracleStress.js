@@ -10,8 +10,7 @@ const SupportersWhitelisted = artifacts.require("SupportersWhitelisted");
 const ORACLE_QUANTITY = 40;
 const COINPAIR = web3.utils.asciiToHex("BTCUSD");
 
-contract("OracleStress", async (accounts) => {
-
+contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
     before(async () => {
         this.governor = await helpers.createGovernor(accounts[8]);
 
@@ -56,11 +55,11 @@ contract("OracleStress", async (accounts) => {
         assert.isTrue(subscribed);
     }
 
-    const oracleList = []
+    const oracleList = [];
     it("Get gas price", async () => {
         const gasPrice = await TestMOC.web3.eth.getGasPrice();
         console.log("Gas Price is ", gasPrice, " wei");
-    })
+    });
 
     function getPrevEntries(oracles) {
         const ret = [];

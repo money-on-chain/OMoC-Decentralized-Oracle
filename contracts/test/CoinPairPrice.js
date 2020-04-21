@@ -292,13 +292,13 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should retrieve the last price published from address 1", async () => {
 
         const p = await this.coinPairPrice.getPrice({from: "0x0000000000000000000000000000000000000001"});
-        assert.equal(p, (10 ** 18).toString());
+        assert.equal(p.toString(), (10 ** 18).toString());
     });
 
     it("Should retrieve the last price published from whitelisted address", async () => {
 
         const p = await this.coinPairPrice.getPrice({from: "0x0000000000000000000000000000000000000001"});
-        assert.equal(p, (10 ** 18).toString());
+        assert.equal(p.toString(), (10 ** 18).toString());
     });
 
     it("Should fail to retrieve the last price from any non-WL address", async () => {

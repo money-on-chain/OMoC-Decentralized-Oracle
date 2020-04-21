@@ -1,24 +1,32 @@
-MoC Contracts
-=============
+# MoC Contracts
 
-Requirments:
-===========
+## Requirements:
+
+```
 npm install -g ganache-cli
 node version 10.17.0
 npm install
+```
 
-how to deploy the SmartContract:
-===============================
+## How to build the contracts to be used on other projects (DAPP & Server):
 
-A.Ganache:
-----------
+```bash
+ $ cd contracts/
+ $ npm install
+ $ npm install -g truffle
+ $ npm run build
+```
+
+## how to deploy the SmartContract:
+
+### A.Ganache:
+
 1) npm install -g ganache-cli
 2) Run './run_ganache.sh'
 3) In another tab run './scripts/FirstDeploy.sh'
 
 
-B.RSKTestnet:
--------------
+### B.RSKTestnet:
 
 1) Edit truffle-config.js at rsk_testnet configuration  (line:85)
 
@@ -30,8 +38,7 @@ You can use truffle to build the project.
 
 Use `npm install` to install  dependencies.
 
-SmartContract deployment environment variables:
-===============================================
+## SmartContract deployment environment variables:
 
 The FirstDeploy.sh script exports some environment variables from the scripts/variables.sh file, those
 variables are used by the truffle deploy script to configure the smart-contracts parameters.
@@ -71,13 +78,16 @@ The following are configurations parameters for the Supporters smart contract.
 - supportersMinStopBlocks: 10
   The minimum amount of blocks a supporter must stay stop before he can recover his stake.
 
- 
-
-Coverage Tests
-==============
+## Tests
 
 ```
-npx truffle run coverage --network ganache_test --file="test/Oracle.js 
+npm run test
+```
+
+## Coverage Tests
+
+```
+npm run coverage
 ```
 
 

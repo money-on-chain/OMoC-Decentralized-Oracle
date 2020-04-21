@@ -1,6 +1,7 @@
 contracts/build
 contracts/.coverage*
 contracts/coverage.json
+scripts/index*db*
 dapp/src/contracts
 builds
 contracts/node_modules
