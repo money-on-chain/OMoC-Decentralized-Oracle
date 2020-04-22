@@ -92,7 +92,7 @@ ORACLE_PRIVATE_KEY="0x..."
 # ORACLE_STAKE_LIMIT_MULTIPLICATOR = 2
 
 # If configured (json array of strings) only publish for those coinpairs in the list
-# ORACLE_COIN_PAIR_FILTER =[ "", "" ]
+ORACLE_COIN_PAIR_FILTER =[ "BTCUSD", "RIFUSD" ]
 
 
 
