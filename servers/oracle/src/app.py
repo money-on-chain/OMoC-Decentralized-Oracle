@@ -5,9 +5,8 @@ from starlette.responses import RedirectResponse
 
 from common import settings, run_uvicorn
 from common.bg_task_executor import BgTaskExecutor
-from common.services import coin_pair_price_service
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
-from oracle.src import oracle_settings, oracle_service, scheduler_oracle_loop, scheduler_supporters_loop
+from oracle.src import oracle_settings, scheduler_oracle_loop, scheduler_supporters_loop
 from oracle.src.monitor import MonitorTask
 from oracle.src.oracle_helpers import log_setup
 from oracle.src.oracle_loop import OracleLoop
@@ -82,25 +81,5 @@ async def sign(*, version: str = Form(...),
 
     except Exception as e:
         logger.error(e)
-        msg = str(e) if not settings.DEBUG else "Invalid signature"
+        msg = str(e) if settings.DEBUG else "Invalid signature"
         raise HTTPException(status_code=500, detail=msg)
-
-
-if settings.DEBUG or settings.DEBUG_ENDPOINTS:
-    @app.get("/get_oracle/{idx}")
-    async def _get_oracle_info(idx: int):
-        _info = coin_pair_price_service.get_oracle_info_by_index(idx)
-        return {"oracle_info": _info}
-
-
-    @app.get("/get_oracle_by_address/{address}")
-    async def _get_oracle_info_by_addr(address):
-        # oracle = cfg.W3.eth.contract(address=cfg.W3.toChecksumAddress(ORACLE), abi=ORACLE_ABI)
-        _info = coin_pair_price_service.get_oracle_info(address)
-        return {"oracle_info": {'addr': address, **_info}}
-
-
-    @app.get("/get_oracle_all")
-    async def _get_oracle_all():
-        oracles = await oracle_service.get_all_oracles_info()
-        return {"oracles": oracles}
