@@ -26,13 +26,14 @@ class OracleTurn:
     # Called byt coin_pair_price_loop
     def is_oracle_turn(self, vi: OracleBlockchainInfo, oracle_addr, exchange_price: PriceWithTimestamp):
         (is_my_turn, msg) = self._is_oracle_turn_with_msg(vi, oracle_addr, exchange_price)
-        if is_my_turn:
-            f_block = self._price_changed_blocks(vi, exchange_price)
-            if f_block is None or f_block < self._oracle_price_publish_blocks:
-                logger.warning("%r : I'm selected but still waiting for price change blocks %r < %r" %
-                               (self._coin_pair, f_block, self._oracle_price_publish_blocks))
-            return True
-        return False
+        if not is_my_turn:
+            return False
+        f_block = self._price_changed_blocks(vi, exchange_price)
+        if f_block is None or f_block < self._oracle_price_publish_blocks:
+            logger.warning("%r : I'm selected but still waiting for price change blocks %r < %r" %
+                           (self._coin_pair, f_block, self._oracle_price_publish_blocks))
+            return False
+        return True
 
     def _price_changed_blocks(self, block_chain: OracleBlockchainInfo, exchange_price: PriceWithTimestamp):
         if block_chain.last_pub_block < 0 or block_chain.block_num < 0:

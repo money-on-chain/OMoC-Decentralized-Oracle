@@ -13,7 +13,7 @@ SCHEDULER_ACCOUNT = BlockchainAccount(oracle_settings.SCHEDULER_SIGNING_ADDR,
                                       oracle_settings.SCHEDULER_SIGNING_KEY)
 
 
-class CoinPairLoop:
+class SchedulerCoinPairLoop:
     def __init__(self, cps: CoinPairPriceService):
         self.cps = cps
         self._coin_pair = cps.coin_pair
@@ -78,7 +78,7 @@ async def scheduler_loop():
 
     success = True
     for cp in cpi:
-        if not await CoinPairLoop(cp).run():
+        if not await SchedulerCoinPairLoop(cp).run():
             success = False
     if success:
         return SCHEDULER_ROUND_DELAY

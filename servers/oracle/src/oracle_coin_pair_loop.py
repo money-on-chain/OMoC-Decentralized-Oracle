@@ -65,8 +65,8 @@ class OracleCoinPairLoop(BgTaskExecutor):
                                                                                     exchange_price,
                                                                                     ORACLE_ACCOUNT.addr,
                                                                                     blockchain_info.last_pub_block))
-            return oracle_settings.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL
-        logger.info("%r : ------------> Is NOT my turn: %s" % (self._coin_pair, ORACLE_ACCOUNT.addr))
+        else:
+            logger.info("%r : ------------> Is NOT my turn: %s" % (self._coin_pair, ORACLE_ACCOUNT.addr))
         return oracle_settings.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL
 
     async def publish(self, oracles, params: PublishPriceParams):
