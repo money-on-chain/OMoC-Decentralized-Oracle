@@ -111,10 +111,11 @@ class NoPubAlert:
     FormatTime = staticmethod(lambda x: time.strftime("%Y-%m-%d %H:%M:%S",
                                                       time.gmtime(x)))
 
-    def __init__(self, checker, pair):
+    def __init__(self, addr, checker, pair):
         # super(NoPubAlert, self).__init__(name="no-publication: %s" %
         #                                       self.FormatPair(pair), test=None,
         #                                       msg=None, action_required=False)
+        self.addr = addr
         self.checker = checker
         self.pair = pair
         self.name = "no-publication: %s" % self.FormatPair(pair)
@@ -130,7 +131,7 @@ class NoPubAlert:
         reason = "backend started" if reason == "init" else "last point was registered"
         date = self.FormatTime(date)
         pair = self.FormatPair(self.pair)
-        return "No %s price publication: since %s at %s" % (pair, reason, date)
+        return "%s No %s price publication: since %s at %s" % (self.addr, pair, reason, date)
 
     def render(self, ctx):
         ua = "- User action is required!!!" if self.action_required else ""
