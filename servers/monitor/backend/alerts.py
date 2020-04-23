@@ -33,7 +33,7 @@ def GasFor(account):
     return Alert(name="gas: "+account,
           test=lambda ctx: ctx.balanceOf(account) <= ctx.cfg.getGasLowLimit().int,
           msg=lambda ctx: "GasAlert: current balance in %s account (%s) is too "
-                          "low: %s < %s" % (account, ctx.addresslist[account],
+                          "low: %s < %s" % (account, ctx.accountData[account]["addr"],
                                        C(ctx.balanceOf(account)),
                                        C(ctx.cfg.getGasLowLimit().int)),
           action_required=True)

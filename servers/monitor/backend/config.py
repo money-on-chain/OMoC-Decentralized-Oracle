@@ -4,7 +4,6 @@ import unittest
 
 from starlette.config import Config
 from starlette.datastructures import Secret, CommaSeparatedStrings
-
 from web3 import HTTPProvider
 from web3 import Web3
 
@@ -69,6 +68,7 @@ class TestEthers(unittest.TestCase):
 
 class Config:
     _Instance = None
+
     @classmethod
     def Get(cls):
         if cls._Instance is None:
@@ -91,9 +91,6 @@ class Config:
     def getOracleManagerAddress(self):
         return config("ORACLE_MGR", cast=str)
 
-    def getPairs(self):
-        return config("PAIRS", cast=CommaSeparatedStrings)
-
     # config
     def getAgentProgram(self):
         return config("AGENT_PROGRAM", cast=str)
@@ -104,8 +101,8 @@ class Config:
     def getAccountAddress(self, account):
         return config(account, cast=str)
 
-    def getOracleAddress(self):
-        return config("ORACLE_ADDRESS", cast=str)
+    def getOracleAddresses(self):
+        return config("ORACLE_ADDRESSES", cast=str)
 
     def getGasLowLimit(self):
         return config("GAS_LOW_LIMIT", cast=ethers)
@@ -115,7 +112,7 @@ class Config:
 
     # mailer
     def getSMTP(self):
-        return (config("SMTP_HOST", cast=str),
+        return (config("SMTP_HOST", cast=str, default=None),
                 config("SMTP_PORT", cast=int, default=25))
 
     def getSMTP_From(self):
@@ -131,7 +128,7 @@ class Config:
 
     def getSMTP_UseSSL(self):
         return config("SMTP_SSL_TLS", cast=str, default="no").lower() in [
-                                                        "y", "yes", "true"]
+            "y", "yes", "true"]
 
     def getAlertEmails(self):
         return config("ALERT_EMAILS", cast=CommaSeparatedStrings)
@@ -150,3 +147,13 @@ class Config:
     def LastMailInterval(self):
         return config("EMAIL_REPEAT_INTERVAL", cast=float, default=3600)  # one hour
 
+    # slack
+    def getSlackInfo(self):
+        url = config("SLACK_HOOK_URL", cast=str, default=None)
+        if url is None:
+            return None
+        return {"url": url,
+                "user": config("SLACK_HOOK_USER", cast=str),
+                "channel": config("SLACK_HOOK_CHANNEL", cast=str),
+                "title": config("SLACK_HOOK_TITLE", cast=str),
+                }

@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import time
-
 from xmlrpc.client import ServerProxy
 
 from config import Config
@@ -26,6 +25,7 @@ class AWeb3:
 
 class Info:
     _Instance = None
+
     @classmethod
     def Get(cls):
         if cls._Instance is None:
@@ -39,11 +39,13 @@ class Info:
         self.netid = str(config.getBCNetId())
         self.lastblock = None
         self.accounts = config.getAccountList()
-        self.addresslist = {}
+        self.oracle_manager_addr = config.getOracleManagerAddress()
+        self.accountData = {}
         for account in self.accounts:
-            self.addresslist[account] = config.getAccountAddress(account)
+            addr = config.getAccountAddress(account)
+            self.accountData[account] = {"addr": addr,
+                                         "checker": AccountsChecker(self.oracle_manager_addr, addr)}
         self.agent = config.getAgentProgram()
-        self.DocAC = AccountsChecker(config)
 
     async def checkBlock(self):
         curblock = await self.aw3.getBlock()
@@ -55,15 +57,15 @@ class Info:
     async def fetch(self):
         self.state["now"] = time.time()
         for account in self.accounts:
+            data = self.accountData[account]
             try:
-                self.state[account] = await self.aw3.getBalance(
-                                                    self.addresslist[account])
+                self.state[account] = await self.aw3.getBalance(data["addr"])
             except Exception as err:
                 logging.error(f"Cannot retrieve account ${account} balance. "
                               f"Error: %r" % err)
+            await data["checker"].fetch()
         self.state["blocknr"] = self.lastblock.number
         self.state["alive"] = self.getAgentAlive()
-        await self.DocAC.fetch()
 
     @property
     def now(self):
@@ -81,11 +83,11 @@ class Info:
             try:
                 server = ServerProxy('http://localhost:9001/RPC2')
             except Exception as e:
-                logging.debug("Supervisor connection error: "+str(e))
+                logging.debug("Supervisor connection error: " + str(e))
                 raise
             m = {True: "yes", False: "no"}
             running = server.supervisor.getProcessInfo(
-                                            self.agent)["statename"]=="RUNNING"
+                self.agent)["statename"] == "RUNNING"
             return m[running]
         except:
             return "unknown"

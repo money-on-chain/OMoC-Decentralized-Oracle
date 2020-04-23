@@ -12,7 +12,7 @@ class Pair:
         self._cp = cp.replace(b'\x00', b'')
         self.cp = self._cp.decode("ascii")
         self.address = None
-        self.netcp = self._cp + (b'\00'*(32-len(self.cp)))
+        self.netcp = self._cp + (b'\00' * (32 - len(self.cp)))
 
     @property
     def name(self):
@@ -64,18 +64,17 @@ class DecOracleCheker:
 
     def getPoints(self, pair, address):
         points, _, _ = self.contracts[pair].functions.getOracleRoundInfo(
-                                                                address).call()
+            address).call()
         return points
 
 
 class AccountsChecker:
-    def __init__(self, cfg):
-        self.doc = DecOracleCheker(cfg.getOracleManagerAddress())
+    def __init__(self, oracle_manager_addr, oracle_addr):
+        self.doc = DecOracleCheker(oracle_manager_addr)
         self.prev = {}
-        self.pairs_to_check = cfg.getPairs()
-        self.oracle_addr = cfg.getOracleAddress()
+        self.oracle_addr = oracle_addr
         self.__lastpub = {}  # pair: (date, why=init|publish)
-        for pair in self.pairs_to_check:
+        for pair in self.pairs:
             self.update(pair, "init")
 
     @property
@@ -85,18 +84,17 @@ class AccountsChecker:
 
     async def fetch(self):
         cur = {}
-        for pair in self.pairs_to_check:
+        for pair in self.pairs:
             try:
-                cur[pair] = await blockchain.arun(lambda: self.doc.getPoints(
-                                                        pair, self.oracle_addr))
+                cur[pair] = await blockchain.arun(lambda: self.doc.getPoints(pair, self.oracle_addr))
             except Exception as err:
-                logging.error(f"Cannot retrieve oracle ${self.oracle_addr} "
+                logging.error(f"Cannot retrieve oracle {self.oracle_addr} "
                               f"points. Error: %r" % err)
 
-        for pair in self.pairs_to_check:
+        for pair in self.pairs:
             prev = self.prev.get(pair)
             _cur = cur.get(pair)
-            if not(prev is None):
+            if not (prev is None):
                 if (prev != _cur) and (_cur != 0):
                     self.update(pair)
         self.prev = cur
@@ -113,22 +111,23 @@ class NoPubAlert:
     FormatTime = staticmethod(lambda x: time.strftime("%Y-%m-%d %H:%M:%S",
                                                       time.gmtime(x)))
 
-    def __init__(self, pair):
+    def __init__(self, checker, pair):
         # super(NoPubAlert, self).__init__(name="no-publication: %s" %
         #                                       self.FormatPair(pair), test=None,
         #                                       msg=None, action_required=False)
+        self.checker = checker
         self.pair = pair
         self.name = "no-publication: %s" % self.FormatPair(pair)
         self.action_required = False
 
     def test(self, ctx):
-        xxx = ctx.DocAC.getLastPub(self.pair)
+        xxx = self.checker.getLastPub(self.pair)
         return ((ctx.now - xxx[0]) >
                 ctx.cfg.getMaxNoPubPeriod())
 
     def msg(self, ctx):
-        date, reason = ctx.DocAC.getLastPub(self.pair)
-        reason = "backend started" if reason=="init" else "last point was registered"
+        date, reason = self.checker.getLastPub(self.pair)
+        reason = "backend started" if reason == "init" else "last point was registered"
         date = self.FormatTime(date)
         pair = self.FormatPair(self.pair)
         return "No %s price publication: since %s at %s" % (pair, reason, date)

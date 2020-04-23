@@ -2,14 +2,12 @@ import asyncio
 import traceback
 from datetime import datetime
 
-import blockchain
-from alerts import GasFor, AgentMonitorAlert
-from alert_checker import AlertChecker
-
 from quart import Quart, render_template
 
-
-#app = FastAPI()
+import blockchain
+from alert_checker import AlertChecker
+from alerts import GasFor, AgentMonitorAlert
+# app = FastAPI()
 from moc.moc_oracle import NoPubAlert
 
 app = Quart(__name__, static_url_path='/')
@@ -46,8 +44,8 @@ async def alarms():
         return UpdateError(e)
 
 
-#p = os.path.join("..", "frontend", "build")
-#app.mount("/", StaticFiles(directory=p), name="/")
+# p = os.path.join("..", "frontend", "build")
+# app.mount("/", StaticFiles(directory=p), name="/")
 
 def prepare_alerts(info):
     alerts = []
@@ -56,8 +54,10 @@ def prepare_alerts(info):
         app.logger.error("No AGENT_PROGRAM specified. Alert disabled.")
     else:
         alerts.append(AgentMonitorAlert)
-    for pair in info.DocAC.pairs:
-        alerts.append(NoPubAlert(pair))
+    for acc in info.accountData.keys():
+        checker = info.accountData[acc]["checker"]
+        for pair in checker.pairs:
+            alerts.append(NoPubAlert(checker, pair))
     for account in info.accounts:
         alerts.append(GasFor(account))
     return alerts
@@ -73,12 +73,11 @@ async def main_loop():
             await asyncio.sleep(1)
         await info.fetch()
         await Checker.test(info)
-        await Checker.do_email(info)
+        await Checker.do_notify(info)
         await asyncio.sleep(blockchain.sleep_for_net(app))
 
 
-#@app.on_event("startup")
+# @app.on_event("startup")
 @app.before_serving
 async def startup_event():
     asyncio.create_task(main_loop())
-
