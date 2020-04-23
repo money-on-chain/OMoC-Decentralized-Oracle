@@ -23,12 +23,13 @@ There are a couple of scripts that you can use to get your system running by jus
 * apt-get install python3.7-dev
 * nvm
 * node --version: 10.17.0
+* sudo npm install -g ganache-cli
 
 And then you can run:
 
 ```
-$ installAll.sh
-$ setTest.sh
+$ ./scripts/installAll.sh
+$ ./scripts/runLocalhost.sh
 ```
 
 ### Detailed How-To of the steps

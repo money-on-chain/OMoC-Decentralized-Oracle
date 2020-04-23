@@ -14,7 +14,7 @@ npm install
  $ cd contracts/
  $ npm install
  $ npm install -g truffle
- $ npm run build
+ $ truffle compile --all
 ```
 
 ## how to deploy the SmartContract:

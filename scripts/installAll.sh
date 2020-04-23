@@ -2,7 +2,6 @@
 echo "///////////////////"
 echo "///// GLOBAL ////"
 echo "///////////////////"
-npm install -g ganache-cli
 npm install -g truffle
 npm install -g pm2
 #contracts
@@ -11,6 +10,7 @@ echo "///// contracts ////"
 echo "///////////////////"
 cd contracts
 npm install
+npx openzeppelin init MOCOraculos 1.0.0
 cd ..
 
 #dapp
