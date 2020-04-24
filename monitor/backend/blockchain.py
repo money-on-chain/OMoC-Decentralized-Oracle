@@ -4,7 +4,7 @@ import time
 from xmlrpc.client import ServerProxy
 
 from config import Config
-from moc.moc_oracle import AccountsChecker
+from moc.moc_oracle import AccountsChecker, DecOracleCheker
 
 
 async def arun(f):
@@ -39,12 +39,12 @@ class Info:
         self.netid = str(config.getBCNetId())
         self.lastblock = None
         self.accounts = config.getAccountList()
-        self.oracle_manager_addr = config.getOracleManagerAddress()
-        self.accountData = {}
+        self.dec_oracle_checker = DecOracleCheker(config.getW3(), config.getOracleManagerAddress())
+        self.accountCheckers = {}
+        # TODO: Not all accounts must be oracles.
         for account in self.accounts:
             addr = config.getAccountAddress(account)
-            self.accountData[account] = {"addr": addr,
-                                         "checker": AccountsChecker(self.oracle_manager_addr, addr)}
+            self.accountCheckers[account] = AccountsChecker(self.dec_oracle_checker, addr)
         self.agent = config.getAgentProgram()
 
     async def checkBlock(self):
@@ -55,15 +55,16 @@ class Info:
         return update
 
     async def fetch(self):
-        self.state["now"] = time.time()
         for account in self.accounts:
-            data = self.accountData[account]
+            checker = self.accountCheckers[account]
             try:
-                self.state[account] = await self.aw3.getBalance(data["addr"])
+                self.state[account] = await self.aw3.getBalance(checker.addr)
             except Exception as err:
-                logging.error(f"Cannot retrieve account ${account} balance. "
+                logging.error(f"Cannot retrieve account {account} balance. "
                               f"Error: %r" % err)
-            await data["checker"].fetch()
+            await checker.fetch()
+        # checker.fetch access time.time, so now must be after that.
+        self.state["now"] = time.time()
         self.state["blocknr"] = self.lastblock.number
         self.state["alive"] = self.getAgentAlive()
 

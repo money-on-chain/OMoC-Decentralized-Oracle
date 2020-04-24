@@ -54,11 +54,10 @@ def prepare_alerts(info):
         app.logger.error("No AGENT_PROGRAM specified. Alert disabled.")
     else:
         alerts.append(AgentMonitorAlert)
-    for acc in info.accountData.keys():
-        checker = info.accountData[acc]["checker"]
-        addr = info.accountData[acc]["addr"]
+    for acc in info.accountCheckers.keys():
+        checker = info.accountCheckers[acc]
         for pair in checker.pairs:
-            alerts.append(NoPubAlert(addr, checker, pair))
+            alerts.append(NoPubAlert(checker, pair))
     for account in info.accounts:
         alerts.append(GasFor(account))
     return alerts

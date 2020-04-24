@@ -4,7 +4,6 @@ import os
 import time
 
 import blockchain
-from config import Config
 
 
 class Pair:
@@ -40,10 +39,9 @@ class DecOracleCheker:
         with open(filename) as jfile:
             return json.load(jfile)["abi"]
 
-    def __init__(self, mgr_addr):
+    def __init__(self, w3, mgr_addr):
         self.contracts = {}
-        self.cfg = cfg = Config.Get()
-        self.w3 = w3 = cfg.getW3()
+        self.w3 = w3
         self.mgr_addr = mgr_addr
         self.mgr = w3.eth.contract(address=mgr_addr, abi=self.getABI(self.MGR))
         self.pairs = self.init()
@@ -69,34 +67,33 @@ class DecOracleCheker:
 
 
 class AccountsChecker:
-    def __init__(self, oracle_manager_addr, oracle_addr):
-        self.doc = DecOracleCheker(oracle_manager_addr)
+    def __init__(self, dec_oracle_checker, addr):
+        self.dec_oracle_checker = dec_oracle_checker
         self.prev = {}
-        self.oracle_addr = oracle_addr
+        self.addr = addr
         self.__lastpub = {}  # pair: (date, why=init|publish)
         for pair in self.pairs:
             self.update(pair, "init")
 
     @property
     def pairs(self):
-        for p in self.doc.pairs.values():
+        for p in self.dec_oracle_checker.pairs.values():
             yield p.name
 
     async def fetch(self):
         cur = {}
         for pair in self.pairs:
             try:
-                cur[pair] = await blockchain.arun(lambda: self.doc.getPoints(pair, self.oracle_addr))
+                cur[pair] = await blockchain.arun(lambda: self.dec_oracle_checker.getPoints(pair, self.addr))
             except Exception as err:
-                logging.error(f"Cannot retrieve oracle {self.oracle_addr} "
+                logging.error(f"Cannot retrieve oracle {self.addr} "
                               f"points. Error: %r" % err)
 
         for pair in self.pairs:
             prev = self.prev.get(pair)
             _cur = cur.get(pair)
-            if not (prev is None):
-                if (prev != _cur) and (_cur != 0):
-                    self.update(pair)
+            if not (prev is None) and _cur != 0 and prev != _cur:
+                self.update(pair)
         self.prev = cur
 
     def update(self, pair, why="publish"):
@@ -111,27 +108,25 @@ class NoPubAlert:
     FormatTime = staticmethod(lambda x: time.strftime("%Y-%m-%d %H:%M:%S",
                                                       time.gmtime(x)))
 
-    def __init__(self, addr, checker, pair):
+    def __init__(self, checker, pair):
         # super(NoPubAlert, self).__init__(name="no-publication: %s" %
         #                                       self.FormatPair(pair), test=None,
         #                                       msg=None, action_required=False)
-        self.addr = addr
         self.checker = checker
         self.pair = pair
-        self.name = "no-publication: %s" % self.FormatPair(pair)
+        self.name = "%s no-publication: %s" % (checker.addr, self.FormatPair(pair))
         self.action_required = False
 
     def test(self, ctx):
         xxx = self.checker.getLastPub(self.pair)
-        return ((ctx.now - xxx[0]) >
-                ctx.cfg.getMaxNoPubPeriod())
+        return (ctx.now - xxx[0]) > ctx.cfg.getMaxNoPubPeriod()
 
     def msg(self, ctx):
         date, reason = self.checker.getLastPub(self.pair)
         reason = "backend started" if reason == "init" else "last point was registered"
         date = self.FormatTime(date)
         pair = self.FormatPair(self.pair)
-        return "%s No %s price publication: since %s at %s" % (self.addr, pair, reason, date)
+        return "%s No %s price publication: since %s at %s" % (self.checker.addr, pair, reason, date)
 
     def render(self, ctx):
         ua = "- User action is required!!!" if self.action_required else ""
