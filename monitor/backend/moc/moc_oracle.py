@@ -66,21 +66,21 @@ class DecOracleCheker:
         return points
 
 
-class AccountsChecker:
+class OracleChecker:
     def __init__(self, dec_oracle_checker, addr):
         self.dec_oracle_checker = dec_oracle_checker
         self.prev = {}
         self.addr = addr
         self.__lastpub = {}  # pair: (date, why=init|publish)
         for pair in self.pairs:
-            self.update(pair, "init")
+            self.update(pair, time.time(), "init")
 
     @property
     def pairs(self):
         for p in self.dec_oracle_checker.pairs.values():
             yield p.name
 
-    async def fetch(self):
+    async def fetch(self, now):
         cur = {}
         for pair in self.pairs:
             try:
@@ -93,11 +93,13 @@ class AccountsChecker:
             prev = self.prev.get(pair)
             _cur = cur.get(pair)
             if not (prev is None) and _cur != 0 and prev != _cur:
-                self.update(pair)
+                logging.info("UPDATE", time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(now)),
+                             self.addr, pair, prev, _cur)
+                self.update(pair, now)
         self.prev = cur
 
-    def update(self, pair, why="publish"):
-        self.__lastpub[pair] = (time.time(), why)
+    def update(self, pair, now, why="publish"):
+        self.__lastpub[pair] = (now, why)
 
     def getLastPub(self, pair):
         return self.__lastpub.get(pair)
@@ -119,7 +121,7 @@ class NoPubAlert:
 
     def test(self, ctx):
         xxx = self.checker.getLastPub(self.pair)
-        return (ctx.now - xxx[0]) > ctx.cfg.getMaxNoPubPeriod()
+        return ((ctx.now - xxx[0]) > ctx.cfg.getMaxNoPubPeriod())
 
     def msg(self, ctx):
         date, reason = self.checker.getLastPub(self.pair)

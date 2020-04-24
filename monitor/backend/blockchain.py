@@ -4,7 +4,7 @@ import time
 from xmlrpc.client import ServerProxy
 
 from config import Config
-from moc.moc_oracle import AccountsChecker, DecOracleCheker
+from moc.moc_oracle import OracleChecker, DecOracleCheker
 
 
 async def arun(f):
@@ -44,7 +44,7 @@ class Info:
         # TODO: Not all accounts must be oracles.
         for account in self.accounts:
             addr = config.getAccountAddress(account)
-            self.accountCheckers[account] = AccountsChecker(self.dec_oracle_checker, addr)
+            self.accountCheckers[account] = OracleChecker(self.dec_oracle_checker, addr)
         self.agent = config.getAgentProgram()
 
     async def checkBlock(self):
@@ -55,6 +55,8 @@ class Info:
         return update
 
     async def fetch(self):
+        now = time.time()
+        self.state["now"] = now
         for account in self.accounts:
             checker = self.accountCheckers[account]
             try:
@@ -62,9 +64,7 @@ class Info:
             except Exception as err:
                 logging.error(f"Cannot retrieve account {account} balance. "
                               f"Error: %r" % err)
-            await checker.fetch()
-        # checker.fetch access time.time, so now must be after that.
-        self.state["now"] = time.time()
+            await checker.fetch(now)
         self.state["blocknr"] = self.lastblock.number
         self.state["alive"] = self.getAgentAlive()
 
