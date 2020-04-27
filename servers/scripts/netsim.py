@@ -162,9 +162,9 @@ async def main():
         addr = oe["account"].addr
         port = int(oe["name"].split(":")[-1])
         logging_config = uvicorn.config.LOGGING_CONFIG.copy()
-        logging_config["formatters"]["default"]["fmt"] = addr + " ---> %(levelprefix)s %(message)s"
+        logging_config["formatters"]["default"]["fmt"] = addr + " ---> %(asctime)s %(levelprefix)s %(message)s"
         logging_config["formatters"]["access"][
-            "fmt"] = addr + ' ---> %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
+            "fmt"] = addr + ' ---> %(asctime)s %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
         config = uvicorn.Config("oracle.src.app:app", host="0.0.0.0",
                                 port=port,
                                 log_level="info",
