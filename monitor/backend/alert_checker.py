@@ -40,9 +40,10 @@ class AlertChecker:
                                    and config.getSMTP()[0] is not None)
             cls.notify_by_slack = config.getSlackInfo() is not None
             al = logging.getLogger("alarms")
-            h = logging.FileHandler(config.getLogAlarmFilename())
-            h.setFormatter(logging.Formatter(config.getLogFormat()))
-            al.addHandler(h)
+            if len(config.getLogAlarmFilename()) > 0:
+                h = logging.FileHandler(config.getLogAlarmFilename())
+                h.setFormatter(logging.Formatter(config.getLogFormat()))
+                al.addHandler(h)
 
     async def test(self, ctx):
         """ returns a new state composed by alert"""

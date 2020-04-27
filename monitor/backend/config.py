@@ -2,10 +2,11 @@ import decimal
 import logging
 import unittest
 
-from starlette.config import Config
-from starlette.datastructures import Secret, CommaSeparatedStrings
 from web3 import HTTPProvider
 from web3 import Web3
+
+from starlette.config import Config
+from starlette.datastructures import Secret, CommaSeparatedStrings
 
 decimal.getcontext().prec = 80
 PREC_STR = '{:f}'
@@ -93,7 +94,7 @@ class Config:
 
     # config
     def getAgentProgram(self):
-        return config("AGENT_PROGRAM", cast=str)
+        return config("AGENT_PROGRAM", cast=str, default="oracle")
 
     def getAccountList(self):
         return config("ACCOUNTS", cast=CommaSeparatedStrings)

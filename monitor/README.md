@@ -3,13 +3,13 @@
 
 ## Monitor
 
-Monitor main purpose is notify and display about defined state alerts. Those states are:
+Monitor main purpose is notify and display alerts. Those alerts are:
 
- * oracle process is not running
- * there is no balance of native coin, required for oracle's gas consumtion
+ * oracle process is running or not (checked via supervisor)
+ * there is no balance of native coin, required for oracle's gas consumption
  * oracle haven't published price in a defined period of time
  
-Alerts will be sent via email when they are triggered and can also be check all the time in 
+Alerts will be sent via email or to a slack hook when they are triggered and can also be checked all the time in 
 the web interface.
 
  
@@ -22,49 +22,133 @@ the web interface.
 
 ### Installation
 
-There are two common ways to install this: with or without python's virtual-env.
+Start by downloading the project from the repo: `git clone repository-link cfmonitor/`.
 
-Using virtual-env is analogous to using a new system user and installing requirements into users' space by doing the following:
+The monitor is configured using a `.env` file, the `Sample.env` file can be used as a base configuration.
+See the details in the Configuration section.
 
-1. Review supervisor configuration files and modify them to support oracle execution: backend/supervisor/*.conf
-    * install them into `/etc/supervisor/conf.d`
-    * make supervisor accessible:
-        * edit /etc/supervisor/supervisor.conf to include:
-            `[inet_http_server]`
-            `port = 127.0.0.1:9001`
+
+#### Running the Monitor
+        
+There are two common ways to install and run the Monitor.
+1. with virutal-env
+2. without python's virtual-env.
+ 
+
+##### With Virtualenv
+
+Using virtual-env is the recommended way and is analogous to using a new user and installing requirements into 
+users' space by doing the following:
+
+1. Create a python virtualenv: `virtualenv -p /usr/bin/python3.7 venv`
+
+2. Activate the virtualenv: `source venv/bin/activate`
+
+3. Install python project dependencies: `python3.7 -m pip install --user -r  cfmonitor/backend/requirements.txt`
+
+4. Create full configuration based on `Sample.env` (see details in the section below):
+    * `cd backend`
+    * `vim .env`  edit the configuration file according to the network and your deployment
+    
+5. You can manually run (in case you want to diagnose or test) the monitor by 
+running: `cd backend && python3.7 main.py`
+
+6. As root adjust the paths and install the supervisor file `backend/supervisor/backend.conf` in `/etc/supervisor/conf.d` 
+ 
+7. Manage the Monitor process using supervisor: 
+    * `supervisorctl add backend`
+    * `supervisorctl start backend`
+    * `supervisorctl stop backend`
+    * `supervisorctl restart backend`
+    * etc
+    
+##### Without Virtualenv
+
+Installing the monitor without a virtualenv is similar to doing it with virutalenv the only difference is that
+most of the commands must be run as root and affects the whole system.
+As root used proceed with steps three to seven of the previous section.
+    
+ 
+### Configuration
+
+The monitor is configured using a `.env` file that must be saved in the backend directory of the repo.
+The `Sample.env` file can be used as a base configuration.
+
+#### Configuring the block chain node.
+        
+To monitor the balances and oracle publication time some block chain node must be accessible. The following
+configuration parameters are needed:
+- `BC_NODE=node to connect to.`
+- `BC_NETID=net id from network at node.`
+    
+For example:
+- `BC_NODE=https://public-node.testnet.rsk.co`
+- `BC_NETID=31`
+
+#### Configuring block chain Oracle accounts to monitor.
+
+To be able to monitor oracle the address of the OracleManager smart contract is needed: 
+`ORACLE_MGR=0xe8E10f85D33f1343C4Fbd3c24371AcA44eb82D76` 
+
+The following parameters determine which Oracle accounts to monitor.
+For each account a name must be configured: `ACCOUNTS=account_name1, account_name2, etc`
+After for each account name a variable must be add with the specific Oracle Coin Pair address for example:
+- `account_name1=0x695706Df94DB0970c1AD41e84a5c2bdB24C6C618`
+- `account_name2=0xff49426EE621FCF9928FfDBd163fBC13fA36f465`
+
+The gas limit can be set using: `GAS_LOW_LIMIT=1.4`
+And the no publication period alert time in seconds: `NO_PUB_PERIOD_ALERT=600`
+
+(*) All addresses **must** be ethereum checksummed. 
+You can use [etherscan indexer webpage](https://etherscan.io/address/address-to-checksum) to get the mentioned checksum.
+
+#### Monitoring the Oracle Process
+
+To monitor the Oracle process we use supervisor, this is optional and can be disabled
+by setting an empty variable `AGENT_PROGRAM=` in the .env configuration file. 
+
+If you choose to monitor the Oracle process the `AGENT_PROGRAM` variable must be set to `oracle` and the 
+supervisor software must be configured to run it. Also supervisor must be accessible from localhost:
+1. Make supervisor accessible from localhost by editing /etc/supervisor/supervisor.conf to include:
+        `[inet_http_server]`
+        `port = 127.0.0.1:9001`
+2. To run the Oracle process using supervisor: 
+    * edit the configuration file `backend/supervisor/oracle.conf` and modify it to support your specific installation 
+    * as root install it into `/etc/supervisor/conf.d`
     * `supervisorctl add oracle`
     * `supervisorctl start oracle` being oracle the process
     * Also note that `supervisorctl restart oracle` will restart components and make them reload the configuration.
-1. Install sources in two places one for the agent and one for the backend:
-    * `git clone repository-link cfmonitor/`
-1. Install python project dependencies: `python3.7 -m pip install --user -r  cfmonitor/backend/requirements.txt`
-1. Create full configuration based on `Sample.env` (see details in the section below):
-    * `cd backend`
-    * `vim .env`  edit the configuration file according to the network and your deployment
-1. You can manually run (in case you want to diagnose or test) the agent and the backend by doing the what is described below:
-    * `cd backend && python3.7 main.py`
 
 
-### Configuration
+#### Reporting Configuration 
 
-The `.env` configuration file is required by both components.
+The monitor can report alerts via email, slack and/or using a regular log file. 
 
-Here is a configuration sample followed by the parameters description:
+##### Log file configuration
 
+Use the `ALERT_LOG_FILENAME` variable to set where to store the log of every alert.
+To disable just set an empty name.
+
+##### Email configuration
+
+Use the following variables to configure email reporting:
+
+- `SMTP_HOST=smtp server address used to deliver reports.`
+- `SMTP_PORT=smtp server port.`
+- `SMTP_From=Email sender <email address>`
+- `SMTP_SSL_TLS=yes if smtp server requires SSL/TLS connection, else no`
+- `ALERT_EMAILS=email addresses to notify to.`
+- `EMAIL_REPEAT_INTERVAL=time interval (in seconds) required to re-send a recurring alert message.`
+
+If the server requires authentication:
+
+- `SMTP_USER=user for authentication.`
+- `SMTP_PWD=password for authentication.`
+
+If the `SMTP_HOST` variable is missing then the reporting via email is ***disabled***.
+
+For example: 
 ```
-BC_NODE=https://public-node.testnet.rsk.co
-BC_NETID=31
-AGENT_PROGRAM=oracle
-ORACLE_MGR=0x.....  
-GAS_LOW_LIMIT=1.4
-PAIRS=BTCUSD,RIFBTC
-ACCOUNTS=account_name1, account_name2,..
-account_name1=0x695706Df94DB0970c1AD41e84a5c2bdB24C6C618
-account_name2=0x695706Df94DB0970c1AD41e84a5c2bdB24C6C618
-..
-
-NO_PUB_PERIOD_ALERT=600
-
 SMTP_HOST=smtp.mail.yahoo.com
 SMTP_PORT=465
 SMTP_From=someone <someone@yahoo.com>
@@ -74,44 +158,32 @@ SMTP_PWD=gmaqwgfkqgzpkied
 
 ALERT_EMAILS=to-be-notified@example.com
 EMAIL_REPEAT_INTERVAL=3600
-DEBUG=true
 ```
 
-**BC_NODE**=node to connect to.
-**BC_NETID**=net id from network at node.
-**AGENT_PROGRAM**=the program-name to check on supervisor
-**PAIRS**=check price publication for these coinpairs
-**GAS_LOW_LIMIT**=ethers limit. below this will raise alert
-**ACCOUNTS**=the list of oracle addresses to check for publications and gas (eg: account_name_1, account_name_2,..)
-**account_name_1**=0x....
-**account_name_2**=0x....
-**NO_PUB_PERIOD_ALERT**=time limit without price publications, after that, alert will be raised
+##### Slack configuration
 
-**SMTP_HOST**=smtp server address used to deliver reports.
-**SMTP_PORT**=smtp server port.
-**SMTP_From**=Email sender <email address>
-**SMTP_SSL_TLS**=yes if smtp server requires SSL/TLS connection, else no
+To use slack a slack application web hook must be configured in the slack website see:
+`https://api.slack.com/messaging/webhooks`
 
-**ALERT_EMAILS**=email addresses to notify to.
-**EMAIL_REPEAT_INTERVAL**=time interval (in seconds) required to re-send a recurring alert message.
+Then the monitor must be configured using the following variales:
 
-**ALERT_LOG_FILENAME**=where to store the log of every alert.
+- `SLACK_HOOK_URL=https://hooks.slack.com/services/XXXXXX`
+- `SLACK_HOOK_USER=monito`
+- `SLACK_HOOK_CHANNEL="#moc-monit"`
+- `SLACK_HOOK_TITLE=moc-monitor`
 
-**DEBUG**=turn this value to True if you want logs to be extra-verbose.
-
-##### Optional Parameters (when server requires authentication):
-
-**SMTP_USER**=user for authentication.
-**SMTP_PWD**=password for authentication.
+If the `SLACK_HOOK_URL` variable is missing then the reporting via slack is ***disabled***.
 
 
-(*) All addresses **must** be ethereum checksummed. 
-You can use [etherscan indexer webpage](https://etherscan.io/address/address-to-checksum) to get the mentioned checksum.
+##### Extra parameters
+
+- `DEBUG=turn this value to True if you want logs to be extra-verbose.`
+
+
 
 ### Alerts
 
-Currently defined alerts. New rules can be easily added in `alerts.py` file.
-
+New rules can be easily added in `alerts.py` file.
 
 #### User action is expected:
 <dl>
@@ -135,7 +207,6 @@ Currently defined alerts. New rules can be easily added in `alerts.py` file.
 ### Considerations
 
 When alarms are triggered, emails configured are notified. As the alarms state usually don't go off fast, there is a setting to indicate which is the *time interval* required to notify for the same alarms. However, this interval is ignored if a new alarm occurs.
-
 
 *Supervisor*: both components are expected to be running continuously without crashes. Nevertheless, we rely on supervisor to:
  * keep them running all the time
