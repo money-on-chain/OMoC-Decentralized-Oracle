@@ -21,7 +21,7 @@ ORACLE_RUN = config('ORACLE_RUN', cast=bool, default=True)
 # Port in which the oracle listen for sign request
 ORACLE_PORT = config('ORACLE_PORT', cast=int, default=5556)
 # Flag that indicates if the monitor (a module that store information in logfiles) must be run
-ORACLE_MONITOR = config('ORACLE_MONITOR', cast=bool, default=True)
+ORACLE_MONITOR = config('ORACLE_MONITOR', cast=bool, default=False)
 # Monitor : Log exchange prices file name
 ORACLE_MONITOR_LOG_EXCHANGE_PRICE = config('ORACLE_MONITOR_LOG_EXCHANGE_PRICE', cast=str, default="exchanges.log")
 # Monitor : Log published prices file name
