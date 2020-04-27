@@ -92,3 +92,14 @@ def publish_log(msg):
     if oracle_settings.ORACLE_MONITOR:
         pplogger = logging.getLogger("published_price")
         pplogger.warning(msg)
+
+
+def report_prices(engines, f_prices):
+    all_engines = {engine["name"] for engine in engines}
+    list_all_engines = list(all_engines)
+    list_all_engines.sort()
+    fetched = {pr['name']: str(pr['price']) for pr in f_prices}
+    for pending in all_engines - set(fetched.keys()):
+        fetched[pending] = "--"
+    exchange_log(",".join(list_all_engines))
+    exchange_log(",".join([fetched[engine] for engine in list_all_engines]))
