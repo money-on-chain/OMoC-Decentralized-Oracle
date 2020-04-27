@@ -48,7 +48,7 @@ def weighted_median_idx(values, weights):
         elif cumulative_probability == 0.5:
             if i + 1 >= len(sorted_tuples):
                 return sorted_tuples[i][2]
-            return (sorted_tuples[i][2] + sorted_tuples[i + 1][0]) / 2
+            return (sorted_tuples[i][2] + sorted_tuples[i + 1][2]) / 2
     return sorted_tuples[-1][2]
 
 
