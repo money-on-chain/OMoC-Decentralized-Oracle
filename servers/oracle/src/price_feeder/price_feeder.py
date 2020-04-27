@@ -6,7 +6,7 @@ from statistics import median
 
 from common.bg_task_executor import BgTaskExecutor
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
-from oracle.src import oracle_settings
+from oracle.src import oracle_settings, monitor
 from oracle.src.price_feeder import moc_price_engines
 
 logger = logging.getLogger(__name__)
@@ -45,6 +45,6 @@ class PriceFeederLoop(BgTaskExecutor):
         except asyncio.CancelledError as e:
             raise e
         except Exception as ex:
-            logging.getLogger("exchange_price").info("ERROR FETCHING PRICE %r" % ex)
+            monitor.exchange_log("ERROR FETCHING PRICE %r" % ex)
             logger.error("ERROR FETCHING PRICE %r" % ex)
         return oracle_settings.ORACLE_PRICE_FETCH_RATE

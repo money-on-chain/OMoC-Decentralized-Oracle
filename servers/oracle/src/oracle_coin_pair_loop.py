@@ -13,7 +13,7 @@ from common.crypto import verify_signature
 from common.services.blockchain import is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
 from common.services.oracle_dao import OracleRoundInfo
-from oracle.src import oracle_settings
+from oracle.src import oracle_settings, monitor
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfoLoop
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_turn import OracleTurn
@@ -78,7 +78,6 @@ class OracleCoinPairLoop(BgTaskExecutor):
 
         # send message to all oracles to sign
         sigs = await gather_signatures(oracles, params, message, signature)
-        # TODO: Check smart contract rules.
         if len(sigs) < len(oracles) // 2 + 1:
             logger.error("%r : %r Publish: Not enough signatures" % (self._coin_pair, ORACLE_ACCOUNT.addr))
             return
@@ -89,8 +88,7 @@ class OracleCoinPairLoop(BgTaskExecutor):
                 (self._coin_pair, ORACLE_ACCOUNT.addr, sigs, params,
                  [crypto.recover(hexstr=message, signature=x) for x in sigs]))
 
-        pplogger = logging.getLogger("published_price")
-        pplogger.warning("%r : %r publishing price: %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, params.price))
+        monitor.publish_log("%r : %r publishing price: %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, params.price))
         try:
             tx = await self._cps.publish_price(params.version,
                                                params.coin_pair,

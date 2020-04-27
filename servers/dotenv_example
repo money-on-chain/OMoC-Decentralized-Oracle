@@ -53,7 +53,7 @@ SCHEDULER_SIGNING_KEY = "MUST BE CONFIGURED"
 # ORACLE_PORT = 5556
 
 # Flag that indicates if the monitor (a module that store information in logfiles) must be run
-# ORACLE_MONITOR = True
+# ORACLE_MONITOR = False
 
 # Oracle-only parameters.
 # Account used to publish prices

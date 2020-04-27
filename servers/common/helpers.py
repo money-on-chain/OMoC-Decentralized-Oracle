@@ -76,13 +76,6 @@ def hb_to_bytes(h):
     return bytes.fromhex(h.hex()[2:])
 
 
-def log_setup():
-    xlogger = logging.getLogger("exchange_price")
-    fh = logging.FileHandler("exchange_price.log")
-    fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-    xlogger.addHandler(fh)
-
-
 class PrintableClass:
     @property
     def initargs(self):

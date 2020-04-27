@@ -9,6 +9,8 @@ from decimal import Decimal
 import aiohttp
 import requests
 
+from oracle.src import monitor
+
 logger = logging.getLogger(__name__)
 
 decimal.getcontext().prec = 28
@@ -446,18 +448,15 @@ class PriceEngines(object):
         fetched = {pr['name']: str(pr['price']) for pr in f_prices}
         for pending in all_engines - set(fetched.keys()):
             fetched[pending] = "--"
-
-        l = logging.getLogger("exchange_price")
-        l.info(",".join(list_all_engines))
-        l.info(",".join([fetched[engine] for engine in list_all_engines]))
+        monitor.exchange_log(",".join(list_all_engines))
+        monitor.exchange_log(",".join([fetched[engine] for engine in list_all_engines]))
 
     def get_weighted_median(self, f_prices):
         l_prices = [p_price['price'] for p_price in f_prices]
         l_weights = [Decimal(p_price['ponderation']) for p_price in f_prices]
         w_median = weighted_median(l_prices, l_weights)
         logger.info("%s median: %s" % (self._coin_pair, w_median))
-        l = logging.getLogger("exchange_price")
-        l.info("%s median: %s" % (self._coin_pair, w_median))
+        monitor.exchange_log("%s median: %s" % (self._coin_pair, w_median))
         return w_median
 
     async def get_weighted(self):

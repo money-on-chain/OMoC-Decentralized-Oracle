@@ -3,7 +3,7 @@ import logging
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import get_last_block, is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
-from oracle.src import oracle_service
+from oracle.src import oracle_service, oracle_settings
 from oracle.src.select_next import select_next
 
 
@@ -63,3 +63,32 @@ class MonitorTask(BgTaskExecutor):
                 self.cpMap[cp_key] = MonitorLoopByCoinPair(self.logger, cps)
             await self.cpMap[cp_key].run()
         return 5
+
+
+def log_setup():
+    if oracle_settings.ORACLE_MONITOR:
+        xlogger = logging.getLogger("exchange_price")
+        fn = oracle_settings.ORACLE_MONITOR_LOG_EXCHANGE_PRICE
+        if not fn in ("",):
+            fh = logging.FileHandler(fn)
+        fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        xlogger.addHandler(fh)
+
+        xlogger = logging.getLogger("published_price")
+        fn = oracle_settings.ORACLE_MONITOR_LOG_PUBLISHED_PRICE
+        if not fn in ("",):
+            fh = logging.FileHandler(fn)
+        fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        xlogger.addHandler(fh)
+
+
+def exchange_log(msg):
+    if oracle_settings.ORACLE_MONITOR:
+        l = logging.getLogger("exchange_price")
+        l.info(msg)
+
+
+def publish_log(msg):
+    if oracle_settings.ORACLE_MONITOR:
+        pplogger = logging.getLogger("published_price")
+        pplogger.warning(msg)

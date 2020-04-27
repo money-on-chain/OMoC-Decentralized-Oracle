@@ -7,8 +7,7 @@ from common import settings, run_uvicorn
 from common.bg_task_executor import BgTaskExecutor
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src import oracle_settings, scheduler_oracle_loop, scheduler_supporters_loop
-from oracle.src.monitor import MonitorTask
-from oracle.src.oracle_helpers import log_setup
+from oracle.src.monitor import MonitorTask, log_setup
 from oracle.src.oracle_loop import OracleLoop
 from oracle.src.oracle_publish_message import PublishPriceParams
 
