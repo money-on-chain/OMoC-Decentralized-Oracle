@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import os
@@ -107,8 +108,7 @@ class OracleChecker:
 
 class NoPubAlert:
     FormatPair = staticmethod(lambda pair: pair[:3] + "-" + pair[3:])
-    FormatTime = staticmethod(lambda x: time.strftime("%Y-%m-%d %H:%M:%S",
-                                                      time.gmtime(x)))
+    FormatTime = staticmethod(lambda x: datetime.datetime.fromtimestamp(x))
 
     def __init__(self, checker, pair):
         # super(NoPubAlert, self).__init__(name="no-publication: %s" %
