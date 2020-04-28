@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 import typing
 
 from common.bg_task_executor import BgTaskExecutor
@@ -26,13 +27,27 @@ class OracleBlockchainInfoLoop(BgTaskExecutor):
         self._cps = cps
         self._coin_pair = cps.coin_pair
         self._blockchain_info: OracleBlockchainInfo = None
+        self.last_update = None
+        self.update_lock = asyncio.Lock()
         super().__init__(self.task_loop)
 
     async def task_loop(self):
+        delta = oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL
+        async with self.update_lock:
+            if self.last_update:
+                delta = (time.time() - self.last_update)
+        if delta < oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL:
+            return oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL - delta
+        await self.force_update()
+        return oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL
+
+    async def force_update(self):
+        async with self.update_lock:
+            self.last_update = time.time()
+
         data = await self._get_blocking()
         if data:
             self._blockchain_info = data
-        return oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL
 
     def get(self) -> OracleBlockchainInfo:
         return self._blockchain_info

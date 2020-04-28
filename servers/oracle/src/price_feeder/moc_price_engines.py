@@ -16,7 +16,16 @@ logger = logging.getLogger(__name__)
 decimal.getcontext().prec = 28
 
 
+def get_utc_time(timestamp_str):
+    return datetime.datetime.fromtimestamp(int(timestamp_str), datetime.timezone.utc)
+
+
 def weighted_median(values, weights):
+    idx = weighted_median_idx(values, weights)
+    return values[idx]
+
+
+def weighted_median_idx(values, weights):
     ''' compute the weighted median of values list. The weighted median is computed as follows:
     1- sort both lists (values and weights) based on values.
     2- select the 0.5 point from the weights and return the corresponding values as results
@@ -28,19 +37,19 @@ def weighted_median(values, weights):
     sum_weights = sum(weights)
     weights = [w / sum_weights for w in weights]
     # sort values and weights based on values
-    sorted_tuples = sorted(zip(values, weights))
+    sorted_tuples = sorted(zip(values, weights, range(len(values))))
 
     # select the median point
     cumulative_probability = 0
     for i in range(len(sorted_tuples)):
         cumulative_probability += sorted_tuples[i][1]
         if cumulative_probability > 0.5:
-            return sorted_tuples[i][0]
+            return sorted_tuples[i][2]
         elif cumulative_probability == 0.5:
-            if i + 1 >= len(sorted_tuples):
-                return sorted_tuples[i][0]
-            return (sorted_tuples[i][0] + sorted_tuples[i + 1][0]) / 2
-    return sorted_tuples[-1][0]
+            # if i + 1 >= len(sorted_tuples):
+            return sorted_tuples[i][2]
+            # return (sorted_tuples[i][2] + sorted_tuples[i + 1][2]) / 2
+    return sorted_tuples[-1][2]
 
 
 @contextlib.contextmanager
@@ -147,7 +156,7 @@ class BitstampBTCUSD(PriceEngineBase):
         d_price_info = dict()
         d_price_info['price'] = Decimal(response_json['last'])
         d_price_info['volume'] = Decimal(response_json['volume'])
-        d_price_info['timestamp'] = datetime.datetime.utcfromtimestamp(int(response_json['timestamp']))
+        d_price_info['timestamp'] = get_utc_time(response_json['timestamp'])
         return d_price_info
 
 
@@ -178,8 +187,7 @@ class BitGOBTCUSD(PriceEngineBase):
         d_price_info = dict()
         d_price_info['price'] = Decimal(response_json['latest']['currencies']['USD']['last'])
         d_price_info['volume'] = Decimal(response_json['latest']['currencies']['USD']['total_vol'])
-        d_price_info['timestamp'] = datetime.datetime.utcfromtimestamp(
-            int(response_json['latest']['currencies']['USD']['timestamp']))
+        d_price_info['timestamp'] = get_utc_time(response_json['latest']['currencies']['USD']['timestamp'])
         return d_price_info
 
 
@@ -441,25 +449,18 @@ class PriceEngines(object):
 
         return prices
 
-    def report_prices(self, f_prices):
-        all_engines = {engine["name"] for engine in self.engines}
-        list_all_engines = list(all_engines)
-        list_all_engines.sort()
-        fetched = {pr['name']: str(pr['price']) for pr in f_prices}
-        for pending in all_engines - set(fetched.keys()):
-            fetched[pending] = "--"
-        monitor.exchange_log(",".join(list_all_engines))
-        monitor.exchange_log(",".join([fetched[engine] for engine in list_all_engines]))
-
-    def get_weighted_median(self, f_prices):
+    def get_weighted_idx(self, f_prices):
         l_prices = [p_price['price'] for p_price in f_prices]
         l_weights = [Decimal(p_price['ponderation']) for p_price in f_prices]
-        w_median = weighted_median(l_prices, l_weights)
-        logger.info("%s median: %s" % (self._coin_pair, w_median))
-        monitor.exchange_log("%s median: %s" % (self._coin_pair, w_median))
-        return w_median
+        idx = weighted_median_idx(l_prices, l_weights)
+        monitor.exchange_log("%s median: %s" % (self._coin_pair, l_prices[idx]))
+        return idx
+
+    def get_weighted_median(self, f_prices):
+        idx = self.get_weighted_idx(f_prices)
+        return f_prices[idx]['price']
 
     async def get_weighted(self):
         f_prices = await self.fetch_prices()
-        self.report_prices(f_prices)
+        monitor.report_prices(self.engines, f_prices)
         return f_prices

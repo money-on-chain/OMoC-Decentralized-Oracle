@@ -103,6 +103,8 @@ class OracleCoinPairLoop(BgTaskExecutor):
             else:
                 logger.info(
                     "%r : %r --------------------> PRICE PUBLISHED %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, tx))
+                # Last pub block has changed, force an update of the block chain info.
+                await self.vi_loop.force_update()
         except asyncio.CancelledError as e:
             raise e
         except Exception as err:

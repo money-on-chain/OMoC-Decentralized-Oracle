@@ -44,7 +44,7 @@ users' space by doing the following:
 
 2. Activate the virtualenv: `source venv/bin/activate`
 
-3. Install python project dependencies: `python3.7 -m pip install --user -r  cfmonitor/backend/requirements.txt`
+3. Install python project dependencies: `python3.7 -m pip install --user -r  monitor/backend/requirements.txt`
 
 4. Create full configuration based on `Sample.env` (see details in the section below):
     * `cd backend`
