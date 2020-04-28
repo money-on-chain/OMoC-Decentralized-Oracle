@@ -14,22 +14,39 @@ const sqlite3 = require('sqlite-async');
 
 async function principal2(conf) {
     const {web3, coinPairPrice} = conf;
-    const addr = web3.utils.toChecksumAddress(process.argv[process.argv.length - 1]);
-    const contract = new web3.eth.Contract(coinPairPrice.abi, addr);
+    const addr1 = web3.utils.toChecksumAddress(process.argv[process.argv.length - 1]);
+    let addr2;
+    try {
+        addr2 = web3.utils.toChecksumAddress(process.argv[process.argv.length - 2]);
+    } catch (e) {
+    }
     let db = await sqlite3.open('./index.db');
     const fnDecoder = new txDecoder.FunctionDecoder(coinPairPrice.abi);
     try {
         // instantiate
         const table = new Table({
-            head: ["blocknumber", "message last pub block", "from", "price", "status", "gas", "gasPrice"]
+            head: ["timestamp [UTC]", "delta secs", "blocknumber", "message last pub block", "from", "price", "status", "gas", "gasPrice"]
         });
-        const sql = "select * from blocks a, txs b where a.id = b.block_id and lower(b.`to`) = ? order by a.number desc, b.transactionIndex desc";
+        let sql;
+        let args;
+        if (addr2) {
+            sql = "select * from blocks a, txs b where a.id = b.block_id and lower(b.`to`) = ? and lower(b.`from`) = ? order by a.number desc, b.transactionIndex desc";
+            args = [addr2.toLowerCase(), addr1.toLowerCase()];
+        } else {
+            sql = "select * from blocks a, txs b where a.id = b.block_id and lower(b.`to`) = ? order by a.number desc, b.transactionIndex desc";
+            args = [addr1.toLowerCase()];
+        }
         const pr = (x, st, el) => (x.status ? colors.green(st) : colors.red(el || st));
         let prev = new BigNumber(0);
-        await db.each(sql, addr.toLowerCase(), (err, tx) => {
+        let dprev = Date.now();
+        await db.each(sql, ...args, (err, tx) => {
             const args = fnDecoder.decodeFn(tx.input);
+            // const tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;
+            const date = (new Date(tx.timestamp * 1000));
             if (args.signature == "switchRound()") {
                 table.push([
+                    pr(tx, date),
+                    pr(tx, dprev / 1000 - tx.timestamp),
                     pr(tx, tx.number),
                     pr(tx, "SWITCH ROUND"),
                     pr(tx, tx.from),
@@ -40,6 +57,8 @@ async function principal2(conf) {
                 ]);
             } else if (args.signature == "publishPrice(uint256,bytes32,uint256,address,uint256,uint8[],bytes32[],bytes32[])") {
                 table.push([
+                    pr(tx, date),
+                    pr(tx, dprev / 1000 - tx.timestamp),
                     pr(tx, tx.number),
                     pr(tx, args.blockNumber.toString(10) + " - " + prev.sub(args.blockNumber).toString(10)),
                     pr(tx, tx.from),
@@ -49,6 +68,7 @@ async function principal2(conf) {
                     pr(tx, tx.gasPrice),
                 ]);
                 prev = args.blockNumber;
+                dprev = tx.timestamp * 1000;
             } else {
                 console.log("Invalid signature", args.signature);
             }
@@ -99,4 +119,4 @@ async function principal(conf) {
 }
 
 
-config.run(principal);
+config.run(principal2);
