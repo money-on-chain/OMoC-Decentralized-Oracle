@@ -62,14 +62,17 @@ class DecOracleCheker:
         return pairs
 
     def getPoints(self, pair, address):
-        points, _, _ = self.contracts[pair].functions.getOracleRoundInfo(
-            address).call()
+        (points, selectedInRound, selectedInCurrentRound) = self.contracts[pair].functions \
+            .getOracleRoundInfo(address).call()
+        if not selectedInCurrentRound:
+            return None
         return points
 
 
 class OracleChecker:
     def __init__(self, dec_oracle_checker, addr):
         self.dec_oracle_checker = dec_oracle_checker
+        self.selected = False
         self.prev = {}
         self.addr = addr
         self.__lastpub = {}  # pair: (date, why=init|publish)
@@ -93,7 +96,12 @@ class OracleChecker:
         for pair in self.pairs:
             prev = self.prev.get(pair)
             _cur = cur.get(pair)
-            if not (prev is None) and _cur != 0 and prev != _cur:
+            if _cur is None:
+                # NOT SELECTED
+                self.selected = False
+                continue
+            self.selected = True
+            if prev is not None and _cur != 0 and prev != _cur:
                 logging.info("UPDATE", time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(now)),
                              self.addr, pair, prev, _cur)
                 self.update(pair, now)
@@ -120,6 +128,8 @@ class NoPubAlert:
         self.action_required = False
 
     def test(self, ctx):
+        if not self.checker.selected:
+            return False
         xxx = self.checker.getLastPub(self.pair)
         return ((ctx.now - xxx[0]) > ctx.cfg.getMaxNoPubPeriod())
 
