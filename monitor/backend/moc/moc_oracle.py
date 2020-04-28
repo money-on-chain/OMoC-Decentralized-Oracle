@@ -72,11 +72,12 @@ class DecOracleCheker:
 class OracleChecker:
     def __init__(self, dec_oracle_checker, addr):
         self.dec_oracle_checker = dec_oracle_checker
-        self.selected = False
+        self._selected = {}
         self.prev = {}
         self.addr = addr
         self.__lastpub = {}  # pair: (date, why=init|publish)
         for pair in self.pairs:
+            self._selected[pair] = False
             self.update(pair, time.time(), "init")
 
     @property
@@ -98,9 +99,9 @@ class OracleChecker:
             _cur = cur.get(pair)
             if _cur is None:
                 # NOT SELECTED
-                self.selected = False
+                self._selected[pair] = False
                 continue
-            self.selected = True
+            self._selected[pair] = True
             if prev is not None and _cur != 0 and prev != _cur:
                 logging.info("UPDATE", time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(now)),
                              self.addr, pair, prev, _cur)
@@ -110,8 +111,11 @@ class OracleChecker:
     def update(self, pair, now, why="publish"):
         self.__lastpub[pair] = (now, why)
 
-    def getLastPub(self, pair):
+    def get_last_pub(self, pair):
         return self.__lastpub.get(pair)
+
+    def get_selected(self, pair):
+        return self._selected.get(pair)
 
 
 class NoPubAlert:
@@ -128,13 +132,13 @@ class NoPubAlert:
         self.action_required = False
 
     def test(self, ctx):
-        if not self.checker.selected:
+        if not self.checker.get_selected(self.pair):
             return False
-        xxx = self.checker.getLastPub(self.pair)
-        return ((ctx.now - xxx[0]) > ctx.cfg.getMaxNoPubPeriod())
+        xxx = self.checker.get_last_pub(self.pair)
+        return (ctx.now - xxx[0]) > ctx.cfg.getMaxNoPubPeriod()
 
     def msg(self, ctx):
-        date, reason = self.checker.getLastPub(self.pair)
+        date, reason = self.checker.get_last_pub(self.pair)
         reason = "backend started" if reason == "init" else "last point was registered"
         date = self.FormatTime(date)
         pair = self.FormatPair(self.pair)
