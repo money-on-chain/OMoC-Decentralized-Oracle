@@ -81,17 +81,14 @@ class Info:
 
     def getAgentAlive(self):
         try:
-            try:
-                server = ServerProxy('http://localhost:9001/RPC2')
-            except Exception as e:
-                logging.debug("Supervisor connection error: " + str(e))
-                raise
-            m = {True: "yes", False: "no"}
-            running = server.supervisor.getProcessInfo(
-                self.agent)["statename"] == "RUNNING"
-            return m[running]
-        except:
-            return "unknown"
+            server = ServerProxy('http://localhost:9001/RPC2')
+            info = server.supervisor.getProcessInfo(self.agent)
+            if not info or "statename" not in info:
+                return "ERROR: invalid response from supervisor"
+            return "yes" if info["statename"] == "RUNNING" else "no"
+        except Exception as e:
+            logging.error("Supervisor connection error: %r" % e)
+            return "ERROR: " + str(e)
 
 
 def sleep_for_net(app):
