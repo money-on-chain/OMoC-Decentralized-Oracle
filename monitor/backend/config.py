@@ -83,6 +83,9 @@ class Config:
     def getW3(self):
         return self.W3
 
+    def getAlertCheckDelay(self):
+        return config("ALERT_CHECK_DELAY", cast=int, default=1)
+
     def getBCNetId(self):
         return config("BC_NETID", cast=int)
 

@@ -46,6 +46,9 @@ class Info:
             addr = config.getAccountAddress(account)
             self.accountCheckers[account] = OracleChecker(self.dec_oracle_checker, addr)
         self.agent = config.getAgentProgram()
+        self.agent_enabled = (config.getAgentProgram() != "")
+        if not self.agent_enabled:
+            logging.error("No AGENT_PROGRAM specified. Alert disabled.")
 
     async def checkBlock(self):
         curblock = await self.aw3.getBlock()
@@ -66,7 +69,8 @@ class Info:
                               f"Error: %r" % err)
             await checker.fetch(now)
         self.state["blocknr"] = self.lastblock.number
-        self.state["alive"] = self.getAgentAlive()
+        if self.agent_enabled:
+            self.state["alive"] = self.getAgentAlive()
 
     @property
     def now(self):
@@ -89,17 +93,3 @@ class Info:
         except Exception as e:
             logging.error("Supervisor connection error: %r" % e)
             return "ERROR: " + str(e)
-
-
-def sleep_for_net(app):
-    blocktimes = {
-        12341234: 1,
-        30: 12,
-        31: 12,
-    }
-    netid = Config.Get().getBCNetId()
-    seconds = blocktimes.get(netid, None)
-    if seconds is None:
-        app.logger.error("No blocktime for network: %r" % netid)
-        seconds = 5
-    return seconds

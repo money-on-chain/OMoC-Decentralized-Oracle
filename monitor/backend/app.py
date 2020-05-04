@@ -8,6 +8,7 @@ import blockchain
 from alert_checker import AlertChecker
 from alerts import GasFor, AgentMonitorAlert
 # app = FastAPI()
+from config import Config
 from moc.moc_oracle import NoPubAlert
 
 app = Quart(__name__, static_url_path='/')
@@ -49,10 +50,7 @@ async def alarms():
 
 def prepare_alerts(info):
     alerts = []
-    agent = info.cfg.getAgentProgram()
-    if agent == "":
-        app.logger.error("No AGENT_PROGRAM specified. Alert disabled.")
-    else:
+    if info.agent_enabled:
         alerts.append(AgentMonitorAlert)
     for acc in info.accountCheckers.keys():
         checker = info.accountCheckers[acc]
@@ -65,6 +63,7 @@ def prepare_alerts(info):
 
 async def main_loop():
     global Checker
+    seconds = Config.Get().getAlertCheckDelay()
     info = blockchain.Info.Get()
     alerts = prepare_alerts(info)
     Checker = AlertChecker(alerts)
@@ -74,7 +73,7 @@ async def main_loop():
         await info.fetch()
         await Checker.test(info)
         await Checker.do_notify(info)
-        await asyncio.sleep(blockchain.sleep_for_net(app))
+        await asyncio.sleep(seconds)
 
 
 # @app.on_event("startup")
