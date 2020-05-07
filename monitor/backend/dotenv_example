@@ -1,4 +1,4 @@
-# Block chain configuration
+# Block chain node configuration
 BC_NODE=https://public-node.testnet.rsk.co
 BC_NETID=31
 
@@ -6,10 +6,12 @@ BC_NETID=31
 # This parameter can be tuned to avoid "Too many requests" from the blockchain nodes.
 ALERT_CHECK_DELAY=40
 
-# Oracle block chain accounts to monitor
+# mgr_pair_addr (used to get the coinpairs available in the system)
 ORACLE_MGR=0xe8E10f85D33f1343C4Fbd3c24371AcA44eb82D76
-ACCOUNTS=ORACLE_SERVER_ADDRESS
+# Oracle block chain account to monitor (one or more)
 ORACLE_SERVER_ADDRESS=0x
+# You can also monitor extra accounts
+#ACCOUNTS=ORACLE_SERVER_ADDRESS
 
 # Gas limit
 GAS_LOW_LIMIT=0.01
@@ -29,15 +31,15 @@ SMTP_PORT=465
 SMTP_From=someone <someone@yahoo.com>
 SMTP_SSL_TLS=yes
 SMTP_USER=someone@yahoo.com
-SMTP_PWD=gmaqwgfkqgzpkied
+SMTP_PWD=YourPasswordGoesHere
 ALERT_EMAILS=to-be-notified@example.com
 EMAIL_REPEAT_INTERVAL=3600
 
 # Slack reporting
-SLACK_HOOK_URL=https://hooks.slack.com/services/XXXXXXXXXXXXXXX
-SLACK_HOOK_USER=monito
-SLACK_HOOK_CHANNEL="#moc-monit"
-SLACK_HOOK_TITLE=moc-monitor
+#SLACK_HOOK_URL=https://hooks.slack.com/services/XXXXXXXXXXXXXXX
+#SLACK_HOOK_USER=monito
+#SLACK_HOOK_CHANNEL="#moc-monit"
+#SLACK_HOOK_TITLE=moc-monitor
 
 # Debug logging
 DEBUG=true

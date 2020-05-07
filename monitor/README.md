@@ -24,14 +24,14 @@ the web interface.
 
 Start by downloading the project from the repo: `git clone repository-link cfmonitor/`.
 
-The monitor is configured using a `.env` file, the `Sample.env` file can be used as a base configuration.
+The monitor is configured using a `.env` file, the `dotenv_example` file can be used as a base configuration.
 See the details in the Configuration section.
 
 
 #### Running the Monitor
         
 There are two common ways to install and run the Monitor.
-1. with virutal-env
+1. with virtual-env
 2. without python's virtual-env.
  
 
@@ -46,7 +46,7 @@ users' space by doing the following:
 
 3. Install python project dependencies: `python3.7 -m pip install --user -r  monitor/backend/requirements.txt`
 
-4. Create full configuration based on `Sample.env` (see details in the section below):
+4. Create full configuration based on `dotenv_example` (see details in the section below):
     * `cd backend`
     * `vim .env`  edit the configuration file according to the network and your deployment
     
@@ -72,7 +72,7 @@ As root used proceed with steps three to seven of the previous section.
 ### Configuration
 
 The monitor is configured using a `.env` file that must be saved in the backend directory of the repo.
-The `Sample.env` file can be used as a base configuration.
+The `dotenv_example` file can be used as a base configuration.
 
 #### Configuring the block chain node.
         
