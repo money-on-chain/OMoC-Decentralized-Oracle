@@ -1,7 +1,5 @@
 from getpass import getpass
 from pathlib import Path
-from shutil import copyfile
-import os
 import re
 
 envMonitor = "monitor/backend/.env"
@@ -28,10 +26,6 @@ def addTo(filePath, search, replace):
 
 def main():
 
-	copyfile (envMonitor[:-4] + "Sample.env", envMonitor)
-	copyfile (envServer[:-4] + "dotenv_example", envServer)
-
-
 	# Address  and privateKey
 	address = input("address:") 
 	privKey = getpass("PrivateKey:") 
@@ -51,42 +45,21 @@ def main():
 
 	addTo(envMonitor,"ORACLE_SERVER_ADDRESS=",address)
 	
-	Path(os.getcwd() + "/monitor/logs").mkdir(parents=True, exist_ok=True)
-	addTo(envMonitor,"ALERT_LOG_FILENAME=",os.getcwd()  +  "/monitor/logs/monitor.log")
-
-
 
 	#EMAIL INFO
 	answ = input("Do you want to configurate your mail (default: no)").lower()
-	if answ in ["yes","y"]:
-		addTo(envMonitor,"SMTP_HOST=", input("SMTP_HOST:"))
-		addTo(envMonitor,"SMTP_PORT=", input("SMTP_PORT:"))
-		addTo(envMonitor,"SMTP_From=", input("SMTP_From:"))
-		answ = input("SMTP_SSL_TLS (default: yes)").lower()
-		if answ in ["no","n"]:
-			addTo(envMonitor,"SMTP_SSL_TLS=", "no")
-		else:
-			addTo(envMonitor,"SMTP_SSL_TLS=", "yes")
-		addTo(envMonitor,"SMTP_USER=", input("SMTP_USER:"))
-		addTo(envMonitor,"SMTP_PWD=", getpass("SMTP_PWD:"))
-		addTo(envMonitor,"ALERT_EMAILS=", input("ALERT_EMAILS:"))
-		addTo(envMonitor,"EMAIL_REPEAT_INTERVAL=", input("Email repeat interval in sec:"))
-
-
-
+	addTo(envMonitor,"SMTP_HOST=", input("SMTP_HOST:"))
+	addTo(envMonitor,"SMTP_PORT=", input("SMTP_PORT:"))
+	addTo(envMonitor,"SMTP_From=", input("SMTP_From:"))
+	answ = input("SMTP_SSL_TLS (default: yes)").lower()
+	if answ in ["no","n"]:
+		addTo(envMonitor,"SMTP_SSL_TLS=", "no")
+	else:
+		addTo(envMonitor,"SMTP_SSL_TLS=", "yes")
+	addTo(envMonitor,"SMTP_USER=", input("SMTP_USER:"))
+	addTo(envMonitor,"SMTP_PWD=", getpass("SMTP_PWD:"))
+	addTo(envMonitor,"ALERT_EMAILS=", input("ALERT_EMAILS:"))
+	addTo(envMonitor,"EMAIL_REPEAT_INTERVAL=", input("Email repeat interval in sec:"))
 	#add and remove comments
-
-	comment(envServer,'NETWORK_ID=12341234')
-	comment(envServer,'NODE_URL = "http://localhost:8545"')
-	
-	uncomment(envServer,'NODE_URL = "https://public-node.testnet.rsk.co:443"')
-	uncomment(envServer,'NETWORK_ID=31')
-	uncomment(envServer,'CHAIN_ID=31')
-
-
-	print("Perfecto, todo configurado ")
-
-
 if __name__ =="__main__":
 	main()
-	
