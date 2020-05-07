@@ -16,7 +16,8 @@ async function getHistory(web3, fromBlk, toBlk, to) {
     const eth = web3.eth;
     const range = [...Array(toBlk - fromBlk + 1).keys()].map(i => i + fromBlk);
     const blocks = await Promise.all(range.map(i => eth.getBlock(i, true)));
-    const f_blocks = blocks.filter(b => b != null && b.transactions != null).map(b => b.transactions);
+    const f_blocks = blocks.filter(b => b != null && b.transactions != null)
+        .map(b => b.transactions.map(x => ({...x, timestamp: b.timestamp})));
     const txs = [].concat.apply([], f_blocks)
         .filter(tx => tx.to && tx.to.toLowerCase() == to.toLowerCase());
     const txMap = txs.reduce((acc, tx) => {
@@ -39,17 +40,18 @@ async function historyForCoinPair(web3, abi, contract) {
         + " search txs from " + startBlockNumber + " to " + endBlockNumber
     ));
     const txs = await getHistory(web3, startBlockNumber, endBlockNumber, contract.options.address);
-
     const pr = (x, st, el) => (x.status ? colors.green(st) : colors.red(el || st));
     // instantiate
     const table = new Table({
-        head: ["blocknumber", "message last pub block", "from", "price", "status"]
+        head: ["timestamp", "blocknumber", "message last pub block", "from", "price", "status"]
     });
     let prev = new BigNumber(endBlockNumber.toString());
     txs.forEach(x => {
         const args = fnDecoder.decodeFn(x.input);
+        const d = new Date(x.timestamp * 1000).toISOString();
         if (args.signature == "switchRound()") {
             table.push([
+                pr(x, d),
                 pr(x, x.blockNumber),
                 pr(x, "SWITCH ROUND"),
                 pr(x, x.from),
@@ -58,6 +60,7 @@ async function historyForCoinPair(web3, abi, contract) {
             ]);
         } else if (args.signature == "publishPrice(uint256,bytes32,uint256,address,uint256,uint8[],bytes32[],bytes32[])") {
             table.push([
+                pr(x, d),
                 pr(x, x.blockNumber),
                 pr(x, args.blockNumber.toString(10) + " - " + prev.sub(args.blockNumber).toString(10)),
                 pr(x, x.from),
