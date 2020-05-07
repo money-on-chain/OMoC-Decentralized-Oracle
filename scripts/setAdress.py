@@ -84,6 +84,5 @@ def main():
 
 
 if __name__ =="__main__":
-	#main()
-	comment(envServer,'NETWORK_ID=12341234')
-	comment(envServer,'NODE_URL = "http://localhost:8545"')
+	main()
+	
