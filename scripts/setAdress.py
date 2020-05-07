@@ -1,6 +1,7 @@
 from getpass import getpass
 from pathlib import Path
 from shutil import copyfile
+import os
 import re
 
 envMonitor = "monitor/backend/.env"
@@ -49,6 +50,9 @@ def main():
 	addTo(envServer,"SCHEDULER_SIGNING_KEY = ", '"' + schedulerPrivKey + '"')
 
 	addTo(envMonitor,"ORACLE_SERVER_ADDRESS=",address)
+	
+	Path(os.getcwd() + "/monitor/logs").mkdir(parents=True, exist_ok=True)
+	addTo(envMonitor,"ALERT_LOG_FILENAME=",os.getcwd()  +  "/monitor/logs/monitor.log")
 
 
 
