@@ -8,10 +8,18 @@ ALERT_CHECK_DELAY=40
 
 # mgr_pair_addr (used to get the coinpairs available in the system)
 ORACLE_MGR=0xe8E10f85D33f1343C4Fbd3c24371AcA44eb82D76
-# Oracle block chain account to monitor (one or more)
+# You can monitor extra accounts, but below you see a single monitored account configuration
+ACCOUNTS=ORACLE_SERVER_ADDRESS
+# Oracle blockchain account to monitor
 ORACLE_SERVER_ADDRESS=0x
-# You can also monitor extra accounts
-#ACCOUNTS=ORACLE_SERVER_ADDRESS
+
+# If you want to use multiple accounts you can as well.
+# First you list the names:
+#ACCOUNTS=AWS1, AWS2, AWS3
+# Then you configure the address of each account
+#AWS1=0x
+#AWS2=0x
+#AWS3=0x
 
 # Gas limit
 GAS_LOW_LIMIT=0.01
@@ -43,4 +51,3 @@ EMAIL_REPEAT_INTERVAL=3600
 
 # Debug logging
 DEBUG=true
-
