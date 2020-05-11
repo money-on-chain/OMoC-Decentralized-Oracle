@@ -28,7 +28,7 @@ class TimeWithTimestampQueue:
 class PriceFeederLoop(BgTaskExecutor):
 
     def __init__(self, coin_pair: CoinPair):
-        super().__init__(self.fetch_price_loop)
+        super().__init__(self.run)
         self._price_queues = {}
         self._coin_pair = str(coin_pair)
         engines = oracle_settings.ORACLE_PRICE_ENGINES[self._coin_pair]
@@ -63,7 +63,7 @@ class PriceFeederLoop(BgTaskExecutor):
         logger.info("%s got price: %s, timestamp %r" % (self._coin_pair, last_price_fetch_wei, tm_utc))
         return PriceWithTimestamp(last_price_fetch_wei, tm_utc)
 
-    async def fetch_price_loop(self):
+    async def run(self):
         try:
             w_data = await self._moc_price_engines.get_weighted()
             for val in w_data:

@@ -46,3 +46,8 @@ async def get_all_coin_pair_service() -> List[CoinPairPriceService]:
     if len(oracle_settings.ORACLE_COIN_PAIR_FILTER) != 0:
         ret = [x for x in ret if str(x.coin_pair) in oracle_settings.ORACLE_COIN_PAIR_FILTER]
     return ret
+
+
+async def get_subscribed_coin_pair_service(addr) -> List[CoinPairPriceService]:
+    ret = get_all_coin_pair_service()
+    return [x for x in ret if oracle_manager_service.is_subscribed(str(x.coin_pair), addr)]

@@ -10,7 +10,7 @@ from hexbytes import HexBytes
 from common import crypto, settings, helpers
 from common.bg_task_executor import BgTaskExecutor
 from common.crypto import verify_signature
-from common.services.blockchain import is_error
+from common.services.blockchain import is_error, BlockchainAccount
 from common.services.coin_pair_price_service import CoinPairPriceService
 from common.services.oracle_dao import OracleRoundInfo
 from oracle.src import oracle_settings, monitor
@@ -25,13 +25,14 @@ OracleSignature = typing.NamedTuple("OracleSignature",
                                     [("addr", str),
                                      ('signature', HexBytes)])
 
-ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
-
 
 class OracleCoinPairLoop(BgTaskExecutor):
-    def __init__(self, cps: CoinPairPriceService,
+    def __init__(self, oracle_account: BlockchainAccount,
+                 cps: CoinPairPriceService,
                  price_feeder_loop: PriceFeederLoop,
                  vi_loop: OracleBlockchainInfoLoop):
+        self._oracle_account = oracle_account
+        self._oracle_addr = oracle_account.addr
         self._cps = cps
         self._coin_pair = cps.coin_pair
         self._oracle_turn = OracleTurn(cps.coin_pair)
@@ -58,68 +59,68 @@ class OracleCoinPairLoop(BgTaskExecutor):
         if not blockchain_info:
             return oracle_settings.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL
 
-        if self._oracle_turn.is_oracle_turn(blockchain_info, ORACLE_ACCOUNT.addr, exchange_price):
+        if self._oracle_turn.is_oracle_turn(blockchain_info, self._oracle_addr, exchange_price):
             logger.info("%r : ------------> Is my turn I'm chosen: %s block %r" %
-                        (self._coin_pair, ORACLE_ACCOUNT.addr, blockchain_info.block_num))
+                        (self._coin_pair, self._oracle_addr, blockchain_info.block_num))
             publish_success = await self.publish(blockchain_info.selected_oracles,
                                                  PublishPriceParams(oracle_settings.MESSAGE_VERSION,
                                                                     self._coin_pair,
                                                                     exchange_price,
-                                                                    ORACLE_ACCOUNT.addr,
+                                                                    self._oracle_addr,
                                                                     blockchain_info.last_pub_block))
             if not publish_success:
                 # retry immediately.
                 return 1
         else:
             logger.info("%r : ------------> Is NOT my turn: %s block %r" %
-                        (self._coin_pair, ORACLE_ACCOUNT.addr, blockchain_info.block_num))
+                        (self._coin_pair, self._oracle_addr, blockchain_info.block_num))
         return oracle_settings.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL
 
     async def publish(self, oracles, params: PublishPriceParams):
         message = params.prepare_price_msg()
-        signature = crypto.sign_message(hexstr="0x" + message, account=ORACLE_ACCOUNT)
-        logger.debug("%r : %r GOT MESSAGE %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, message))
+        signature = crypto.sign_message(hexstr="0x" + message, account=self._oracle_account)
+        logger.debug("%r : %r GOT MESSAGE %r" % (self._coin_pair, self._oracle_addr, message))
         logger.info("%r : %r GOT MESSAGE params %r and signature %r" %
-                    (self._coin_pair, ORACLE_ACCOUNT.addr, params, signature))
+                    (self._coin_pair, self._oracle_addr, params, signature))
 
         # send message to all oracles to sign
         logger.info("%r : %r GATHERING SIGNATURES, last pub block %r, price %r" %
-                    (self._coin_pair, ORACLE_ACCOUNT.addr, params.last_pub_block, params.price))
+                    (self._coin_pair, self._oracle_addr, params.last_pub_block, params.price))
         sigs = await gather_signatures(oracles, params, message, signature)
         if len(sigs) < len(oracles) // 2 + 1:
-            logger.error("%r : %r Publish: Not enough signatures" % (self._coin_pair, ORACLE_ACCOUNT.addr))
+            logger.error("%r : %r Publish: Not enough signatures" % (self._coin_pair, self._oracle_addr))
             return False
 
         if settings.DEBUG:
             logger.info(
                 "%r : %r GOT SIGS %r and params %r recover %r" %
-                (self._coin_pair, ORACLE_ACCOUNT.addr, sigs, params,
+                (self._coin_pair, self._oracle_addr, sigs, params,
                  [crypto.recover(hexstr=message, signature=x) for x in sigs]))
 
-        monitor.publish_log("%r : %r publishing price: %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, params.price))
+        monitor.publish_log("%r : %r publishing price: %r" % (self._coin_pair, self._oracle_addr, params.price))
         try:
             logger.info("%r : %r SENDING TRANSACTION, last pub block %r, price %r" %
-                        (self._coin_pair, ORACLE_ACCOUNT.addr, params.last_pub_block, params.price))
+                        (self._coin_pair, self._oracle_addr, params.last_pub_block, params.price))
             tx = await self._cps.publish_price(params.version,
                                                params.coin_pair,
                                                params.price,
                                                params.oracle_addr,
                                                params.last_pub_block,
                                                sigs,
-                                               account=ORACLE_ACCOUNT,
+                                               account=self._oracle_account,
                                                wait=True)
             if is_error(tx):
-                logger.info("%r : %r ERROR PUBLISHING %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, tx))
+                logger.info("%r : %r ERROR PUBLISHING %r" % (self._coin_pair, self._oracle_addr, tx))
                 return False
             logger.info(
-                "%r : %r --------------------> PRICE PUBLISHED %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, tx))
+                "%r : %r --------------------> PRICE PUBLISHED %r" % (self._coin_pair, self._oracle_addr, tx))
             # Last pub block has changed, force an update of the block chain info.
             await self.vi_loop.force_update()
             return True
         except asyncio.CancelledError as e:
             raise e
         except Exception as err:
-            logger.error("%r : %r Publish: %r" % (self._coin_pair, ORACLE_ACCOUNT.addr, err))
+            logger.error("%r : %r Publish: %r" % (self._coin_pair, self._oracle_addr, err))
             logger.warning(traceback.format_exc())
             return False
 
@@ -128,9 +129,9 @@ async def gather_signatures(oracles, params, message, my_signature):
     cors = [
         get_signature(oracle, params, message, my_signature,
                       timeout=oracle_settings.ORACLE_GATHER_SIGNATURE_TIMEOUT)
-        for oracle in oracles if oracle.addr != params.oracle_addr]
+        for oracle in oracles if oracle.addr != params.self._oracle_account]
     sigs = await asyncio.gather(*cors, return_exceptions=True)
-    sigs.append(OracleSignature(params.oracle_addr, my_signature))
+    sigs.append(OracleSignature(params.self._oracle_account, my_signature))
     # Sort signatures by addr so the smart contract accept them.
     sorted_sigs = sorted([x for x in sigs if x is not None], key=lambda y: int(y.addr, 16))
     return [x.signature for x in sorted_sigs]
@@ -161,7 +162,8 @@ async def get_signature(oracle: OracleRoundInfo, params: PublishPriceParams, mes
             return
         obj = json.loads(response)
         if "signature" not in obj:
-            logger.error("%s : Missing signature from: %s,%s" % (params.coin_pair, oracle.addr, oracle.internetName))
+            logger.error(
+                "%s : Missing signature from: %s,%s" % (params.coin_pair, oracle.addr, oracle.internetName))
             return
         signature = HexBytes(obj["signature"])
     except asyncio.CancelledError as e:

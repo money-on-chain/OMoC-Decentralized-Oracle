@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class BgTaskExecutor:
-    task = None
 
     def __init__(self, main_loop):
+        self.task = None
         self.cancel = False
         self.main_loop = main_loop
 

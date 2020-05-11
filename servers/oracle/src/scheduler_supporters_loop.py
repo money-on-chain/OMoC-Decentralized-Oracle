@@ -12,26 +12,22 @@ SCHEDULER_ACCOUNT = BlockchainAccount(oracle_settings.SCHEDULER_SIGNING_ADDR,
                                       oracle_settings.SCHEDULER_SIGNING_KEY)
 
 
-def log(msg):
-    logger.info("Supporters scheduler : %s" % msg)
-
-
-async def scheduler_loop():
-    log("Loop start")
+async def scheduler_supporters_loop():
+    logger.info("SchedulerSupportersLoop start")
 
     is_ready_to_distribute = await supporters_service.is_ready_to_distribute()
     if blockchain.is_error(is_ready_to_distribute):
-        logger.error("Supporters oracles error getting is_ready_to_distribute %r" % (is_ready_to_distribute,))
+        logger.error("SchedulerSupportersLoop error getting is_ready_to_distribute %r" % (is_ready_to_distribute,))
         return SCHEDULER_POOL_DELAY
 
     if not is_ready_to_distribute:
-        logger.info("Not ready to distribute, wait...")
+        logger.info("SchedulerSupportersLoop not ready to distribute, wait...")
         return SCHEDULER_POOL_DELAY
 
     receipt = await supporters_service.distribute(account=SCHEDULER_ACCOUNT, wait=True)
     if is_error(receipt):
-        logger.error("Error in distribute tx %r" % (receipt,))
+        logger.error("SchedulerSupportersLoop error in distribute tx %r" % (receipt,))
         return SCHEDULER_POOL_DELAY
 
-    log("round switched %r" % receipt.hash)
+    logger.info("SchedulerSupportersLoop round switched %r" % receipt.hash)
     return SCHEDULER_ROUND_DELAY
