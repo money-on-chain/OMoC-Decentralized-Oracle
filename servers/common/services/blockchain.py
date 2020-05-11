@@ -4,6 +4,7 @@ import traceback
 import typing
 
 from decorator import decorator
+from eth_typing import Primitives, HexStr
 from pydantic import UrlStr
 from starlette.datastructures import Secret
 from web3 import Web3, HTTPProvider
@@ -16,6 +17,10 @@ logger = logging.getLogger(__name__)
 W3 = Web3(HTTPProvider(str(settings.NODE_URL), request_kwargs={'timeout': settings.WEB3_TIMEOUT}))
 
 ZERO_ADDR = "0x0000000000000000000000000000000000000000";
+
+
+def keccak256(text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+    return Web3.keccak(primitive=primitive, text=text, hexstr=hexstr)
 
 
 def parse_addr(addr):
