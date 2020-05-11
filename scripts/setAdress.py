@@ -27,11 +27,22 @@ def addTo(filePath, search, replace):
 def main():
 
 	# Address  and privateKey
+	print("///////////")
+	print("A continuacion vamos a configurar su oraculo. ")
+	print("Para ello vamos a requerir un address y su privateKey respectivo a la red de RSK. ")
+	print("Asi como un usuario SMTP y un mail al cual avisar por los mensajes de error.")
+	print("Recuerde que para que el sistema funcione tal address debe de poseer RSK.")
+	print("Por favor, ingrese la informacion que se le solicitará a continuación.")
+	print("Aclaración: los datos privados (llaves privadas y contraseñas) no se visualizarán en la consola")
+	print("///////////")
+	
+
 	address = input("address:") 
 	privKey = getpass("PrivateKey:") 
 
-	answ = input("use the same addres for scheduler? (default: yes)").lower()
+	answ = input("Desea usar la misma direccion para el scheduler? (Si/no) (default: Si)").lower()
 	if (answ in ["no","n"]):
+		print("¿que dirección va a usar para el scheduler ?")
 		schedulerAddress = input("address:")
 		schedulerPrivKey = getpass("PrivateKey:")
 	else:
@@ -47,19 +58,40 @@ def main():
 	
 
 	#EMAIL INFO
-	answ = input("Do you want to configurate your mail (default: no)").lower()
+
+
+
 	addTo(envMonitor,"SMTP_HOST=", input("SMTP_HOST:"))
 	addTo(envMonitor,"SMTP_PORT=", input("SMTP_PORT:"))
-	addTo(envMonitor,"SMTP_From=", input("SMTP_From:"))
-	answ = input("SMTP_SSL_TLS (default: yes)").lower()
+	answ = input("¿la cuenta de SMTP requiere usar TLS? (si/no) (default: si)").lower()
 	if answ in ["no","n"]:
 		addTo(envMonitor,"SMTP_SSL_TLS=", "no")
 	else:
 		addTo(envMonitor,"SMTP_SSL_TLS=", "yes")
-	addTo(envMonitor,"SMTP_USER=", input("SMTP_USER:"))
-	addTo(envMonitor,"SMTP_PWD=", getpass("SMTP_PWD:"))
-	addTo(envMonitor,"ALERT_EMAILS=", input("ALERT_EMAILS:"))
-	addTo(envMonitor,"EMAIL_REPEAT_INTERVAL=", input("Email repeat interval in sec:"))
+	addTo(envMonitor,"SMTP_USER=", input("SMTP user:"))
+	addTo(envMonitor,"SMTP_PWD=", getpass("SMTP password:"))
+	addTo(envMonitor,"ALERT_EMAILS=", input("¿que cuenta de mail recibirá los mensajes?"))
+	addTo(envMonitor,"SMTP_From=", input("From:"))
+	addTo(envMonitor,"EMAIL_REPEAT_INTERVAL=", input("Cada cuantos segundos se enviará el mail:"))
 	#add and remove comments
+	print("")
+	print("////////")
+	print("Perfecto, esta todo configurado.")
+	print("Vamos a levantar los servicios")
+	print("////////")
+
+	supervisorctl start oracle
+	supervisorctl start backend
+
+	supervisorctl status
+	print("////////")
+
+	print("Los servicios estan corriendo.")
+	print("Si desea deteer los servicios simplemente ingrese:")
+	print("  supervisorctl stop oracle")
+	print("  supervisorctl stop backend")
+	print("////////")
+
+	print("supervisorctl")
 if __name__ =="__main__":
 	main()
