@@ -49,5 +49,5 @@ async def get_all_coin_pair_service() -> List[CoinPairPriceService]:
 
 
 async def get_subscribed_coin_pair_service(addr) -> List[CoinPairPriceService]:
-    ret = get_all_coin_pair_service()
-    return [x for x in ret if oracle_manager_service.is_subscribed(str(x.coin_pair), addr)]
+    ret = await get_all_coin_pair_service()
+    return [x for x in ret if await oracle_manager_service.is_subscribed(x.coin_pair, addr)]
