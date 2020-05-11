@@ -34,7 +34,7 @@ async def sign(*, version: str = Form(...),
                price_timestamp: str = Form(...),
                oracle_addr: str = Form(...),
                last_pub_block: str = Form(...),
-               signature: str = Form(...)):
+               other_signature: str = Form(...)):
     try:
         params = PublishPriceParams(int(version), CoinPair(coin_pair),
                                     PriceWithTimestamp(int(price),
@@ -47,10 +47,10 @@ async def sign(*, version: str = Form(...),
             raise Exception("Missing coin pair %r" % coin_pair)
 
         logger.debug("Sign: %r" % (params,))
-        message, signature = validation_data.validate_and_sign(signature)
+        message, my_signature = validation_data.validate_and_sign(other_signature)
         return {
             "message": message,
-            "signature": signature.hex()
+            "signature": my_signature.hex()
         }
 
     except Exception as e:

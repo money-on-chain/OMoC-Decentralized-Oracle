@@ -27,7 +27,7 @@ ORACLE_MONITOR_LOG_EXCHANGE_PRICE = config('ORACLE_MONITOR_LOG_EXCHANGE_PRICE', 
 # Monitor : Log published prices file name
 ORACLE_MONITOR_LOG_PUBLISHED_PRICE = config('ORACLE_MONITOR_LOG_PUBLISHED_PRICE', cast=str, default="published.log")
 
-# Exchange price- etch rate in seconds, all the exchanges are queried at the same time.
+# Exchange price-fetch rate in seconds, all the exchanges are queried at the same time.
 ORACLE_PRICE_FETCH_RATE = parseTimeDelta(config('ORACLE_PRICE_FETCH_RATE', cast=str, default="5 secs"))
 # This loop collect a lot of information needed for validation (like last pub block) from the block chain
 ORACLE_BLOCKCHAIN_INFO_INTERVAL = parseTimeDelta(config('ORACLE_BLOCKCHAIN_INFO_INTERVAL', cast=str, default="3 secs"))
