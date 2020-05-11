@@ -4,10 +4,11 @@ import typing
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import is_error, BlockchainAccount
 from common.services.coin_pair_price_service import CoinPairPriceService
-from oracle.src import oracle_settings, oracle_service
+from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfoLoop, OracleBlockchainInfo
 from oracle.src.oracle_coin_pair_loop import OracleCoinPairLoop
 from oracle.src.oracle_publish_message import PublishPriceParams
+from oracle.src.oracle_service import OracleService
 from oracle.src.oracle_settings import ORACLE_RUN
 from oracle.src.oracle_turn import OracleTurn
 from oracle.src.price_feeder.price_feeder import PriceFeederLoop
@@ -28,8 +29,9 @@ OracleLoopTasks = typing.NamedTuple("OracleLoopTasks",
 
 class OracleLoop(BgTaskExecutor):
 
-    def __init__(self, oracle_account: BlockchainAccount):
+    def __init__(self, oracle_account: BlockchainAccount, oracle_service: OracleService):
         self.oracle_account = oracle_account
+        self.oracle_service = oracle_service
         self.cpMap = {}
         super().__init__(self.run)
 
@@ -63,7 +65,7 @@ class OracleLoop(BgTaskExecutor):
 
     async def run(self):
         logger.info("Oracle loop start")
-        coin_pair_services = await oracle_service.get_subscribed_coin_pair_service(self.oracle_account.addr)
+        coin_pair_services = await self.oracle_service.get_subscribed_coin_pair_services(self.oracle_account.addr)
         if is_error(coin_pair_services):
             logger.error("Oracle loop Error getting coin pairs %r" % (coin_pair_services,))
             return oracle_settings.ORACLE_MAIN_LOOP_TASK_INTERVAL
@@ -80,13 +82,12 @@ class OracleLoop(BgTaskExecutor):
         logger.info("Oracle loop done")
         return oracle_settings.ORACLE_MAIN_LOOP_TASK_INTERVAL
 
+    async def get_validation_data(self, params: PublishPriceParams) -> RequestValidation:
+        tasks: OracleLoopTasks = self.cpMap.get(str(params.coin_pair))
+        if not tasks or not tasks.price_feeder_loop \
+                or not tasks.blockchain_info_loop or not tasks.oracle_turn:
+            return None
 
-async def get_validation_data(self, params: PublishPriceParams) -> RequestValidation:
-    tasks: OracleLoopTasks = self.cpMap.get(str(params.coin_pair))
-    if not tasks or not tasks.price_feeder_loop \
-            or not tasks.blockchain_info_loop or not tasks.oracle_turn:
-        return None
-
-    exchange_price = await tasks.price_feeder_loop.get_last_price(params.price_ts_utc)
-    blockchain_info: OracleBlockchainInfo = tasks.blockchain_info_loop.get()
-    return RequestValidation(params, tasks.oracle_turn, exchange_price, blockchain_info)
+        exchange_price = await tasks.price_feeder_loop.get_last_price(params.price_ts_utc)
+        blockchain_info: OracleBlockchainInfo = tasks.blockchain_info_loop.get()
+        return RequestValidation(params, tasks.oracle_turn, exchange_price, blockchain_info)

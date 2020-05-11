@@ -1,42 +1,39 @@
 import logging
 
-from eth_typing import HexStr
+from eth_typing import HexStr, Primitives
 
-from common import settings, helpers
+from common import helpers, settings
 from common.services import blockchain
 
 logger = logging.getLogger(__name__)
 
-ETERNAL_STORAGE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "EternalStorageGobernanza.json")
-ETERNAL_STORAGE_ABI = ETERNAL_STORAGE_DATA["abi"]
-ETERNAL_STORAGE_ADDR = blockchain.parse_addr(ETERNAL_STORAGE_DATA["networks"][str(settings.NETWORK_ID)]["address"])
-_eternal_storage_contract = blockchain.get_contract(ETERNAL_STORAGE_ADDR, ETERNAL_STORAGE_ABI)
 
+class EternalStorageService:
+    ETERNAL_STORAGE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "EternalStorageGobernanza.json")
+    ETERNAL_STORAGE_ABI = ETERNAL_STORAGE_DATA["abi"]
+    ETERNAL_STORAGE_ADDR = blockchain.parse_addr(ETERNAL_STORAGE_DATA["networks"][str(settings.NETWORK_ID)]["address"])
 
-async def registry_call(method, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
-    return await blockchain.bc_call(_eternal_storage_contract, method,
-                                    blockchain.keccak256(text=text, hexstr=hexstr, primitive=primitive))
+    def __init__(self, addr=ETERNAL_STORAGE_ADDR, abi=ETERNAL_STORAGE_ABI):
+        self._eternal_storage_contract = blockchain.get_contract(addr, abi)
 
+    async def registry_call(self, method, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+        return await blockchain.bc_call(self._eternal_storage_contract, method,
+                                        blockchain.keccak256(text=text, hexstr=hexstr, primitive=primitive))
 
-async def get_uint(text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
-    return await registry_call("getUint", text=text, hexstr=hexstr, primitive=primitive)
+    async def get_uint(self, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+        return await self.registry_call("getUint", text=text, hexstr=hexstr, primitive=primitive)
 
+    async def get_string(self, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+        return await self.registry_call("getString", text=text, hexstr=hexstr, primitive=primitive)
 
-async def get_string(text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
-    return await registry_call("getString", text=text, hexstr=hexstr, primitive=primitive)
+    async def get_address(self, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+        return await self.registry_call("getAddress", text=text, hexstr=hexstr, primitive=primitive)
 
+    async def get_bytes(self, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+        return await self.registry_call("getBytes", text=text, hexstr=hexstr, primitive=primitive)
 
-async def get_address(text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
-    return await registry_call("getAddress", text=text, hexstr=hexstr, primitive=primitive)
+    async def get_bool(self, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+        return await self.registry_call("getBool", text=text, hexstr=hexstr, primitive=primitive)
 
-
-async def get_bytes(text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
-    return await registry_call("getBytes", text=text, hexstr=hexstr, primitive=primitive)
-
-
-async def get_bool(text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
-    return await registry_call("getBool", text=text, hexstr=hexstr, primitive=primitive)
-
-
-async def get_int(text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
-    return await registry_call("getInt", text=text, hexstr=hexstr, primitive=primitive)
+    async def get_int(self, text: str = None, hexstr: HexStr = None, primitive: Primitives = None):
+        return await self.registry_call("getInt", text=text, hexstr=hexstr, primitive=primitive)

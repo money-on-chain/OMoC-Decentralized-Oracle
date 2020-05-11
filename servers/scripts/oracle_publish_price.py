@@ -2,8 +2,10 @@ from random import randint
 
 from common import crypto, helpers
 from common.services.oracle_dao import PriceWithTimestamp
-from oracle.src import oracle_settings, oracle_service
+from common.services.oracle_manager_service import OracleManagerService
+from oracle.src import oracle_settings
 from oracle.src.oracle_publish_message import PublishPriceParams
+from oracle.src.oracle_service import OracleService
 from scripts import script_settings
 from scripts.script_settings import ORACLE_OWNER_ACCOUNT
 
@@ -12,10 +14,13 @@ ORACLE_ADDR = str(ORACLE_ACCOUNT.addr)
 print("ORACLE ADDR", ORACLE_ADDR)
 print("ORACLE OWNER ADDR", ORACLE_OWNER_ACCOUNT.addr)
 
+oracle_manager_service = OracleManagerService()
+oracle_service = OracleService(oracle_manager_service)
+
 
 async def main():
     for cp in script_settings.USE_COIN_PAIR:
-        cps = await oracle_service.get_oracle_service(cp)
+        cps = await oracle_service.get_coin_pair_service(cp)
         print('PRICE PREV', await cps.get_price())
         print('INFO FOR ', ORACLE_ACCOUNT.addr, ' = ', await cps.get_oracle_round_info(ORACLE_ACCOUNT.addr))
         price = randint(0, 10 ** 20)

@@ -125,13 +125,13 @@ class OracleCoinPairLoop(BgTaskExecutor):
             return False
 
 
-async def gather_signatures(oracles, params, message, my_signature):
+async def gather_signatures(oracles, params: PublishPriceParams, message, my_signature):
     cors = [
         get_signature(oracle, params, message, my_signature,
                       timeout=oracle_settings.ORACLE_GATHER_SIGNATURE_TIMEOUT)
-        for oracle in oracles if oracle.addr != params.self._oracle_account]
+        for oracle in oracles if oracle.addr != params.oracle_addr]
     sigs = await asyncio.gather(*cors, return_exceptions=True)
-    sigs.append(OracleSignature(params.self._oracle_account, my_signature))
+    sigs.append(OracleSignature(params.oracle_addr, my_signature))
     # Sort signatures by addr so the smart contract accept them.
     sorted_sigs = sorted([x for x in sigs if x is not None], key=lambda y: int(y.addr, 16))
     return [x.signature for x in sorted_sigs]

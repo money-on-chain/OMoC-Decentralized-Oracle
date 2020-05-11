@@ -1,5 +1,5 @@
 from common import helpers
-from common.services import oracle_manager_service
+from common.services.oracle_manager_service import OracleManagerService
 from oracle.src import oracle_settings
 from scripts import script_settings
 from scripts.script_settings import ORACLE_OWNER_ACCOUNT
@@ -8,6 +8,7 @@ ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
 ORACLE_ADDR = str(ORACLE_ACCOUNT.addr)
 print("ORACLE ADDR", ORACLE_ADDR)
 print("ORACLE OWNER ADDR", ORACLE_OWNER_ACCOUNT.addr)
+oracle_manager_service = OracleManagerService()
 
 
 async def main():

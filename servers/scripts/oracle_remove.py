@@ -1,6 +1,8 @@
 from common import helpers
-from common.services import blockchain, oracle_manager_service
-from oracle.src import oracle_settings, oracle_service
+from common.services import blockchain
+from common.services.oracle_manager_service import OracleManagerService
+from oracle.src import oracle_settings
+from oracle.src.oracle_service import OracleService
 from scripts import script_settings
 from scripts.script_settings import NEEDED_GAS, ORACLE_OWNER_ACCOUNT
 
@@ -8,6 +10,9 @@ ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
 ORACLE_ADDR = str(ORACLE_ACCOUNT.addr)
 print("ORACLE ADDR", ORACLE_ADDR)
 print("ORACLE OWNER ADDR", ORACLE_OWNER_ACCOUNT.addr)
+
+oracle_manager_service = OracleManagerService()
+oracle_service = OracleService(oracle_manager_service)
 
 
 async def main():
@@ -24,7 +29,7 @@ async def main():
             print(cp, " ORACLE IS SUBSCRIBED, CANT REMOVE")
             return
 
-        cps = await oracle_service.get_oracle_service(cp)
+        cps = await oracle_service.get_coin_pair_service(cp)
         registered = await cps.get_oracle_round_info(ORACLE_ADDR)
         print(cp, " registered info", registered)
 

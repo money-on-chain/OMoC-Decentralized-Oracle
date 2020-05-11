@@ -3,7 +3,8 @@ import logging
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import get_last_block, is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
-from oracle.src import oracle_service, oracle_settings
+from oracle.src import oracle_settings
+from oracle.src.oracle_service import OracleService
 from oracle.src.select_next import select_next
 
 
@@ -37,11 +38,12 @@ class MonitorLoopByCoinPair:
 
 class MonitorTask(BgTaskExecutor):
 
-    def __init__(self):
-        super().__init__(self.monitor_loop)
+    def __init__(self, oracle_service: OracleService):
+        self.oracle_service = oracle_service
         self.logger = logging.getLogger("published_price")
         self.prev_block = self.pre_pubblock_nr = None
         self.cpMap = {}
+        super().__init__(self.monitor_loop)
 
     async def monitor_loop(self):
         # blockchain-block
@@ -52,7 +54,7 @@ class MonitorTask(BgTaskExecutor):
         if self.prev_block == block:
             return 5
         self.prev_block = block
-        pairs = await oracle_service.get_all_coin_pair_service()
+        pairs = await self.oracle_service.get_all_coin_pair_services()
         if is_error(pairs):
             self.logger.error("Can't retrieve coinpairs")
             return 5
