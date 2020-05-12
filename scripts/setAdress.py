@@ -28,22 +28,24 @@ def main():
 
 	# Address  and privateKey
 	print("///////////")
-	print("A continuacion vamos a configurar su oraculo. ")
-	print("Para ello vamos a requerir un address y su privateKey respectivo a la red de RSK. ")
-	print("Asi como un usuario SMTP y un mail al cual avisar por los mensajes de error.")
-	print("Recuerde que para que el sistema funcione tal address debe de poseer RSK.")
-	print("Por favor, ingrese la informacion que se le solicitará a continuación.")
-	print("Aclaración: los datos privados (llaves privadas y contraseñas) no se visualizarán en la consola")
+	print("We are going to configure your oracle. ")
+	print("For this we will require an address and its respective privateKey to the RSK network. ")
+	print("As well as an SMTP user and an email to notify about error messages.")
+	print("An important thing to keep in mind is that you will need to have RBTC in this `oracle` account to pay for the system gas.")
+	print("Please, enter the information that will be requested below.")
+	print("Note: Private data (private keys and passwords) will not be displayed on the console")
 	print("///////////")
-	
-
-	address = input("address:") 
+	z
+	print("Enter the address of the oracle wallet in RSK")
+	address = input("Adress:") 
+	print("Enter the private password that correspond to the address you just entered")
 	privKey = getpass("PrivateKey:") 
 
-	answ = input("Desea usar la misma direccion para el scheduler? (Si/no) (default: Si)").lower()
+	answ = input("You want to use the same address for the scheduler? (Yes/No) (default: Yes)").lower()
 	if (answ in ["no","n"]):
-		print("¿que dirección va a usar para el scheduler ?")
-		schedulerAddress = input("address:")
+		print("What address will you use for the scheduler ?")
+		schedulerAddress = input("Address:")
+		print("Enter the private password that correspond to the address you just entered")
 		schedulerPrivKey = getpass("PrivateKey:")
 	else:
 		schedulerAddress = address
@@ -63,21 +65,23 @@ def main():
 
 	addTo(envMonitor,"SMTP_HOST=", input("SMTP_HOST:"))
 	addTo(envMonitor,"SMTP_PORT=", input("SMTP_PORT:"))
-	answ = input("¿la cuenta de SMTP requiere usar TLS? (si/no) (default: si)").lower()
+	answ = input("Does the SMTP account require using TLS? (Yes/No) (default: Yes)").lower()
 	if answ in ["no","n"]:
 		addTo(envMonitor,"SMTP_SSL_TLS=", "no")
 	else:
 		addTo(envMonitor,"SMTP_SSL_TLS=", "yes")
 	addTo(envMonitor,"SMTP_USER=", input("SMTP user:"))
 	addTo(envMonitor,"SMTP_PWD=", getpass("SMTP password:"))
-	addTo(envMonitor,"ALERT_EMAILS=", input("¿que cuenta de mail recibirá los mensajes?"))
 	addTo(envMonitor,"SMTP_From=", input("From:"))
-	addTo(envMonitor,"EMAIL_REPEAT_INTERVAL=", input("Cada cuantos segundos se enviará el mail:"))
+	print("What email account will receive the messages?")
+	addTo(envMonitor,"ALERT_EMAILS=", input("to:"))
+	print("How often, in seconds, are the emails sent?")
+	addTo(envMonitor,"EMAIL_REPEAT_INTERVAL=", input("seconds:"))
 	#add and remove comments
 	print("")
 	print("////////")
-	print("Perfecto, esta todo configurado.")
-	print("Vamos a levantar los servicios")
+	print("Everything is setup correctly.")
+	print("Let's run the services.")
 	print("////////")
 
 	supervisorctl start oracle
@@ -86,8 +90,8 @@ def main():
 	supervisorctl status
 	print("////////")
 
-	print("Los servicios estan corriendo.")
-	print("Si desea deteer los servicios simplemente ingrese:")
+	print("The services are running.")
+	print("If you want to stop them, enter the follow commands:")
 	print("  supervisorctl stop oracle")
 	print("  supervisorctl stop backend")
 	print("////////")
