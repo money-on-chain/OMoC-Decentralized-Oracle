@@ -32,7 +32,8 @@ class BgTaskExecutor:
         logger.info("MONITOR STOP")
 
     def start_bg_task(self):
-        self.task = asyncio.create_task(self.bg_task())
+        loop = asyncio.get_event_loop()
+        self.task = loop.create_task(self.bg_task())
 
     def stop_bg_task(self):
         self.cancel = True

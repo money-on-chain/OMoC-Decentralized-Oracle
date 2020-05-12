@@ -5,13 +5,14 @@ from common.services import blockchain
 from common.services.blockchain import is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
 from common.services.oracle_dao import CoinPair
+from common.services.oracle_manager_service import OracleManagerService
 from oracle.src import oracle_settings
 
 logger = logging.getLogger(__name__)
 
 
 class OracleService:
-    def __init__(self, oracle_manager_service):
+    def __init__(self, oracle_manager_service: OracleManagerService):
         self.oracle_manager_service = oracle_manager_service
 
     async def get_all_oracles_info(self):
