@@ -1,6 +1,7 @@
 from getpass import getpass
 from pathlib import Path
 import re
+import os
 
 envMonitor = "monitor/backend/.env"
 envServer = "servers/.env"
@@ -82,12 +83,11 @@ def main():
 	print("////////")
 	print("Everything is setup correctly.")
 	print("Let's run the services.")
-	print("////////")
 
-	supervisorctl start oracle
-	supervisorctl start backend
+	os.system("supervisorctl start oracle")
+	os.system("supervisorctl start backend")
 
-	supervisorctl status
+	os.system("supervisorctl status")
 	print("////////")
 
 	print("The services are running.")
@@ -98,4 +98,5 @@ def main():
 
 	print("supervisorctl")
 if __name__ =="__main__":
-	main()
+	print(os.getcwd())
+	#main()
