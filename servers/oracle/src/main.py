@@ -7,11 +7,10 @@ from common import settings
 from common.run_uvicorn import run_uvicorn
 from oracle.src import oracle_settings
 from oracle.src.main_executor import MainExecutor
-from oracle.src.oracle_settings import ORACLE_RUN
 
 
 def main():
-    if ORACLE_RUN:
+    if oracle_settings.ORACLE_RUN:
         run_uvicorn("oracle.src.app:app", oracle_settings.ORACLE_PORT)
         return
 

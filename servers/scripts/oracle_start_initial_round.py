@@ -3,7 +3,6 @@ from common.services.blockchain import is_error
 from common.services.oracle_manager_service import OracleManagerService
 from oracle.src.oracle_service import OracleService
 from scripts import script_settings
-from scripts.script_settings import PRICE_FETCHER_OWNER_ACCOUNT
 
 oracle_manager_service = OracleManagerService()
 oracle_service = OracleService(oracle_manager_service)
@@ -24,7 +23,7 @@ async def main():
         print(repr(round_info))
 
         print("start initial round")
-        tx = await cps.switch_round(account=PRICE_FETCHER_OWNER_ACCOUNT, wait=True)
+        tx = await cps.switch_round(account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT, wait=True)
         print("start initial round", tx)
 
 

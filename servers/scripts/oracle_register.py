@@ -3,30 +3,30 @@ from common.services import blockchain
 from common.services.blockchain import is_error
 from common.services.moc_token_service import MocTokenService
 from common.services.oracle_manager_service import OracleManagerService
-from oracle.src import oracle_settings
-from scripts.script_settings import INITIAL_STAKE, SCHEDULER_ACCOUNT, NEEDED_GAS, ORACLE_OWNER_ACCOUNT
+from scripts import script_settings
 
-ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
+ORACLE_ACCOUNT = script_settings.SCRIPT_ORACLE_ACCOUNT
 ORACLE_ADDR = str(ORACLE_ACCOUNT.addr)
 print("ORACLE ADDR", ORACLE_ADDR)
-print("ORACLE OWNER ADDR", ORACLE_OWNER_ACCOUNT.addr)
+print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
 
 moc_token_service = MocTokenService()
 oracle_manager_service = OracleManagerService()
 
 
 async def main():
-    balance = await blockchain.get_balance(ORACLE_OWNER_ACCOUNT.addr)
+    balance = await blockchain.get_balance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
     print("Oracle owner coinbase balance ", balance)
-    if balance < NEEDED_GAS:
-        print("Oralce owner need at least %r but has %r" % (NEEDED_GAS, balance))
+    if balance < script_settings.NEEDED_GAS:
+        print("Oralce owner need at least %r but has %r" % (script_settings.NEEDED_GAS, balance))
         return
 
-    moc_balance = await moc_token_service.balance_of(ORACLE_OWNER_ACCOUNT.addr)
+    moc_balance = await moc_token_service.balance_of(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
     print("Oracle owner moc balance ", moc_balance)
-    if moc_balance < INITIAL_STAKE * 2:
-        tx = await moc_token_service.mint(ORACLE_OWNER_ACCOUNT.addr, INITIAL_STAKE * 2,
-                                          account=ORACLE_OWNER_ACCOUNT,
+    if moc_balance < script_settings.INITIAL_STAKE * 2:
+        tx = await moc_token_service.mint(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr,
+                                          script_settings.INITIAL_STAKE * 2,
+                                          account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                           wait=True)
         if is_error(tx):
             print("ERROR IN APPROVE", tx)
@@ -35,10 +35,10 @@ async def main():
     # move some rsks to my account
     balance = await blockchain.get_balance(ORACLE_ADDR)
     print("price fetcher coinbase balance", balance)
-    if balance < NEEDED_GAS:
+    if balance < script_settings.NEEDED_GAS:
         tx = await blockchain.bc_transfer(ORACLE_ADDR,
-                                          NEEDED_GAS,
-                                          account=SCHEDULER_ACCOUNT,
+                                          script_settings.NEEDED_GAS,
+                                          account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                           wait=True)
         print("rbtc transfer", tx)
 
@@ -46,18 +46,19 @@ async def main():
     registered = await oracle_manager_service.get_oracle_registration_info(ORACLE_ADDR)
     if blockchain.is_error(registered):
         # aprove moc movement
-        token_approved = await moc_token_service.allowance(ORACLE_OWNER_ACCOUNT.addr,
+        token_approved = await moc_token_service.allowance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr,
                                                            oracle_manager_service.ORACLE_MANAGER_ADDR)
         print("tokenApproved", token_approved)
-        if token_approved < INITIAL_STAKE:
+        if token_approved < script_settings.INITIAL_STAKE:
             tx = await moc_token_service.approve(oracle_manager_service.ORACLE_MANAGER_ADDR,
-                                                 INITIAL_STAKE,
-                                                 account=ORACLE_OWNER_ACCOUNT,
+                                                 script_settings.INITIAL_STAKE,
+                                                 account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                                  wait=True)
             print("token approve", tx)
 
-        tx = await oracle_manager_service.register_oracle(ORACLE_ADDR, "http://localhost:5556", INITIAL_STAKE,
-                                                          account=ORACLE_OWNER_ACCOUNT,
+        tx = await oracle_manager_service.register_oracle(ORACLE_ADDR, "http://localhost:5556",
+                                                          script_settings.INITIAL_STAKE,
+                                                          account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                                           wait=True)
         print("register oracle is ok to fail", tx)
 

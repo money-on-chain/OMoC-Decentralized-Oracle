@@ -8,10 +8,12 @@ from common.services.oracle_dao import CoinPair, PriceWithTimestamp, \
     OracleRoundInfo
 from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
+from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_turn import OracleTurn
 from oracle.src.request_validation import RequestValidation, ValidationFailure
 
+conf = OracleTurnConfiguration(2, 0.05, 3, 1)
 cp = CoinPair("BTCUSD")
 price_ts_utc = 1
 
@@ -40,13 +42,15 @@ def rv(oracle_account):
     publish_last_pub_block = 12
     blockchain_last_pub_block = 12
     version = 1
+    oracle_price_reject_delta_pct = 0.05
     params = PublishPriceParams(version,
                                 cp,
                                 PriceWithTimestamp(publish_price, price_ts_utc),
                                 oracle_account.addr,
                                 publish_last_pub_block)
-    return RequestValidation(params,
-                             OracleTurn(cp),
+    return RequestValidation(oracle_price_reject_delta_pct,
+                             params,
+                             OracleTurn(conf, cp),
                              PriceWithTimestamp(exchange_price, price_ts_utc),
                              OracleBlockchainInfo(cp,
                                                   oracles,

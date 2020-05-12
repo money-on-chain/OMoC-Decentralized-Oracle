@@ -1,15 +1,14 @@
 from common import helpers
 from common.services.oracle_manager_service import OracleManagerService
-from oracle.src import oracle_settings
 from scripts import script_settings
-from scripts.script_settings import ORACLE_OWNER_ACCOUNT
 
-ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
+ORACLE_ACCOUNT = script_settings.SCRIPT_ORACLE_ACCOUNT
 ORACLE_ADDR = str(ORACLE_ACCOUNT.addr)
 print("ORACLE ADDR", ORACLE_ADDR)
-print("ORACLE OWNER ADDR", ORACLE_OWNER_ACCOUNT.addr)
+print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
 
 oracle_manager_service = OracleManagerService()
+
 
 async def main():
     registered = await oracle_manager_service.is_oracle_registered(ORACLE_ADDR)
@@ -22,7 +21,7 @@ async def main():
         print(cp, " IS SUBSCRIBED: ", is_subscribed)
         if not is_subscribed:
             tx = await oracle_manager_service.subscribe_coin_pair(cp, ORACLE_ADDR,
-                                                                  account=ORACLE_OWNER_ACCOUNT,
+                                                                  account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                                                   wait=True)
 
             print("register oracle for coinpar", cp, " result ", tx)

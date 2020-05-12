@@ -2,8 +2,8 @@ import logging
 
 from common import helpers
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
-from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
+from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
 from oracle.src.select_next import select_next
 
 logger = logging.getLogger(__name__)
@@ -11,11 +11,9 @@ logger = logging.getLogger(__name__)
 
 class OracleTurn:
 
-    def __init__(self, coin_pair: CoinPair):
-        self._price_fallback_delta = oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT
-        self._price_fallback_blocks = oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS
-        self._oracle_price_publish_blocks = oracle_settings.ORACLE_PRICE_PUBLISH_BLOCKS
-        self._coin_pair = coin_pair
+    def __init__(self, conf: OracleTurnConfiguration, coin_pair: CoinPair):
+        self._conf: OracleTurnConfiguration = conf
+        self._coin_pair: CoinPair = coin_pair
         self.price_change_block = -1
         self.price_change_pub_block = -1
 
@@ -29,9 +27,9 @@ class OracleTurn:
         if not is_my_turn:
             return False
         f_block = self._price_changed_blocks(vi, exchange_price)
-        if f_block is None or f_block < self._oracle_price_publish_blocks:
+        if f_block is None or f_block < self._conf.price_publish_blocks:
             logger.warning("%r : I'm selected but still waiting for price change blocks %r < %r" %
-                           (self._coin_pair, f_block, self._oracle_price_publish_blocks))
+                           (self._coin_pair, f_block, self._conf.price_publish_blocks))
             return False
         return True
 
@@ -46,10 +44,10 @@ class OracleTurn:
             return block_chain.block_num - self.price_change_block
 
         delta = helpers.price_delta(block_chain.blockchain_price, exchange_price.price)
-        if delta < self._price_fallback_delta:
+        if delta < self._conf.price_fallback_delta_pct:
             logger.info("%r : We are not fallbacks and/or the price didn't change enough %r < %r,"
                         " blockchain price %r exchange price %r" %
-                        (self._coin_pair, delta, self._price_fallback_delta,
+                        (self._coin_pair, delta, self._conf.price_fallback_delta_pct,
                          block_chain.blockchain_price, exchange_price.price))
             return None
 
@@ -73,7 +71,9 @@ class OracleTurn:
             logger.info(msg)
             return False, msg
 
-        selection = select_next(vi.last_pub_block_hash, vi.selected_oracles)
+        selection = select_next(self._conf.stake_limit_multiplicator,
+                                vi.last_pub_block_hash,
+                                vi.selected_oracles)
         addrs = [x.addr for x in selection]
         selected = addrs.pop(0)
         # selected oracle can publish from f_block == 0
@@ -88,11 +88,11 @@ class OracleTurn:
             logger.info(msg)
             return False, msg
 
-        # fallback oracles need to wait  self._price_fallback_blocks
-        f_num = f_block - self._price_fallback_blocks
+        # fallback oracles need to wait  self._conf.price_fallback_blocks
+        f_num = f_block - self._conf.price_fallback_blocks
         if f_num < 0:
             msg = "%r : is not %s turn it is not a fallback and price changed %r blocks ago, this is less than %r" % \
-                  (self._coin_pair, oracle_addr, f_block, self._price_fallback_blocks,)
+                  (self._coin_pair, oracle_addr, f_block, self._conf.price_fallback_blocks,)
             logger.info(msg)
             return False, msg
 

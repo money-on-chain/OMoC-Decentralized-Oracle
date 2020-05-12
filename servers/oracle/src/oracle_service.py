@@ -52,4 +52,6 @@ class OracleService:
 
     async def get_subscribed_coin_pair_services(self, addr) -> List[CoinPairPriceService]:
         ret = await self.get_all_coin_pair_services()
+        if is_error(ret):
+            return ret
         return [x for x in ret if await self.oracle_manager_service.is_subscribed(x.coin_pair, addr)]

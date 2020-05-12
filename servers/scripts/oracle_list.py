@@ -27,7 +27,7 @@ async def main():
         selected = await cps.get_selected_oracles_info()
         print("SELECTED ORACLES")
         for o in selected:
-            print("\t", o.addr)
+            print("\t", o.oracle_addr)
 
         oracles = await oracle_service.get_all_oracles_info()
         if is_error(oracles):
