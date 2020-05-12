@@ -98,5 +98,8 @@ def main():
 
 	print("supervisorctl")
 if __name__ =="__main__":
-	print(os.getcwd())
-	#main()
+	folders = os.getcwd().split("/")
+	if ((folders[len(folders)-1] ) == "scripts"):
+		envMonitor = "../" + envMonitor
+		envServer = "../" + envServer
+	main()
