@@ -39,6 +39,10 @@ async function deploy(deployer, networkName, accounts) {
     const scall = await artifacts.require("EternalStorageGobernanza").at(ethernalStorage.options.address);
     await scall.initialize(governorAddr);
 
+    const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
+    const change = await MocRegistryInitChange.new(ethernalStorage.options.address);
+    console.log("Initialize registry/ethernalStorage for MOC Oracles", change.address, 'via governor', governorAddr);
+    await governor.executeChange(change.address, {from: governorOwner});
 }
 
 async function truffle_main(deployer, networkName, accounts) {
