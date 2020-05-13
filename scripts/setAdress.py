@@ -36,7 +36,7 @@ def main():
 	print("Please, enter the information that will be requested below.")
 	print("Note: Private data (private keys and passwords) will not be displayed on the console")
 	print("///////////")
-	z
+	
 	print("Enter the address of the oracle wallet in RSK")
 	address = input("Adress:") 
 	print("Enter the private password that correspond to the address you just entered")
@@ -83,20 +83,15 @@ def main():
 	print("////////")
 	print("Everything is setup correctly.")
 	print("Let's run the services.")
-
-	os.system("supervisorctl start oracle")
-	os.system("supervisorctl start backend")
-
-	os.system("supervisorctl status")
+	print("Run the following commands:")
+	print(" ")
+	print("sudo systemctl enable supervisor.service")
+	print("sudo supervisord")
+	print("supervisorctl status")
+	print(" ")
 	print("////////")
 
-	print("The services are running.")
-	print("If you want to stop them, enter the follow commands:")
-	print("  supervisorctl stop oracle")
-	print("  supervisorctl stop backend")
-	print("////////")
 
-	print("supervisorctl")
 if __name__ =="__main__":
 	folders = os.getcwd().split("/")
 	if ((folders[len(folders)-1] ) == "scripts"):
