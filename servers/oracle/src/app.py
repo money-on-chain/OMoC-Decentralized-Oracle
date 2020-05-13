@@ -14,7 +14,7 @@ app = run_uvicorn.get_app("Oracle", "The moc reference oracle")
 
 @app.on_event("startup")
 async def startup():
-    main_executor.web_server_startup()
+    await main_executor.web_server_startup()
 
 
 @app.on_event("shutdown")

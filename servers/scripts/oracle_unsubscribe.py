@@ -1,13 +1,13 @@
 from common import helpers
-from common.services import oracle_manager_service
-from oracle.src import oracle_settings
+from common.services.oracle_manager_service import OracleManagerService
 from scripts import script_settings
-from scripts.script_settings import ORACLE_OWNER_ACCOUNT
 
-ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
+ORACLE_ACCOUNT = script_settings.SCRIPT_ORACLE_ACCOUNT
 ORACLE_ADDR = str(ORACLE_ACCOUNT.addr)
 print("ORACLE ADDR", ORACLE_ADDR)
-print("ORACLE OWNER ADDR", ORACLE_OWNER_ACCOUNT.addr)
+print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
+
+oracle_manager_service = OracleManagerService()
 
 
 async def main():
@@ -21,7 +21,7 @@ async def main():
         print(cp, " IS SUBSCRIBED: ", is_subscribed)
         if is_subscribed:
             tx = await oracle_manager_service.unsubscribe_coin_pair(cp, ORACLE_ADDR,
-                                                                    account=ORACLE_OWNER_ACCOUNT,
+                                                                    account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                                                     wait=True)
 
             print("unsubscribe for coinpar", cp, " result ", tx)

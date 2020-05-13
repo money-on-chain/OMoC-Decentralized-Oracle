@@ -1,6 +1,7 @@
 from common.services.oracle_dao import OracleRoundInfo, CoinPair, PriceWithTimestamp
 from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
+from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
 from oracle.src.oracle_turn import OracleTurn
 
 oracle_settings.ORACLE_PRICE_PUBLISH_BLOCKS = 1
@@ -11,11 +12,12 @@ def g(last_pub_block, block_num, blockchain_price):
     return OracleBlockchainInfo("BTCUSD", [], blockchain_price, block_num, last_pub_block, "")
 
 
+conf = OracleTurnConfiguration(2, 0.05, 3, 1)
 gg = PriceWithTimestamp
 
 
 def test_no_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
     ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
     ret = f._price_changed_blocks(g(1, 12, 11.1), gg(11.1, 0))
@@ -31,7 +33,7 @@ def test_no_price_change():
 
 
 def test_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
     ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
     ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
@@ -45,7 +47,7 @@ def test_price_change():
 
 
 def test_initial_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
     ret = f._price_changed_blocks(g(1, 10, 11.1), gg(22.2, 0))
     assert ret == 0
     ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
@@ -59,7 +61,7 @@ def test_initial_price_change():
 
 
 def test_price_change_2():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
     ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
     ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
@@ -69,7 +71,7 @@ def test_price_change_2():
 
 
 def test_new_pub_no_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
     ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
     ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
@@ -81,7 +83,7 @@ def test_new_pub_no_price_change():
 
 
 def test_new_pub_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
     ret = f._price_changed_blocks(g(1, 10, 11.1), gg(11.1, 0))
     assert ret is None
     ret = f._price_changed_blocks(g(1, 12, 11.1), gg(22.2, 0))
@@ -93,7 +95,7 @@ def test_new_pub_price_change():
 
 
 def test_new_pub_initial_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
     ret = f._price_changed_blocks(g(1, 10, 11.1), gg(22.2, 0))
     assert ret == 0
     ret = f._price_changed_blocks(g(1, 12, 11.1), gg(11.1, 0))
@@ -129,18 +131,18 @@ def h(os, block_num, last_pub_block, last_pub_block_hash, blockchain_price):
 
 
 def test_is_never_oracle_3_turn_is_not_selected():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
 
     def is_oracle_turn(vi, oracle_addr, exchange_price):
         return f._is_oracle_turn_with_msg(vi, oracle_addr, exchange_price)[0]
 
     assert is_oracle_turn(h(selected_oracles, 18, 1, "0x00000000",
-                            11.1 + oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT * .99),
+                            11.1 + conf.price_fallback_delta_pct * .99),
                           selected_oracles[3].addr, gg(11.1, 0)) is False
 
 
 def test_is_oracle_turn_no_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
 
     def is_oracle_turn(vi, oracle_addr, exchange_price):
         return f._is_oracle_turn_with_msg(vi, oracle_addr, exchange_price)[0]
@@ -154,19 +156,19 @@ def test_is_oracle_turn_no_price_change():
     assert is_oracle_turn(h(selected_oracles, 14, 1, "0x00000000", 11.1), selected_oracles[1].addr,
                           gg(11.1, 0)) is False
     assert is_oracle_turn(h(selected_oracles, 16, 1, "0x00000000", 11.1), selected_oracles[0].addr,
-                          gg(11.1 + oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT * .99, 0)) is True
+                          gg(11.1 + conf.price_fallback_delta_pct * .99, 0)) is True
     assert is_oracle_turn(h(selected_oracles, 16, 1, "0x00000000", 11.1), selected_oracles[1].addr,
-                          gg(11.1 + oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT * .99, 0)) is False
+                          gg(11.1 + conf.price_fallback_delta_pct * .99, 0)) is False
     assert is_oracle_turn(h(selected_oracles, 18, 1, "0x00000000",
-                            11.1 + oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT * .99),
+                            11.1 + conf.price_fallback_delta_pct * .99),
                           selected_oracles[0].addr, gg(11.1, 0)) is True
     assert is_oracle_turn(h(selected_oracles, 18, 1, "0x00000000",
-                            11.1 + oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT * .99),
+                            11.1 + conf.price_fallback_delta_pct * .99),
                           selected_oracles[0].addr, gg(11.1, 0)) is True
 
 
 def test_is_oracle_turn_price_change():
-    f = OracleTurn("BTCUSD")
+    f = OracleTurn(conf, "BTCUSD")
 
     def is_oracle_turn(vi, oracle_addr, exchange_price):
         return f._is_oracle_turn_with_msg(vi, oracle_addr, exchange_price)[0]

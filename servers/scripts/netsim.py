@@ -12,8 +12,10 @@ from starlette.datastructures import Secret
 
 from common import settings, helpers
 from common.ganache_accounts import GANACHE_ACCOUNTS
-from common.services import blockchain, moc_service, oracle_manager_service
+from common.services import blockchain
 from common.services.blockchain import is_error, BlockchainAccount
+from common.services.moc_token_service import MocTokenService
+from common.services.oracle_manager_service import OracleManagerService
 from scripts import script_settings
 
 logger = logging.getLogger(__name__)
@@ -42,6 +44,9 @@ oracleList = [
 ]
 
 scheduler = "http://127.0.0.1:5555"
+
+oracle_manager_service = OracleManagerService()
+moc_token_service = MocTokenService()
 
 
 class MyServer(uvicorn.Server):
@@ -95,13 +100,13 @@ async def register_oracles(oe):
         print("DONE", info)
         return True
 
-    token_approved = await moc_service.allowance(oe["owner"].addr, oracle_manager_service.ORACLE_MANAGER_ADDR)
+    token_approved = await moc_token_service.allowance(oe["owner"].addr, oracle_manager_service.ORACLE_MANAGER_ADDR)
     print("tokenApproved", token_approved)
     if token_approved < oe["stake"]:
-        tx = await moc_service.approve(oracle_manager_service.ORACLE_MANAGER_ADDR,
-                                       oe["stake"],
-                                       account=oe["owner"],
-                                       wait=True)
+        tx = await moc_token_service.approve(oracle_manager_service.ORACLE_MANAGER_ADDR,
+                                             oe["stake"],
+                                             account=oe["owner"],
+                                             wait=True)
         print("token approve", tx)
         if is_error(tx):
             return False
@@ -125,13 +130,13 @@ async def main():
         print("Oracle name=" + oe["name"] + " address=" + oe["account"].addr)
         print("       balances: ETH=" +
               str(await blockchain.get_balance(blockchain.parse_addr(oe["account"].addr))) +
-              "  MOC=" + str(await moc_service.balance_of(blockchain.parse_addr(oe["account"].addr))))
+              "  MOC=" + str(await moc_token_service.balance_of(blockchain.parse_addr(oe["account"].addr))))
 
     #  Register oracles.
     print("0. Mint tokens.")
     print("-----------------------------")
     for oe in oracleList:
-        tx = await moc_service.mint(oe["owner"].addr, oe["stake"], account=oe["owner"], wait=True)
+        tx = await moc_token_service.mint(oe["owner"].addr, oe["stake"], account=oe["owner"], wait=True)
         if is_error(tx):
             print("ERROR IN APPROVE", tx)
             return

@@ -2,43 +2,40 @@ import logging
 
 from common.bg_task_executor import BgTaskExecutor
 from common.services import blockchain
-from common.services.blockchain import BlockchainAccount, is_error
+from common.services.blockchain import is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
 from oracle.src import oracle_settings
+from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 
 logger = logging.getLogger(__name__)
 
-SCHEDULER_POOL_DELAY = oracle_settings.SCHEDULER_POOL_DELAY
-SCHEDULER_ROUND_DELAY = oracle_settings.SCHEDULER_ROUND_DELAY
-SCHEDULER_ACCOUNT = BlockchainAccount(oracle_settings.SCHEDULER_SIGNING_ADDR,
-                                      oracle_settings.SCHEDULER_SIGNING_KEY)
-
 
 class SchedulerCoinPairLoop(BgTaskExecutor):
-    def __init__(self, cps: CoinPairPriceService):
-        self.cps = cps
+    def __init__(self, conf: OracleConfigurationLoop, cps: CoinPairPriceService):
+        self._conf = conf
+        self._cps = cps
         self._coin_pair = cps.coin_pair
         super().__init__(self.run)
 
     async def run(self):
         self.log("start")
 
-        round_info = await self.cps.get_round_info()
+        round_info = await self._cps.get_round_info()
         if not self._is_round_started(round_info):
-            return SCHEDULER_POOL_DELAY
+            return self._conf.SCHEDULER_POOL_DELAY
         self.log("Round %r" % (round_info,))
 
         block_number = await blockchain.get_last_block()
         if not self._is_right_block(round_info, block_number):
-            return SCHEDULER_POOL_DELAY
+            return self._conf.SCHEDULER_POOL_DELAY
 
-        receipt = await self.cps.switch_round(account=SCHEDULER_ACCOUNT, wait=True)
+        receipt = await self._cps.switch_round(account=oracle_settings.get_oracle_scheduler_account(), wait=True)
         if is_error(receipt):
             self.error("error in switch_round tx %r" % (receipt,))
-            return SCHEDULER_POOL_DELAY
+            return self._conf.SCHEDULER_POOL_DELAY
 
         self.log("round switched %r" % (receipt.hash,))
-        return SCHEDULER_ROUND_DELAY
+        return self._conf.SCHEDULER_ROUND_DELAY
 
     def _is_round_started(self, round_info):
         if blockchain.is_error(round_info):

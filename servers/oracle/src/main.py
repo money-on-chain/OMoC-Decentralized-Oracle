@@ -8,11 +8,10 @@ from common import settings
 from common.run_uvicorn import run_uvicorn
 from oracle.src import oracle_settings
 from oracle.src.main_executor import MainExecutor
-from oracle.src.oracle_settings import ORACLE_RUN
 
 
 def main():
-    if ORACLE_RUN:
+    if oracle_settings.ORACLE_RUN:
         run_uvicorn("oracle.src.app:app", oracle_settings.ORACLE_PORT)
         return
 
@@ -28,9 +27,9 @@ def main():
     logger.addHandler(handler)
     main_task = MainExecutor()
     try:
-        main_task.setup()
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(asyncio.gather(*main_task.bg_tasks()))
+        task = loop.create_task(main_task.scheduler_alone_startup())
+        loop.run_until_complete(task)
     except KeyboardInterrupt:
         pass
     finally:

@@ -7,15 +7,14 @@ from common.settings import config
 from oracle.src import oracle_settings
 
 USE_COIN_PAIR = [CoinPair("BTCUSD"), CoinPair("RIFBTC")]
-SCHEDULER_ACCOUNT = BlockchainAccount(oracle_settings.SCHEDULER_SIGNING_ADDR,
-                                      oracle_settings.SCHEDULER_SIGNING_KEY)
-
 INITIAL_STAKE = 5 * (10 ** 12)
 NEEDED_GAS = 5 * (10 ** 12)
 REWARDS = 123
-ORACLE_OWNER_ACCOUNT = BlockchainAccount(config('ORACLE_OWNER_ADDR', cast=str),
-                                         config('ORACLE_OWNER_PRIVATE_KEY', cast=Secret))
 
-PRICE_FETCHER_OWNER_ACCOUNT = BlockchainAccount(config('PRICE_FETCHER_OWNER_ADDR', cast=str),
-                                                config('PRICE_FETCHER_OWNER_KEY', cast=Secret))
+SCRIPT_ORACLE_OWNER_ACCOUNT = BlockchainAccount(config('SCRIPT_ORACLE_OWNER_ADDR', cast=str),
+                                                config('SCRIPT_ORACLE_OWNER_PRIVATE_KEY', cast=Secret))
+SCRIPT_REWARD_BAG_ACCOUNT = BlockchainAccount(config('SCRIPT_REWARD_BAG_ADDR', cast=str),
+                                              config('SCRIPT_REWARD_BAG_PRIVATE_KEY', cast=Secret))
+SCRIPT_ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
+
 NEEDED_APROVE_BAG = 1000000000000000
