@@ -36,7 +36,7 @@ def main():
 	print("Please, enter the information that will be requested below.")
 	print("Note: Private data (private keys and passwords) will not be displayed on the console")
 	print("///////////")
-	z
+	
 	print("Enter the address of the oracle wallet in RSK")
 	address = input("Adress:") 
 	print("Enter the private password that correspond to the address you just entered")
@@ -96,7 +96,6 @@ def main():
 	print("  supervisorctl stop backend")
 	print("////////")
 
-	print("supervisorctl")
 if __name__ =="__main__":
 	folders = os.getcwd().split("/")
 	if ((folders[len(folders)-1] ) == "scripts"):
