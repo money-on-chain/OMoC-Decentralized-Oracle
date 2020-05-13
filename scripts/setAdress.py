@@ -83,18 +83,14 @@ def main():
 	print("////////")
 	print("Everything is setup correctly.")
 	print("Let's run the services.")
-
-	os.system("supervisorctl start oracle")
-	os.system("supervisorctl start backend")
-
-	os.system("supervisorctl status")
+	print("Run the following commands:")
+	print(" ")
+	print("sudo systemctl enable supervisor.service")
+	print("sudo supervisord")
+	print("supervisorctl status")
+	print(" ")
 	print("////////")
 
-	print("The services are running.")
-	print("If you want to stop them, enter the follow commands:")
-	print("  supervisorctl stop oracle")
-	print("  supervisorctl stop backend")
-	print("////////")
 
 if __name__ =="__main__":
 	folders = os.getcwd().split("/")
