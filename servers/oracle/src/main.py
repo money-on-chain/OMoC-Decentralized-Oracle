@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import uvicorn
@@ -26,7 +27,9 @@ def main():
     logger.addHandler(handler)
     main_task = MainExecutor()
     try:
-        main_task.scheduler_alone_startup()
+        loop = asyncio.get_event_loop()
+        task = loop.create_task(main_task.scheduler_alone_startup())
+        loop.run_until_complete(task)
     except KeyboardInterrupt:
         pass
     finally:

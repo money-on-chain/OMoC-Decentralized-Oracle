@@ -26,7 +26,16 @@ class MainExecutor:
         self.oracle_loop = OracleLoop(self.conf, self.oracle_service)
         self.tasks: List[BgTaskExecutor] = [self.oracle_loop, self.conf]
 
-    def web_server_startup(self):
+    async def web_server_startup(self):
+        await self._startup()
+
+    async def scheduler_alone_startup(self):
+        await self._startup()
+        bg_tasks = [x.task for x in self.tasks]
+        await asyncio.gather(*bg_tasks)
+
+    async def _startup(self):
+        await self.conf.initialize()
         logger.info("=== Money-On-Chain Reference Oracle Starting up ===")
         logger.info("    Address: " + oracle_settings.get_oracle_account().addr)
         logger.info("    Loop main task interval: " + str(self.conf.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL))
@@ -39,12 +48,6 @@ class MainExecutor:
             self.tasks.append(SchedulerSupportersLoop(self.conf, self.supporters_service))
         for t in self.tasks:
             t.start_bg_task()
-
-    def scheduler_alone_startup(self):
-        self.web_server_startup()
-        bg_tasks = [x.task for x in self.tasks]
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(asyncio.gather(*bg_tasks))
 
     def shutdown(self):
         for t in self.tasks:
