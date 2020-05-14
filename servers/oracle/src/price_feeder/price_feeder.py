@@ -6,6 +6,7 @@ import time
 from common.bg_task_executor import BgTaskExecutor
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src import oracle_settings, monitor
+from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 from oracle.src.price_feeder import moc_price_engines
 
 logger = logging.getLogger(__name__)
@@ -13,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 class TimeWithTimestampQueue:
 
-    def __init__(self, name):
+    def __init__(self, conf: OracleConfigurationLoop, name):
         self.name = name
-        self._price_queue = collections.deque(maxlen=oracle_settings.ORACLE_QUEUE_LEN)
+        self._price_queue = collections.deque(maxlen=conf.ORACLE_QUEUE_LEN)
 
     def get_nearest_data(self, target_time_utc):
         ret = min(self._price_queue, key=lambda x: abs(target_time_utc - x["ts_utc"]))
@@ -27,12 +28,13 @@ class TimeWithTimestampQueue:
 
 class PriceFeederLoop(BgTaskExecutor):
 
-    def __init__(self, coin_pair: CoinPair):
-        super().__init__(self.fetch_price_loop)
+    def __init__(self, conf: OracleConfigurationLoop, coin_pair: CoinPair):
+        self._conf = conf
         self._price_queues = {}
         self._coin_pair = str(coin_pair)
         engines = oracle_settings.ORACLE_PRICE_ENGINES[self._coin_pair]
         self._moc_price_engines = moc_price_engines.PriceEngines(self._coin_pair, engines)
+        super().__init__(self.run)
 
     @property
     def coin_pair(self):
@@ -59,24 +61,24 @@ class PriceFeederLoop(BgTaskExecutor):
         info = [(x[1], str(x[0]), x[2]) for x in sorted(zip(l_prices, l_names, l_times))]
         logger.info("%s median: %r %r %r, %r" % (self._coin_pair, val['name'], str(price), tm_utc, info))
 
-        last_price_fetch_wei = int(price * (10 ** oracle_settings.ORACLE_PRICE_DIGITS))
+        last_price_fetch_wei = int(price * (10 ** self._conf.ORACLE_PRICE_DIGITS))
         logger.info("%s got price: %s, timestamp %r" % (self._coin_pair, last_price_fetch_wei, tm_utc))
         return PriceWithTimestamp(last_price_fetch_wei, tm_utc)
 
-    async def fetch_price_loop(self):
+    async def run(self):
         try:
             w_data = await self._moc_price_engines.get_weighted()
             for val in w_data:
                 name = val['name']
                 tm_utc = val['timestamp'].timestamp()
                 if name not in self._price_queues:
-                    self._price_queues[name] = TimeWithTimestampQueue(name)
+                    self._price_queues[name] = TimeWithTimestampQueue(self._conf, name)
                 logger.debug("%s insert: %s -> %s, timestamp %r" % (self._coin_pair, name, val['price'], tm_utc))
                 self._price_queues[name].append(tm_utc, val)
-            return oracle_settings.ORACLE_PRICE_FETCH_RATE
+            return self._conf.ORACLE_PRICE_FETCH_RATE
         except asyncio.CancelledError as e:
             raise e
         except Exception as ex:
             monitor.exchange_log("ERROR FETCHING PRICE %r" % ex)
             logger.error("ERROR FETCHING PRICE %r" % ex)
-        return oracle_settings.ORACLE_PRICE_FETCH_RATE
+        return self._conf.ORACLE_PRICE_FETCH_RATE

@@ -8,7 +8,7 @@ from common.services import blockchain
 from common.services.blockchain import is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
 from common.services.oracle_dao import CoinPair, OracleRoundInfo
-from oracle.src import oracle_settings
+from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,8 @@ OracleBlockchainInfo = typing.NamedTuple("OracleBlockchainInfo",
 
 
 class OracleBlockchainInfoLoop(BgTaskExecutor):
-    def __init__(self, cps: CoinPairPriceService):
+    def __init__(self, conf: OracleConfigurationLoop, cps: CoinPairPriceService):
+        self._conf = conf
         self._cps = cps
         self._coin_pair = cps.coin_pair
         self._blockchain_info: OracleBlockchainInfo = None
@@ -32,14 +33,14 @@ class OracleBlockchainInfoLoop(BgTaskExecutor):
         super().__init__(self.task_loop)
 
     async def task_loop(self):
-        delta = oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL
+        delta = self._conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL
         async with self.update_lock:
             if self.last_update:
                 delta = (time.time() - self.last_update)
-        if delta < oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL:
-            return oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL - delta
+        if delta < self._conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL:
+            return self._conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL - delta
         await self.force_update()
-        return oracle_settings.ORACLE_BLOCKCHAIN_INFO_INTERVAL
+        return self._conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL
 
     async def force_update(self):
         async with self.update_lock:

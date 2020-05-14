@@ -1,46 +1,45 @@
 import logging
 
+from common.bg_task_executor import BgTaskExecutor
 from common.services import blockchain
-from common.services.blockchain import BlockchainAccount, is_error
+from common.services.blockchain import is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
-from oracle.src import oracle_settings, oracle_service
+from oracle.src import oracle_settings
+from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 
 logger = logging.getLogger(__name__)
 
-SCHEDULER_POOL_DELAY = oracle_settings.SCHEDULER_POOL_DELAY
-SCHEDULER_ROUND_DELAY = oracle_settings.SCHEDULER_ROUND_DELAY
-SCHEDULER_ACCOUNT = BlockchainAccount(oracle_settings.SCHEDULER_SIGNING_ADDR,
-                                      oracle_settings.SCHEDULER_SIGNING_KEY)
 
-
-class SchedulerCoinPairLoop:
-    def __init__(self, cps: CoinPairPriceService):
-        self.cps = cps
+class SchedulerCoinPairLoop(BgTaskExecutor):
+    def __init__(self, conf: OracleConfigurationLoop, cps: CoinPairPriceService):
+        self._conf = conf
+        self._cps = cps
         self._coin_pair = cps.coin_pair
+        super().__init__(self.run)
 
     async def run(self):
-        self.log("Loop start")
+        self.log("start")
 
-        round_info = await self.cps.get_round_info()
+        round_info = await self._cps.get_round_info()
         if not self._is_round_started(round_info):
-            return False
-        log("Round %r" % (round_info,))
+            return self._conf.SCHEDULER_POOL_DELAY
+        self.log("Round %r" % (round_info,))
 
         block_number = await blockchain.get_last_block()
         if not self._is_right_block(round_info, block_number):
-            return False
+            return self._conf.SCHEDULER_POOL_DELAY
 
-        receipt = await self.cps.switch_round(account=SCHEDULER_ACCOUNT, wait=True)
+        receipt = await self._cps.switch_round(account=oracle_settings.get_oracle_scheduler_account(), wait=True)
         if is_error(receipt):
-            self.error("Oracle scheduler error in switch_round tx %r" % (receipt,))
-            return False
+            self.error("error in switch_round tx %r" % (receipt,))
+            return self._conf.SCHEDULER_POOL_DELAY
 
-        log("round switched %r" % receipt.hash)
-        return True
+        self.log("round switched %r" % (receipt.hash,))
+        return self._conf.SCHEDULER_ROUND_DELAY
 
     def _is_round_started(self, round_info):
         if blockchain.is_error(round_info):
-            self.error("Oracle scheduler error get_round_info error %r" % (round_info,))
+            self.error("error get_round_info error %r" % (round_info,))
             return False
         if round_info.round == 0:
             self.log("The system didn't started yet, wait %r" % (round_info,))
@@ -49,37 +48,17 @@ class SchedulerCoinPairLoop:
 
     def _is_right_block(self, round_info, block_number):
         if blockchain.is_error(block_number):
-            self.error("Oracle scheduler error get_last_block error %r" % (block_number,))
+            self.error("error get_last_block error %r" % (block_number,))
             return False
         if round_info.lockPeriodEndBlock > block_number:
-            self.log("The round is running, wait %r < %r " % (block_number, round_info.lockPeriodEndBlock))
+            self.log("The round is running, wait %r < %r " %
+                     (block_number, round_info.lockPeriodEndBlock))
             return False
-        self.log("Current block %r" % block_number)
+        self.log("Current block %r" % (block_number,))
         return True
 
     def log(self, msg):
-        logger.info("Oracle scheduler : %s -> %s" % (self._coin_pair, msg))
+        logger.info("%r : SchedulerCoinPairLoop : %s" % (self._coin_pair, msg))
 
     def error(self, msg):
-        logger.error("%s -> %s" % (self._coin_pair, msg))
-
-
-def log(msg):
-    logger.info("Oracle scheduler : %s" % msg)
-
-
-async def scheduler_loop():
-    log("Loop start")
-
-    cpi = await oracle_service.get_all_coin_pair_service()
-    if is_error(cpi):
-        logger.error("Oracle scheduler error getting coin pairs info %r" % (cpi,))
-        return SCHEDULER_POOL_DELAY
-
-    success = True
-    for cp in cpi:
-        if not await SchedulerCoinPairLoop(cp).run():
-            success = False
-    if success:
-        return SCHEDULER_ROUND_DELAY
-    return SCHEDULER_POOL_DELAY
+        logger.error("%r : SchedulerCoinPairLoop : %s" % (self._coin_pair, msg))

@@ -37,10 +37,12 @@ class DifferentLastPubBlock(ValidationFailure):
 
 class RequestValidation:
     def __init__(self,
+                 oracle_price_reject_delta_pct,
                  params: PublishPriceParams,
                  oracle_turn: OracleTurn,
                  exchange_price: PriceWithTimestamp,
                  blockchain_info: OracleBlockchainInfo):
+        self.oracle_price_reject_delta_pct = oracle_price_reject_delta_pct
         self.params = params
         self.oracle_turn = oracle_turn
         self.exchange_price = exchange_price
@@ -64,18 +66,18 @@ class RequestValidation:
         if not self.params or not self.blockchain_info:
             raise NoBlockchainData("Still don't have a valid block chain info "
                                    "params %r block chain info %r" % (
-                                    self.params, self.blockchain_info), self.cp)
+                                       self.params, self.blockchain_info), self.cp)
 
         if self.params.last_pub_block != self.blockchain_info.last_pub_block:
             raise DifferentLastPubBlock("Different last publication blocks %r "
                                         "!= %r" % (self.params.last_pub_block,
-                                        self.blockchain_info.last_pub_block),
+                                                   self.blockchain_info.last_pub_block),
                                         self.cp)
 
         if (not self.exchange_price or not self.exchange_price.price or
                 self.exchange_price.ts_utc <= 0):
             raise NoBlockchainData("Still don't have a valid price %r" % (
-                                   self.exchange_price,), self.cp)
+                self.exchange_price,), self.cp)
 
         if not self.params.price or self.params.price_ts_utc <= 0:
             raise ValidationFailure("Invalid publish price %r" %
@@ -83,18 +85,19 @@ class RequestValidation:
 
         price_delta = helpers.price_delta(self.params.price,
                                           self.exchange_price.price)
-        if price_delta > oracle_settings.ORACLE_PRICE_REJECT_DELTA_PCT:
+        if price_delta > self.oracle_price_reject_delta_pct:
             raise ValidationFailure("price out of range delta %r > %r and "
                                     "price %r exchange price %r" % (price_delta,
-                        oracle_settings.ORACLE_PRICE_REJECT_DELTA_PCT,
-                        self.params.price, self.exchange_price.price), self.cp)
+                                                                    self.oracle_price_reject_delta_pct,
+                                                                    self.params.price, self.exchange_price.price),
+                                    self.cp)
 
     def validate_turn(self):
         is_turn, msg = self.oracle_turn.validate_turn(
             self.blockchain_info, self.params.oracle_addr, self.exchange_price)
         if not is_turn:
             raise InvalidTurn("is not oracle %s turn : %s" % (
-                                self.params.oracle_addr, msg), self.cp)
+                self.params.oracle_addr, msg), self.cp)
 
     def validate_signature(self, message, signature):
         if not verify_signature(self.params.oracle_addr, message,

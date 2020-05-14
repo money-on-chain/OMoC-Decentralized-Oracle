@@ -1,4 +1,3 @@
-import hashlib
 import logging
 from typing import List
 
@@ -6,21 +5,22 @@ from hexbytes import HexBytes
 
 from common import settings, helpers
 from common.helpers import hb_to_bytes
-from common.services import blockchain, oracle_manager_service
+from common.services import blockchain
 from common.services.blockchain import BlockChainAddress, BlockchainAccount, is_error
 from common.services.oracle_dao import OracleRoundInfo, RoundInfo, CoinPair, CoinPairInfo
+from common.services.oracle_manager_service import OracleManagerService
 
 logger = logging.getLogger(__name__)
 
-COIN_PAIR_PRICE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "CoinPairPrice.json")
-COIN_PAIR_PRICE_ABI = COIN_PAIR_PRICE_DATA["abi"]
-
 
 class CoinPairPriceService:
+    COIN_PAIR_PRICE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "CoinPairPrice.json")
+    COIN_PAIR_PRICE_ABI = COIN_PAIR_PRICE_DATA["abi"]
 
-    def __init__(self, coin_pair_info: CoinPairInfo):
+    def __init__(self, oracle_manager_service: OracleManagerService, coin_pair_info: CoinPairInfo):
+        self._oracle_manager_service = oracle_manager_service
         self._coin_pair_info = coin_pair_info
-        self._coin_pair_price_contract = blockchain.get_contract(coin_pair_info.addr, COIN_PAIR_PRICE_ABI)
+        self._coin_pair_price_contract = blockchain.get_contract(coin_pair_info.addr, self.COIN_PAIR_PRICE_ABI)
 
     @property
     def coin_pair(self) -> CoinPair:
@@ -93,7 +93,7 @@ class CoinPairPriceService:
         return RoundInfo(*bc_data)
 
     async def get_oracle_round_info(self, address: BlockChainAddress) -> OracleRoundInfo:
-        registration_info = await oracle_manager_service.get_oracle_registration_info(address)
+        registration_info = await self._oracle_manager_service.get_oracle_registration_info(address)
         if is_error(registration_info):
             return registration_info
         bc_data = await self.coin_pair_price_call("getOracleRoundInfo", address)

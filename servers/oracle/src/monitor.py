@@ -3,13 +3,16 @@ import logging
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import get_last_block, is_error
 from common.services.coin_pair_price_service import CoinPairPriceService
-from oracle.src import oracle_service, oracle_settings
+from oracle.src import oracle_settings
+from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_service import OracleService
 from oracle.src.select_next import select_next
 
 
 class MonitorLoopByCoinPair:
 
-    def __init__(self, logger, cps: CoinPairPriceService):
+    def __init__(self, conf: OracleConfigurationLoop, logger, cps: CoinPairPriceService):
+        self._conf = conf
         self._logger = logger
         self._cps = cps
         self._pre_pubblock_nr = None
@@ -28,7 +31,7 @@ class MonitorLoopByCoinPair:
             self._logger.error("Error getting oracles %r" % (oracles,))
             return 5
         self._logger.info("block %r published price: %r " % (pubblock_nr, price))
-        sorted_oracles = select_next(pubblock_hash, oracles)
+        sorted_oracles = select_next(self._conf.ORACLE_STAKE_LIMIT_MULTIPLICATOR, _pubblock_hash, oracles)
         for idx, oracle_addr in enumerate(sorted_oracles):
             self._logger.debug(" turn: %d  oracle: %s " % (idx, oracle_addr))
         self._logger.debug("---------")
@@ -37,11 +40,12 @@ class MonitorLoopByCoinPair:
 
 class MonitorTask(BgTaskExecutor):
 
-    def __init__(self):
-        super().__init__(self.monitor_loop)
+    def __init__(self, oracle_service: OracleService):
+        self.oracle_service = oracle_service
         self.logger = logging.getLogger("published_price")
         self.prev_block = self.pre_pubblock_nr = None
         self.cpMap = {}
+        super().__init__(self.monitor_loop)
 
     async def monitor_loop(self):
         # blockchain-block
@@ -52,7 +56,7 @@ class MonitorTask(BgTaskExecutor):
         if self.prev_block == block:
             return 5
         self.prev_block = block
-        pairs = await oracle_service.get_all_coin_pair_service()
+        pairs = await self.oracle_service.get_all_coin_pair_services()
         if is_error(pairs):
             self.logger.error("Can't retrieve coinpairs")
             return 5
@@ -66,7 +70,7 @@ class MonitorTask(BgTaskExecutor):
 
 
 def log_setup():
-    if oracle_settings.ORACLE_MONITOR:
+    if oracle_settings.ORACLE_MONITOR_RUN:
         xlogger = logging.getLogger("exchange_price")
         fn = oracle_settings.ORACLE_MONITOR_LOG_EXCHANGE_PRICE
         if not fn in ("",):
@@ -83,13 +87,13 @@ def log_setup():
 
 
 def exchange_log(msg):
-    if oracle_settings.ORACLE_MONITOR:
+    if oracle_settings.ORACLE_MONITOR_RUN:
         l = logging.getLogger("exchange_price")
         l.info(msg)
 
 
 def publish_log(msg):
-    if oracle_settings.ORACLE_MONITOR:
+    if oracle_settings.ORACLE_MONITOR_RUN:
         pplogger = logging.getLogger("published_price")
         pplogger.warning(msg)
 
