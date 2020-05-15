@@ -6,12 +6,12 @@ from scripts import script_settings
 
 REWARDS_ACCOUNT = script_settings.SCRIPT_REWARD_BAG_ACCOUNT
 
-supporters_service = SupportersService()
-moc_token_service = MocTokenService()
-
 
 # Take from scheduler addr into reward bag addr
 async def main():
+    conf = await script_settings.configure()
+    supporters_service = SupportersService(conf.SUPPORTERS_VESTED_ADDR)
+    moc_token_service = MocTokenService(await supporters_service.get_token_addr())
     print("isReadyToDistribute: ", await supporters_service.is_ready_to_distribute())
 
     currentblock = await blockchain.get_last_block()

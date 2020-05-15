@@ -26,6 +26,21 @@ class OracleConfigurationLoop(BgTaskExecutor):
 
     def __init__(self, eternal_storage_service: EternalStorageService):
         self.parameters = {
+            "SUPPORTERS_VESTED_ADDR": {
+                "priority": self.Order.configuration_blockchain_default,
+                "configuration": lambda: config('SUPPORTERS_VESTED_ADDR', cast=str),
+                "blockchain": lambda p: self._eternal_storage_service.get_address(p),
+                "description": "Supporters vested address, called by scheduler",
+                "default": 5
+            },
+            "ORACLE_MANAGER_ADDR": {
+                "priority": self.Order.configuration_blockchain_default,
+                "configuration": lambda: config('ORACLE_MANAGER_ADDR', cast=str),
+                "blockchain": lambda p: self._eternal_storage_service.get_address(p),
+                "description": "Oracle manager address, used in OracleLoop to get coin"
+                               "pairs and CoinPairPrice addresses",
+                "default": 5
+            },
             "ORACLE_PRICE_FETCH_RATE": {
                 "priority": self.Order.configuration_blockchain_default,
                 "configuration": lambda: parseTimeDelta(config('ORACLE_PRICE_FETCH_RATE', cast=str)),
@@ -152,6 +167,9 @@ class OracleConfigurationLoop(BgTaskExecutor):
         if name in self.values:
             return self.values[name]
         raise AttributeError("OracleConfigurationLoop has no attribute '%s'" % name)
+
+    def __dir__(self):
+        return self.mapping.keys()
 
     async def initialize(self):
         for (p, param) in self.parameters.items():

@@ -18,13 +18,9 @@ logger = logging.getLogger(__name__)
 class MainExecutor:
 
     def __init__(self):
-        self.eternal_storage_service = EternalStorageService()
+        self.eternal_storage_service = EternalStorageService(oracle_settings.get_registry_addr())
         self.conf = OracleConfigurationLoop(self.eternal_storage_service)
-        self.supporters_service = SupportersService()
-        self.oracle_manager_service = OracleManagerService()
-        self.oracle_service = OracleService(self.oracle_manager_service)
-        self.oracle_loop = OracleLoop(self.conf, self.oracle_service)
-        self.tasks: List[BgTaskExecutor] = [self.oracle_loop, self.conf]
+        self.tasks: List[BgTaskExecutor] = [self.conf]
 
     async def web_server_startup(self):
         await self._startup()
@@ -36,6 +32,12 @@ class MainExecutor:
 
     async def _startup(self):
         await self.conf.initialize()
+        self.supporters_service = SupportersService(self.conf.SUPPORTERS_VESTED_ADDR)
+        oracle_manager_service = OracleManagerService(self.conf.ORACLE_MANAGER_ADDR)
+        self.oracle_service = OracleService(oracle_manager_service)
+        self.oracle_loop = OracleLoop(self.conf, self.oracle_service)
+        self.tasks.append(self.oracle_loop)
+
         logger.info("=== Money-On-Chain Reference Oracle Starting up ===")
         logger.info("    Address: " + oracle_settings.get_oracle_account().addr)
         logger.info("    Loop main task interval: " + str(self.conf.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL))

@@ -45,9 +45,6 @@ oracleList = [
 
 scheduler = "http://127.0.0.1:5555"
 
-oracle_manager_service = OracleManagerService()
-moc_token_service = MocTokenService()
-
 
 class MyServer(uvicorn.Server):
     def __init__(self, config, env):
@@ -88,7 +85,9 @@ class MyMultiprocess:
             process.join()
 
 
-async def register_oracles(oe):
+async def register_oracles(oracle_manager_addr, moc_token_service, oe):
+    oracle_manager_service = OracleManagerService(oracle_manager_addr)
+
     addr = oe["account"].addr
     print("Registering oracle name=" + oe["name"] + " address=" + addr + " owner=" + oe["owner"].addr)
     info = await oracle_manager_service.get_oracle_registration_info(addr)
@@ -100,10 +99,10 @@ async def register_oracles(oe):
         print("DONE", info)
         return True
 
-    token_approved = await moc_token_service.allowance(oe["owner"].addr, oracle_manager_service.ORACLE_MANAGER_ADDR)
+    token_approved = await moc_token_service.allowance(oe["owner"].addr, oracle_manager_addr)
     print("tokenApproved", token_approved)
     if token_approved < oe["stake"]:
-        tx = await moc_token_service.approve(oracle_manager_service.ORACLE_MANAGER_ADDR,
+        tx = await moc_token_service.approve(oracle_manager_addr,
                                              oe["stake"],
                                              account=oe["owner"],
                                              wait=True)
@@ -120,6 +119,10 @@ async def register_oracles(oe):
 
 
 async def main():
+    conf = await script_settings.configure()
+    oracle_manager_service = OracleManagerService(conf.ORACLE_MANAGER_ADDR)
+    moc_token_service = MocTokenService(await oracle_manager_service.get_token_addr())
+
     print()
     print("MoC Oracle Network Simulator")
     print("=================================")
@@ -143,7 +146,7 @@ async def main():
 
     print("1. Oracle registration stage.")
     print("-----------------------------")
-    registration = [await register_oracles(oe) for oe in oracleList]
+    registration = [await register_oracles(conf.ORACLE_MANAGER_ADDR, moc_token_service, oe) for oe in oracleList]
     if not all(registration):
         quit(1)
 

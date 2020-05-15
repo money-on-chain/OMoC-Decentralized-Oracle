@@ -15,6 +15,9 @@ class OracleService:
     def __init__(self, oracle_manager_service: OracleManagerService):
         self.oracle_manager_service = oracle_manager_service
 
+    async def get_token_addr(self):
+        return await self.oracle_manager_service.get_token_addr()
+
     async def get_all_oracles_info(self):
         oracles = {}
         it = await self.oracle_manager_service.get_registered_oracle_head()

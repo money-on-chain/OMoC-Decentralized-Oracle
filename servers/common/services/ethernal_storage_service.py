@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 class EternalStorageService:
     ETERNAL_STORAGE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "EternalStorageGobernanza.json")
     ETERNAL_STORAGE_ABI = ETERNAL_STORAGE_DATA["abi"]
-    ETERNAL_STORAGE_ADDR = blockchain.parse_addr(ETERNAL_STORAGE_DATA["networks"][str(settings.NETWORK_ID)]["address"])
+    #ETERNAL_STORAGE_ADDR = blockchain.parse_addr(ETERNAL_STORAGE_DATA["networks"][str(settings.NETWORK_ID)]["address"])
 
-    def __init__(self, addr=ETERNAL_STORAGE_ADDR, abi=ETERNAL_STORAGE_ABI):
+    def __init__(self, addr, abi=ETERNAL_STORAGE_ABI):
         self._eternal_storage_contract = blockchain.get_contract(addr, abi)
 
     async def registry_call(self, method, text: str):

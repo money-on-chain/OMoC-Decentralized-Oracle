@@ -18,9 +18,10 @@ SupportersDetailedBalance = typing.NamedTuple("SupportersDetailedBalance",
 class SupportersService:
     SUPPORTERS_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "SupportersVested.json")
     SUPPORTERS_ABI = SUPPORTERS_DATA["abi"]
-    SUPPORTERS_ADDR = blockchain.parse_addr(SUPPORTERS_DATA["networks"][str(settings.NETWORK_ID)]["address"])
 
-    def __init__(self, addr=SUPPORTERS_ADDR, abi=SUPPORTERS_ABI):
+    # SUPPORTERS_ADDR = blockchain.parse_addr(SUPPORTERS_DATA["networks"][str(settings.NETWORK_ID)]["address"])
+
+    def __init__(self, addr, abi=SUPPORTERS_ABI):
         self._supporters_contract = blockchain.get_contract(addr, abi)
 
     async def supporters_call(self, method, *args, **kw):
@@ -28,6 +29,9 @@ class SupportersService:
 
     async def supporters_execute(self, method, *args, account: BlockchainAccount = None, wait=False, **kw):
         return await blockchain.bc_execute(self._supporters_contract, method, *args, account=account, wait=wait, **kw)
+
+    async def get_token_addr(self):
+        return await self.supporters_call("mocToken")
 
     async def distribute(self, account: BlockchainAccount = None, wait=False):
         return await self.supporters_execute("distribute", account=account, wait=wait)

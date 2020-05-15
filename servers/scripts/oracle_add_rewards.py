@@ -6,13 +6,13 @@ from common.services.oracle_manager_service import OracleManagerService
 from oracle.src.oracle_service import OracleService
 from scripts import script_settings
 
-oracle_manager_service = OracleManagerService()
-oracle_service = OracleService(oracle_manager_service)
-moc_token_service = MocTokenService()
-
 
 # Take from scheduler addr into reward bag addr
 async def main():
+    conf = await script_settings.configure()
+    oracle_service = OracleService(OracleManagerService(conf.ORACLE_MANAGER_ADDR))
+    moc_token_service = MocTokenService(await oracle_service.get_token_addr())
+
     for cp in script_settings.USE_COIN_PAIR:
         cps = await oracle_service.get_coin_pair_service(cp)
         print(cp, " REWARDS BEFORE: ", await cps.get_available_reward_fees())

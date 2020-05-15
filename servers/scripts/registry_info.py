@@ -4,6 +4,7 @@ from colorlog import ColoredFormatter
 
 from common import helpers
 from common.services.ethernal_storage_service import EternalStorageService
+from oracle.src import oracle_settings
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 
 
@@ -15,13 +16,11 @@ async def main():
     logger.setLevel(logging.INFO)
     logger.addHandler(handler)
 
-    b = "ORACLE_STAKE_LIMIT_MULTIPLICATOR"
-    k = "MOC_ORACLE\\1\\" + b
-    registry = EternalStorageService()
-    print("--------------------------------> RESULT", await registry.get_uint(k))
-
-    loop = OracleConfigurationLoop(registry)
-    await loop.initialize()
+    loop = OracleConfigurationLoop(EternalStorageService(oracle_settings.get_registry_addr()))
+    for (p, param) in loop.parameters.items():
+        p_path = loop.get_registry_path(p)
+        print(p, await param["blockchain"](p_path))
+        print("\t", param["description"])
 
 
 if __name__ == '__main__':

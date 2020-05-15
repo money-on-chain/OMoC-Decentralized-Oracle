@@ -6,9 +6,9 @@ from common.services.blockchain import BlockChainAddress, BlockchainAccount
 class MocTokenService:
     MOC_ERC20_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "TestMOC.json")
     MOC_ERC20_ABI = MOC_ERC20_DATA["abi"]
-    MOC_ERC20_ADDR = blockchain.parse_addr(MOC_ERC20_DATA["networks"][str(settings.NETWORK_ID)]["address"])
+    # MOC_ERC20_ADDR = blockchain.parse_addr(MOC_ERC20_DATA["networks"][str(settings.NETWORK_ID)]["address"])
 
-    def __init__(self, addr=MOC_ERC20_ADDR, abi=MOC_ERC20_ABI):
+    def __init__(self, addr, abi=MOC_ERC20_ABI):
         self._moc_erc20_contract = blockchain.get_contract(addr, abi)
 
     async def moc_call(self, method, *args, **kw):

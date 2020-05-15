@@ -12,9 +12,10 @@ logger = logging.getLogger(__name__)
 class OracleManagerService:
     ORACLE_MANAGER_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "OracleManager.json")
     ORACLE_MANAGER_ABI = ORACLE_MANAGER_DATA["abi"]
-    ORACLE_MANAGER_ADDR = blockchain.parse_addr(ORACLE_MANAGER_DATA["networks"][str(settings.NETWORK_ID)]["address"])
 
-    def __init__(self, addr=ORACLE_MANAGER_ADDR, abi=ORACLE_MANAGER_ABI):
+    # ORACLE_MANAGER_ADDR = blockchain.parse_addr(ORACLE_MANAGER_DATA["networks"][str(settings.NETWORK_ID)]["address"])
+
+    def __init__(self, addr, abi=ORACLE_MANAGER_ABI):
         self._oracle_manager_contract = blockchain.get_contract(addr, abi)
 
     async def oracle_manager_call(self, method, *args, **kw):
@@ -23,6 +24,9 @@ class OracleManagerService:
     async def oracle_manager_execute(self, method, *args, account: BlockchainAccount = None, wait=False, **kw):
         return await blockchain.bc_execute(self._oracle_manager_contract, method, *args,
                                            account=account, wait=wait, **kw)
+
+    async def get_token_addr(self):
+        return await self.oracle_manager_call("token")
 
     async def get_min_oracle_owner_stake(self):
         return await self.oracle_manager_call("minOracleOwnerStake")

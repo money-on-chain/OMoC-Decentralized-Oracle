@@ -6,14 +6,15 @@ from common.services.oracle_manager_service import OracleManagerService
 from oracle.src.oracle_service import OracleService
 from scripts import script_settings
 
-oracle_manager_service = OracleManagerService()
-oracle_service = OracleService(oracle_manager_service)
-moc_token_service = MocTokenService()
-
 
 async def main():
+    conf = await script_settings.configure()
+    oracle_manager_service = OracleManagerService(conf.ORACLE_MANAGER_ADDR)
+    oracle_service = OracleService(oracle_manager_service)
+    moc_token_service = MocTokenService(await oracle_service.get_token_addr())
+
     print('--------------------------------------------------------------------------------------------------')
-    print("Min oracle owner stake", await  oracle_manager_service.get_min_oracle_owner_stake())
+    print("Min oracle owner stake", await oracle_manager_service.get_min_oracle_owner_stake())
     for cp in script_settings.USE_COIN_PAIR:
         print('--------------------------------------------------------------------------------------------------')
         print('=========== COIN PAIR:', cp)

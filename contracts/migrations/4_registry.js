@@ -1,6 +1,5 @@
 'use strict';
 const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
-const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
 
 stdout.silent(false);
 
@@ -12,6 +11,7 @@ async function deploy(deployer, networkName, accounts) {
 
     // Deployed in 2_moc_gobernanza
     const governorOwner = accounts[0];
+    const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
     const governor = await Governor.deployed();
     const governorAddr = governor.address;
     console.log("governorAddr", governorAddr, 'owner', governorOwner);
@@ -22,6 +22,17 @@ async function deploy(deployer, networkName, accounts) {
     );
     const proxyAdminAddr = networkFile.proxyAdminAddress;
     console.log("proxyAdminAddr ", proxyAdminAddr);
+
+    // Deployed in 3_deploy
+    const OracleManager = artifacts.require('../moc-gobernanza/contracts/Governance/OracleManager.sol');
+    const oracleManager = await OracleManager.deployed();
+    const oracleManagerAddr = oracleManager.address;
+    console.log("oracleManagerAddr", oracleManagerAddr);
+
+    const SupportersVested = artifacts.require('../moc-gobernanza/contracts/Governance/SupportersVested.sol');
+    const supportersVested = await SupportersVested.deployed();
+    const supportersVestedAddr = supportersVested.address;
+    console.log("supportersVestedAddr", supportersVestedAddr);
 
 
     console.log("Create EternalStorageGobernanza Proxy");
@@ -40,7 +51,7 @@ async function deploy(deployer, networkName, accounts) {
     await scall.initialize(governorAddr);
 
     const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
-    const change = await MocRegistryInitChange.new(ethernalStorage.options.address);
+    const change = await MocRegistryInitChange.new(ethernalStorage.options.address, oracleManagerAddr, supportersVestedAddr);
     console.log("Initialize registry/ethernalStorage for MOC Oracles", change.address, 'via governor', governorAddr);
     await governor.executeChange(change.address, {from: governorOwner});
 }

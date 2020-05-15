@@ -4,12 +4,12 @@ from common.services.moc_token_service import MocTokenService
 from common.services.supporters_service import SupportersService
 from scripts import script_settings
 
-supporters_service = SupportersService()
-moc_token_service = MocTokenService()
-
 
 # Take from scheduler addr into reward bag addr
 async def main():
+    conf = await script_settings.configure()
+    supporters_service = SupportersService(conf.SUPPORTERS_VESTED_ADDR)
+    moc_token_service = MocTokenService(await supporters_service.get_token_addr())
     available_mocs = await moc_token_service.balance_of(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr)
     print("AVAILABLE MOCS: ", available_mocs)
     if available_mocs < script_settings.INITIAL_STAKE:
@@ -24,10 +24,10 @@ async def main():
           await supporters_service.detailed_balance_of(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr))
 
     token_approved = await moc_token_service.allowance(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr,
-                                                       supporters_service.SUPPORTERS_ADDR)
+                                                       conf.SUPPORTERS_VESTED_ADDR)
     print("tokenApproved", token_approved)
     if token_approved < script_settings.INITIAL_STAKE:
-        tx = await moc_token_service.approve(supporters_service.SUPPORTERS_ADDR,
+        tx = await moc_token_service.approve(conf.SUPPORTERS_VESTED_ADDR,
                                              script_settings.INITIAL_STAKE,
                                              account=script_settings.SCRIPT_REWARD_BAG_ACCOUNT,
                                              wait=True)
