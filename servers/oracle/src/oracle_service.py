@@ -3,17 +3,18 @@ from typing import List
 
 from common.services import blockchain
 from common.services.blockchain import is_error
-from common.services.coin_pair_price_service import CoinPairPriceService
+from common.services.contract_factory_service import ContractFactoryService
 from common.services.oracle_dao import CoinPair
-from common.services.oracle_manager_service import OracleManagerService
 from oracle.src import oracle_settings
+from oracle.src.oracle_coin_pair_service import OracleCoinPairService
 
 logger = logging.getLogger(__name__)
 
 
 class OracleService:
-    def __init__(self, oracle_manager_service: OracleManagerService):
-        self.oracle_manager_service = oracle_manager_service
+    def __init__(self, contract_factory: ContractFactoryService, oracle_manager_addr: str):
+        self.contract_factory = contract_factory
+        self.oracle_manager_service = contract_factory.get_oracle_manager(oracle_manager_addr)
 
     async def get_token_addr(self):
         return await self.oracle_manager_service.get_token_addr()
@@ -33,13 +34,15 @@ class OracleService:
             oracles[oracle.addr] = oracle
         return oracles
 
-    async def get_coin_pair_service(self, coin_pair: CoinPair) -> CoinPairPriceService:
-        bc_data = await self.oracle_manager_service.get_coin_pair_info(coin_pair)
-        if is_error(bc_data):
-            return bc_data
-        return CoinPairPriceService(self.oracle_manager_service, bc_data)
+    # CoinPairPriceService factory
+    async def get_coin_pair_service(self, coin_pair: CoinPair) -> OracleCoinPairService:
+        coin_pair_info = await self.oracle_manager_service.get_coin_pair_info(coin_pair)
+        if is_error(coin_pair_info):
+            return coin_pair_info
+        coin_pair_price_service = self.contract_factory.get_coin_pair_price(coin_pair_info.addr)
+        return OracleCoinPairService(coin_pair_price_service, self.oracle_manager_service, coin_pair_info)
 
-    async def get_all_coin_pair_services(self) -> List[CoinPairPriceService]:
+    async def get_all_coin_pair_services(self) -> List[OracleCoinPairService]:
         coin_pairs = await self.oracle_manager_service.get_all_coin_pair()
         if is_error(coin_pairs):
             return coin_pairs
@@ -53,7 +56,7 @@ class OracleService:
             ret = [x for x in ret if str(x.coin_pair) in oracle_settings.ORACLE_COIN_PAIR_FILTER]
         return ret
 
-    async def get_subscribed_coin_pair_services(self, addr) -> List[CoinPairPriceService]:
+    async def get_subscribed_coin_pair_services(self, addr) -> List[OracleCoinPairService]:
         ret = await self.get_all_coin_pair_services()
         if is_error(ret):
             return ret

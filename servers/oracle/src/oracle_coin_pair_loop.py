@@ -11,10 +11,9 @@ from common import crypto, settings, helpers
 from common.bg_task_executor import BgTaskExecutor
 from common.crypto import verify_signature
 from common.services.blockchain import is_error
-from common.services.coin_pair_price_service import CoinPairPriceService
-from common.services.oracle_dao import OracleRoundInfo
 from oracle.src import monitor, oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfoLoop
+from oracle.src.oracle_coin_pair_service import OracleCoinPairService, FullOracleRoundInfo
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_turn import OracleTurn
@@ -29,7 +28,7 @@ OracleSignature = typing.NamedTuple("OracleSignature",
 
 class OracleCoinPairLoop(BgTaskExecutor):
     def __init__(self, conf: OracleConfigurationLoop,
-                 cps: CoinPairPriceService,
+                 cps: OracleCoinPairService,
                  price_feeder_loop: PriceFeederLoop,
                  vi_loop: OracleBlockchainInfoLoop):
         self._conf = conf
@@ -143,7 +142,7 @@ async def gather_signatures(oracles, params: PublishPriceParams, message, my_sig
     return [x.signature for x in sorted_sigs]
 
 
-async def get_signature(oracle: OracleRoundInfo, params: PublishPriceParams, message, my_signature, timeout=10):
+async def get_signature(oracle: FullOracleRoundInfo, params: PublishPriceParams, message, my_signature, timeout=10):
     target_uri = oracle.internetName + "/sign/"
     logger.info("%s : Trying to get signatures from: %s == %s" % (params.coin_pair, target_uri, oracle.addr), )
     try:

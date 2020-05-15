@@ -1,5 +1,4 @@
 from common import helpers
-from common.services.oracle_manager_service import OracleManagerService
 from scripts import script_settings
 
 
@@ -9,8 +8,7 @@ async def main():
     print("ORACLE ADDR", oracle_addr)
     print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
 
-    conf = await script_settings.configure()
-    oracle_manager_service = OracleManagerService(conf.ORACLE_MANAGER_ADDR)
+    conf, oracle_service, moc_token_service, oracle_manager_service = await script_settings.configure_oracle()
 
     registered = await oracle_manager_service.is_oracle_registered(oracle_addr)
     if not registered:

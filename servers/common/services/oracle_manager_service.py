@@ -1,29 +1,22 @@
 import logging
 from typing import List
 
-from common import helpers, settings
-from common.services import blockchain
-from common.services.blockchain import BlockChainAddress, BlockchainAccount, is_error
+from common.services.blockchain import BlockChainAddress, BlockchainAccount, is_error, BlockChainContract
 from common.services.oracle_dao import CoinPair, CoinPairInfo, OracleRegistrationInfo
 
 logger = logging.getLogger(__name__)
 
 
 class OracleManagerService:
-    ORACLE_MANAGER_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "OracleManager.json")
-    ORACLE_MANAGER_ABI = ORACLE_MANAGER_DATA["abi"]
 
-    # ORACLE_MANAGER_ADDR = blockchain.parse_addr(ORACLE_MANAGER_DATA["networks"][str(settings.NETWORK_ID)]["address"])
-
-    def __init__(self, addr, abi=ORACLE_MANAGER_ABI):
-        self._oracle_manager_contract = blockchain.get_contract(addr, abi)
+    def __init__(self, contract: BlockChainContract):
+        self._contract = contract
 
     async def oracle_manager_call(self, method, *args, **kw):
-        return await blockchain.bc_call(self._oracle_manager_contract, method, *args, **kw)
+        return await self._contract.bc_call(method, *args, **kw)
 
     async def oracle_manager_execute(self, method, *args, account: BlockchainAccount = None, wait=False, **kw):
-        return await blockchain.bc_execute(self._oracle_manager_contract, method, *args,
-                                           account=account, wait=wait, **kw)
+        return await self._contract.bc_execute(method, *args, account=account, wait=wait, **kw)
 
     async def get_token_addr(self):
         return await self.oracle_manager_call("token")

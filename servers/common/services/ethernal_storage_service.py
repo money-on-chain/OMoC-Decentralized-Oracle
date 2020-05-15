@@ -1,24 +1,20 @@
 import logging
 from decimal import Decimal
 
-from common import helpers, settings
 from common.services import blockchain
-from common.services.blockchain import is_error
+from common.services.blockchain import is_error, BlockChainContract
 
 logger = logging.getLogger(__name__)
 
 
 class EternalStorageService:
-    ETERNAL_STORAGE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "EternalStorageGobernanza.json")
-    ETERNAL_STORAGE_ABI = ETERNAL_STORAGE_DATA["abi"]
-    #ETERNAL_STORAGE_ADDR = blockchain.parse_addr(ETERNAL_STORAGE_DATA["networks"][str(settings.NETWORK_ID)]["address"])
 
-    def __init__(self, addr, abi=ETERNAL_STORAGE_ABI):
-        self._eternal_storage_contract = blockchain.get_contract(addr, abi)
+    def __init__(self, contract: BlockChainContract):
+        self._contract = contract
 
     async def registry_call(self, method, text: str):
         h = blockchain.keccak256(text=text)
-        return await blockchain.bc_call(self._eternal_storage_contract, method, h)
+        return await self._contract.bc_call(method, h)
 
     async def get_uint(self, text: str):
         return await self.registry_call("getUint", text)

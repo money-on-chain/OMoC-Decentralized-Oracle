@@ -3,7 +3,7 @@ from starlette.datastructures import Secret
 
 from common.ganache_accounts import GANACHE_ACCOUNTS
 from common.services.blockchain import BlockchainAccount
-from common.services.oracle_dao import CoinPair, PriceWithTimestamp, OracleRoundInfo
+from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
 from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
 from oracle.src.oracle_publish_message import PublishPriceParams

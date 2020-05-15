@@ -3,9 +3,7 @@ import logging
 from typing import List
 
 from common.bg_task_executor import BgTaskExecutor
-from common.services.ethernal_storage_service import EternalStorageService
-from common.services.oracle_manager_service import OracleManagerService
-from common.services.supporters_service import SupportersService
+from common.services.contract_factory_service import LocalContractFactoryService
 from oracle.src import oracle_settings, monitor
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 from oracle.src.oracle_loop import OracleLoop
@@ -18,7 +16,8 @@ logger = logging.getLogger(__name__)
 class MainExecutor:
 
     def __init__(self):
-        self.eternal_storage_service = EternalStorageService(oracle_settings.get_registry_addr())
+        self.cf = LocalContractFactoryService()
+        self.eternal_storage_service = self.cf.get_eternal_storage(oracle_settings.get_registry_addr())
         self.conf = OracleConfigurationLoop(self.eternal_storage_service)
         self.tasks: List[BgTaskExecutor] = [self.conf]
 
@@ -32,9 +31,8 @@ class MainExecutor:
 
     async def _startup(self):
         await self.conf.initialize()
-        self.supporters_service = SupportersService(self.conf.SUPPORTERS_VESTED_ADDR)
-        oracle_manager_service = OracleManagerService(self.conf.ORACLE_MANAGER_ADDR)
-        self.oracle_service = OracleService(oracle_manager_service)
+        self.supporters_service = self.cf.get_supporters(self.conf.SUPPORTERS_VESTED_ADDR)
+        self.oracle_service = OracleService(self.cf, self.conf.ORACLE_MANAGER_ADDR)
         self.oracle_loop = OracleLoop(self.conf, self.oracle_service)
         self.tasks.append(self.oracle_loop)
 

@@ -1,4 +1,4 @@
-from common.services.oracle_dao import OracleRoundInfo, CoinPair, PriceWithTimestamp
+from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
 from oracle.src.oracle_configuration_loop import OracleTurnConfiguration

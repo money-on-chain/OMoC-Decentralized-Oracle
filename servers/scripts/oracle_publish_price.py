@@ -2,9 +2,7 @@ from random import randint
 
 from common import crypto, helpers
 from common.services.oracle_dao import PriceWithTimestamp
-from common.services.oracle_manager_service import OracleManagerService
 from oracle.src.oracle_publish_message import PublishPriceParams
-from oracle.src.oracle_service import OracleService
 from scripts import script_settings
 
 
@@ -14,9 +12,7 @@ async def main():
     print("ORACLE ADDR", oracle_addr)
     print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
 
-    conf = await script_settings.configure()
-    oracle_manager_service = OracleManagerService(conf.ORACLE_MANAGER_ADDR)
-    oracle_service = OracleService(oracle_manager_service)
+    conf, oracle_service, moc_token_service, oracle_manager_service = await script_settings.configure_oracle()
 
     for cp in script_settings.USE_COIN_PAIR:
         cps = await oracle_service.get_coin_pair_service(cp)

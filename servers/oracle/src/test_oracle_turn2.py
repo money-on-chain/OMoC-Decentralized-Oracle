@@ -1,5 +1,6 @@
-from common.services.oracle_dao import CoinPair, PriceWithTimestamp, OracleRoundInfo
+from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
+from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo
 from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
 from oracle.src.oracle_turn import OracleTurn
 
@@ -8,16 +9,18 @@ conf = OracleTurnConfiguration(2, 0.05, 3, 1)
 points = 0
 current_round_num = 10
 selected_oracles = [
-    OracleRoundInfo('0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d', 'http://127.0.0.1:24004',
-                    14000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
-                    current_round_num),
-    OracleRoundInfo('0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b', 'http://127.0.0.1:24002',
-                    8000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True, current_round_num),
-    OracleRoundInfo('0x28a8746e75304c0780E011BEd21C72cD78cd535E', 'http://127.0.0.1:24000',
-                    2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True, current_round_num),
-    OracleRoundInfo('0x28a8746e75304c0780E011BEd21C72cD78cd535E', 'http://127.0.0.1:24000',
-                    2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, False,
-                    current_round_num)]
+    FullOracleRoundInfo('0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d', 'http://127.0.0.1:24004',
+                        14000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
+                        current_round_num),
+    FullOracleRoundInfo('0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b', 'http://127.0.0.1:24002',
+                        8000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
+                        current_round_num),
+    FullOracleRoundInfo('0x28a8746e75304c0780E011BEd21C72cD78cd535E', 'http://127.0.0.1:24000',
+                        2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
+                        current_round_num),
+    FullOracleRoundInfo('0x28a8746e75304c0780E011BEd21C72cD78cd535E', 'http://127.0.0.1:24000',
+                        2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, False,
+                        current_round_num)]
 
 
 def g(last_pub_block, block_num, blockchain_price):

@@ -1,17 +1,12 @@
 from common import helpers
 from common.services import blockchain
 from common.services.blockchain import is_error
-from common.services.moc_token_service import MocTokenService
-from common.services.oracle_manager_service import OracleManagerService
-from oracle.src.oracle_service import OracleService
 from scripts import script_settings
 
 
 # Take from scheduler addr into reward bag addr
 async def main():
-    conf = await script_settings.configure()
-    oracle_service = OracleService(OracleManagerService(conf.ORACLE_MANAGER_ADDR))
-    moc_token_service = MocTokenService(await oracle_service.get_token_addr())
+    conf, oracle_service, moc_token_service, oracle_manager_service = await script_settings.configure_oracle()
 
     for cp in script_settings.USE_COIN_PAIR:
         cps = await oracle_service.get_coin_pair_service(cp)

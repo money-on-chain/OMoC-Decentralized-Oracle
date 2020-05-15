@@ -1,8 +1,6 @@
 from common import helpers
 from common.services import blockchain
 from common.services.blockchain import is_error
-from common.services.moc_token_service import MocTokenService
-from common.services.oracle_manager_service import OracleManagerService
 from scripts import script_settings
 
 
@@ -11,10 +9,7 @@ async def main():
     oracle_addr = str(oracle_account.addr)
     print("ORACLE ADDR", oracle_addr)
     print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
-
-    conf = await script_settings.configure()
-    oracle_manager_service = OracleManagerService(conf.ORACLE_MANAGER_ADDR)
-    moc_token_service = MocTokenService(await oracle_manager_service.get_token_addr())
+    conf, oracle_service, moc_token_service, oracle_manager_service = await script_settings.configure_oracle()
 
     balance = await blockchain.get_balance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
     print("Oracle owner coinbase balance ", balance)
