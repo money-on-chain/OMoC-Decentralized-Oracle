@@ -1,7 +1,7 @@
 from starlette.datastructures import Secret
 
 from common.services.blockchain import BlockchainAccount
-from common.services.contract_factory_service import LocalContractFactoryService
+from common.services.contract_factory_service import LocalContractFactoryService, ContractFactoryService
 from common.services.oracle_dao import CoinPair
 from common.settings import config
 # https://www.starlette.io/config/
@@ -26,16 +26,19 @@ cf = LocalContractFactoryService()
 
 
 async def configure_oracle():
-    conf = OracleConfigurationLoop(cf.get_eternal_storage(oracle_settings.get_registry_addr()))
+    cf = ContractFactoryService.get_contract_factory_service()
+    conf = OracleConfigurationLoop(cf)
     await conf.initialize()
     oracle_service = OracleService(cf, conf.ORACLE_MANAGER_ADDR)
     moc_token_service = cf.get_moc_token(await oracle_service.get_token_addr())
     oracle_manager_service = cf.get_oracle_manager(conf.ORACLE_MANAGER_ADDR)
-    return conf, oracle_service, moc_token_service, oracle_manager_service
+    oracle_manager_addr = cf.get_addr("ORACLE_MANAGER")
+    return conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr
 
 
 async def configure_supporter():
-    conf = OracleConfigurationLoop(cf.get_eternal_storage(oracle_settings.get_registry_addr()))
+    cf = ContractFactoryService.get_contract_factory_service()
+    conf = OracleConfigurationLoop(cf)
     await conf.initialize()
     supporters_service = cf.get_supporters(conf.SUPPORTERS_VESTED_ADDR)
     moc_token_service = cf.get_moc_token(await supporters_service.get_token_addr())

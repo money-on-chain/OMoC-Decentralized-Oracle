@@ -5,7 +5,7 @@ from scripts import script_settings
 
 
 async def main():
-    conf, oracle_service, moc_token_service, oracle_manager_service = await script_settings.configure_oracle()
+    conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr = await script_settings.configure_oracle()
 
     print('--------------------------------------------------------------------------------------------------')
     print("Min oracle owner stake", await oracle_manager_service.get_min_oracle_owner_stake())

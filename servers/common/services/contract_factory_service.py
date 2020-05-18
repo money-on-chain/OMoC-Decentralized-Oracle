@@ -14,6 +14,21 @@ logger = logging.getLogger(__name__)
 
 
 class ContractFactoryService:
+    FILES = {
+        "ETERNAL_STORAGE": "EternalStorageGobernanza.json"
+        , "MOC_ERC20": "TestMOC.json"
+        , "SUPPORTERS": "SupportersVested.json"
+        , "ORACLE_MANAGER": "OracleManager.json"
+        , "COIN_PAIR_PRICE": "CoinPairPrice.json"
+    }
+    DATA = dict()
+
+    @staticmethod
+    def get_contract_factory_service():
+        if settings.DEVELOP:
+            return LocalContractFactoryService()
+        raise Exception("Unimplemented")
+
     def get_coin_pair_price(self, addr) -> CoinPairService:
         raise Exception("Unimplemented")
 
@@ -28,6 +43,11 @@ class ContractFactoryService:
 
     def get_supporters(self, addr) -> SupportersService:
         raise Exception("Unimplemented")
+
+    def get_addr(self, name):
+        if not settings.DEVELOP:
+            raise Exception("Only for development!!!")
+        return None
 
 
 class MocContractFactoryService(ContractFactoryService):
@@ -49,37 +69,52 @@ class MocContractFactoryService(ContractFactoryService):
     def get_supporters(self):
         raise Exception("Unimplemented")
 
+    def get_addr(self, name):
+        if not settings.DEVELOP:
+            raise Exception("Only for development!!!")
+        return None
+
 
 class LocalContractFactoryService(ContractFactoryService):
-    COIN_PAIR_PRICE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "CoinPairPrice.json")
-    COIN_PAIR_PRICE_ABI = COIN_PAIR_PRICE_DATA["abi"]
-    ETERNAL_STORAGE_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "EternalStorageGobernanza.json")
-    ETERNAL_STORAGE_ABI = ETERNAL_STORAGE_DATA["abi"]
-    ETERNAL_STORAGE_ADDR = blockchain.parse_addr(ETERNAL_STORAGE_DATA["networks"][str(settings.NETWORK_ID)]["address"])
-    MOC_ERC20_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "TestMOC.json")
-    MOC_ERC20_ABI = MOC_ERC20_DATA["abi"]
-    MOC_ERC20_ADDR = blockchain.parse_addr(MOC_ERC20_DATA["networks"][str(settings.NETWORK_ID)]["address"])
-    SUPPORTERS_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "SupportersVested.json")
-    SUPPORTERS_ABI = SUPPORTERS_DATA["abi"]
-    SUPPORTERS_ADDR = blockchain.parse_addr(SUPPORTERS_DATA["networks"][str(settings.NETWORK_ID)]["address"])
-    ORACLE_MANAGER_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "OracleManager.json")
-    ORACLE_MANAGER_ABI = ORACLE_MANAGER_DATA["abi"]
-    # ORACLE_MANAGER_ADDR = blockchain.parse_addr(ORACLE_MANAGER_DATA["networks"][str(settings.NETWORK_ID)]["address"])
-
-    def __init__(self):
-        pass
 
     def get_coin_pair_price(self, addr) -> CoinPairService:
-        return CoinPairService(blockchain.BlockChainContract(addr, self.COIN_PAIR_PRICE_ABI))
+        data = self._read_data("COIN_PAIR_PRICE")
+        return CoinPairService(blockchain.BlockChainContract(addr, data["abi"]))
 
     def get_eternal_storage(self, addr) -> EternalStorageService:
-        return EternalStorageService(blockchain.BlockChainContract(addr, self.ETERNAL_STORAGE_ABI))
+        data = self._read_data("ETERNAL_STORAGE")
+        return EternalStorageService(blockchain.BlockChainContract(addr, data["abi"]))
 
     def get_moc_token(self, addr) -> MocTokenService:
-        return MocTokenService(blockchain.BlockChainContract(addr, self.MOC_ERC20_ABI))
+        data = self._read_data("MOC_ERC20")
+        return MocTokenService(blockchain.BlockChainContract(addr, data["abi"]))
 
     def get_oracle_manager(self, addr) -> OracleManagerService:
-        return OracleManagerService(blockchain.BlockChainContract(addr, self.ORACLE_MANAGER_ABI))
+        data = self._read_data("ORACLE_MANAGER")
+        return OracleManagerService(blockchain.BlockChainContract(addr, data["abi"]))
 
     def get_supporters(self, addr) -> SupportersService:
-        return SupportersService(blockchain.BlockChainContract(addr, self.SUPPORTERS_ABI))
+        data = self._read_data("SUPPORTERS")
+        return SupportersService(blockchain.BlockChainContract(addr, data["abi"]))
+
+    @classmethod
+    def get_addr(cls, name):
+        if not settings.DEVELOP:
+            raise Exception("Only for development!!!")
+        data = cls._read_data(name)
+        networks = data["networks"]
+        network_id = next(iter(networks)) if len(networks) == 1 else settings.DEVELOP_NETWORK_ID
+        logger.info("Using network id %r for %s" % (network_id, name))
+        return blockchain.parse_addr(data["networks"][str(network_id)]["address"])
+
+    @classmethod
+    def _read_data(cls, name):
+        if not settings.DEVELOP:
+            raise Exception("Only for development!!!")
+        if name in cls.DATA:
+            return cls.DATA[name]
+        if name not in cls.FILES:
+            raise ValueError("Invalid file name %s " % name)
+        data = helpers.readfile(settings.CONTRACT_FOLDER, cls.FILES[name])
+        cls.DATA[name] = data
+        return data

@@ -2,8 +2,9 @@ import asyncio
 import logging
 from typing import List
 
+from common import settings
 from common.bg_task_executor import BgTaskExecutor
-from common.services.contract_factory_service import LocalContractFactoryService
+from common.services.contract_factory_service import ContractFactoryService
 from oracle.src import oracle_settings, monitor
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 from oracle.src.oracle_loop import OracleLoop
@@ -16,9 +17,8 @@ logger = logging.getLogger(__name__)
 class MainExecutor:
 
     def __init__(self):
-        self.cf = LocalContractFactoryService()
-        self.eternal_storage_service = self.cf.get_eternal_storage(oracle_settings.get_registry_addr())
-        self.conf = OracleConfigurationLoop(self.eternal_storage_service)
+        self.cf = ContractFactoryService.get_contract_factory_service()
+        self.conf = OracleConfigurationLoop(self.cf)
         self.tasks: List[BgTaskExecutor] = [self.conf]
 
     async def web_server_startup(self):
@@ -41,6 +41,10 @@ class MainExecutor:
         logger.info("    Loop main task interval: " + str(self.conf.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL))
         logger.info("    Loop per-coin task interval: " + str(self.conf.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL))
         logger.info("    Loop blockchain loop interval: " + str(self.conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL))
+        flags = []
+        if settings.DEBUG: flags.append("DEBUG")
+        if settings.DEVELOP: flags.append("DEVELOP")
+        logger.info("    Flags %s" % ",".join(flags))
         if oracle_settings.ORACLE_MONITOR_RUN:
             monitor.log_setup()
             self.tasks.append(monitor.MonitorTask(self.oracle_service))

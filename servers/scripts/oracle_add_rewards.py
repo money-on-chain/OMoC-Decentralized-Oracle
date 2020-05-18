@@ -6,7 +6,7 @@ from scripts import script_settings
 
 # Take from scheduler addr into reward bag addr
 async def main():
-    conf, oracle_service, moc_token_service, oracle_manager_service = await script_settings.configure_oracle()
+    conf, oracle_service, moc_token_service, oracle_manager, oracle_manager_addr = await script_settings.configure_oracle()
 
     for cp in script_settings.USE_COIN_PAIR:
         cps = await oracle_service.get_coin_pair_service(cp)

@@ -83,7 +83,7 @@ class MyMultiprocess:
             process.join()
 
 
-async def register_oracles(oracle_manager_service, moc_token_service, oe):
+async def register_oracles(oracle_manager_addr, oracle_manager_service, moc_token_service, oe):
     addr = oe["account"].addr
     print("Registering oracle name=" + oe["name"] + " address=" + addr + " owner=" + oe["owner"].addr)
     info = await oracle_manager_service.get_oracle_registration_info(addr)
@@ -115,8 +115,7 @@ async def register_oracles(oracle_manager_service, moc_token_service, oe):
 
 
 async def main():
-    conf, oracle_service, moc_token_service, oracle_manager_service = await script_settings.configure_oracle()
-
+    conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr = await script_settings.configure_oracle()
     print()
     print("MoC Oracle Network Simulator")
     print("=================================")
@@ -140,7 +139,8 @@ async def main():
 
     print("1. Oracle registration stage.")
     print("-----------------------------")
-    registration = [await register_oracles(oracle_manager_service, moc_token_service, oe) for oe in oracleList]
+    registration = [await register_oracles(oracle_manager_addr, oracle_manager_service, moc_token_service, oe) for oe in
+                    oracleList]
     if not all(registration):
         quit(1)
 
