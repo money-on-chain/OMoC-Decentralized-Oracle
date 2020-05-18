@@ -46,10 +46,11 @@ async function deploy(deployer, networkName, accounts) {
     });
     console.log("EternalStorageGobernanza: ", ethernalStorage.options.address, 'proxyAdmin', proxyAdminAddr);
 
-    console.log("Initialize ethernalStorage", 'governor', governorAddr);
+    console.log("Initialize ethernalStorage governor", governorAddr);
     const scall = await artifacts.require("EternalStorageGobernanza").at(ethernalStorage.options.address);
     await scall.initialize(governorAddr);
 
+    console.log("Deploy change contract", governorAddr);
     const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
     const change = await MocRegistryInitChange.new(ethernalStorage.options.address, oracleManagerAddr, supportersVestedAddr);
     console.log("Initialize registry/ethernalStorage for MOC Oracles", change.address, 'via governor', governorAddr);
