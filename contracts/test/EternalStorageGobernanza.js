@@ -95,43 +95,43 @@ contract("EternalStorageGobernanza", async (accounts) => {
 	it("Should not get decimal passing a key that hasn't been used", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.getDecimal(keys2.decimal),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should not get uint passing a key that hasn't been used", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.getUint(keys2.uInt),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should not get string passing a key that hasn't been used", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.getString(keys2.string),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should not get address passing a key that hasn't been used", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.getAddress(keys2.address),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should not get bytes passing a key that hasn't been used", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.getBytes(keys2.bytes),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should not get bool passing a key that hasn't been used", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.getBool(keys2.bool),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should not get int passing a key that hasn't been used", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.getInt(keys2.int),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 
@@ -222,49 +222,49 @@ contract("EternalStorageGobernanza", async (accounts) => {
 		await this.eternalStorageGobernanza.deleteDecimal(keys2.decimal, { from: GOVERNOR });
 		await expectRevert(
 			this.eternalStorageGobernanza.getDecimal(keys2.decimal),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should delete uint passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteUint(keys2.uInt, { from: GOVERNOR });
 		await expectRevert(
 			this.eternalStorageGobernanza.getUint(keys2.uInt),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should delete string passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteString(keys2.string, { from: GOVERNOR });
 		await expectRevert(
 			this.eternalStorageGobernanza.getString(keys2.string),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should delete address passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteAddress(keys2.address, { from: GOVERNOR });
 		await expectRevert(
 			this.eternalStorageGobernanza.getAddress(keys2.address),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should delete bytes passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteBytes(keys2.bytes, { from: GOVERNOR });
 		await expectRevert(
 			this.eternalStorageGobernanza.getBytes(keys2.bytes),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should delete bool passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteBool(keys2.bool, { from: GOVERNOR });
 		await expectRevert(
 			this.eternalStorageGobernanza.getBool(keys2.bool),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 	it("Should delete int passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteInt(keys2.int, { from: GOVERNOR });
 		await expectRevert(
 			this.eternalStorageGobernanza.getInt(keys2.int),
-			"Missing key"
+			"Key does not match with existent key/value pair"
 		);
 	});
 
