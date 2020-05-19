@@ -53,7 +53,7 @@ ORACLE_RUN = True
 ORACLE_PORT = 5556
 
 # Flag that indicates if the monitor (a module that store information in logfiles) must be run
-ORACLE_MONITOR = False
+ORACLE_MONITOR_RUN = False
 
 # Oracle-only parameters.
 # Account used to publish prices

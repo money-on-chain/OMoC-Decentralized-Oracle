@@ -3,16 +3,14 @@ from starlette.datastructures import Secret
 
 from common.ganache_accounts import GANACHE_ACCOUNTS
 from common.services.blockchain import BlockchainAccount
-from common.services.oracle_dao import CoinPair, PriceWithTimestamp, OracleRoundInfo
-from oracle.src import oracle_settings
+from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
+from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_turn import OracleTurn
 from oracle.src.request_validation import RequestValidation, InvalidTurn
 
-oracle_settings.ORACLE_PRICE_PUBLISH_BLOCKS = 1
-oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS = 3
-
+conf = OracleTurnConfiguration(2, 0.05, 3, 1)
 cp = CoinPair("BTCUSD")
 price_ts_utc = 1
 version = 1
@@ -35,8 +33,10 @@ def rv(oracle_turn, running_oracle, params):
     # Validated elsewhere
     publish_last_pub_block = 3231213
     blockchain_price = 1023
+    oracle_price_reject_delta_pct = 0.05
     exchange_price = blockchain_price * params["price_delta"]
-    return RequestValidation(PublishPriceParams(version,
+    return RequestValidation(oracle_price_reject_delta_pct,
+                             PublishPriceParams(version,
                                                 cp,
                                                 PriceWithTimestamp(publish_price, price_ts_utc),
                                                 running_oracle[0].addr,
@@ -65,7 +65,7 @@ def can_publish(ot, params, is_idx):
 def test_success_oracle_turn():
     # This class monitors the publication block an the price change block
     # if we don't change any of those the internal state doesn't change
-    ot = OracleTurn(cp)
+    ot = OracleTurn(conf, cp)
     params = {
         "block_number": 1,
         "price_delta": 1,
@@ -85,27 +85,27 @@ def test_success_oracle_turn():
     can_publish(ot, params, [1])
 
     # After a price change the fallback start will publish, but after some blocks
-    params["price_delta"] = 1.000000001 + oracle_settings.ORACLE_PRICE_FALLBACK_DELTA_PCT / 100
+    params["price_delta"] = 1.000000001 + conf.price_fallback_delta_pct / 100
     can_publish(ot, params, [1])
-    params["block_number"] = params["block_number"] + oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS - 1
+    params["block_number"] = params["block_number"] + conf.price_fallback_blocks - 1
     can_publish(ot, params, [1])
     # after some block then the primary fallbacks can
-    params["block_number"] = params["block_number"] + oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS
+    params["block_number"] = params["block_number"] + conf.price_fallback_blocks
     can_publish(ot, params, [1, 0])
 
     # After some more blocks the secondary can
-    params["block_number"] = params["block_number"] + oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS
+    params["block_number"] = params["block_number"] + conf.price_fallback_blocks
     can_publish(ot, params, [1, 0, 2])
 
     # After some more blocks everybody can publish
-    params["block_number"] = params["block_number"] + oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS
+    params["block_number"] = params["block_number"] + conf.price_fallback_blocks
     can_publish(ot, params, [1, 0, 2, 3])
 
 
 def test_fail_if_invalid_price():
     # This class monitors the publication block an the price change block
     # if we don't change any of those the internal state doesn't change
-    ot = OracleTurn(cp)
+    ot = OracleTurn(conf, cp)
     params = {
         "block_number": 1,
         "price_delta": 1,

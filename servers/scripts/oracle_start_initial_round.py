@@ -1,13 +1,13 @@
 from common import helpers
 from common.services.blockchain import is_error
-from oracle.src import oracle_service
 from scripts import script_settings
-from scripts.script_settings import PRICE_FETCHER_OWNER_ACCOUNT
 
 
 async def main():
+    conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr = await script_settings.configure_oracle()
+
     for cp in script_settings.USE_COIN_PAIR:
-        cps = await oracle_service.get_oracle_service(cp)
+        cps = await oracle_service.get_coin_pair_service(cp)
         if is_error(cps):
             print("Error getting coin pair service for coin pair", cp, cps)
             continue
@@ -20,7 +20,7 @@ async def main():
         print(repr(round_info))
 
         print("start initial round")
-        tx = await cps.switch_round(account=PRICE_FETCHER_OWNER_ACCOUNT, wait=True)
+        tx = await cps.switch_round(account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT, wait=True)
         print("start initial round", tx)
 
 

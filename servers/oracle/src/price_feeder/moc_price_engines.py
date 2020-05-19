@@ -60,27 +60,6 @@ def closing(thing):
         asyncio.create_task(thing.close())
 
 
-# TODO: USE THIS ONE.
-async def fetch_price_with_accxt():
-    global _last_price_fetch, _last_delta, _last_price_fetch_wei
-
-    with closing(accxt.kraken({
-        'apiKey': "hEvQNMDIeoCJbr7W/ZBb5CGOrx3G0lWF5B3zqa1JBxdZlEaL8EK+D0Mw",
-        'secret': "JaE9wI6Nwgh5oRxiHcVxurwzwBxwc05W/qv/k1srGg4s3EYuXPpNkLLM5NYbbWpM8rCyijIeDavRuqWbU0ZV9A=="})
-    ) as kraken:
-        tick = await kraken.fetch_ticker('BTC/USD')
-    price = (tick["ask"] + tick["bid"]) / 2
-    avg = abs((_last_price_fetch + price) / 2)
-    _last_delta = 0 if avg == 0 else abs(100.0 * ((_last_price_fetch - price) / avg))
-    logger.info(
-        "New Price Fetch: " + str(price) + " Old: " + str(_last_price_fetch) + " Delta pct: " + str(_last_delta))
-    _last_price_fetch = price
-    p = Decimal(price)
-    exp = Decimal("1" + ("0" * oracle_settings.ORACLE_PRICE_DIGITS))
-    _last_price_fetch_wei = int(p * exp)
-    return max(oracle_settings.ORACLE_PRICE_FETCH_RATE, kraken.rateLimit / 1000)
-
-
 class PriceEngineBase(object):
     name = "base_engine"
     description = "Base Engine"

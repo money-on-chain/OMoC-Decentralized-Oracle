@@ -1,9 +1,7 @@
 import logging
 import typing
 
-from common import settings, helpers
-from common.services import blockchain
-from common.services.blockchain import BlockChainAddress, BlockchainAccount, is_error
+from common.services.blockchain import BlockChainAddress, BlockchainAccount, BlockChainContract
 
 logger = logging.getLogger(__name__)
 
@@ -14,48 +12,42 @@ SupportersDetailedBalance = typing.NamedTuple("SupportersDetailedBalance",
                                                ("stopped_in_block", int),
                                                ])
 
-SUPPORTERS_DATA = helpers.readfile(settings.CONTRACT_FOLDER, "SupportersVested.json")
-SUPPORTERS_ABI = SUPPORTERS_DATA["abi"]
-SUPPORTERS_ADDR = blockchain.parse_addr(SUPPORTERS_DATA["networks"][str(settings.NETWORK_ID)]["address"])
-_supporters_contract = blockchain.get_contract(SUPPORTERS_ADDR, SUPPORTERS_ABI)
 
+class SupportersService:
 
-async def supporters_call(method, *args, **kw):
-    return await blockchain.bc_call(_supporters_contract, method, *args, **kw)
+    def __init__(self, contract: BlockChainContract):
+        self._contract = contract
 
+    async def supporters_call(self, method, *args, **kw):
+        return await self._contract.bc_call(method, *args, **kw)
 
-async def supporters_execute(method, *args, account: BlockchainAccount = None, wait=False, **kw):
-    return await blockchain.bc_execute(_supporters_contract, method, *args, account=account, wait=wait, **kw)
+    async def supporters_execute(self, method, *args, account: BlockchainAccount = None, wait=False, **kw):
+        return await self._contract.bc_execute(method, *args, account=account, wait=wait, **kw)
 
+    async def get_token_addr(self):
+        return await self.supporters_call("mocToken")
 
-async def distribute(account: BlockchainAccount = None, wait=False):
-    return await supporters_execute("distribute", account=account, wait=wait)
+    async def distribute(self, account: BlockchainAccount = None, wait=False):
+        return await self.supporters_execute("distribute", account=account, wait=wait)
 
+    async def add_stake(self, mocs: int, account: BlockchainAccount = None, wait=False):
+        return await self.supporters_execute("addStake", mocs, account=account, wait=wait)
 
-async def add_stake(mocs: int, account: BlockchainAccount = None, wait=False):
-    return await supporters_execute("addStake", mocs, account=account, wait=wait)
+    async def stop(self, account: BlockchainAccount = None, wait=False):
+        return await self.supporters_execute("stop", account=account, wait=wait)
 
+    async def restart(self, account: BlockchainAccount = None, wait=False):
+        return await self.supporters_execute("reStake", account=account, wait=wait)
 
-async def stop(account: BlockchainAccount = None, wait=False):
-    return await supporters_execute("stop", account=account, wait=wait)
+    async def withdraw(self, account: BlockchainAccount = None, wait=False):
+        return await self.supporters_execute("withdraw", account=account, wait=wait)
 
+    async def balance_of(self, addr: BlockChainAddress):
+        return await self.supporters_call("balanceOf", addr)
 
-async def restart(account: BlockchainAccount = None, wait=False):
-    return await supporters_execute("reStake", account=account, wait=wait)
+    async def detailed_balance_of(self, addr: BlockChainAddress) -> SupportersDetailedBalance:
+        data = await self.supporters_call("detailedBalanceOf", addr)
+        return SupportersDetailedBalance(*data)
 
-
-async def withdraw(account: BlockchainAccount = None, wait=False):
-    return await supporters_execute("withdraw", account=account, wait=wait)
-
-
-async def balance_of(addr: BlockChainAddress):
-    return await supporters_call("balanceOf", addr)
-
-
-async def detailed_balance_of(addr: BlockChainAddress) -> SupportersDetailedBalance:
-    data = await supporters_call("detailedBalanceOf", addr)
-    return SupportersDetailedBalance(*data)
-
-
-async def is_ready_to_distribute() -> bool:
-    return await supporters_call("isReadyToDistribute")
+    async def is_ready_to_distribute(self) -> bool:
+        return await self.supporters_call("isReadyToDistribute")

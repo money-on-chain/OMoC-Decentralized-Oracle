@@ -1,21 +1,20 @@
 from common import helpers
-from common.services import supporters_service
 from common.services.blockchain import is_error
-from scripts.script_settings import SCHEDULER_ACCOUNT
-
-REWARDS_ACCOUNT = SCHEDULER_ACCOUNT
+from scripts import script_settings
 
 
 # Take from scheduler addr into reward bag addr
 async def main():
-    print("STAKE BEFORE: ", await supporters_service.detailed_balance_of(SCHEDULER_ACCOUNT.addr))
+    conf, supporters_service, moc_token_service = await script_settings.configure_supporter()
+    print("STAKE BEFORE: ",
+          await supporters_service.detailed_balance_of(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr))
 
-    tx = await supporters_service.stop(account=REWARDS_ACCOUNT, wait=True)
+    tx = await supporters_service.stop(account=script_settings.SCRIPT_REWARD_BAG_ACCOUNT, wait=True)
     if is_error(tx):
         print("ERROR IN APPROVE", tx)
         return
-    
-    print("STAKE AFTER: ", await supporters_service.detailed_balance_of(SCHEDULER_ACCOUNT.addr))
+
+    print("STAKE AFTER: ", await supporters_service.detailed_balance_of(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr))
 
 
 if __name__ == '__main__':

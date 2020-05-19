@@ -5,6 +5,7 @@ async-timeout==3.0.1
 attrdict==2.0.1
 attrs==19.3.0
 base58==1.0.3
+bitarray==1.2.1
 ccxt==1.20.3
 certifi==2019.9.11
 cffi==1.13.2
@@ -18,7 +19,7 @@ decorator==4.4.1
 dnspython==1.16.0
 email-validator==1.0.5
 eth-abi==2.0.0
-eth-account==0.4.0
+eth-account==0.5.2
 eth-hash==0.2.0
 eth-keyfile==0.5.1
 eth-keys==0.2.4
@@ -36,6 +37,7 @@ Jinja2==2.10.3
 jsonschema==3.2.0
 lru-dict==1.1.6
 MarkupSafe==1.1.1
+moneyonchain==0.0.19
 more-itertools==8.0.0
 multiaddr==0.0.8
 multidict==4.6.1
@@ -44,6 +46,7 @@ netaddr==0.7.19
 packaging==19.2
 parsimonious==0.8.1
 peewee==3.13.1
+pkg-resources==0.0.0
 pluggy==0.13.1
 protobuf==3.11.1
 py==1.8.0
@@ -72,7 +75,7 @@ uvicorn==0.10.8
 uvloop==0.14.0
 varint==1.0.2
 wcwidth==0.1.7
--e git+https://github.com/ethereum/web3.py@7d26aaccc2db3bcc3fbbcff0af8b36b3af9e2d00#egg=web3
+web3==5.9.0
 websockets==8.1
 yarl==1.1.0
 zipp==0.6.0

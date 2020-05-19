@@ -40,11 +40,7 @@ OracleRegistrationInfo = typing.NamedTuple("OracleRegistrationInfo",
                                             ("owner", str)])
 
 OracleRoundInfo = typing.NamedTuple("OracleRoundInfo",
-                                    [("addr", str),
-                                     ('internetName', str),
-                                     ("stake", int),
-                                     ("owner", str),
-                                     ("points", int),
+                                    [("points", int),
                                      ("selectedInCurrentRound", bool),
                                      ("selectedInRound", int)
                                      ])

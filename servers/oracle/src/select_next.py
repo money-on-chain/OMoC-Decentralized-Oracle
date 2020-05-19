@@ -48,13 +48,12 @@ from typing import List
 
 from hexbytes import HexBytes
 
-from common.services.oracle_dao import OracleRoundInfo
-from oracle.src import oracle_settings
+from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo
 
 logger = logging.getLogger("fastapi")
 
 
-def select_next(last_block_hash: str, oracle_info_list: List[OracleRoundInfo]):
+def select_next(stake_limit_multiplicator, last_block_hash: str, oracle_info_list: List[FullOracleRoundInfo]):
     if len(oracle_info_list) == 0:
         return []
     if len(oracle_info_list) > 32:
@@ -63,7 +62,7 @@ def select_next(last_block_hash: str, oracle_info_list: List[OracleRoundInfo]):
     min_stake = min([int(o.stake) for o in oracle_info_list])
 
     def get_capped_stake(oi):
-        return min(int(oi.stake), min_stake * oracle_settings.ORACLE_STAKE_LIMIT_MULTIPLICATOR)
+        return min(int(oi.stake), min_stake * stake_limit_multiplicator)
 
     l1 = oracle_info_list.copy()
     total_stake = 0
