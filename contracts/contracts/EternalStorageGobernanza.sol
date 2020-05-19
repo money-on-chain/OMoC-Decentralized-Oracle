@@ -91,6 +91,10 @@ contract EternalStorageGobernanza is Governed {
     }
 
     // *** Delete Methods ***
+    function deleteDecimal(bytes32 _key) onlyAuthorizedChanger external {
+        delete decimalStorage[_key];
+    }
+
     function deleteUint(bytes32 _key) onlyAuthorizedChanger external {
         delete uIntStorage[_key];
     }
