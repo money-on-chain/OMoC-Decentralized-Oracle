@@ -1,17 +1,13 @@
 from common import helpers
 from common.services import blockchain
-from common.services.moc_token_service import MocTokenService
-from common.services.supporters_service import SupportersService
 from scripts import script_settings
 
 REWARDS_ACCOUNT = script_settings.SCRIPT_REWARD_BAG_ACCOUNT
 
-supporters_service = SupportersService()
-moc_token_service = MocTokenService()
-
 
 # Take from scheduler addr into reward bag addr
 async def main():
+    conf, supporters_service, moc_token_service = await script_settings.configure_supporter()
     print("isReadyToDistribute: ", await supporters_service.is_ready_to_distribute())
 
     currentblock = await blockchain.get_last_block()

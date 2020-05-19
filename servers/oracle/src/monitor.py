@@ -2,8 +2,8 @@ import logging
 
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import get_last_block, is_error
-from common.services.coin_pair_price_service import CoinPairPriceService
 from oracle.src import oracle_settings
+from oracle.src.oracle_coin_pair_service import OracleCoinPairService
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 from oracle.src.oracle_service import OracleService
 from oracle.src.select_next import select_next
@@ -11,7 +11,7 @@ from oracle.src.select_next import select_next
 
 class MonitorLoopByCoinPair:
 
-    def __init__(self, conf: OracleConfigurationLoop, logger, cps: CoinPairPriceService):
+    def __init__(self, conf: OracleConfigurationLoop, logger, cps: OracleCoinPairService):
         self._conf = conf
         self._logger = logger
         self._cps = cps

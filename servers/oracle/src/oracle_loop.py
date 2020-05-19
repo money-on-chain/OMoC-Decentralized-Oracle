@@ -3,10 +3,10 @@ import typing
 
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import is_error
-from common.services.coin_pair_price_service import CoinPairPriceService
 from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfoLoop, OracleBlockchainInfo
 from oracle.src.oracle_coin_pair_loop import OracleCoinPairLoop
+from oracle.src.oracle_coin_pair_service import OracleCoinPairService
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_service import OracleService
@@ -18,7 +18,7 @@ from oracle.src.scheduler_oracle_loop import SchedulerCoinPairLoop
 logger = logging.getLogger(__name__)
 
 OracleLoopTasks = typing.NamedTuple("OracleLoopTasks",
-                                    [("coin_pair_service", CoinPairPriceService),
+                                    [("coin_pair_service", OracleCoinPairService),
                                      ("tasks", typing.List[BgTaskExecutor]),
                                      ("coin_pair_loop", OracleCoinPairLoop),
                                      ("price_feeder_loop", PriceFeederLoop),

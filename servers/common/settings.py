@@ -9,7 +9,7 @@ from common.helpers import parseTimeDelta
 config = Config(".env")
 
 # Block chain network id
-NETWORK_ID = config('NETWORK_ID', cast=int)
+DEVELOP_NETWORK_ID = config('DEVELOP_NETWORK_ID', cast=int)
 # Block chain server url
 NODE_URL = config('NODE_URL', cast=URL)
 # Block chain chain id
@@ -26,7 +26,8 @@ WEB3_TIMEOUT = parseTimeDelta(config('WEB3_TIMEOUT ', cast=str, default="30 secs
 
 # Turn on debug?
 UVICOIN_DEBUG = config('UVICOIN_DEBUG', cast=bool, default=False)
-DEBUG = config('DEBUG', cast=bool, default=False)
+DEVELOP = config('DEVELOP', cast=bool, default=False)
+DEBUG = config('DEBUG', cast=bool, default=DEVELOP)
 LOG_LEVEL = config('LOG_LEVEL', cast=str, default="info")
 # Add some development endpoints
 DEBUG_ENDPOINTS = config('DEBUG_ENDPOINTS', cast=bool, default=False)

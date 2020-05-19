@@ -1,19 +1,16 @@
 from common import helpers
 from common.services import blockchain
-from common.services.oracle_manager_service import OracleManagerService
-from oracle.src.oracle_service import OracleService
 from scripts import script_settings
-
-ORACLE_ACCOUNT = script_settings.SCRIPT_ORACLE_ACCOUNT
-ORACLE_ADDR = str(ORACLE_ACCOUNT.addr)
-print("ORACLE ADDR", ORACLE_ADDR)
-print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
-
-oracle_manager_service = OracleManagerService()
-oracle_service = OracleService(oracle_manager_service)
 
 
 async def main():
+    oracle_account = script_settings.SCRIPT_ORACLE_ACCOUNT
+    oracle_addr = str(oracle_account.addr)
+    print("ORACLE ADDR", oracle_addr)
+    print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
+
+    conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr = await script_settings.configure_oracle()
+
     for cp in script_settings.USE_COIN_PAIR:
         balance = await blockchain.get_balance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
         print(cp, " Oracle owner coinbase balance ", balance)
@@ -22,13 +19,13 @@ async def main():
             return
 
         # register oracle
-        is_subscribed = await oracle_manager_service.is_subscribed(cp, ORACLE_ADDR)
+        is_subscribed = await oracle_manager_service.is_subscribed(cp, oracle_addr)
         if is_subscribed:
             print(cp, " ORACLE IS SUBSCRIBED, CANT REMOVE")
             return
 
         cps = await oracle_service.get_coin_pair_service(cp)
-        registered = await cps.get_oracle_round_info(ORACLE_ADDR)
+        registered = await cps.get_oracle_round_info(oracle_addr)
         print(cp, " registered info", registered)
 
         round_info = await cps.get_round_info()
@@ -40,7 +37,7 @@ async def main():
             print("must be idle for", num_idle_rounds, 'rounds and was only', round_number - registered.selectedInRound)
             return
 
-        tx = await oracle_manager_service.remove_oracle(ORACLE_ADDR,
+        tx = await oracle_manager_service.remove_oracle(oracle_addr,
                                                         account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                                         wait=True)
         print("remove oracle", tx)
