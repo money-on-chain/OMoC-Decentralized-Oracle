@@ -9,17 +9,22 @@ The Backend service will send emails with the content of the logs from Oracle se
 If your your machine is based on the AMI from AWS, the following commands will set up your machine and start the services.
 
 
-1. Configure the data of oracles and SMTP email following the instructions in the script:
+1. Go to the OMoC folder an update your repo.
+
+	`cd ..(VOLVER)`	
+	`git pull`
+	
+2. Configure the data of oracles and SMTP email following the instructions in the script:
 
 	`python3 scripts/setAdress.py`
 
-2. Enable supervisor as a service when starting the machine:
+3. Enable supervisor as a service when starting the machine:
 
 	`sudo systemctl enable supervisor.service`
-3. Start supervisor:
+4. Start supervisor:
 
 	`sudo supervisord`
-4. Check if oracle and backend service's are running:
+5. Check if oracle and backend service's are running:
 
 	`supervisorctl status`
 
