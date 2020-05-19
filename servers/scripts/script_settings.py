@@ -1,7 +1,7 @@
 from starlette.datastructures import Secret
 
 from common.services.blockchain import BlockchainAccount
-from common.services.contract_factory_service import LocalContractFactoryService, ContractFactoryService
+from common.services.contract_factory_service import BuildDirContractFactoryService, ContractFactoryService
 from common.services.oracle_dao import CoinPair
 from common.settings import config
 # https://www.starlette.io/config/
@@ -22,7 +22,7 @@ SCRIPT_ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
 
 NEEDED_APROVE_BAG = 1000000000000000
 
-cf = LocalContractFactoryService()
+cf = BuildDirContractFactoryService()
 
 
 async def configure_oracle():

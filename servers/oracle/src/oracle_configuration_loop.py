@@ -3,7 +3,6 @@ import typing
 from decimal import Decimal
 from enum import Enum
 
-from common import settings
 from common.bg_task_executor import BgTaskExecutor
 from common.helpers import parseTimeDelta
 from common.services.blockchain import is_error
@@ -27,15 +26,14 @@ class OracleConfigurationLoop(BgTaskExecutor):
         configuration_default_blockchain = 3
 
     def __init__(self, cf: ContractFactoryService):
-        registry_addr = config('ORACLE_REGISTRY_ADDR', cast=str, default=cf.get_addr("ETERNAL_STORAGE"))
+        eternal_storage_addr = cf.get_addr("ETERNAL_STORAGE")
+        registry_addr = config('ORACLE_REGISTRY_ADDR', cast=str, default=eternal_storage_addr)
         if registry_addr is None:
             raise ValueError("Missing ORACLE_REGISTRY_ADDR!!!")
+        logger.info("Configuration Registry address: %s" % registry_addr)
         self._eternal_storage_service = cf.get_eternal_storage(registry_addr)
-        supporters_vested_addr = None
-        oracle_manager_addr = None
-        if settings.DEVELOP:
-            supporters_vested_addr = cf.get_addr("SUPPORTERS")
-            oracle_manager_addr = cf.get_addr("ORACLE_MANAGER")
+        supporters_vested_addr = cf.get_addr("SUPPORTERS")
+        oracle_manager_addr = cf.get_addr("ORACLE_MANAGER")
 
         self.parameters = {
             "SUPPORTERS_VESTED_ADDR": {
