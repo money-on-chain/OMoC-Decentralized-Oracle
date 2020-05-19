@@ -1,7 +1,7 @@
 import logging
 
 from common.bg_task_executor import BgTaskExecutor
-from common.services.blockchain import get_last_block, is_error
+from common.services.blockchain import BlockChain, is_error
 from oracle.src import oracle_settings
 from oracle.src.oracle_coin_pair_service import OracleCoinPairService
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
@@ -40,7 +40,8 @@ class MonitorLoopByCoinPair:
 
 class MonitorTask(BgTaskExecutor):
 
-    def __init__(self, oracle_service: OracleService):
+    def __init__(self, blockchain: BlockChain, oracle_service: OracleService):
+        self.blockchain = blockchain
         self.oracle_service = oracle_service
         self.logger = logging.getLogger("published_price")
         self.prev_block = self.pre_pubblock_nr = None
@@ -49,7 +50,7 @@ class MonitorTask(BgTaskExecutor):
 
     async def monitor_loop(self):
         # blockchain-block
-        block = await get_last_block()
+        block = await self.blockchain.get_last_block()
         if is_error(block):
             self.logger.error("Error getting last block %r" % (block,))
             return 5

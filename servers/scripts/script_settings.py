@@ -23,6 +23,7 @@ SCRIPT_ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
 NEEDED_APROVE_BAG = 1000000000000000
 
 cf = BuildDirContractFactoryService()
+blockchain = cf.blockchain
 
 
 async def configure_oracle():

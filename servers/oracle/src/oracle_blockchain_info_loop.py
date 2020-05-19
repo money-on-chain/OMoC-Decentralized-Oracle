@@ -1,10 +1,11 @@
 import asyncio
 import logging
 import time
+import traceback
 import typing
 
+from common import settings
 from common.bg_task_executor import BgTaskExecutor
-from common.services import blockchain
 from common.services.blockchain import is_error
 from common.services.oracle_dao import CoinPair
 from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo, OracleCoinPairService
@@ -61,11 +62,15 @@ class OracleBlockchainInfoLoop(BgTaskExecutor):
 
         cors = [self._cps.get_selected_oracles_info(),
                 self._cps.get_price(),
-                blockchain.get_last_block(),
+                self._cps.get_last_block(),
                 _get_last_pub_data()]
         ret = await asyncio.gather(*cors, return_exceptions=True)
-        if any(is_error(elem) for elem in ret):
-            logger.warning("Error getting blockchain info %r" % (ret,))
+        if any(is_error(elem) or isinstance(elem, Exception) for elem in ret):
+            logger.error("Error getting blockchain info %r" % (ret,))
+            if settings.ON_ERROR_PRINT_STACK_TRACE:
+                for e in ret:
+                    if isinstance(e, Exception):
+                        logger.error("\n".join(traceback.format_exception(type(e), e, e.__traceback__)))
             return None
         (selected_oracles, blockchain_price, block_num, (last_pub_block, last_pub_block_hash)) = ret
         return OracleBlockchainInfo(self._coin_pair, selected_oracles,

@@ -1,7 +1,6 @@
 import logging
 
 from common.bg_task_executor import BgTaskExecutor
-from common.services import blockchain
 from common.services.blockchain import is_error
 from oracle.src import oracle_settings
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
@@ -20,7 +19,7 @@ class SchedulerSupportersLoop(BgTaskExecutor):
         logger.info("SchedulerSupportersLoop start")
 
         is_ready_to_distribute = await self.supporters_service.is_ready_to_distribute()
-        if blockchain.is_error(is_ready_to_distribute):
+        if is_error(is_ready_to_distribute):
             logger.error("SchedulerSupportersLoop error getting is_ready_to_distribute %r" % (is_ready_to_distribute,))
             return self.conf.SCHEDULER_POOL_DELAY
 

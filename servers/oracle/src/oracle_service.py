@@ -1,8 +1,7 @@
 import logging
 from typing import List
 
-from common.services import blockchain
-from common.services.blockchain import is_error
+from common.services.blockchain import ZERO_ADDR, is_error
 from common.services.contract_factory_service import ContractFactoryService
 from common.services.oracle_dao import CoinPair
 from oracle.src import oracle_settings
@@ -24,7 +23,7 @@ class OracleService:
         it = await self.oracle_manager_service.get_registered_oracle_head()
         if is_error(it):
             return it
-        while it != blockchain.ZERO_ADDR:
+        while it != ZERO_ADDR:
             oracle = await self.oracle_manager_service.get_oracle_registration_info(it)
             if is_error(oracle):
                 return oracle
@@ -39,8 +38,10 @@ class OracleService:
         coin_pair_info = await self.oracle_manager_service.get_coin_pair_info(coin_pair)
         if is_error(coin_pair_info):
             return coin_pair_info
-        coin_pair_price_service = self.contract_factory.get_coin_pair_price(coin_pair_info.addr)
-        return OracleCoinPairService(coin_pair_price_service, self.oracle_manager_service, coin_pair_info)
+        return OracleCoinPairService(self.contract_factory.get_blockchain(),
+                                     self.contract_factory.get_coin_pair_price(coin_pair_info.addr),
+                                     self.oracle_manager_service,
+                                     coin_pair_info)
 
     async def get_all_coin_pair_services(self) -> List[OracleCoinPairService]:
         coin_pairs = await self.oracle_manager_service.get_all_coin_pair()

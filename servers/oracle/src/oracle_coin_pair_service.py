@@ -2,8 +2,7 @@ import logging
 import typing
 from typing import List
 
-from common.services import blockchain
-from common.services.blockchain import is_error, BlockChainAddress, BlockchainAccount
+from common.services.blockchain import BlockChainAddress, BlockchainAccount, is_error, BlockChain
 from common.services.coin_pair_price_service import CoinPairService
 from common.services.oracle_dao import CoinPair, CoinPairInfo, RoundInfo
 from common.services.oracle_manager_service import OracleManagerService
@@ -22,9 +21,11 @@ FullOracleRoundInfo = typing.NamedTuple("FullOracleRoundInfo",
 
 
 class OracleCoinPairService:
-    def __init__(self, coin_pair_service: CoinPairService,
+    def __init__(self, blockchain: BlockChain,
+                 coin_pair_service: CoinPairService,
                  oracle_manager_service: OracleManagerService,
                  coin_pair_info: CoinPairInfo):
+        self._blockchain = blockchain
         self._coin_pair_service = coin_pair_service
         self._oracle_manager_service = oracle_manager_service
         self._coin_pair_info = coin_pair_info
@@ -61,7 +62,7 @@ class OracleCoinPairService:
     async def get_last_pub_block_hash(self, last_pub_block=None):
         if last_pub_block is None:
             last_pub_block = await self.get_last_pub_block()
-        return (await blockchain.get_block_by_number(last_pub_block)).hash
+        return (await self._blockchain.get_block_by_number(last_pub_block)).hash
         # return hashlib.sha3_256(str(last_pub_block).encode('ascii')).digest()
 
     async def get_price(self):
@@ -109,3 +110,6 @@ class OracleCoinPairService:
 
     async def switch_round(self, account: BlockchainAccount = None, wait=False):
         return await self._coin_pair_service.switch_round(account=account, wait=wait)
+
+    async def get_last_block(self):
+        return await self._blockchain.get_last_block()

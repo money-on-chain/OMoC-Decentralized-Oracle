@@ -1,7 +1,6 @@
 import logging
 
 from common.bg_task_executor import BgTaskExecutor
-from common.services import blockchain
 from common.services.blockchain import is_error
 from oracle.src import oracle_settings
 from oracle.src.oracle_coin_pair_service import OracleCoinPairService
@@ -25,7 +24,7 @@ class SchedulerCoinPairLoop(BgTaskExecutor):
             return self._conf.SCHEDULER_POOL_DELAY
         self.log("Round %r" % (round_info,))
 
-        block_number = await blockchain.get_last_block()
+        block_number = await self._cps.get_last_block()
         if not self._is_right_block(round_info, block_number):
             return self._conf.SCHEDULER_POOL_DELAY
 
@@ -38,7 +37,7 @@ class SchedulerCoinPairLoop(BgTaskExecutor):
         return self._conf.SCHEDULER_ROUND_DELAY
 
     def _is_round_started(self, round_info):
-        if blockchain.is_error(round_info):
+        if is_error(round_info):
             self.error("error get_round_info error %r" % (round_info,))
             return False
         if round_info.round == 0:
@@ -47,7 +46,7 @@ class SchedulerCoinPairLoop(BgTaskExecutor):
         return True
 
     def _is_right_block(self, round_info, block_number):
-        if blockchain.is_error(block_number):
+        if is_error(block_number):
             self.error("error get_last_block error %r" % (block_number,))
             return False
         if round_info.lockPeriodEndBlock > block_number:

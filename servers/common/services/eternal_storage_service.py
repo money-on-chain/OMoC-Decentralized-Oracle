@@ -1,8 +1,7 @@
 import logging
 from decimal import Decimal
 
-from common.services import blockchain
-from common.services.blockchain import is_error, BlockChainContract
+from common.services.blockchain import is_error, BlockChainContract, keccak256
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +12,7 @@ class EternalStorageService:
         self._contract = contract
 
     async def registry_call(self, method, text: str):
-        h = blockchain.keccak256(text=text)
+        h = keccak256(text=text)
         return await self._contract.bc_call(method, h)
 
     async def get_uint(self, text: str):

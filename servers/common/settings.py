@@ -9,7 +9,7 @@ from common.helpers import parseTimeDelta
 config = Config(".env")
 
 # Block chain server url
-NODE_URL = config('NODE_URL', cast=URL)
+NODE_URL = config('NODE_URL', cast=URL, default=None)
 # Block chain chain id
 CHAIN_ID = config('CHAIN_ID', cast=str, default=None)
 

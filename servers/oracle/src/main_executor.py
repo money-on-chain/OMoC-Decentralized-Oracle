@@ -33,7 +33,7 @@ class MainExecutor:
         await self.conf.initialize()
         self.supporters_service = self.cf.get_supporters(self.conf.SUPPORTERS_VESTED_ADDR)
         self.oracle_service = OracleService(self.cf, self.conf.ORACLE_MANAGER_ADDR)
-        self.oracle_loop = OracleLoop(self.conf, self.oracle_service)
+        self.oracle_loop = OracleLoop(self.cf, self.conf, self.oracle_service)
         self.tasks.append(self.oracle_loop)
 
         logger.info("=== Money-On-Chain Reference Oracle Starting up ===")
@@ -50,7 +50,7 @@ class MainExecutor:
             logger.info("    DEBUG")
         if oracle_settings.ORACLE_MONITOR_RUN:
             monitor.log_setup()
-            self.tasks.append(monitor.MonitorTask(self.oracle_service))
+            self.tasks.append(monitor.MonitorTask(self.cf.get_blockchain(), self.oracle_service))
         if oracle_settings.SCHEDULER_RUN_SUPPORTERS_SCHEDULER:
             self.tasks.append(SchedulerSupportersLoop(self.conf, self.supporters_service))
         for t in self.tasks:

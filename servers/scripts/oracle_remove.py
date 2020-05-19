@@ -1,5 +1,4 @@
 from common import helpers
-from common.services import blockchain
 from scripts import script_settings
 
 
