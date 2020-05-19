@@ -1,21 +1,24 @@
+const { BN, expectRevert } = require("@openzeppelin/test-helpers");
+const {expect} = require("chai");
 const EternalStorageGobernanza = artifacts.require("EternalStorageGobernanza");
 const MockGovernor = artifacts.require("MockGovernor");
-const { expectRevert } = require("@openzeppelin/test-helpers")
 
 contract("EternalStorageGobernanza", async (accounts) => {
 
 	const GOVERNOR = accounts[8];
 	const NOT_A_GOVERNOR = accounts[7];
-	// For testing all except the set functions
+	// For testing all except the set functions.
 	const keys1 = {
-		uInt: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74711",
-		string: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74712",
-		address: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74713",
-		bytes: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74714",
-		bool: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74715",
-		int: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74716"
+		decimal: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74711",
+		uInt: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74712",
+		string: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74713",
+		address: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74714",
+		bytes: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74715",
+		bool: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74716",
+		int: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74717"
 	};
 	const values1 = {
+		decimal: { base: 5, exp: -3 },
 		uInt: 1111,
 		string: "string",
 		address: accounts[0],
@@ -23,16 +26,18 @@ contract("EternalStorageGobernanza", async (accounts) => {
 		bool: true,
 		int: 13
 	};
-	// Exclusive for testing set functions
+	// Exclusive for testing set functions.
 	const keys2 = {
-		uInt: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74721",
-		string: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74722",
-		address: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74723",
-		bytes: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74724",
-		bool: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74725",
-		int: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74726"
+		decimal: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74721",
+		uInt: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74722",
+		string: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74723",
+		address: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74724",
+		bytes: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74725",
+		bool: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74726",
+		int: "0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf74727"
 	};
 	const values2 = {
+		decimal: { base: 6, exp: -4 },
 		uInt: 2222,
 		string: "string",
 		address: accounts[1],
@@ -41,21 +46,12 @@ contract("EternalStorageGobernanza", async (accounts) => {
 		int: 32
 	};
 
-	const defaultValues = {
-		uInt: 0,
-		string: "",
-		address: "0x0000000000000000000000000000000000000000",
-		bytes: null,
-		bool: false,
-		int: 0
-	};
-
 	before(async () => {
 		this.governor = await MockGovernor.new(GOVERNOR);
-		const governorContract = this.governor.address;
 		this.eternalStorageGobernanza = await EternalStorageGobernanza.new();
-		await this.eternalStorageGobernanza.initialize(governorContract);
-		// Setting values to test get and delete functions
+		await this.eternalStorageGobernanza.initialize(this.governor.address);
+		// Setting values to test get and delete functions.
+		await this.eternalStorageGobernanza.setDecimal(keys1.decimal, values1.decimal.base, values1.decimal.exp, { from: GOVERNOR });
 		await this.eternalStorageGobernanza.setUint(keys1.uInt, values1.uInt, { from: GOVERNOR });
 		await this.eternalStorageGobernanza.setString(keys1.string, values1.string, { from: GOVERNOR });
 		await this.eternalStorageGobernanza.setAddress(keys1.address, values1.address, { from: GOVERNOR });
@@ -64,7 +60,12 @@ contract("EternalStorageGobernanza", async (accounts) => {
 		await this.eternalStorageGobernanza.setInt(keys1.int, values1.int, { from: GOVERNOR });
 	});
 
-	// Testing get functions
+	// Testing get functions with keys used to store a value.
+	it("Should get decimal passing its key", async () => {
+		const decimalReturned = await this.eternalStorageGobernanza.getDecimal(keys1.decimal);
+		expect(decimalReturned.base, "Wrong base number").to.be.bignumber.equal(new BN(values1.decimal.base));
+		expect(decimalReturned.exp, "Wrong exp number").to.be.bignumber.equal(new BN(values1.decimal.exp));
+	});
 	it("Should get uint passing its key", async () => {
 		const uIntReturned = await this.eternalStorageGobernanza.getUint(keys1.uInt);
 		assert.equal(uIntReturned, values1.uInt);
@@ -90,7 +91,57 @@ contract("EternalStorageGobernanza", async (accounts) => {
 		assert.equal(intReturned, values1.int);
 	});
 
-	// Testing set functions with authorized changer
+	// Testing get functions with keys NOT used to store a value.
+	it("Should not get decimal passing a key that hasn't been used", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.getDecimal(keys2.decimal),
+			"Missing key"
+		);
+	});
+	it("Should not get uint passing a key that hasn't been used", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.getUint(keys2.uInt),
+			"Missing key"
+		);
+	});
+	it("Should not get string passing a key that hasn't been used", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.getString(keys2.string),
+			"Missing key"
+		);
+	});
+	it("Should not get address passing a key that hasn't been used", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.getAddress(keys2.address),
+			"Missing key"
+		);
+	});
+	it("Should not get bytes passing a key that hasn't been used", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.getBytes(keys2.bytes),
+			"Missing key"
+		);
+	});
+	it("Should not get bool passing a key that hasn't been used", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.getBool(keys2.bool),
+			"Missing key"
+		);
+	});
+	it("Should not get int passing a key that hasn't been used", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.getInt(keys2.int),
+			"Missing key"
+		);
+	});
+
+	// Testing set functions with authorized changer.
+	it("Should set decimal passing its key and with authorized changer", async () => {
+		await this.eternalStorageGobernanza.setDecimal(keys2.decimal, values2.decimal.base, values2.decimal.exp, { from: GOVERNOR });
+		const decimalReturned = await this.eternalStorageGobernanza.getDecimal(keys2.decimal);
+		expect(decimalReturned.base, "Wrong base number").to.be.bignumber.equal(new BN(values2.decimal.base));
+		expect(decimalReturned.exp, "Wrong exp number").to.be.bignumber.equal(new BN(values2.decimal.exp));
+	});
 	it("Should set uint passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.setUint(keys2.uInt, values2.uInt, { from: GOVERNOR });
 		const uIntReturned = await this.eternalStorageGobernanza.getUint(keys2.uInt);
@@ -122,7 +173,13 @@ contract("EternalStorageGobernanza", async (accounts) => {
 		assert.equal(intReturned, values2.int);
 	});
 
-	// Testing set functions with unauthorized changer
+	// Testing set functions with unauthorized changer.
+	it("Should not set decimal passing its key and with unauthorized changer", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.setDecimal(keys2.decimal, values2.decimal.base, values2.decimal.exp, { from: NOT_A_GOVERNOR }),
+			"Invalid changer -- Reason given: Invalid changer."
+		);
+	});
 	it("Should not set uint passing its key and with unauthorized changer", async () => {
 		await expectRevert(
 			this.eternalStorageGobernanza.setUint(keys2.uInt, values2.uInt, { from: NOT_A_GOVERNOR }),
@@ -160,42 +217,67 @@ contract("EternalStorageGobernanza", async (accounts) => {
 		);
 	});
 
-	// Testing delete functions with authorized changer
+	// Testing delete functions with authorized changer.
+	it("Should delete decimal passing its key and with authorized changer", async () => {
+		await this.eternalStorageGobernanza.deleteDecimal(keys2.decimal, { from: GOVERNOR });
+		await expectRevert(
+			this.eternalStorageGobernanza.getDecimal(keys2.decimal),
+			"Missing key"
+		);
+	});
 	it("Should delete uint passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteUint(keys2.uInt, { from: GOVERNOR });
-		const uIntReturned = await this.eternalStorageGobernanza.getUint(keys2.uInt);
-		assert.equal(uIntReturned, defaultValues.uInt);
+		await expectRevert(
+			this.eternalStorageGobernanza.getUint(keys2.uInt),
+			"Missing key"
+		);
 	});
 	it("Should delete string passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteString(keys2.string, { from: GOVERNOR });
-		const stringReturned = await this.eternalStorageGobernanza.getString(keys2.string);
-		assert.equal(stringReturned, defaultValues.string);
+		await expectRevert(
+			this.eternalStorageGobernanza.getString(keys2.string),
+			"Missing key"
+		);
 	});
 	it("Should delete address passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteAddress(keys2.address, { from: GOVERNOR });
-		const addressReturned = await this.eternalStorageGobernanza.getAddress(keys2.address);
-		assert.equal(addressReturned, defaultValues.address);
+		await expectRevert(
+			this.eternalStorageGobernanza.getAddress(keys2.address),
+			"Missing key"
+		);
 	});
 	it("Should delete bytes passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteBytes(keys2.bytes, { from: GOVERNOR });
-		const bytesReturned = await this.eternalStorageGobernanza.getBytes(keys2.bytes);
-		assert.equal(bytesReturned, defaultValues.bytes);
+		await expectRevert(
+			this.eternalStorageGobernanza.getBytes(keys2.bytes),
+			"Missing key"
+		);
 	});
 	it("Should delete bool passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteBool(keys2.bool, { from: GOVERNOR });
-		const boolReturned = await this.eternalStorageGobernanza.getBool(keys2.bool);
-		assert.equal(boolReturned, defaultValues.bool);
+		await expectRevert(
+			this.eternalStorageGobernanza.getBool(keys2.bool),
+			"Missing key"
+		);
 	});
 	it("Should delete int passing its key and with authorized changer", async () => {
 		await this.eternalStorageGobernanza.deleteInt(keys2.int, { from: GOVERNOR });
-		const intReturned = await this.eternalStorageGobernanza.getInt(keys2.int);
-		assert.equal(intReturned, defaultValues.int);
+		await expectRevert(
+			this.eternalStorageGobernanza.getInt(keys2.int),
+			"Missing key"
+		);
 	});
 
-	// Testing delete functions with unauthorized changer
+	// Testing delete functions with unauthorized changer.
+	it("Should not delete decimal passing its key and with unauthorized changer", async () => {
+		await expectRevert(
+			this.eternalStorageGobernanza.deleteDecimal(keys1.decimal, { from: NOT_A_GOVERNOR }),
+			"Invalid changer -- Reason given: Invalid changer."
+		);
+	});
 	it("Should not delete uint passing its key and with unauthorized changer", async () => {
 		await expectRevert(
-			this.eternalStorageGobernanza.deleteUint(keys1.uInt,	 { from: NOT_A_GOVERNOR }),
+			this.eternalStorageGobernanza.deleteUint(keys1.uInt, { from: NOT_A_GOVERNOR }),
 			"Invalid changer -- Reason given: Invalid changer."
 		);
 	});
