@@ -1,14 +1,11 @@
 from common import helpers
 from common.services.blockchain import is_error
-from common.services.oracle_manager_service import OracleManagerService
-from oracle.src.oracle_service import OracleService
 from scripts import script_settings
-
-oracle_manager_service = OracleManagerService()
-oracle_service = OracleService(oracle_manager_service)
 
 
 async def main():
+    conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr = await script_settings.configure_oracle()
+
     for cp in script_settings.USE_COIN_PAIR:
         cps = await oracle_service.get_coin_pair_service(cp)
         if is_error(cps):

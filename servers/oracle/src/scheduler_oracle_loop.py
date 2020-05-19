@@ -3,15 +3,15 @@ import logging
 from common.bg_task_executor import BgTaskExecutor
 from common.services import blockchain
 from common.services.blockchain import is_error
-from common.services.coin_pair_price_service import CoinPairPriceService
 from oracle.src import oracle_settings
+from oracle.src.oracle_coin_pair_service import OracleCoinPairService
 from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
 
 logger = logging.getLogger(__name__)
 
 
 class SchedulerCoinPairLoop(BgTaskExecutor):
-    def __init__(self, conf: OracleConfigurationLoop, cps: CoinPairPriceService):
+    def __init__(self, conf: OracleConfigurationLoop, cps: OracleCoinPairService):
         self._conf = conf
         self._cps = cps
         self._coin_pair = cps.coin_pair

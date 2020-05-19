@@ -9,6 +9,10 @@ from common.services.blockchain import BlockchainAccount
 logger = logging.getLogger(__name__)
 
 
+def addr_from_key(key):
+    return Account.from_key(key).address
+
+
 def _sign_msghash(msghash, key):
     return Account.sign_message(msghash, key)
 

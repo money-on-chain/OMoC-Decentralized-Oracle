@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from starlette.datastructures import Secret
 
+from common import crypto
 from common.services.blockchain import BlockchainAccount
 from common.settings import config
 
@@ -49,8 +50,8 @@ ORACLE_PRICE_ENGINES = {
 
 
 def get_oracle_account() -> BlockchainAccount:
-    return BlockchainAccount(config('ORACLE_ADDR', cast=str),
-                             config('ORACLE_PRIVATE_KEY', cast=Secret))
+    secret = config('ORACLE_PRIVATE_KEY', cast=Secret)
+    return BlockchainAccount(crypto.addr_from_key(str(secret)), secret)
 
 
 def get_oracle_scheduler_account() -> BlockchainAccount:

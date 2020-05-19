@@ -100,7 +100,10 @@ module.exports = {
             provider: () => {
                 return new HDWalletProvider(["3b7fe967dfa11684539ceb1f3c8606aa5af6915bd1d31f32f7f8a59757dcc8a5"], "http://rsknodes:4446");
             },
-//            gas: 2500000,
+            // VERY IMPORTANT, if this number is too big: near gasLimit (the default) transaction are QUEUED for
+            // a long time, on the other hand if it is too small some big transactions can fail!!!
+            // Tune it to your needs.
+            gas: 4200000,
             gasPrice: 59240000,
             skipDryRun: true
         }

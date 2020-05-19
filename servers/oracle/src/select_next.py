@@ -48,12 +48,12 @@ from typing import List
 
 from hexbytes import HexBytes
 
-from common.services.oracle_dao import OracleRoundInfo
+from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo
 
 logger = logging.getLogger("fastapi")
 
 
-def select_next(stake_limit_multiplicator, last_block_hash: str, oracle_info_list: List[OracleRoundInfo]):
+def select_next(stake_limit_multiplicator, last_block_hash: str, oracle_info_list: List[FullOracleRoundInfo]):
     if len(oracle_info_list) == 0:
         return []
     if len(oracle_info_list) > 32:
