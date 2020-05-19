@@ -15,15 +15,16 @@ class Account(object):
     """Generete a privateKey/Account using  2 random numbers + date + an input words"""
     def __init__(self, word):
         super(Account, self).__init__()
-        now = datetime.now()
-        randomFromWeb = requests.get('https://www.random.org/integers/?num=1&min=1&max=4096&col=1&base=10&format=plain&rnd=new').text
-        seed_str =  (randomFromWeb 
-                     + str(os.urandom(4096))
-                     + now.strftime("%d/%m/%Y %H:%M:%S")
-                     + word)
-        privKey_Raw = utils.sha3(seed_str)
-        self.address = utils.checksum_encode(utils.privtoaddr(privKey_Raw))
-        self.privateKey = utils.encode_hex(privKey_Raw)
+        if (word != ""):
+            now = datetime.now()
+            randomFromWeb = requests.get('https://www.random.org/integers/?num=1&min=1&max=4096&col=1&base=10&format=plain&rnd=new').text
+            seed_str =  (randomFromWeb 
+                         + str(os.urandom(4096))
+                         + now.strftime("%d/%m/%Y %H:%M:%S")
+                         + word)
+            privKey_Raw = utils.sha3(seed_str)
+            self.address = utils.checksum_encode(utils.privtoaddr(privKey_Raw))
+            self.privateKey = utils.encode_hex(privKey_Raw)
     def setAddress(self,_address):
         self.address=_address
     def setPrivateKey(self,_privateKey):
