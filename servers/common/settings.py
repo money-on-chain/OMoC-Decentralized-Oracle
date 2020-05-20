@@ -17,7 +17,7 @@ CHAIN_ID = config('CHAIN_ID', cast=str, default=None)
 # In not then we use the build diretory
 MOC_NETWORK = config('MOC_NETWORK', cast=str, default=None)
 # If we use the build directory (MOC_NETWORK unconfigured) we must set this parameter to the block chain network id
-DEVELOP_NETWORK_ID = config('DEVELOP_NETWORK_ID', cast=int)
+DEVELOP_NETWORK_ID = config('DEVELOP_NETWORK_ID', cast=int, default=None)
 CONTRACT_ROOT_FOLDER = config('CONTRACT_ROOT_FOLDER', cast=pathlib.Path,
                               default=os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                    "../../contracts"))

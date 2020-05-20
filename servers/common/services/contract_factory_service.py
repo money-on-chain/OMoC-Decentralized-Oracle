@@ -138,7 +138,11 @@ class BuildDirContractFactoryService(ContractFactoryService):
     def get_addr(cls, name):
         data = cls._read_data(name)
         networks = data["networks"]
-        network_id = next(iter(networks)) if len(networks) == 1 else settings.DEVELOP_NETWORK_ID
+        network_id = settings.DEVELOP_NETWORK_ID
+        if len(networks) == 1:
+            network_id = next(iter(networks))
+        if network_id is None:
+            raise Exception("Configure DEVELOP_NETWORK_ID environment variable")
         logger.info("Using network id %r for %s" % (network_id, name))
         return parse_addr(data["networks"][str(network_id)]["address"])
 
