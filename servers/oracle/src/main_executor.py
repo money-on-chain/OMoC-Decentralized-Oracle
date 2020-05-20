@@ -33,7 +33,7 @@ class MainExecutor:
         await self.conf.initialize()
         self.supporters_service = self.cf.get_supporters(self.conf.SUPPORTERS_VESTED_ADDR)
         self.oracle_service = OracleService(self.cf, self.conf.ORACLE_MANAGER_ADDR)
-        self.oracle_loop = OracleLoop(self.cf, self.conf, self.oracle_service)
+        self.oracle_loop = OracleLoop(self.conf, self.oracle_service)
         self.tasks.append(self.oracle_loop)
 
         logger.info("=== Money-On-Chain Reference Oracle Starting up ===")
