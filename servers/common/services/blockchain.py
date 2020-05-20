@@ -106,8 +106,8 @@ class BlockChain:
     def sign_transaction(self, txn, private_key):
         return self.W3.eth.account.sign_transaction(txn, private_key)
 
-    def send_raw_transaction(self, raw_transaction: HexStr):
-        return self.W3.eth.sendRawTransaction(raw_transaction)
+    async def send_raw_transaction(self, raw_transaction: HexStr):
+        return await run_in_executor(lambda: self.W3.eth.sendRawTransaction(raw_transaction))
 
     @exec_with_catch_async
     async def get_last_block(self):
@@ -209,25 +209,22 @@ class BlockChain:
 class BlockChainContract:
 
     def __init__(self, blockchain: BlockChain, addr, abi):
-        self.blockchain = blockchain
-        self.contract = blockchain.get_contract(addr, abi)
-
-    def get_blockchain(self):
-        return self.blockchain
+        self._blockchain = blockchain
+        self._contract = blockchain.get_contract(addr, abi)
 
     @exec_with_catch_async
     async def bc_call(self, method, *args, account: BlockchainAccount = None, **kw):
-        return await run_in_executor(lambda: self.contract.functions[method](*args, **kw).call(
+        return await run_in_executor(lambda: self._contract.functions[method](*args, **kw).call(
             {'from': account} if account else {}))
 
     @exec_with_catch_async
     async def bc_execute(self, method, *args, account: BlockchainAccount = None, wait=False, **kw):
         if not account:
             raise Exception("Missing key, cant execute")
-        method = self.contract.functions[method](*args, **kw)
-        tx = await self.blockchain.get_tx(method, str(account.addr))
+        method_func = self._contract.functions[method](*args, **kw)
+        tx = await self._blockchain.get_tx(method_func, str(account.addr))
         txn = tx["tx"]
-        signed_txn = self.blockchain.sign_transaction(txn, private_key=Web3.toBytes(hexstr=str(account.key)))
+        signed_txn = self._blockchain.sign_transaction(txn, private_key=Web3.toBytes(hexstr=str(account.key)))
         logger.debug("%s SENDING SIGNED TX %r", tx["txdata"]["chainId"], signed_txn)
-        tx = await run_in_executor(lambda: self.blockchain.send_raw_transaction(signed_txn.rawTransaction))
-        return await self.blockchain.process_tx(tx, wait)
+        tx = await self._blockchain.send_raw_transaction(signed_txn.rawTransaction)
+        return await self._blockchain.process_tx(tx, wait)
