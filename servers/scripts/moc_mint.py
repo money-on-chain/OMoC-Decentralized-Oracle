@@ -12,7 +12,7 @@ async def mint(moc_token_service, addr):
                                       account=script_settings.SCRIPT_REWARD_BAG_ACCOUNT,
                                       wait=True)
     if is_error(tx):
-        print(addr, "ERROR IN APPROVE", tx)
+        print(addr, "ERROR IN MINT", tx)
         return
 
     print(addr, "AVAILABLE MOCS AFTER: ", await moc_token_service.balance_of(addr))
