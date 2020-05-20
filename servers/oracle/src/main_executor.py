@@ -42,12 +42,12 @@ class MainExecutor:
         logger.info("    Loop per-coin task interval: " + str(self.conf.ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL))
         logger.info("    Loop blockchain loop interval: " + str(self.conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL))
         logger.info("    Loop blockchain loop interval: " + str(self.conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL))
+        if settings.NODE_URL is not None:
+            logger.info("    Node url %s" % str(settings.NODE_URL))
         if settings.DEBUG:
             logger.info("    DEBUG")
-        if settings.CONTRACT_ROOT_FOLDER:
-            logger.info("    DEBUG")
-        if settings.DEBUG:
-            logger.info("    DEBUG")
+        if settings.MOC_NETWORK is not None:
+            logger.info("    Using moneyonchain library to get abis and addresses")
         if oracle_settings.ORACLE_MONITOR_RUN:
             monitor.log_setup()
             self.tasks.append(monitor.MonitorTask(self.cf.get_blockchain(), self.oracle_service))
