@@ -5,6 +5,7 @@ from common.ganache_accounts import GANACHE_ACCOUNTS
 from common.services.blockchain import BlockchainAccount
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
+from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo
 from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_turn import OracleTurn
@@ -44,7 +45,7 @@ def rv(oracle_turn, running_oracle, params):
                              oracle_turn,
                              PriceWithTimestamp(exchange_price, price_ts_utc),
                              OracleBlockchainInfo(cp,
-                                                  [OracleRoundInfo(x[0].addr, *x[1:]) for x in selected_oracles],
+                                                  [FullOracleRoundInfo(x[0].addr, *x[1:]) for x in selected_oracles],
                                                   blockchain_price,
                                                   params["block_number"],
                                                   params["blockchain_last_pub_block"],
