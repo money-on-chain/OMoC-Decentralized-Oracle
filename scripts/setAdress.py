@@ -1,6 +1,6 @@
 from getpass import getpass
 from pathlib import Path
-from ethereum import utils
+from eth_account import Account
 from datetime import datetime
 import re, os, requests
 
@@ -9,22 +9,22 @@ envMonitor = "monitor/backend/.env"
 envServer = "servers/.env"
 oracleDone = ""
 emailDone = ""
-class Account(object):
+class AccountLocal(object):
     address = ""
     privateKey = ""
-    """Generete a privateKey/Account using  2 random numbers + date + an input words"""
-    def __init__(self, word):
-        super(Account, self).__init__()
+    """Generete a privateKey/AccountLocal using  2 random numbers + date + an input words"""
+    def __init__(self, word=""):
+        super(AccountLocal, self).__init__()
         if (word != ""):
             now = datetime.now()
             randomFromWeb = requests.get('https://www.random.org/integers/?num=1&min=1&max=4096&col=1&base=10&format=plain&rnd=new').text
-            seed_str =  (randomFromWeb 
+            seed_str =  str(randomFromWeb 
                          + str(os.urandom(4096))
                          + now.strftime("%d/%m/%Y %H:%M:%S")
                          + word)
-            privKey_Raw = utils.sha3(seed_str)
-            self.address = utils.checksum_encode(utils.privtoaddr(privKey_Raw))
-            self.privateKey = utils.encode_hex(privKey_Raw)
+            acct =  Account.create(seed_str)
+            self.address = acct.address
+            self.privateKey = acct.privateKey.hex()
     def setAddress(self,_address):
         self.address=_address
     def setPrivateKey(self,_privateKey):
@@ -39,7 +39,7 @@ class Account(object):
             print("2. I want to generate the pair")
             answer = input()
             if (answer == "1"):
-                account = Account("")
+                account = AccountLocal()
                 print("Enter the address of the " + _purpose +" wallet in RSK")
                 account.setAddress(input("Adress:")) 
                 print("Enter the private password that correspond to the address you just entered")
@@ -50,8 +50,8 @@ class Account(object):
                     print("Enter 2 or more words separated by spaces.")
                     print("We will use them as part of the seed used for generate a random privateKey")
                     words = input()
-                account = Account(words)
-                print("Your new address is:" + account.address)
+                account = AccountLocal(words)
+                print("Your new address is: " + account.address)
         return (account)
 
 def addTo(filePath, search, addText):
@@ -63,12 +63,12 @@ def oracleOption():
     global envServer
     global oracleDone
 
-    oracle = Account.getAccount("oracle")
+    oracle = AccountLocal.getAccount("oracle")
     answ = input("You want to use the same address for the scheduler? (Yes/No) (default: Yes)").lower()
     if (answ in ["no","n"]):
-        scheduler = Account.getAccount("scheduler")
+        scheduler = AccountLocal.getAccount("scheduler")
     else:
-        scheduler = Account("")
+        scheduler = AccountLocal()
         scheduler.setAddress(oracle.address)
         scheduler.setPrivateKey(oracle.privateKey)
 
