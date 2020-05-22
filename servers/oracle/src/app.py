@@ -46,7 +46,7 @@ async def sign(*, version: str = Form(...),
 
         validation_data = await main_executor.get_validation_data(params)
         if not validation_data:
-            raise ValidationFailure("Missing coin pair %r" % coin_pair)
+            raise ValidationFailure("Missing coin pair %r" % str(coin_pair))
 
         logger.debug("Sign: %r" % (params,))
         message, my_signature = validation_data.validate_and_sign(signature)
