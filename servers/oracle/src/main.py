@@ -7,7 +7,7 @@ from colorlog import ColoredFormatter
 from common import settings
 from common.run_uvicorn import run_uvicorn
 from oracle.src import oracle_settings
-from oracle.src.main_executor import MainExecutor
+from oracle.src.main_loop import MainLoop
 
 
 def main():
@@ -25,7 +25,7 @@ def main():
     logger = logging.getLogger('')
     logger.setLevel(uvicorn.config.LOG_LEVELS[settings.LOG_LEVEL])
     logger.addHandler(handler)
-    main_task = MainExecutor()
+    main_task = MainLoop()
     try:
         loop = asyncio.get_event_loop()
         task = loop.create_task(main_task.scheduler_alone_startup())

@@ -4,17 +4,17 @@ from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import is_error
 from oracle.src import oracle_settings
 from oracle.src.oracle_coin_pair_service import OracleCoinPairService
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 
 logger = logging.getLogger(__name__)
 
 
 class SchedulerCoinPairLoop(BgTaskExecutor):
-    def __init__(self, conf: OracleConfigurationLoop, cps: OracleCoinPairService):
+    def __init__(self, conf: OracleConfiguration, cps: OracleCoinPairService):
         self._conf = conf
         self._cps = cps
         self._coin_pair = cps.coin_pair
-        super().__init__(self.run)
+        super().__init__(name="SchedulerCoinPairLoop", main=self.run)
 
     async def run(self):
         self.log("start")

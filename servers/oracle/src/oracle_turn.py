@@ -3,7 +3,7 @@ import logging
 from common import helpers
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
-from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
+from oracle.src.oracle_configuration import OracleTurnConfiguration
 from oracle.src.select_next import select_next
 
 logger = logging.getLogger(__name__)

@@ -4,14 +4,14 @@ from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import BlockChain, is_error
 from oracle.src import oracle_settings
 from oracle.src.oracle_coin_pair_service import OracleCoinPairService
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 from oracle.src.oracle_service import OracleService
 from oracle.src.select_next import select_next
 
 
 class MonitorLoopByCoinPair:
 
-    def __init__(self, conf: OracleConfigurationLoop, logger, cps: OracleCoinPairService):
+    def __init__(self, conf: OracleConfiguration, logger, cps: OracleCoinPairService):
         self._conf = conf
         self._logger = logger
         self._cps = cps
@@ -46,9 +46,9 @@ class MonitorTask(BgTaskExecutor):
         self.logger = logging.getLogger("published_price")
         self.prev_block = self.pre_pubblock_nr = None
         self.cpMap = {}
-        super().__init__(self.monitor_loop)
+        super().__init__(name="MonitorTask", main=self.run)
 
-    async def monitor_loop(self):
+    async def run(self):
         # blockchain-block
         block = await self.blockchain.get_last_block()
         if is_error(block):

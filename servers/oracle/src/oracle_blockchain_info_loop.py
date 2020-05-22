@@ -9,7 +9,7 @@ from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import is_error
 from common.services.oracle_dao import CoinPair
 from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo, OracleCoinPairService
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 
 logger = logging.getLogger(__name__)
 
@@ -24,16 +24,16 @@ OracleBlockchainInfo = typing.NamedTuple("OracleBlockchainInfo",
 
 
 class OracleBlockchainInfoLoop(BgTaskExecutor):
-    def __init__(self, conf: OracleConfigurationLoop, cps: OracleCoinPairService):
+    def __init__(self, conf: OracleConfiguration, cps: OracleCoinPairService):
         self._conf = conf
         self._cps = cps
         self._coin_pair = cps.coin_pair
         self._blockchain_info: OracleBlockchainInfo = None
         self.last_update = None
         self.update_lock = asyncio.Lock()
-        super().__init__(self.task_loop)
+        super().__init__(name="OracleBlockchainInfoLoop", main=self.run)
 
-    async def task_loop(self):
+    async def run(self):
         delta = self._conf.ORACLE_BLOCKCHAIN_INFO_INTERVAL
         async with self.update_lock:
             if self.last_update:

@@ -3,17 +3,17 @@ import logging
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import is_error
 from oracle.src import oracle_settings
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 
 logger = logging.getLogger(__name__)
 
 
 class SchedulerSupportersLoop(BgTaskExecutor):
 
-    def __init__(self, conf: OracleConfigurationLoop, supporters_service):
+    def __init__(self, conf: OracleConfiguration, supporters_service):
         self.conf = conf
         self.supporters_service = supporters_service
-        super().__init__(self.run)
+        super().__init__(name="SchedulerSupportersLoop", main=self.run)
 
     async def run(self):
         logger.info("SchedulerSupportersLoop start")

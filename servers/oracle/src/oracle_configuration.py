@@ -3,7 +3,6 @@ import typing
 from decimal import Decimal
 from enum import Enum
 
-from common.bg_task_executor import BgTaskExecutor
 from common.helpers import parseTimeDelta
 from common.services.blockchain import is_error
 from common.services.contract_factory_service import ContractFactoryService
@@ -19,11 +18,12 @@ OracleTurnConfiguration = typing.NamedTuple("OracleTurnConfiguration",
                                              ])
 
 
-class OracleConfigurationLoop(BgTaskExecutor):
+class OracleConfiguration:
     class Order(Enum):
         blockchain_configuration_default = 1
         configuration_blockchain_default = 2
         configuration_default_blockchain = 3
+        configuration_default = 4
 
     def __init__(self, cf: ContractFactoryService):
         eternal_storage_addr = cf.get_addr("ETERNAL_STORAGE")
@@ -50,7 +50,6 @@ class OracleConfigurationLoop(BgTaskExecutor):
                 "description": "Oracle manager address, used in OracleLoop to get coin"
                                "pairs and CoinPairPrice addresses",
                 "default": oracle_manager_addr
-
             },
             "ORACLE_PRICE_FETCH_RATE": {
                 "priority": self.Order.configuration_blockchain_default,
@@ -94,6 +93,13 @@ class OracleConfigurationLoop(BgTaskExecutor):
                 "blockchain": lambda p: self._eternal_storage_service.get_uint(p),
                 "description": "Configuration Oracle loop scanning interval, in which we get configuration info",
                 "default": 240,
+            },
+            "ORACLE_MAIN_EXECUTOR_TASK_INTERVAL": {
+                "priority": self.Order.configuration_default,
+                "configuration": lambda: parseTimeDelta(config('ORACLE_MAIN_EXECUTOR_TASK_INTERVAL', cast=str)),
+                "blockchain": lambda p: self._eternal_storage_service.get_uint(p),
+                "description": "Configuration Main executor loop scanning interval",
+                "default": 20,
             },
             "ORACLE_GATHER_SIGNATURE_TIMEOUT": {
                 "priority": self.Order.configuration_blockchain_default,
@@ -172,7 +178,6 @@ class OracleConfigurationLoop(BgTaskExecutor):
         self.from_conf = set()
         self.from_default = set()
         self.values = dict()
-        super().__init__(self.run)
 
     def __getattr__(self, name):
         if name in self.values:
@@ -204,20 +209,20 @@ class OracleConfigurationLoop(BgTaskExecutor):
                 val = await self._get_from_blockchain(p, param)
 
             if val is None:
-                raise ValueError("Missing value %s" % p)
+                logger.warning("Missing value %s" % p)
+                continue
             self.values[p] = val
 
-    async def run(self):
-        logger.info("Configuration loop start")
+    async def update(self):
         for (p, param) in self.parameters.items():
             val = await self._get_from_blockchain(p, param)
             if val is not None and self.values[p] != val:
                 logger.info("Setting param %r from blockchain registry -> %r" % (p, val))
                 self.values[p] = val
-        logger.info("Configuration loop done")
-        return self.ORACLE_CONFIGURATION_TASK_INTERVAL
 
     async def _get_from_blockchain(self, p, param):
+        if param["priority"] == self.Order.configuration_default:
+            return None
         if p in self.from_conf and param["priority"] == self.Order.configuration_blockchain_default:
             return None
         if p in self.from_default and param["priority"] == self.Order.configuration_default_blockchain:
@@ -226,7 +231,7 @@ class OracleConfigurationLoop(BgTaskExecutor):
         val = await param["blockchain"](p_path)
         if is_error(val):
             msg = "Error getting param from blockchain %r -> %r" % (p, val)
-            if not p in self.values or self.values[p] is None:
+            if p not in self.values or self.values[p] is None:
                 logger.error(msg)
             else:
                 logger.warning(msg)

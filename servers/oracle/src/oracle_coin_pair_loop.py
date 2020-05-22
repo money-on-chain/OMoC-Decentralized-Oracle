@@ -14,7 +14,7 @@ from common.services.blockchain import is_error
 from oracle.src import monitor, oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfoLoop
 from oracle.src.oracle_coin_pair_service import OracleCoinPairService, FullOracleRoundInfo
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_turn import OracleTurn
 from oracle.src.price_feeder.price_feeder import PriceFeederLoop
@@ -27,7 +27,7 @@ OracleSignature = typing.NamedTuple("OracleSignature",
 
 
 class OracleCoinPairLoop(BgTaskExecutor):
-    def __init__(self, conf: OracleConfigurationLoop,
+    def __init__(self, conf: OracleConfiguration,
                  cps: OracleCoinPairService,
                  price_feeder_loop: PriceFeederLoop,
                  vi_loop: OracleBlockchainInfoLoop):
@@ -38,9 +38,9 @@ class OracleCoinPairLoop(BgTaskExecutor):
         self._oracle_turn = OracleTurn(self._conf.oracle_turn_conf, cps.coin_pair)
         self._price_feeder_loop = price_feeder_loop
         self.vi_loop = vi_loop
-        super().__init__(self.task_loop)
+        super().__init__(name="OracleCoinPairLoop-%s" % self._coin_pair, main=self.run)
 
-    async def task_loop(self):
+    async def run(self):
         logger.info("%r : OracleCoinPairLoop start" % self._coin_pair)
         round_info = await self._cps.get_round_info()
         if is_error(round_info):
