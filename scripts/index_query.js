@@ -10,7 +10,7 @@ const colors = require('colors/safe');
 const BigNumber = require('bignumber.js');
 const Table = require('cli-table');
 const sqlite3 = require('sqlite-async');
-
+const path = require('path');
 
 async function principal2(conf) {
     const {web3, coinPairPrice} = conf;
@@ -20,7 +20,7 @@ async function principal2(conf) {
         addr2 = web3.utils.toChecksumAddress(process.argv[process.argv.length - 2]);
     } catch (e) {
     }
-    let db = await sqlite3.open('./index.db');
+    let db = await sqlite3.open(path.resolve(__dirname, 'index.db'));
     const fnDecoder = new txDecoder.FunctionDecoder(coinPairPrice.abi);
     try {
         // instantiate

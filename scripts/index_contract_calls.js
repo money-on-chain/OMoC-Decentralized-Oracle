@@ -7,6 +7,7 @@ This is a basic blockchain indexer that saves transactions sent to a specific
 const config = require('./CONFIG');
 const txDecoder = require('ethereum-tx-decoder');
 const sqlite3 = require('sqlite-async');
+const path = require('path');
 
 
 const TABLES = {
@@ -141,6 +142,10 @@ async function purge_head(web3, db, currentBlock, head) {
             return;
         }
         const block = await db.get('select id,hash,parentHash,number from blocks where hash = ?', current.hash);
+        if (!block) {
+            console.log("Block not found", current.hash);
+            return;
+        }
         console.log("Purge head", head.hash, head.id, head.number, "delete entries");
         await db.run("delete from txs where block_id = ?;", block.id);
         await db.run("delete from blocks where id = ?;", block.id);
@@ -207,7 +212,7 @@ async function principal_with_db(web3, db, addr) {
 async function principal(conf) {
     const {web3} = conf;
     const addr = web3.utils.toChecksumAddress(process.argv[process.argv.length - 1]);
-    let db = await sqlite3.open('./index.db');
+    let db = await sqlite3.open(path.resolve(__dirname, 'index.db'));
     try {
         await create_tables(db);
         await principal_with_db(web3, db, addr);
