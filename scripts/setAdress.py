@@ -61,7 +61,6 @@ def addTo(filePath, search, addText):
 def oracleOption():
     global envMonitor
     global envServer
-    global oracleDone
 
     oracle = AccountLocal.getAccount("oracle")
     answ = input("You want to use the same address for the scheduler? (Yes/No) (default: Yes)").lower()
@@ -77,8 +76,6 @@ def oracleOption():
     addTo(envServer,"SCHEDULER_SIGNING_ADDR = ",'"' + scheduler.address  + '"')
     addTo(envServer,"SCHEDULER_SIGNING_KEY = ", '"' + scheduler.privateKey + '"')
     addTo(envMonitor,"ORACLE_SERVER_ADDRESS=",oracle.address)
-
-    oracleDone  = " (Done)"
 def emailOption():
     global envMonitor
     print("///////////")
@@ -113,7 +110,8 @@ def checkStatus():
     global envMonitor
     global oracleDone
     global emailDone 
-
+    oracleDone = ""
+    emailDone = ""
     file = Path(envMonitor)
     oracle = re.search('ORACLE_SERVER_ADDRESS=.*',file.read_text())
     mail = re.search('SMTP_HOST=.*',file.read_text())
@@ -129,7 +127,7 @@ def main():
     if ((folders[len(folders)-1] ) == "scripts"):
         envMonitor = "../" + envMonitor
         envServer = "../" + envServer
-    checkStatus()
+    
     # Address  and privateKey
     print("///////////")
     print("We are going to configure your oracle. ")
@@ -141,9 +139,10 @@ def main():
     print("///////////")
     print("")
 
-
     quit = False
     while (quit ==False):
+        checkStatus()
+
         print("Please, select what do you want to configure right now:")
         print(" 1. Configure my oracle and scheduler" + oracleDone)
         print(" 2. Configure my email account" + emailDone)
