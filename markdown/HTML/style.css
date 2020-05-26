@@ -1,0 +1,12 @@
+body{
+	width: 100%;
+	font-size: 18px;
+}
+img{
+	width: 48%;
+	align-items: center;
+}
+code{
+	background-color: black;
+	color: white;
+}

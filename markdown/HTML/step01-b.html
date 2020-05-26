@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen"/> </head>
+<body>
+<h1 id="launchyourinstantfromtheami">Launch your instant from the AMI</h1>
+
+<h2 id="1loginec2">1) Login &amp; EC2</h2>
+
+<p>Login with your account and go to the EC2 service.
+<img src="http://google.com.au/" alt="&lt;img src=&quot;http://www.google.om.au/images/nav_logo7.png&quot;&gt;" /></p>
+
+<p><img src="" alt="&lt;img src=&quot;./images/login.png&quot;&gt;" />t./images/login.pnghumbnail)
+<img src="./images/00.png" alt="&lt;img src=&quot;./images/00.png&quot;&gt;" /></p>
+
+<h2 id="2launchmenu">2) Launch menu</h2>
+
+<p>From the EC2 menu go to Instances and press Launch Instance.</p>
+
+<p><img src="./images/01.png" alt="&lt;img src=&quot;./images/01.png&quot;&gt;" /></p>
+
+<h2 id="3selecttheoraclesami">3) Select the Oracle's AMI</h2>
+
+<p>Now select My AMIs and check &quot;Shared with me&quot; from ownership's menu. After that select the AMI MOC-Oracle.</p>
+
+<p><img src="./images/02.png" alt="&lt;img src=&quot;./images/02.png&quot;&gt;" /></p>
+
+<h2 id="4wewilluseat2.microsojustgoto6.configuresecuritygroup">4) We will use a t2.micro so just go to &quot;6. Configure Security Group&quot;</h2>
+
+<p><img src="./images/03.png" alt="&lt;img src=&quot;./images/03.png&quot;&gt;" /></p>
+
+<h2 id="5configureyoursecuritygroup">5) Configure your Security Group</h2>
+
+<p>At Security Group press &quot;Add Rule&quot;, select &quot;custom RPC&quot; at the type column, in port range enter &quot;5556&quot; and in the source column select &quot;Anywhere&quot;.
+After that press &quot;Review and Launch&quot;</p>
+
+<p><img src="./images/sescurityGroup.png" alt="&lt;img src=&quot;./images/sescurityGroup.png&quot;&gt;" /></p>
+
+<h2 id="6launchyourmachine">6) Launch your machine</h2>
+
+<p>ress &quot;Launch&quot;</p>
+
+<p><img src="./images/04.png" alt="&lt;img src=&quot;./images/04.png&quot;&gt;" /></p>
+
+<h2 id="7downloadkeypairandlaunchtheinstance.">7) Download KeyPair and launch the instance.</h2>
+
+<p>Select &quot;Create a new key pair&quot;, put a name for the key and download the file. Now run the instance</p>
+
+<p><img src="./images/05.png" alt="&lt;img src=&quot;./images/05.png&quot;&gt;" /></p>
+
+<h2 id="8connectviassh">8) connect via ssh</h2>
+
+<p>o connect to your instance follow the instructions from AWS and change &quot;root&quot; for &quot;ubuntu&quot;</p>
+
+<figure>
+<img src="./images/connect01.png" alt="&lt;img src=&quot;./images/connect01.png&quot;&gt;" />
+<figcaption><img src="./images/connect01.png"></figcaption>
+</figure>
+
+<figure>
+<img src="./images/connect02.png" alt="&lt;img src=&quot;./images/connect02.png&quot;&gt;" />
+<figcaption><img src="./images/connect02.png"></figcaption>
+</figure>
+
+</body>
+</html>
