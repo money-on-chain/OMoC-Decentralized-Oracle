@@ -231,7 +231,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
                 name);
         }
         return (currentRound.number, currentRound.startBlock, currentRound.lockPeriodEndBlock, currentRound.totalPoints,
-        info, currentPrice, block.number, lastPublicationBlock, blockhash(lastPublicationBlock - 1000), validPricePeriodInBlocks);
+        info, currentPrice, block.number, lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
 
     }
 
