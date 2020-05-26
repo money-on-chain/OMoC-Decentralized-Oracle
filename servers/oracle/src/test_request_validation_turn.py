@@ -48,7 +48,8 @@ def rv(oracle_turn, running_oracle, params):
                                                   blockchain_price,
                                                   params["block_number"],
                                                   params["blockchain_last_pub_block"],
-                                                  params["last_pub_block_hash"]))
+                                                  params["last_pub_block_hash"],
+                                                  3))
 
 
 def can_publish(ot, params, is_idx):

@@ -58,7 +58,8 @@ def rv(oracle_account):
                                                   validated_by_is_oracle_turn[
                                                       "block_number"],
                                                   blockchain_last_pub_block,
-                                                  last_pub_block_hash="0x000000"))
+                                                  "0x000000",
+                                                  3))
 
 
 def sign(oracle_account, v: RequestValidation):

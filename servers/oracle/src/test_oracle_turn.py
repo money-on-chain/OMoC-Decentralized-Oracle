@@ -9,7 +9,7 @@ oracle_settings.ORACLE_PRICE_FALLBACK_BLOCKS = 3
 
 
 def g(last_pub_block, block_num, blockchain_price):
-    return OracleBlockchainInfo("BTCUSD", [], blockchain_price, block_num, last_pub_block, "")
+    return OracleBlockchainInfo("BTCUSD", [], blockchain_price, block_num, last_pub_block, "", 3)
 
 
 conf = OracleTurnConfiguration(2, 0.05, 3, 1)
@@ -114,20 +114,22 @@ points = 0
 current_round_num = 10
 selected_oracles = [
     FullOracleRoundInfo('0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d', 'http://127.0.0.1:24004',
-                    14000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
-                      current_round_num),
+                        14000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
+                        current_round_num),
     FullOracleRoundInfo('0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b', 'http://127.0.0.1:24002',
-                    8000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True, current_round_num),
+                        8000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
+                        current_round_num),
     FullOracleRoundInfo('0x28a8746e75304c0780E011BEd21C72cD78cd535E', 'http://127.0.0.1:24000',
-                    2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True, current_round_num),
+                        2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, True,
+                        current_round_num),
     FullOracleRoundInfo('0x28a8746e75304c0780E011BEd21C72cD78cd535E', 'http://127.0.0.1:24000',
-                    2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, False,
-                    current_round_num)]
+                        2000000000000000000, '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826', points, False,
+                        current_round_num)]
 
 
 def h(os, block_num, last_pub_block, last_pub_block_hash, blockchain_price):
     return OracleBlockchainInfo(CoinPair('BTCUSD'), os, blockchain_price, block_num, last_pub_block,
-                                last_pub_block_hash)
+                                last_pub_block_hash, 3)
 
 
 def test_is_never_oracle_3_turn_is_not_selected():

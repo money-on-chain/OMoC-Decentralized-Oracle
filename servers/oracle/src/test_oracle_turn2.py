@@ -23,7 +23,7 @@ selected_oracles = [
 
 
 def g(last_pub_block, block_num, blockchain_price):
-    return OracleBlockchainInfo("BTCUSD", [], blockchain_price, block_num, last_pub_block, "")
+    return OracleBlockchainInfo("BTCUSD", [], blockchain_price, block_num, last_pub_block, "", 3)
 
 
 gg = PriceWithTimestamp
@@ -31,7 +31,7 @@ gg = PriceWithTimestamp
 
 def h(os, block_num, last_pub_block, last_pub_block_hash, blockchain_price):
     return OracleBlockchainInfo(CoinPair('BTCUSD'), os, blockchain_price, block_num, last_pub_block,
-                                last_pub_block_hash)
+                                last_pub_block_hash, 3)
 
 
 def test_is_never_oracle_3_turn_is_not_selected():
