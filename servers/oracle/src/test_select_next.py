@@ -1,7 +1,7 @@
 import secrets
 from random import randint
 
-from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo
+from common.services.oracle_dao import FullOracleRoundInfo
 from oracle.src.select_next import select_next
 
 stake_limit_multiplicator = 2

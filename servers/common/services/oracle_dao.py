@@ -50,3 +50,23 @@ RoundInfo = typing.NamedTuple("RoundInfo", [('round', int),
                                             ("lockPeriodEndBlock", int),
                                             ("totalPoints", int),
                                             ("selectedOracles", List[str])])
+
+FullOracleRoundInfo = typing.NamedTuple("FullOracleRoundInfo",
+                                        [("addr", str),
+                                         ('internetName', str),
+                                         ("stake", int),
+                                         ("owner", str),
+                                         ("points", int),
+                                         ("selectedInCurrentRound", bool),
+                                         ("selectedInRound", int)
+                                         ])
+
+OracleBlockchainInfo = typing.NamedTuple("OracleBlockchainInfo",
+                                         [("coin_pair", CoinPair),
+                                          ('selected_oracles', typing.List[FullOracleRoundInfo]),
+                                          ('blockchain_price', int),
+                                          ('block_num', int),
+                                          ('last_pub_block', int),
+                                          ('last_pub_block_hash', str),
+                                          ('valid_price_period_in_blocks', int),
+                                          ])

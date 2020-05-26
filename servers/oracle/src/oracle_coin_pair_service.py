@@ -1,23 +1,12 @@
 import logging
-import typing
 from typing import List
 
 from common.services.blockchain import BlockChainAddress, BlockchainAccount, is_error, BlockChain
 from common.services.coin_pair_price_service import CoinPairService
-from common.services.oracle_dao import CoinPair, CoinPairInfo, RoundInfo
+from common.services.oracle_dao import CoinPair, CoinPairInfo, RoundInfo, FullOracleRoundInfo
 from common.services.oracle_manager_service import OracleManagerService
 
 logger = logging.getLogger(__name__)
-
-FullOracleRoundInfo = typing.NamedTuple("FullOracleRoundInfo",
-                                        [("addr", str),
-                                         ('internetName', str),
-                                         ("stake", int),
-                                         ("owner", str),
-                                         ("points", int),
-                                         ("selectedInCurrentRound", bool),
-                                         ("selectedInRound", int)
-                                         ])
 
 
 class OracleCoinPairService:
@@ -104,6 +93,12 @@ class OracleCoinPairService:
 
     async def get_last_pub_block(self) -> int:
         return await self._coin_pair_service.get_last_pub_block()
+
+    async def get_valid_price_period_in_blocks(self) -> int:
+        return await self._coin_pair_service.get_valid_price_period_in_blocks()
+
+    async def get_oracle_server_info(self) -> int:
+        return await self._coin_pair_service.get_oracle_server_info()
 
     async def get_round_info(self) -> RoundInfo:
         return await self._coin_pair_service.get_round_info()

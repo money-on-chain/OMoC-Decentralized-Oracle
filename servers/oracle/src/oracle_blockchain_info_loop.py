@@ -2,25 +2,15 @@ import asyncio
 import logging
 import time
 import traceback
-import typing
 
 from common import settings
 from common.bg_task_executor import BgTaskExecutor
 from common.services.blockchain import is_error
-from common.services.oracle_dao import CoinPair
-from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo, OracleCoinPairService
+from common.services.oracle_dao import OracleBlockchainInfo
+from oracle.src.oracle_coin_pair_service import OracleCoinPairService
 from oracle.src.oracle_configuration import OracleConfiguration
 
 logger = logging.getLogger(__name__)
-
-OracleBlockchainInfo = typing.NamedTuple("OracleBlockchainInfo",
-                                         [("coin_pair", CoinPair),
-                                          ('selected_oracles', typing.List[FullOracleRoundInfo]),
-                                          ('blockchain_price', int),
-                                          ('block_num', int),
-                                          ('last_pub_block', int),
-                                          ('last_pub_block_hash', str),
-                                          ])
 
 
 class OracleBlockchainInfoLoop(BgTaskExecutor):
@@ -63,7 +53,8 @@ class OracleBlockchainInfoLoop(BgTaskExecutor):
         cors = [self._cps.get_selected_oracles_info(),
                 self._cps.get_price(),
                 self._cps.get_last_block(),
-                _get_last_pub_data()]
+                _get_last_pub_data(),
+                self._cps.get_valid_price_period_in_blocks()]
         ret = await asyncio.gather(*cors, return_exceptions=True)
         if any(is_error(elem) or isinstance(elem, Exception) for elem in ret):
             logger.error("Error getting blockchain info %r" % (ret,))
@@ -72,6 +63,9 @@ class OracleBlockchainInfoLoop(BgTaskExecutor):
                     if isinstance(e, Exception):
                         logger.error("\n".join(traceback.format_exception(type(e), e, e.__traceback__)))
             return None
-        (selected_oracles, blockchain_price, block_num, (last_pub_block, last_pub_block_hash)) = ret
+        (selected_oracles, blockchain_price, block_num,
+         (last_pub_block, last_pub_block_hash),
+         valid_price_period_in_blocks) = ret
         return OracleBlockchainInfo(self._coin_pair, selected_oracles,
-                                    blockchain_price, block_num, last_pub_block, last_pub_block_hash)
+                                    blockchain_price, block_num, last_pub_block, last_pub_block_hash,
+                                    valid_price_period_in_blocks)

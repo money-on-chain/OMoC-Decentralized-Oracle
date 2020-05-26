@@ -48,7 +48,7 @@ from typing import List
 
 from hexbytes import HexBytes
 
-from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo
+from common.services.oracle_dao import FullOracleRoundInfo
 
 logger = logging.getLogger("fastapi")
 
