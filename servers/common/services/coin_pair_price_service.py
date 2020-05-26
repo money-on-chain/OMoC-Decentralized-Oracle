@@ -27,6 +27,12 @@ class CoinPairService:
     async def get_round_lock_period_in_blocks(self):
         return await self.coin_pair_price_call("roundLockPeriodInBlocks")
 
+    async def get_valid_price_period_in_blocks(self):
+        return await self.coin_pair_price_call("validPricePeriodInBlocks")
+
+    async def get_oracle_server_info(self):
+        return await self.coin_pair_price_call("getOracleServerInfo")
+
     async def get_max_oracles_per_rounds(self):
         return await self.coin_pair_price_call("maxOraclesPerRound")
 

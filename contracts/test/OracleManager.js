@@ -28,10 +28,11 @@ contract("OracleManager", async (accounts) => {
             [accounts[0]],
             web3.utils.asciiToHex("BTCUSD"),
             this.token.address,
-            10,
-            5,
-            "100000000",
-            2,
+            10,  // maxOraclesPerRound
+            5, // roundLockPeriodInBlocks
+            3, // validPricePeriodInBlocks
+            "100000000", // bootstrapPrice
+            2,  // numIdleRounds
             this.oracleMgr.address);
 
         await this.coinPairPrice_RIFBTC.initialize(
@@ -39,10 +40,11 @@ contract("OracleManager", async (accounts) => {
             [accounts[0]],
             web3.utils.asciiToHex("RIFBTC"),
             this.token.address,
-            10,
-            5,
-            "100000000",
-            2,
+            10,  // maxOraclesPerRound
+            5, // roundLockPeriodInBlocks
+            3, // validPricePeriodInBlocks
+            "100000000", // bootstrapPrice
+            2,  // numIdleRounds
             this.oracleMgr.address);
 
 

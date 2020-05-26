@@ -15,6 +15,8 @@ contract("CoinPairPrice", async (accounts) => {
        will come from the owner's address. */
 
     before(async () => {
+        this.bootstrapPrice = new BN("100000000");
+        this.validPricePeriodInBlocks = 3
         this.governor = await helpers.createGovernor(accounts[8]);
 
         this.token = await TestMOC.new();
@@ -22,15 +24,17 @@ contract("CoinPairPrice", async (accounts) => {
         this.supporters = await SupportersWhitelisted.new();
 
         this.coinPairPrice = await CoinPairPrice.new();
+
         await this.coinPairPrice.initialize(
             this.governor.addr,
-            [accounts[0]],
+            [accounts[0]], // whitlist
             web3.utils.asciiToHex("BTCUSD"),
             this.token.address,
-            10,
-            5,
-            "100000000",
-            2,
+            10, // maxOraclesPerRound
+            5, // roundLockPeriodInBlocks
+            this.validPricePeriodInBlocks,
+            this.bootstrapPrice,
+            2, // numIdleRounds
             this.oracleMgr.address);
 
 
@@ -304,6 +308,16 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to retrieve the last price from any non-WL address", async () => {
 
         await expectRevert(this.coinPairPrice.getPrice({from: web3.utils.randomHex(20)}), "Address is not whitelisted");
+    });
+
+    it("Price should be valid for validPricePeriodInBlocks blocks", async () => {
+        const {0: price, 1: valid} = await this.coinPairPrice.peek({from: "0x0000000000000000000000000000000000000001"});
+        assert.equal(helpers.bytes32toBN(price).toString(), (10 ** 18).toString());
+        assert.isTrue(valid);
+        await helpers.mineBlocks(this.validPricePeriodInBlocks);
+        const {0: price_after, 1: not_valid} = await this.coinPairPrice.peek({from: "0x0000000000000000000000000000000000000001"});
+        assert.equal(helpers.bytes32toBN(price_after).toString(), (10 ** 18).toString());
+        assert.isFalse(not_valid);
     });
 
     it("Should fail to publish price from  unsuscribed address", async () => {

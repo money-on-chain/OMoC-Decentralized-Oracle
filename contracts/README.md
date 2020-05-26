@@ -61,6 +61,9 @@ that shares the same location.
 
 - roundLockPeriodInBlocks: "86400:86400"
   The round length in blocks (1 month).
+
+- validPricePeriodInBlocks: "180:180"
+  The valid price period blocks (1 hour).
         
 The following are configurations parameters for the OracleManager smart contract.        
 

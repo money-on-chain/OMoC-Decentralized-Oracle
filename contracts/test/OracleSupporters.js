@@ -28,6 +28,7 @@ contract("Oracle-Supporters integration", (accounts) => {
             this.token.address,
             1, // maxOraclesPerRound,
             1, // roundLockPeriodInBlocks,
+            1, // validPricePeriodInBlocks
             0, // bootstrapPrice,
             1, // numIdleRounds,
             this.oracleMgr.address);

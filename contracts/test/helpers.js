@@ -114,3 +114,11 @@ function coinPairStr(hex) {
 }
 
 module.exports.coinPairStr = coinPairStr;
+
+function bytes32toBN(pr) {
+    pr = pr.replace(/^0x/, '')
+    return new BN(pr, 16);
+}
+
+module.exports.bytes32toBN = bytes32toBN;
+

@@ -15,7 +15,6 @@ contract CoinPairPriceFree is IPriceProvider, Initializable {
 
     /// @notice Return the current price, compatible with old MOC Oracle
     function peek() external override view returns (bytes32, bool) {
-        // We can add a kind of expiration if needed based on lastPublicationBlock
         return coinPairPrice.peek();
     }
 }

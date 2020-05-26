@@ -1,4 +1,5 @@
 pragma solidity ^0.6.0;
+
 import "./openzeppelin/math/SafeMath.sol";
 import "./libs/IPriceProvider.sol";
 import "./CoinPairPriceGobernanza.sol";
@@ -154,7 +155,9 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     function peek() public override view returns (bytes32, bool) {
         // We use address(1) to allow calls from outside the block chain
         require(super.isWhitelisted(msg.sender) || msg.sender == address(1), "Address is not whitelisted");
-        return (bytes32(currentPrice), true);
+        require((block.number - lastPublicationBlock) >= 0, "Wrong lastPublicationBlock");
+
+        return (bytes32(currentPrice), (block.number - lastPublicationBlock) < validPricePeriodInBlocks);
     }
 
     /// @notice Return the current price, compatible with old MOC Oracle
@@ -173,6 +176,11 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         return lastPublicationBlock;
     }
 
+    /// @notice Get the valid price period in blocks
+    function getValidPricePeriodInBlocks() public view returns (uint256) {
+        return validPricePeriodInBlocks;
+    }
+
     /// @notice Return current round information
     function getRoundInfo() public view returns (uint256 round,
         uint256 startBlock,
@@ -189,6 +197,33 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         return (oracleRoundInfo[addr].points, oracleRoundInfo[addr].selectedInRound,
         oracleRoundInfo[addr].selectedInRound == currentRound.number);
     }
+
+    /// @notice Return all the information needed by the oracle server (one call, to avoid a lot of rpc)
+    function getOracleServerInfo() public view returns (
+        uint256 round, uint256 startBlock, uint256 lockPeriodEndBlock, uint256 totalPoints,
+        address[] memory selectedOracles,
+        uint256[] memory selectedOraclesPoints,
+        uint256[] memory selectedOraclesSelectedInRound,
+        uint256 price,
+        uint256 currentBlock,
+        uint256 lastPubBlock,
+        bytes32 lastPubBlockHash,
+        uint256 validPricePeriodInBlocks
+    )
+    {
+        uint256[] memory points = new uint256[](currentRound.selectedOracles.length);
+        uint256[] memory rounds = new uint256[](currentRound.selectedOracles.length);
+        for (uint i = 0; i < currentRound.selectedOracles.length; i++) {
+            address addr = currentRound.selectedOracles[i];
+            points[i] = oracleRoundInfo[addr].points;
+            rounds[i] = oracleRoundInfo[addr].selectedInRound;
+        }
+        return (currentRound.number, currentRound.startBlock, currentRound.lockPeriodEndBlock, currentRound.totalPoints,
+        currentRound.selectedOracles, points, rounds, currentPrice, block.number,
+        lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
+
+    }
+
 
     /// @notice Switch contract context to a new round. With the objective of
     /// being a decentralized solution, this can be called by *anyone* if current
