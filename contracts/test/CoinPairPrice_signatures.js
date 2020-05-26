@@ -144,13 +144,14 @@ contract("[ @skip-on-coverage ] CoinPairPrice", async (accounts) => {
                 this.coinPairPrice = await CoinPairPrice.new();
                 await this.coinPairPrice.initialize(
                     this.governor.addr,
-                    [accounts[0]],
+                    [accounts[0]], // whitelist
                     web3.utils.asciiToHex("BTCUSD"),
                     this.token.address,
-                    10,
-                    5,
-                    "100000000",
-                    2,
+                    10, // maxOraclesPerRound
+                    5, // roundLockPeriodInBlocks
+                    3, // validPricePeriodInBlocks
+                    "100000000", // bootstrapPrice
+                    2, // numIdleRounds
                     this.oracleMgr.address);
                 await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5))
                 await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
