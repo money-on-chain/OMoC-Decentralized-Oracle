@@ -6,7 +6,7 @@ import time
 from common.bg_task_executor import BgTaskExecutor
 from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src import oracle_settings, monitor
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 from oracle.src.price_feeder import moc_price_engines
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class TimeWithTimestampQueue:
 
-    def __init__(self, conf: OracleConfigurationLoop, name):
+    def __init__(self, conf: OracleConfiguration, name):
         self.name = name
         self._price_queue = collections.deque(maxlen=conf.ORACLE_QUEUE_LEN)
 
@@ -28,13 +28,13 @@ class TimeWithTimestampQueue:
 
 class PriceFeederLoop(BgTaskExecutor):
 
-    def __init__(self, conf: OracleConfigurationLoop, coin_pair: CoinPair):
+    def __init__(self, conf: OracleConfiguration, coin_pair: CoinPair):
         self._conf = conf
         self._price_queues = {}
         self._coin_pair = str(coin_pair)
         engines = oracle_settings.ORACLE_PRICE_ENGINES[self._coin_pair]
         self._moc_price_engines = moc_price_engines.PriceEngines(self._coin_pair, engines)
-        super().__init__(self.run)
+        super().__init__(name="PriceFeederLoop", main=self.run)
 
     @property
     def coin_pair(self):

@@ -1,5 +1,4 @@
 from common import helpers
-from common.services import blockchain
 from common.services.blockchain import is_error
 from scripts import script_settings
 
@@ -12,7 +11,7 @@ async def main():
         cps = await oracle_service.get_coin_pair_service(cp)
         print(cp, " REWARDS BEFORE: ", await cps.get_available_reward_fees())
 
-        balance = await blockchain.get_balance(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr)
+        balance = await script_settings.blockchain.get_balance(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr)
         if balance < script_settings.NEEDED_APROVE_BAG:
             tx = await moc_token_service.mint(script_settings.SCRIPT_REWARD_BAG_ACCOUNT.addr,
                                               script_settings.NEEDED_APROVE_BAG,

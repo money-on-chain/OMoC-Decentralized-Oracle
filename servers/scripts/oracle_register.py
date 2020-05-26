@@ -1,5 +1,4 @@
 from common import helpers
-from common.services import blockchain
 from common.services.blockchain import is_error
 from scripts import script_settings
 
@@ -11,7 +10,7 @@ async def main():
     print("ORACLE OWNER ADDR", script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
     conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr = await script_settings.configure_oracle()
 
-    balance = await blockchain.get_balance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
+    balance = await script_settings.blockchain.get_balance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
     print("Oracle owner coinbase balance ", balance)
     if balance < script_settings.NEEDED_GAS:
         print("Oralce owner need at least %r but has %r" % (script_settings.NEEDED_GAS, balance))
@@ -29,10 +28,10 @@ async def main():
             return
 
     # move some rsks to my account
-    balance = await blockchain.get_balance(oracle_addr)
+    balance = await script_settings.blockchain.get_balance(oracle_addr)
     print("price fetcher coinbase balance", balance)
     if balance < script_settings.NEEDED_GAS:
-        tx = await blockchain.bc_transfer(oracle_addr,
+        tx = await script_settings.blockchain.bc_transfer(oracle_addr,
                                           script_settings.NEEDED_GAS,
                                           account=script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT,
                                           wait=True)
@@ -40,7 +39,7 @@ async def main():
 
     # register oracle
     registered = await oracle_manager_service.get_oracle_registration_info(oracle_addr)
-    if blockchain.is_error(registered):
+    if is_error(registered):
         # aprove moc movement
         token_approved = await moc_token_service.allowance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr,
                                                            conf.ORACLE_MANAGER_ADDR)

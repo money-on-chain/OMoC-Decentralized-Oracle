@@ -7,7 +7,7 @@ from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfoLoop, OracleBlockchainInfo
 from oracle.src.oracle_coin_pair_loop import OracleCoinPairLoop
 from oracle.src.oracle_coin_pair_service import OracleCoinPairService
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_service import OracleService
 from oracle.src.oracle_turn import OracleTurn
@@ -29,12 +29,12 @@ OracleLoopTasks = typing.NamedTuple("OracleLoopTasks",
 
 class OracleLoop(BgTaskExecutor):
 
-    def __init__(self, conf: OracleConfigurationLoop, oracle_service: OracleService):
+    def __init__(self, conf: OracleConfiguration, oracle_service: OracleService):
         self.conf = conf
         self.oracle_addr = oracle_settings.get_oracle_account().addr
         self.oracle_service = oracle_service
         self.cpMap = {}
-        super().__init__(self.run)
+        super().__init__(name="OracleLoop", main=self.run)
 
     def stop_bg_task(self):
         for cp_key in self.cpMap:

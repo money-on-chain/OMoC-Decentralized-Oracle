@@ -1,5 +1,4 @@
 from common import helpers
-from common.services import blockchain
 from scripts import script_settings
 
 REWARDS_ACCOUNT = script_settings.SCRIPT_REWARD_BAG_ACCOUNT
@@ -10,7 +9,7 @@ async def main():
     conf, supporters_service, moc_token_service = await script_settings.configure_supporter()
     print("isReadyToDistribute: ", await supporters_service.is_ready_to_distribute())
 
-    currentblock = await blockchain.get_last_block()
+    currentblock = await script_settings.blockchain.get_last_block()
     print("current block: ", currentblock)
 
     print("BALANCE OF SCHEDULER_ACCOUNT: ", script_settings.SCRIPT_ORACLE_ACCOUNT.addr, " is ",

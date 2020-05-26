@@ -5,7 +5,7 @@ from colorlog import ColoredFormatter
 from common import helpers
 from common.services.contract_factory_service import ContractFactoryService
 from oracle.src import oracle_settings
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 from scripts import script_settings
 
 
@@ -18,7 +18,7 @@ async def main():
     logger.addHandler(handler)
 
     cf = ContractFactoryService.get_contract_factory_service()
-    loop = OracleConfigurationLoop(cf)
+    loop = OracleConfiguration(cf)
     for (p, param) in loop.parameters.items():
         p_path = loop.get_registry_path(p)
         print(p, await param["blockchain"](p_path))

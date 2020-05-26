@@ -24,37 +24,37 @@ contract EternalStorageGobernanza is Governed {
 
     // *** Getter Methods ***
     function getDecimal(bytes32 _key) external view returns (int232 base, int16 exp) {
-        require(decimalStorage[_key].b, "Missing key");
+        require(decimalStorage[_key].b, "Key does not match with existent key/value pair");
         return (decimalStorage[_key].base, decimalStorage[_key].exp);
     }
 
     function getUint(bytes32 _key) external view returns (uint248) {
-        require(uIntStorage[_key].b, "Missing key");
+        require(uIntStorage[_key].b, "Key does not match with existent key/value pair");
         return uIntStorage[_key].v;
     }
 
     function getString(bytes32 _key) external view returns (string memory) {
-        require(bytes(stringStorage[_key]).length != 0, "Missing key");
+        require(bytes(stringStorage[_key]).length != 0, "Key does not match with existent key/value pair");
         return stringStorage[_key];
     }
 
     function getAddress(bytes32 _key) external view returns (address) {
-        require(addressStorage[_key] != address(0), "Missing key");
+        require(addressStorage[_key] != address(0), "Key does not match with existent key/value pair");
         return addressStorage[_key];
     }
 
     function getBytes(bytes32 _key) external view returns (bytes memory) {
-        require(bytesStorage[_key].length != 0, "Missing key");
+        require(bytesStorage[_key].length != 0, "Key does not match with existent key/value pair");
         return bytesStorage[_key];
     }
 
     function getBool(bytes32 _key) external view returns (bool) {
-        require(boolStorage[_key].b, "Missing key");
+        require(boolStorage[_key].b, "Key does not match with existent key/value pair");
         return boolStorage[_key].v;
     }
 
     function getInt(bytes32 _key) external view returns (int248) {
-        require(intStorage[_key].b, "Missing key");
+        require(intStorage[_key].b, "Key does not match with existent key/value pair");
         return intStorage[_key].v;
     }
 
@@ -91,6 +91,10 @@ contract EternalStorageGobernanza is Governed {
     }
 
     // *** Delete Methods ***
+    function deleteDecimal(bytes32 _key) onlyAuthorizedChanger external {
+        delete decimalStorage[_key];
+    }
+
     function deleteUint(bytes32 _key) onlyAuthorizedChanger external {
         delete uIntStorage[_key];
     }

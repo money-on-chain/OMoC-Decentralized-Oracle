@@ -51,7 +51,11 @@ ORACLE_PRICE_ENGINES = {
 
 def get_oracle_account() -> BlockchainAccount:
     secret = config('ORACLE_PRIVATE_KEY', cast=Secret)
-    return BlockchainAccount(crypto.addr_from_key(str(secret)), secret)
+    default_addr = crypto.addr_from_key(str(secret))
+    addr = config('ORACLE_ADDR', cast=str, default=default_addr)
+    if default_addr != addr:
+        raise ValueError("ORACLE_ADDR doesn't match ORACLE_PRIVATE_KEY, %s != %s" % (default_addr, addr))
+    return BlockchainAccount(addr, secret)
 
 
 def get_oracle_scheduler_account() -> BlockchainAccount:

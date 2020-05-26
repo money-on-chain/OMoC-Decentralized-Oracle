@@ -1,12 +1,12 @@
 from starlette.datastructures import Secret
 
 from common.services.blockchain import BlockchainAccount
-from common.services.contract_factory_service import LocalContractFactoryService, ContractFactoryService
+from common.services.contract_factory_service import BuildDirContractFactoryService, ContractFactoryService
 from common.services.oracle_dao import CoinPair
 from common.settings import config
 # https://www.starlette.io/config/
 from oracle.src import oracle_settings
-from oracle.src.oracle_configuration_loop import OracleConfigurationLoop
+from oracle.src.oracle_configuration import OracleConfiguration
 from oracle.src.oracle_service import OracleService
 
 USE_COIN_PAIR = [CoinPair("BTCUSD"), CoinPair("RIFBTC")]
@@ -22,12 +22,13 @@ SCRIPT_ORACLE_ACCOUNT = oracle_settings.get_oracle_account()
 
 NEEDED_APROVE_BAG = 1000000000000000
 
-cf = LocalContractFactoryService()
+cf = BuildDirContractFactoryService()
+blockchain = cf.blockchain
 
 
 async def configure_oracle():
     cf = ContractFactoryService.get_contract_factory_service()
-    conf = OracleConfigurationLoop(cf)
+    conf = OracleConfiguration(cf)
     await conf.initialize()
     oracle_service = OracleService(cf, conf.ORACLE_MANAGER_ADDR)
     moc_token_service = cf.get_moc_token(await oracle_service.get_token_addr())
@@ -38,7 +39,7 @@ async def configure_oracle():
 
 async def configure_supporter():
     cf = ContractFactoryService.get_contract_factory_service()
-    conf = OracleConfigurationLoop(cf)
+    conf = OracleConfiguration(cf)
     await conf.initialize()
     supporters_service = cf.get_supporters(conf.SUPPORTERS_VESTED_ADDR)
     moc_token_service = cf.get_moc_token(await supporters_service.get_token_addr())

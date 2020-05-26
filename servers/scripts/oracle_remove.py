@@ -1,5 +1,4 @@
 from common import helpers
-from common.services import blockchain
 from scripts import script_settings
 
 
@@ -12,7 +11,7 @@ async def main():
     conf, oracle_service, moc_token_service, oracle_manager_service, oracle_manager_addr = await script_settings.configure_oracle()
 
     for cp in script_settings.USE_COIN_PAIR:
-        balance = await blockchain.get_balance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
+        balance = await script_settings.blockchain.get_balance(script_settings.SCRIPT_ORACLE_OWNER_ACCOUNT.addr)
         print(cp, " Oracle owner coinbase balance ", balance)
         if balance < script_settings.NEEDED_GAS:
             print(cp, " Oralce owner need at least %r but has %r" % (script_settings.NEEDED_GAS, balance))

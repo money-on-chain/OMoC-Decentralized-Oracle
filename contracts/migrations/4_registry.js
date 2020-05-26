@@ -38,22 +38,22 @@ async function deploy(deployer, networkName, accounts) {
     console.log("Create EternalStorageGobernanza Proxy");
     await scripts.add({contractsData: [{name: "EternalStorageGobernanza", alias: "EternalStorageGobernanza"}]});
     await scripts.push({network, txParams});
-    const ethernalStorage = await scripts.create({
+    const eternalStorage = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "EternalStorageGobernanza",
         network,
         txParams
     });
-    console.log("EternalStorageGobernanza: ", ethernalStorage.options.address, 'proxyAdmin', proxyAdminAddr);
+    console.log("EternalStorageGobernanza: ", eternalStorage.options.address, 'proxyAdmin', proxyAdminAddr);
 
-    console.log("Initialize ethernalStorage governor", governorAddr);
-    const scall = await artifacts.require("EternalStorageGobernanza").at(ethernalStorage.options.address);
+    console.log("Initialize eternalStorage governor", governorAddr);
+    const scall = await artifacts.require("EternalStorageGobernanza").at(eternalStorage.options.address);
     await scall.initialize(governorAddr);
 
     console.log("Deploy change contract", governorAddr);
     const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
-    const change = await MocRegistryInitChange.new(ethernalStorage.options.address, oracleManagerAddr, supportersVestedAddr);
-    console.log("Initialize registry/ethernalStorage for MOC Oracles", change.address, 'via governor', governorAddr);
+    const change = await MocRegistryInitChange.new(eternalStorage.options.address, oracleManagerAddr, supportersVestedAddr);
+    console.log("Initialize registry/eternalStorage for MOC Oracles", change.address, 'via governor', governorAddr);
     await governor.executeChange(change.address, {from: governorOwner});
 }
 

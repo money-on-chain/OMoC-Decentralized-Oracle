@@ -12,8 +12,7 @@ from starlette.datastructures import Secret
 
 from common import settings, helpers
 from common.ganache_accounts import GANACHE_ACCOUNTS
-from common.services import blockchain
-from common.services.blockchain import is_error, BlockchainAccount
+from common.services.blockchain import is_error, BlockchainAccount, parse_addr
 from scripts import script_settings
 
 logger = logging.getLogger(__name__)
@@ -125,8 +124,8 @@ async def main():
     for oe in oracleList:
         print("Oracle name=" + oe["name"] + " address=" + oe["account"].addr)
         print("       balances: ETH=" +
-              str(await blockchain.get_balance(blockchain.parse_addr(oe["account"].addr))) +
-              "  MOC=" + str(await moc_token_service.balance_of(blockchain.parse_addr(oe["account"].addr))))
+              str(await script_settings.blockchain.get_balance(parse_addr(oe["account"].addr))) +
+              "  MOC=" + str(await moc_token_service.balance_of(parse_addr(oe["account"].addr))))
 
     #  Register oracles.
     print("0. Mint tokens.")

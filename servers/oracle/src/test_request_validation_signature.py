@@ -8,7 +8,7 @@ from common.services.oracle_dao import CoinPair, PriceWithTimestamp
 from oracle.src import oracle_settings
 from oracle.src.oracle_blockchain_info_loop import OracleBlockchainInfo
 from oracle.src.oracle_coin_pair_service import FullOracleRoundInfo
-from oracle.src.oracle_configuration_loop import OracleTurnConfiguration
+from oracle.src.oracle_configuration import OracleTurnConfiguration
 from oracle.src.oracle_publish_message import PublishPriceParams
 from oracle.src.oracle_turn import OracleTurn
 from oracle.src.request_validation import RequestValidation, ValidationFailure
