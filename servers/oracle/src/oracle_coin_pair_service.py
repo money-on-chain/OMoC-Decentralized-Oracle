@@ -3,7 +3,7 @@ from typing import List
 
 from common.services.blockchain import BlockChainAddress, BlockchainAccount, is_error, BlockChain
 from common.services.coin_pair_price_service import CoinPairService
-from common.services.oracle_dao import CoinPair, CoinPairInfo, RoundInfo, FullOracleRoundInfo
+from common.services.oracle_dao import CoinPair, CoinPairInfo, RoundInfo, FullOracleRoundInfo, OracleBlockchainInfo
 from common.services.oracle_manager_service import OracleManagerService
 
 logger = logging.getLogger(__name__)
@@ -97,8 +97,30 @@ class OracleCoinPairService:
     async def get_valid_price_period_in_blocks(self) -> int:
         return await self._coin_pair_service.get_valid_price_period_in_blocks()
 
-    async def get_oracle_server_info(self) -> int:
-        return await self._coin_pair_service.get_oracle_server_info()
+    async def get_oracle_server_info(self) -> OracleBlockchainInfo:
+        data = await self._coin_pair_service.get_oracle_server_info()
+        if is_error(data):
+            return data
+        (round_number, start_block, lock_period_end_block, total_points,
+         selected_oracles_info,
+         current_price, current_block,
+         last_publication_block, last_publication_block_hash,
+         valid_price_period_in_blocks
+         ) = data
+        if int.from_bytes(last_publication_block_hash, byteorder='big') == 0:
+            last_publication_block_hash = await self.get_last_pub_block_hash(last_publication_block)
+        s_oracles = []
+        for so in selected_oracles_info:
+            (stake, points, addr, owner, name) = so
+            # Only selected in current round oracles are returned.
+            s_oracles.append(FullOracleRoundInfo(addr, name, stake, owner, points, True, round_number))
+        return OracleBlockchainInfo(self.coin_pair,
+                                    s_oracles,
+                                    current_price,
+                                    current_block,
+                                    last_publication_block,
+                                    last_publication_block_hash,
+                                    valid_price_period_in_blocks)
 
     async def get_round_info(self) -> RoundInfo:
         return await self._coin_pair_service.get_round_info()

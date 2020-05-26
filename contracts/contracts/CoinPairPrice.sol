@@ -1,4 +1,5 @@
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "./openzeppelin/math/SafeMath.sol";
 import "./libs/IPriceProvider.sol";
@@ -31,6 +32,14 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
         // The selected oracles that participate in this round.
         address[] selectedOracles;
+    }
+
+    struct FullOracleRoundInfo {
+        uint256 stake;
+        uint256 points;
+        address addr;
+        address owner;
+        string name;
     }
 
     Round currentRound;
@@ -201,9 +210,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     /// @notice Return all the information needed by the oracle server (one call, to avoid a lot of rpc)
     function getOracleServerInfo() public view returns (
         uint256 round, uint256 startBlock, uint256 lockPeriodEndBlock, uint256 totalPoints,
-        address[] memory selectedOracles,
-        uint256[] memory selectedOraclesPoints,
-        uint256[] memory selectedOraclesSelectedInRound,
+        FullOracleRoundInfo[] memory info,
         uint256 price,
         uint256 currentBlock,
         uint256 lastPubBlock,
@@ -211,16 +218,20 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         uint256 validPricePeriodInBlocks
     )
     {
-        uint256[] memory points = new uint256[](currentRound.selectedOracles.length);
-        uint256[] memory rounds = new uint256[](currentRound.selectedOracles.length);
-        for (uint i = 0; i < currentRound.selectedOracles.length; i++) {
+        uint256 len = currentRound.selectedOracles.length;
+        info = new FullOracleRoundInfo[](len);
+        for (uint i = 0; i < len; i++) {
             address addr = currentRound.selectedOracles[i];
-            points[i] = oracleRoundInfo[addr].points;
-            rounds[i] = oracleRoundInfo[addr].selectedInRound;
+            (string memory name, uint stake, address owner) = oracleManager.getOracleRegistrationInfo(addr);
+            info[i] = FullOracleRoundInfo(
+                stake,
+                oracleRoundInfo[addr].points,
+                addr,
+                owner,
+                name);
         }
         return (currentRound.number, currentRound.startBlock, currentRound.lockPeriodEndBlock, currentRound.totalPoints,
-        currentRound.selectedOracles, points, rounds, currentPrice, block.number,
-        lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
+        info, currentPrice, block.number, lastPublicationBlock, blockhash(lastPublicationBlock - 1000), validPricePeriodInBlocks);
 
     }
 
@@ -277,7 +288,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
             address oracleAddr = currentRound.selectedOracles[i];
             uint256 points = oracleRoundInfo[oracleAddr].points;
             uint256 distAmount = ((points).mul(availableRewardFees)).div(currentRound.totalPoints);
-            (,,address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);
+            (,, address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);
 
             require(token.transfer(owneraddr, distAmount), "Token transfer failed");
             distSum = distSum.add(distAmount);
