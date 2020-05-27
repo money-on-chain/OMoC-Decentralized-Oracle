@@ -133,11 +133,15 @@ form a deployment and to manage the gobernanza system.
 
 - change_max_oracles_per_round_by_gobernanza.js: using a change contract (CoinPairPriceMaxOraclesPerRoundChange) change the
     maximum number of oracles per round of a CoinPairPrice contract.
-    Example ```truffle exec --network development scripts/change_max_oracles_per_round_by_gobernanza.js coin_pair_price_smart_contract_addr new_val```
+    Example ```truffle exec --network development scripts/change_max_oracles_per_round_by_gobernanza.js coin_pair_name new_val```
 
 - change_round_lock_period_in_blocks_by_gobernanza.js: using a change contract (CoinPairPriceRoundLockPeriodInBlocksChange) change the
     round lock period in blocks a CoinPairPrice contract.
-    Example ```truffle exec --network development scripts/change_round_lock_period_in_blocks_by_gobernanza.js coin_pair_price_smart_contract_addr new_val```
+    Example ```truffle exec --network development scripts/change_round_lock_period_in_blocks_by_gobernanza.js coin_pair_name new_val```
+
+- change_valid_price_period_in_blocks_by_gobernanza.js: using a change contract (CoinPairPriceValidPricePeriodInBlocksChange) change the
+    valid price period in blocks of a CoinPairPrice contract.
+    Example ```truffle exec --network development scripts/change_valid_price_period_in_blocks_by_gobernanza.js coin_pair_name new_val```
 
 - change_supporters_period_gobernanza.js: using a change contract (SupportersWhitelistedPeriodChange) change the
     supporters round period in blocks of the SupportersWhitelisted contract (currently deployed, in the build directory).
