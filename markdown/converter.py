@@ -1,18 +1,22 @@
+import shutil   
 import pymmd
 import os,re
 
-template = "template.html"
+template = "resources/template.html"
 files = ["index","step01", "step02", "step03"]
-htmlpath = "./HTML/"
-
+build = "./build"
+resources = "./resources"
 file = open(template,mode='r')
 templateContent = file.read()
 file.close()
+
+shutil.rmtree(build) 
+destination = shutil.copytree(resources, build)   
 for file in files:
-	htmlFile = htmlpath + file + ".html" 
+	htmlFile = build + "/" + file + ".html" 
 	mmdFile = file + ".mmd"
 
-	if os.path.exists(htmlpath + file): os.remove(htmlFile) 
+	if os.path.exists(build + "/" + file): os.remove(htmlFile) 
 	#generate html from mmdFile and return body content from HTML
 	print (mmdFile)
 	html_RAW = pymmd.convert_from(mmdFile)

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
+	<script type="text/javascript" src="modal.js"></script> 
+</head>
+<body onload="load_modal();">
+
+<div class="container-fullwidth mb-3">
+    <nav class="navbar navbar-dark bg-brand mb-4">
+      <a class="navbar-brand" href="https://www.moneyonchain.com/">
+        <img src="images/money-blanco-chico.png" height="60" alt="MoC logo">
+      </a>
+      <a class="navbar-brand" href="https://www.coinfabrik.com/">
+        <img src="images/cf-hor-light.svg" height="40" alt="CF logo">
+      </a>
+    </nav>
+    <div class="row px-3">
+      <div class="col">
+	      	
+<h1 id="dappguide">Dapp Guide</h1>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The intention of this document is to guide the user on how to interact with the dapp. For this reason, we assume that the reader has a knowledge of how the decentralized oracle system and its supporters work in general.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ol>
+<li>A complete understanding of the Oracle-Supporter interaction Setup and run your Oracle on a server.</li>
+<li>Know the RSK address (0x...) and internet address of your Oracle (http://<IP>:5556).</li>
+<li>Install Metamask in your browser.</li>
+</ol>
+
+<h2 id="interactionwiththedapp">Interaction with the Dapp</h2>
+
+<h3 id="loginandsetup">Login and Setup</h3>
+
+<h4 id="addrsk-testtometamaskandselectthatnetwork.">Add RSK-Test to Metamask and select that network.</h4>
+
+<p>Go to Network's menu, select Custom RPC and config the network with the following values and save:
+<br /> <img class="img-fluid" src="./images/GUIA03-01.png" alt="dapp" />
+<br /> <img class="img-fluid" src="./images/GUIA03-02.png" alt="dapp" /></p>
+
+<p>Network name: RSKTestnet
+New RPC URL: https://public-node.testnet.rsk.co
+ChainId: 31</p>
+
+<h4 id="getrskinrsk_testnet">Get RSK in RSK_testnet</h4>
+
+<p>Visit https://faucet.rsk.co/ and complete the form to get Ethers.</p>
+
+<h4 id="enterthesitewebandconnectyourmetamaskaccount.notreadyyet">Enter the Site Web and connect your metamask account. (Not ready yet)</h4>
+
+<figure>
+<br /> <img class="img-fluid" src="./images/GUIA03-03.png" alt="dapp" />
+<figcaption>dapp</figcaption>
+</figure>
+
+<h3 id="structureofthesite">Structure of the Site</h3>
+
+<p>The site is divided into five tabs. In this guide we will use those tabs as reference.</p>
+
+<h3 id="taboracles">Tab Oracles</h3>
+
+<h4 id="registrationmint-allow-register">Registration (Mint-&gt;Allow-&gt;Register)</h4>
+
+<p>To register your Oracle, you will need to allow the contract to use your MoCTokens. To do that, go to the Oracle tab and subtab Registration, and mint MoC Token (will be assigned to your account). After that allow part or the total of your MoCToken to the contract. For the last step, register your Oracle using the Oracle address, the network address and stake the total or part of what you allow, in the allow step.
+<br /> <img class="img-fluid" src="./images/GUIA03-04.png" alt="dapp" />
+<br /> <img class="img-fluid" src="./images/GUIA03-05.png" alt="dapp" /></p>
+
+<h4 id="edityouroraclesconfiguration">Edit your Oracle's configuration</h4>
+
+<p>At the end of the Oracle Tab you will see all of the Oracles and you will be allowed to edit or delete only your Oracles.
+<br /> <img class="img-fluid" src="./images/GUIA03-06.png" alt="dapp" />
+<br /> <img class="img-fluid" src="./images/GUIA03-07.png" alt="dapp" /></p>
+
+<p>If you chose to edit your oracle, you can change the internet Address, the Stake and/or the subscription to the coin-pairs
+<br /> <img class="img-fluid" src="./images/GUIA03-08.png" alt="dapp" /></p>
+
+<p>Coin Pairs - actions (Distribute &amp; Switch Round)
+At the Tab Oracle you can see the &quot;Coin Pairs&quot; interface, there you can switch round or Distribute.</p>
+
+<p>The Distribute function will send SupportersWhitelisted's MocTokens to each Supporter.
+<br /> <img class="img-fluid" src="./images/GUIA03-09.png" alt="dapp" /></p>
+
+<h2 id="tabsupporters">Tab Supporters</h2>
+
+<p>Registration (Mint-&gt;Allow-&gt;Stake)
+To register your metamask account as a supporter go to the supporter tab and subtab Supporter Info. Mint MocToken if you haven't, Allow the contract to manage part of your MocToken and Stake the MoCTokens.
+Stop
+You can Stop your supporter whenever you want.
+Withdraw
+You can withdraw your money after N blocks have passed since you stopped your account as a supporter.</p>
+
+
+	      </div>
+	    </div>
+  	</div>
+	<!-- The Modal -->
+	<div id="myModal" class="modal">
+	  <span class="close">&times;</span>
+	  <img class="modal-content" id="modalImg">
+	  <div id="caption"></div>
+	</div>
+	<div class="modal-footer">
+	    
+	</div>
+		<a href="index.html" class="btn btn-primary" role="button" aria-pressed="true">Back to Index</a>
+	 </div>
+    </div>
+  </div>
+</body>
+</html>
