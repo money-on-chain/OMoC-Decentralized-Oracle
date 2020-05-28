@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen"/> </head>
+<body>
+<h1 id="setupyourmachineandruntheservice">Setup your machine and run the service</h1>
+
+<p>We will setup your machine to run the Oracle and Backend services.
+The Oracle service will inform the smart contracts about the current prices of the coinPairs (BTCUSD, RIFBTC).
+The Backend service will send emails with the content of the logs from Oracle service to an specific email account from a SMTP email account.</p>
+
+<p>The following commands will set up your machine and start the services.</p>
+
+<ol>
+<li><p>Go to the OMoC folder an update your repo.</p>
+
+<pre><code>cd OMoC-Decentralized-Oracle/
+git pull
+
+</code></pre></li>
+<li><p>Configure the data of oracles and SMTP email following the instructions in the script:</p>
+
+<p><code>python3 scripts/setAdress.py</code></p></li>
+<li><p>Enable supervisor as a service when starting the machine:</p>
+
+<p><code>sudo systemctl enable supervisor.service</code></p></li>
+<li><p>Start supervisor:</p>
+
+<p><code>sudo supervisord</code></p></li>
+<li><p>Check if oracle and backend service's are running:</p>
+
+<p><code>supervisorctl status</code></p></li>
+</ol>
+
+<p>Now you can register your oracle and interact with the smartcontract using the Dapp.</p>
+
+</body>
+</html>
