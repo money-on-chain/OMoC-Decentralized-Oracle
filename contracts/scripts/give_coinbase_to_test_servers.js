@@ -5,7 +5,7 @@ const ORACLES_TO_REGISTER_BY_NETWORK = require('./TEST_SERVERS')
 global.artifacts = artifacts;
 global.web3 = web3;
 
-const EACH_NEEDED = toBN(toWei("0.005", "ether"));
+const EACH_NEEDED = toBN(toWei("0.05", "ether"));
 const ZERO = toBN("0");
 
 async function main() {
