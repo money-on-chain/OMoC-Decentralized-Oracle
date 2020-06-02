@@ -70,7 +70,18 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersAb
       @param _subaccount sub-account used to identify the stake
     */
     function stakeAt(uint256 _mocs, address _subaccount) external onlyWhitelisted(msg.sender) {
-        super._stakeAt(_mocs, _subaccount);
+        super._stakeAtFrom(_mocs, _subaccount, msg.sender);
+    }
+
+    /**
+    Stake MOC to receive earnings on a subaccount.
+
+    @param _mocs amount of MOC to stake
+    @param _subaccount sub-account used to identify the stake
+    @param _sender sender account that must approve and from which the funds are taken
+    */
+    function stakeAtFrom(uint256 _mocs, address _subaccount, address _sender) external onlyWhitelisted(msg.sender) {
+        super._stakeAtFrom(_mocs, _subaccount, _sender);
     }
 
     /**
@@ -81,7 +92,19 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersAb
       @return Amount of MOC transfered
     */
     function withdrawFrom(uint256 _tokens, address _subaccount) external onlyWhitelisted(msg.sender) returns (uint256) {
-        return super._withdrawFrom(_tokens, _subaccount);
+        return super._withdrawFromTo(_tokens, _subaccount, msg.sender);
+    }
+
+    /**
+      Withdraw MOC for tokens for a subaccount.
+
+      @param _tokens amount of tokens to convert to MOC
+      @param _subaccount subaccount used to withdraw MOC
+      @param _destination destination address that gets the MOC
+      @return Amount of MOC transfered
+    */
+    function withdrawFromTo(uint256 _tokens, address _subaccount, address _destination) external onlyWhitelisted(msg.sender) returns (uint256) {
+        return super._withdrawFromTo(_tokens, _subaccount, _destination);
     }
 
     /**

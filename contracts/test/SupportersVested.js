@@ -36,8 +36,7 @@ contract('SupportersVested', (accounts) => {
             await vested.initialize(
                 GOVERNOR,
                 whitelisted.address,    // _supporters
-                new BN(3),             // _minStayBlocks
-                new BN(5)              // _minStopBlocks
+                new BN(3)               // _minStayBlocks
             )
         })
 
@@ -63,8 +62,7 @@ contract('SupportersVested', (accounts) => {
             await vested.initialize(
                 GOVERNOR,
                 whitelisted.address,   // _supporters
-                new BN(20),            // _minStayBlocks
-                new BN(5)              // _minStopBlocks
+                new BN(5)              // _minStayBlocks
             )
 
             await token.mint(user1, BALANCE_USER1)
@@ -102,29 +100,25 @@ contract('SupportersVested', (accounts) => {
 
         async function do_the_rest() {
 
+            // Not ready to distribute because there is no staked mocs
             await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
-
             await vested.addStake(BALANCE_USER1, {from: user1})
 
-            await helpers.mineBlocks(2)
-
-            await expectRevert(vested.stop({from: user1}), "Can't stop until minStayBlocks")
-            await expectRevert(vested.withdraw({from: user1}), "Must be stop")
-            await expectRevert(vested.reStake({from: user1}), "Must be stop")
-
+            // The first distribute always succeeds
             await vested.distribute({from: payer})
+            // Not ready to distribute the round is open.
+            await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
 
             await helpers.mineBlocks(10)
-            await expectRevert(vested.stop({from: user1}), "Can't stop until minStayBlocks")
-            await helpers.mineBlocks(10)
+            await vested.distribute({from: payer})
 
             let receipt = await vested.stop({from: user1})
             expectEvent(receipt, 'Stop')
 
-            mocs = await vested.balanceOf(user1)
+            let mocs = await vested.balanceOf(user1)
             expect(mocs, "Final MOC balance after stop").to.be.bignumber.equal(FINAL_BALANCE)
 
-            await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStopBlocks")
+            await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStayBlocks")
 
             await helpers.mineBlocks(5)
 
@@ -155,19 +149,10 @@ contract('SupportersVested', (accounts) => {
         })
     })
 
-    async function checkBalances(balances) {
-        const balance1 = await token.balanceOf(user1)
-        expect(balance1, "Balance user1").to.be.bignumber.equal(balances.token)
-        const detailedBalance = await vested.detailedBalanceOf(user1);
-        expect(detailedBalance.staked, "Detailed staked Balance user1").to.be.bignumber.equal(balances.staked)
-        expect(detailedBalance.stopped, "Detailed stopped Balance user1").to.be.bignumber.equal(balances.stopped)
-    }
+    describe('stake', () => {
+        const BALANCE_USER1 = new BN(web3.utils.toWei("1", "ether"))
 
-    describe('User can have part staked and part stopped, first history', () => {
-        const EARNINGS = new BN(web3.utils.toWei("3", "ether"))
-        let receipt;
-
-        before(async () => {
+        beforeEach(async () => {
             token = await TestMOC.new()
             vested = await SupportersVested.new()
             whitelisted = await SupportersWhitelisted.new()
@@ -175,255 +160,61 @@ contract('SupportersVested', (accounts) => {
             await vested.initialize(
                 GOVERNOR,
                 whitelisted.address,   // _supporters
-                new BN(20),            // _minStayBlocks
-                new BN(30)              // _minStopBlocks
+                new BN(5)              // _minStayBlocks
             )
-
             await token.mint(user1, BALANCE_USER1)
-            await token.mint(payer, BALANCE_PAYER)
-
-            await token.approve(vested.address, BALANCE_USER1, {from: user1})
         })
+
 
         it('check minted tokens & approvals', async () => {
-            const balance1 = await token.balanceOf(user1)
-            expect(balance1, "Balance user1").to.be.bignumber.equal(BALANCE_USER1)
-            const allowance1 = await token.allowance(user1, vested.address)
-            expect(allowance1, "Allowance user1").to.be.bignumber.equal(BALANCE_USER1)
-            await checkBalances({
-                token: BALANCE_USER1,
-                staked: ZERO,
-                stopped: ZERO
-            })
+            expect(await token.balanceOf(user1), "Balance user1").to.be.bignumber.equal(BALANCE_USER1)
+            expect(await token.allowance(user1, vested.address), "Allowance").to.be.bignumber.equal(ZERO)
+            expect(await token.allowance(user1, whitelisted.address), "Allowance").to.be.bignumber.equal(ZERO)
         })
 
-        it('add earnings', async () => {
-            await token.transfer(vested.address, EARNINGS, {from: payer})
-            await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
+        async function do_the_stake(contract_addr, success_call, fail_call) {
+            expect(await vested.balanceOf(user1), "Initial MOC balance")
+                .to.be.bignumber.equal(ZERO)
+
+            await token.approve(contract_addr, BALANCE_USER1, {from: user1})
+            expect(await token.allowance(user1, contract_addr), "Allowance")
+                .to.be.bignumber.equal(BALANCE_USER1)
+
+            await expectRevert(fail_call(BALANCE_USER1, user1), "transfer amount exceeds allowance")
+            await success_call(BALANCE_USER1, user1)
+
+            expect(await vested.balanceOf(user1), "Final balance").to.be.bignumber.equal(BALANCE_USER1)
+
+            await expectRevert(vested.withdraw({from: user1}), "Must be stopped")
+
+            expectEvent(await vested.stop({from: user1}), 'Stop')
+            expect(await vested.balanceOf(user1), "Final MOC balance after stop").to.be.bignumber.equal(BALANCE_USER1)
+
+            await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStayBlocks")
+
+            await helpers.mineBlocks(5)
+            expectEvent(await vested.withdraw({from: user1}), 'Withdraw')
+
+            expect(await vested.balanceOf(user1), "Final vested MOC balance after withdraw").to.be.bignumber.equal(ZERO)
+            expect(await token.balanceOf(user1), "Final MOC balance after withdraw").to.be.bignumber.equal(BALANCE_USER1)
+        }
+
+        it('if approve is for whitelisted address then we can stakeDirectly', async () => {
+            //
+            const whitelisted_addr = await vested.supporters.call()
+            expect(whitelisted_addr == whitelisted.address)
+            await do_the_stake(whitelisted_addr,
+                async (balance, user) => await vested.stakeDirectly(balance, {from: user}),
+                async (balance, user) => await vested.addStake(balance, {from: user})
+            );
         })
 
-        it('add stake', async () => {
-            receipt = await vested.addStake(BALANCE_USER1.divn(4), {from: user1})
-            expectEvent(receipt, 'AddStake')
-            receipt = await vested.addStake(BALANCE_USER1.divn(4), {from: user1})
-            expectEvent(receipt, 'AddStake')
-            await checkBalances({
-                token: BALANCE_USER1.divn(2),
-                staked: BALANCE_USER1.divn(2),
-                stopped: ZERO
-            })
-        })
-
-        it('distribute earnings', async () => {
-            await vested.distribute({from: payer})
-            await helpers.mineBlocks(10)
-            await checkBalances({
-                token: BALANCE_USER1.divn(2),
-                staked: BALANCE_USER1.divn(2).add(EARNINGS),
-                stopped: ZERO
-            })
-        })
-
-        it('stop', async () => {
-            await expectRevert(vested.stop({from: user1}), "Can't stop until minStayBlocks")
-            await helpers.mineBlocks(20)
-            receipt = await vested.stop({from: user1})
-            expectEvent(receipt, 'Stop')
-            await checkBalances({
-                token: BALANCE_USER1.divn(2),
-                staked: ZERO,
-                stopped: BALANCE_USER1.divn(2).add(EARNINGS)
-            })
-        })
-
-        it('add more earnings', async () => {
-            await token.transfer(vested.address, EARNINGS, {from: payer})
-            await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
-        })
-
-        it('add more stake', async () => {
-            receipt = await vested.addStake(BALANCE_USER1.divn(2), {from: user1})
-            expectEvent(receipt, 'AddStake')
-            await checkBalances({
-                token: ZERO,
-                staked: BALANCE_USER1.divn(2),
-                stopped: BALANCE_USER1.divn(2).add(EARNINGS)
-            })
-        })
-
-        it('distribute earnings', async () => {
-            await vested.distribute({from: payer})
-            await helpers.mineBlocks(10)
-            await checkBalances({
-                token: ZERO,
-                staked: BALANCE_USER1.divn(2).add(EARNINGS),
-                stopped: BALANCE_USER1.divn(2).add(EARNINGS)
-            })
-        })
-
-        it('stop again', async () => {
-            await expectRevert(vested.stop({from: user1}), "Can't stop until minStayBlocks")
-            await helpers.mineBlocks(20)
-            receipt = await vested.stop({from: user1})
-            expectEvent(receipt, 'Stop')
-            await checkBalances({
-                token: ZERO,
-                staked: ZERO,
-                stopped: BALANCE_USER1.add(EARNINGS).add(EARNINGS)
-            })
-        })
-
-        it('withdraw', async () => {
-            await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStopBlocks")
-            await helpers.mineBlocks(30)
-            receipt = await vested.withdraw({from: user1})
-            expectEvent(receipt, 'Withdraw')
-
-            await checkBalances({
-                token: BALANCE_USER1.add(EARNINGS).add(EARNINGS),
-                staked: ZERO,
-                stopped: ZERO
-            })
-        })
-    })
-
-    describe('User can have part staked and part stopped, second history', () => {
-        const EARNINGS = new BN(web3.utils.toWei("3", "ether"))
-        let receipt;
-
-        before(async () => {
-            token = await TestMOC.new()
-            vested = await SupportersVested.new()
-            whitelisted = await SupportersWhitelisted.new()
-            await whitelisted.initialize(GOVERNOR, [vested.address], token.address, new BN(10))
-            await vested.initialize(
-                GOVERNOR,
-                whitelisted.address,   // _supporters
-                new BN(20),            // _minStayBlocks
-                new BN(30)              // _minStopBlocks
-            )
-
-            await token.mint(user1, BALANCE_USER1)
-            await token.mint(payer, BALANCE_PAYER)
-
-            await token.approve(vested.address, BALANCE_USER1, {from: user1})
-        })
-
-        it('check minted tokens & approvals', async () => {
-            const balance1 = await token.balanceOf(user1)
-            expect(balance1, "Balance user1").to.be.bignumber.equal(BALANCE_USER1)
-            const allowance1 = await token.allowance(user1, vested.address)
-            expect(allowance1, "Allowance user1").to.be.bignumber.equal(BALANCE_USER1)
-            await checkBalances({
-                token: BALANCE_USER1,
-                staked: ZERO,
-                stopped: ZERO
-            })
-        })
-
-        it('add earnings', async () => {
-            await token.transfer(vested.address, EARNINGS, {from: payer})
-            await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
-        })
-
-        it('add stake', async () => {
-            receipt = await vested.addStake(BALANCE_USER1.divn(4), {from: user1})
-            expectEvent(receipt, 'AddStake')
-            receipt = await vested.addStake(BALANCE_USER1.divn(4), {from: user1})
-            expectEvent(receipt, 'AddStake')
-            await checkBalances({
-                token: BALANCE_USER1.divn(2),
-                staked: BALANCE_USER1.divn(2),
-                stopped: ZERO
-            })
-        })
-
-        it('distribute earnings', async () => {
-            await vested.distribute({from: payer})
-            await helpers.mineBlocks(10)
-            await checkBalances({
-                token: BALANCE_USER1.divn(2),
-                staked: BALANCE_USER1.divn(2).add(EARNINGS),
-                stopped: ZERO
-            })
-        })
-
-        it('stop', async () => {
-            await expectRevert(vested.stop({from: user1}), "Can't stop until minStayBlocks")
-            await helpers.mineBlocks(20)
-            receipt = await vested.stop({from: user1})
-            expectEvent(receipt, 'Stop')
-            await checkBalances({
-                token: BALANCE_USER1.divn(2),
-                staked: ZERO,
-                stopped: BALANCE_USER1.divn(2).add(EARNINGS)
-            })
-        })
-
-        it('add more earnings', async () => {
-            await token.transfer(vested.address, EARNINGS, {from: payer})
-            await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
-        })
-
-        it('add more stake', async () => {
-            receipt = await vested.addStake(BALANCE_USER1.divn(2), {from: user1})
-            expectEvent(receipt, 'AddStake')
-            await checkBalances({
-                token: ZERO,
-                staked: BALANCE_USER1.divn(2),
-                stopped: BALANCE_USER1.divn(2).add(EARNINGS)
-            })
-        })
-
-        it('distribute earnings', async () => {
-            await vested.distribute({from: payer})
-            await helpers.mineBlocks(10)
-            await checkBalances({
-                token: ZERO,
-                staked: BALANCE_USER1.divn(2).add(EARNINGS),
-                stopped: BALANCE_USER1.divn(2).add(EARNINGS)
-            })
-        })
-
-        it('withdraw', async () => {
-            await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStopBlocks")
-            await helpers.mineBlocks(30)
-            receipt = await vested.withdraw({from: user1})
-            expectEvent(receipt, 'Withdraw')
-
-            await checkBalances({
-                token: BALANCE_USER1.divn(2).add(EARNINGS),
-                staked: BALANCE_USER1.divn(2).add(EARNINGS),
-                stopped: ZERO
-            })
-        })
-
-        it('stop again', async () => {
-            await expectRevert(vested.stop({from: user1}), "Can't stop until minStayBlocks")
-            await helpers.mineBlocks(20)
-            receipt = await vested.stop({from: user1})
-            expectEvent(receipt, 'Stop')
-            await checkBalances({
-                token: BALANCE_USER1.divn(2).add(EARNINGS),
-                staked: ZERO,
-                stopped: BALANCE_USER1.divn(2).add(EARNINGS)
-            })
-        })
-
-        it('withdraw again', async () => {
-            await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStopBlocks")
-            await helpers.mineBlocks(30)
-            receipt = await vested.withdraw({from: user1})
-            expectEvent(receipt, 'Withdraw')
-
-            await checkBalances({
-                token: BALANCE_USER1.add(EARNINGS).add(EARNINGS),
-                staked: ZERO,
-                stopped: ZERO
-            })
+        it('if approve is for vested address then we must addStake', async () => {
+            await do_the_stake(vested.address,
+                async (balance, user) => await vested.addStake(balance, {from: user}),
+                async (balance, user) => await vested.stakeDirectly(balance, {from: user}),
+            );
         })
 
     })
-
-
 })

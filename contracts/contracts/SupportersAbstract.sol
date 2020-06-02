@@ -98,32 +98,35 @@ contract SupportersAbstract {
 
       @param _mocs amount of MOC to stake
       @param _subaccount sub-account used to identify the stake
+      @param _sender sender account that must approve and from which the funds are taken
     */
-    function _stakeAt(uint256 _mocs, address _subaccount) internal {
+    function _stakeAtFrom(uint256 _mocs, address _subaccount, address _sender) internal {
         uint256 tokens = _mocToToken(_mocs);
 
         mocBalance = mocBalance.add(_mocs);
-        require(mocToken.transferFrom(msg.sender, address(this), _mocs), "error in transfer from");
+        require(mocToken.transferFrom(_sender, address(this), _mocs), "error in transfer from");
 
         __mintToken(msg.sender, tokens, _subaccount);
 
         emit AddStake(msg.sender, _subaccount, tokens, _mocs);
     }
 
+
     /**
       Withdraw MOC for tokens for a subaccount.
 
       @param _tokens amount of tokens to convert to MOC
       @param _subaccount subaccount used to withdraw MOC
+      @param _destination destination address that gets the MOC
       @return Amount of MOC transfered
     */
-    function _withdrawFrom(uint256 _tokens, address _subaccount) internal returns (uint256) {
+    function _withdrawFromTo(uint256 _tokens, address _subaccount, address _destination) internal returns (uint256) {
         uint mocs = _tokenToMoc(_tokens);
 
         _burnToken(msg.sender, _tokens, _subaccount);
 
         mocBalance = mocBalance.sub(mocs);
-        require(mocToken.transfer(msg.sender, mocs), "error in transfer");
+        require(mocToken.transfer(_destination, mocs), "error in transfer");
 
         // When last supporter exits move pending earnings to next round
         if (totalSupply == 0) {
