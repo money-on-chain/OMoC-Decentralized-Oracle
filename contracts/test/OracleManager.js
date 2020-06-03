@@ -9,6 +9,7 @@ const ethers = require('ethers');
 contract("OracleManager", async (accounts) => {
 
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
+    const minStayBlocks = 10;
     const feeSourceAccount = accounts[0];
 
     /* Account is the simulated oracle server address. The stake 
@@ -48,7 +49,7 @@ contract("OracleManager", async (accounts) => {
             this.oracleMgr.address);
 
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5))
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice_btcusd.address);
@@ -260,6 +261,11 @@ contract("OracleManager", async (accounts) => {
         assert.isTrue(await this.coinPairPrice_btcusd.canRemoveOracle(oracleData[0].account));
         assert.isTrue(await this.coinPairPrice_RIFBTC.canRemoveOracle(oracleData[0].account));
 
+        // stop oracle as supporter
+        await expectRevert(this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner}), "Must be stopped");
+        await this.oracleMgr.stop(oracleData[0].account, {from: oracleData[0].owner});
+        await helpers.mineBlocks(minStayBlocks);
+
         await this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner});
         assert.isTrue((await this.token.balanceOf(oracleData[0].owner)).eq(ownerBalance.add(new BN(originalStake))));
     });
@@ -324,6 +330,11 @@ contract("OracleManager", async (accounts) => {
 
         const ownerBalance = await this.token.balanceOf(oracleData[1].owner);
         const originalStake = (await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].account)).stake;
+
+        // stop oracle as supporter
+        await expectRevert(this.oracleMgr.removeOracle(oracleData[1].account, {from: oracleData[1].owner}), "Must be stopped");
+        await this.oracleMgr.stop(oracleData[1].account, {from: oracleData[1].owner});
+        await helpers.mineBlocks(minStayBlocks);
 
         await this.oracleMgr.removeOracle(oracleData[1].account, {from: oracleData[1].owner});
 

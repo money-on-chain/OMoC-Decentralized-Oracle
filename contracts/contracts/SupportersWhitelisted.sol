@@ -3,14 +3,21 @@ pragma solidity ^0.6.0;
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import "./openzeppelin/Initializable.sol";
 import "./libs/IterableWhitelist.sol";
-import "./SupportersAbstract.sol";
+import "./SupportersVestedAbstract.sol";
 import "./moc-gobernanza/Governance/Governed.sol";
 
-contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersAbstract, Governed {
+/*
+    Right now we have two things implemented in the same smart-contract:
+        - Only the smart-contracts in the whitelist can access this one.
+        - Some vesting rules implemented in SupportersVestedAbstract
+    This can be split in the future in two smart-contracts if we want to add a specific set
+    of vesting rules (that doesn't do what SupportersVestedAbstract does).
+*/
+contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVestedAbstract, Governed {
 
-    function initialize(IGovernor _governor, address[] memory wlist, IERC20 _mocToken, uint256 _period) public initializer {
+    function initialize(IGovernor _governor, address[] memory wlist, IERC20 _mocToken, uint256 _period, uint256 _minStayBlocks) public initializer {
         Governed.initialize(_governor);
-        SupportersAbstract._initialize(_mocToken, _period);
+        SupportersVestedAbstract._initialize(_mocToken, _period, _minStayBlocks);
         for (uint256 i = 0; i < wlist.length; i++) {
             super.add(wlist[i]);
         }
@@ -39,6 +46,7 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersAb
     function setPeriod(uint256 _period) external onlyAuthorizedChanger() {
         super._setPeriod(_period);
     }
+
 
     /**
       Stake MOC to receive earnings.
@@ -100,21 +108,11 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersAb
 
       @param _tokens amount of tokens to convert to MOC
       @param _subaccount subaccount used to withdraw MOC
-      @param _destination destination address that gets the MOC
+      @param _receiver destination address that gets the MOC
       @return Amount of MOC transfered
     */
-    function withdrawFromTo(uint256 _tokens, address _subaccount, address _destination) external onlyWhitelisted(msg.sender) returns (uint256) {
-        return super._withdrawFromTo(_tokens, _subaccount, _destination);
-    }
-
-    /**
-      Amount of tokens for _user.
-
-      @param _user User address
-      @return tokens for _user
-    */
-    function getBalance(address _user) external view returns (uint256) {
-        return super._getBalanceAt(_user, _user);
+    function withdrawFromTo(uint256 _tokens, address _subaccount, address _receiver) external onlyWhitelisted(msg.sender) returns (uint256) {
+        return super._withdrawFromTo(_tokens, _subaccount, _receiver);
     }
 
     /**
@@ -126,16 +124,6 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersAb
     */
     function getBalanceAt(address _user, address _subaccount) external view returns (uint256) {
         return super._getBalanceAt(_user, _subaccount);
-    }
-
-    /**
-      MOC available for withdrawal by _user.
-
-      @param _user User address
-      @return MOC for _user
-    */
-    function getMOCBalance(address _user) external view returns (uint256) {
-        return super._getMOCBalanceAt(_user, _user);
     }
 
     /**
@@ -195,4 +183,38 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersAb
     function getEarningsInfo() external view returns (uint256, uint256, uint256) {
         return super._getEarningsInfo();
     }
+
+
+    ////////////////////////////////////////////////////////////// SupportersVestedAbstract
+
+    /**
+      * @dev Sets the minStayBlocks by gobernanza
+      * @param _minStayBlocks- the override minStayBlocks
+      */
+    function setMinStayBlocks(uint256 _minStayBlocks) external onlyWhitelisted(msg.sender) {
+        super._setMinStayBlocks(_minStayBlocks);
+    }
+
+    /**
+     Stop staking some MOCs
+    */
+    function stop(address addr) external onlyWhitelisted(msg.sender) {
+        super._stop(addr);
+    }
+
+    /**
+      Vesting information for _account.
+
+      @param _user User address
+      @param _subaccount subaccount to get MOC balance
+      @return balance stoppedInblock balance
+      @return stoppedInblock the block in which the mocs where stopped
+    */
+    function vestingInfoOf(address _user, address _subaccount) external view returns (uint256 balance, uint256 stoppedInblock) {
+        require(_subaccount != address(0), "Address must be != 0");
+        return (this.getMOCBalanceAt(_user, _subaccount), stopInBlockMap[_subaccount]);
+    }
+
+    ////////////////////////////////////////////////////////////// SupportersVestedAbstract END
+
 }

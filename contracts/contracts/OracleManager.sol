@@ -1,17 +1,18 @@
 pragma solidity ^0.6.0;
 
-import "./Supporters.sol";
 import "./CoinPairRegister.sol";
 import "./CoinPairPrice.sol";
+import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {RegisteredOraclesLib} from "./libs/RegisteredOracles.sol";
 import {OracleInfoLib} from "./libs/OracleInfo.sol";
+import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import "./openzeppelin/Initializable.sol";
 import "./openzeppelin/math/SafeMath.sol";
 import "./moc-gobernanza/Governance/Governed.sol";
 
 contract OracleManager is CoinPairRegister, Initializable, Governed {
     RegisteredOraclesLib.RegisteredOracles  registeredOracles;
-    Supporters public                       supportersContract;
+    SupportersWhitelisted public            supportersContract;
     uint256 public                          minOracleOwnerStake;
     IERC20 public                           token;
 
@@ -33,17 +34,17 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     /// @notice Construct this contract.
     /// @param _minOracleOwnerStake The minimum amount of tokens required as stake by oracle owners.
     /// @param _supportersContract the Supporters contract contract address.
-    function initialize(IGovernor _governor, uint256 _minOracleOwnerStake, Supporters _supportersContract) public initializer
+    function initialize(IGovernor _governor, uint256 _minOracleOwnerStake, SupportersWhitelisted _supportersContract) public initializer
     {
         require(address(_supportersContract) != address(0), "Supporters contract address must be != 0");
         require(address(_supportersContract.mocToken()) != address(0), "Token contract address must be != 0");
         require(_minOracleOwnerStake > 0, "The minimum oracle owner stake amount cannot be zero");
 
         Governed.initialize(_governor);
-
-        minOracleOwnerStake = _minOracleOwnerStake;
         supportersContract = _supportersContract;
         token = _supportersContract.mocToken();
+
+        minOracleOwnerStake = _minOracleOwnerStake;
         registeredOracles = RegisteredOraclesLib.init(getStake);
     }
 
@@ -139,6 +140,16 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         emit OracleUnsubscribed(msg.sender, oracleAddr, coinPair);
     }
 
+    /// @notice stop the supporters part of oracle stake
+    /// @param oracleAddr Address of oracle
+    function stop(address oracleAddr) public {
+        OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
+        require(data.isRegistered(), "Oracle is not registered");
+        require(data.isOwner(msg.sender), "Must be called by oracle owner");
+        unsubscribeAll(oracleAddr);
+        supportersContract.stop(oracleAddr);
+    }
+
     /// @notice Returns true if an oracle is subscribed to a coin pair
     function isSubscribed(address oracleAddr, bytes32 coinPair) public view returns (bool) {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
@@ -166,12 +177,6 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         }
 
         return (subscribedCoinpairs, valid);
-    }
-
-    /// @notice Get the stake in MOCs that an oracle has.
-    /// @param addr The address of the oracle.
-    function getStake(address addr) public view returns (uint256) {
-        return supportersContract.getMOCBalanceAt(address(this), addr);
     }
 
     /// @notice Returns the registered Oracle list head to start iteration.
@@ -278,10 +283,34 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         require(canRemove, "Oracle cannot be removed at this time");
 
         unsubscribeAll(oracleAddr);
-        _withdrawStake(oracleAddr, data.getOwner());
+        uint256 tokens = supportersContract.getBalanceAt(address(this), oracleAddr);
+        supportersContract.withdrawFromTo(tokens, oracleAddr, data.getOwner());
         registeredOracles.remove(oracleAddr, prevEntry);
         emit OracleRemoved(msg.sender, oracleAddr);
     }
+
+    /// @notice Get the stake in MOCs that an oracle has.
+    /// @param addr The address of the oracle.
+    function getStake(address addr) public view returns (uint256 balance) {
+        return supportersContract.getMOCBalanceAt(address(this), addr);
+    }
+
+    /// @notice Vesting information for account.
+    /// @param addr The address of the oracle.
+    function vestingInfoOf(address addr) external view returns (uint256 balance, uint256 stoppedInblock) {
+        return supportersContract.vestingInfoOf(address(this), addr);
+    }
+
+    /// @dev Add stake internal
+    function _addStake(address oracleOwner, address oracleAddr, uint256 stake) internal {
+        // Transfer stake [should be approved by oracle owner first]
+        token.transferFrom(oracleOwner, address(this), stake);
+
+        // Stake at supportersContract contract
+        token.approve(address(supportersContract), stake);
+        supportersContract.stakeAtFrom(stake, oracleAddr, address(this));
+    }
+
 
     /// @dev Unsubscribe a registered oracle from participating in all registered coin-pairs
     /// @param oracleAddr Address of oracle
@@ -298,25 +327,4 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
             cp.unsubscribe(oracleAddr);
         }
     }
-
-    /// @dev Add stake internal
-    function _addStake(address staker, address addr, uint256 stake) internal {
-        // Transfer stake [should be approved by oracle owner first]
-        token.transferFrom(staker, address(this), stake);
-
-        // Stake at supportersContract contract
-        token.approve(address(supportersContract), stake);
-        supportersContract.stakeAt(stake, addr);
-    }
-
-    /// @dev Withdraw stake internal
-    function _withdrawStake(address addr, address oracleOwner) internal {
-        // Withdraw MOC from supportersContract contract
-        uint256 tokens = supportersContract.getBalanceAt(address(this), addr);
-        uint256 mocs = supportersContract.withdrawFrom(tokens, addr);
-
-        // Transfer to Oracle's owner
-        token.transfer(oracleOwner, mocs);
-    }
-
 }

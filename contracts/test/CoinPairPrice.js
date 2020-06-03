@@ -9,6 +9,7 @@ const ethers = require('ethers');
 contract("CoinPairPrice", async (accounts) => {
 
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
+    const minStayBlocks = 10;
     const feeSourceAccount = accounts[0];
 
     /* Account is the simulated oracle server address. The stake 
@@ -30,7 +31,7 @@ contract("CoinPairPrice", async (accounts) => {
             [accounts[0]], // whitlist
             web3.utils.asciiToHex("BTCUSD"),
             this.token.address,
-            10, // maxOraclesPerRound
+            3, // maxOraclesPerRound
             5, // roundLockPeriodInBlocks
             this.validPricePeriodInBlocks,
             this.bootstrapPrice,
@@ -38,7 +39,7 @@ contract("CoinPairPrice", async (accounts) => {
             this.oracleMgr.address);
 
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5))
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
@@ -65,13 +66,13 @@ contract("CoinPairPrice", async (accounts) => {
         },
         {
             name: "oracle-c.io",
-            stake: (1 * 10 ** 18).toString(),
+            stake: (3 * 10 ** 18).toString(),
             account: accounts[5],
             owner: accounts[6]
         },
         {
             name: "oracle-d.io",
-            stake: (3 * 10 ** 18).toString(),
+            stake: (1 * 10 ** 18).toString(),
             account: accounts[7],
             owner: accounts[8]
         }
@@ -424,7 +425,7 @@ contract("CoinPairPrice", async (accounts) => {
 
     it("Should fail to publish if voter/sender is D (not a selected-in-round oracle)", async () => {
 
-
+        console.log(await this.coinPairPrice.getRoundInfo());
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[3].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -641,6 +642,11 @@ contract("CoinPairPrice", async (accounts) => {
         const info = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
         assert.equal(info.internetName, "oracle-a.io");
         const initialBalance = await this.token.balanceOf(oracleData[0].owner);
+
+        // stop oracle as supporter
+        await expectRevert(this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner}), "Must be stopped");
+        await this.oracleMgr.stop(oracleData[0].account, {from: oracleData[0].owner});
+        await helpers.mineBlocks(minStayBlocks);
 
         await this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner});
 

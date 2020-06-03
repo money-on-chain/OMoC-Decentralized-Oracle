@@ -9,8 +9,11 @@ const SupportersWhitelisted = artifacts.require("SupportersWhitelisted");
 
 const ORACLE_QUANTITY = 40;
 const COINPAIR = web3.utils.asciiToHex("BTCUSD");
+const minOracleOwnerStake = 10000000000;
+const minStayBlocks = 10;
 
 contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
+
     before(async () => {
         this.governor = await helpers.createGovernor(accounts[8]);
 
@@ -31,8 +34,7 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
             2, // numIdleRounds,
             this.oracleMgr.address);
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5))
-        const minOracleOwnerStake = 10000000000;
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, COINPAIR, this.coinPairPrice.address);
@@ -262,6 +264,11 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
             const prevEntries = getPrevEntries(ol);
 
             const initialBalance = await this.token.balanceOf(ol[idx].owner_account);
+
+            // stop oracle as supporter
+            await expectRevert(this.oracleMgr.removeOracleWithHint(ol[idx].account, prevEntries[idx], {from: ol[idx].owner_account}), "Must be stopped");
+            await this.oracleMgr.stop(ol[idx].account, {from: ol[idx].owner_account});
+            await helpers.mineBlocks(minStayBlocks);
 
             await this.oracleMgr.removeOracleWithHint(ol[idx].account, prevEntries[idx], {from: ol[idx].owner_account});
             await expectRevert(this.oracleMgr.getOracleRegistrationInfo(ol[idx].account), "Oracle not registered")

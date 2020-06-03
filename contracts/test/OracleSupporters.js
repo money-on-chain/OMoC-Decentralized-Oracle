@@ -8,6 +8,7 @@ const TestMOC = artifacts.require("TestMOC");
 
 contract("Oracle-Supporters integration", (accounts) => {
     const minOracleOwnerStake = 1
+    const minStayBlocks = 10
     const oracle1 = accounts[2]
     const oracle2 = accounts[3]
     const INITIAL_BALANCE = web3.utils.toWei(new BN(10), "ether")
@@ -33,7 +34,7 @@ contract("Oracle-Supporters integration", (accounts) => {
             1, // numIdleRounds,
             this.oracleMgr.address);
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(10))
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(10), minStayBlocks)
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
@@ -104,6 +105,12 @@ contract("Oracle-Supporters integration", (accounts) => {
 
         await helpers.mineUntilNextRound(this.coinPairPrice)
         await this.coinPairPrice.switchRound();
+
+
+        // stop oracle as supporter
+        await expectRevert(this.oracleMgr.removeOracle(oracle1, {from: oracle1}), "Must be stopped");
+        await this.oracleMgr.stop(oracle1, {from: oracle1});
+        await helpers.mineBlocks(minStayBlocks);
 
         await this.oracleMgr.removeOracle(oracle1, {from: oracle1});
 

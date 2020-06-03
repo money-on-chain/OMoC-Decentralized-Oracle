@@ -144,7 +144,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
         address lastAddr = address(0);
         for (uint i = 0; i < sig_s.length; i++) {
-            address rec = recoverSigner(sig_v[i], sig_r[i], sig_s[i], messageHash);
+            address rec = _recoverSigner(sig_v[i], sig_r[i], sig_s[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
             require(subscribedOracles[rec], "Signing oracle not subscribed");
             require(oracleRoundInfo[rec].isInRound(currentRound.number), "Address of signer not part of this round");
@@ -243,10 +243,10 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         if (currentRound.number > 0) // Not before the first round
         {
             require(block.number > currentRound.lockPeriodEndBlock, "The current round lock period is active");
-            distributeRewards();
+            _distributeRewards();
         }
 
-        clearOracleState();
+        _clearOracleState();
 
         // Setup new round parameters
 
@@ -257,7 +257,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
         // Select top stake oracles to participate on this round
 
-        selectOraclesForRound();
+        _selectOraclesForRound();
 
         emit NewRound(msg.sender, currentRound.number, currentRound.totalPoints, currentRound.startBlock,
             currentRound.lockPeriodEndBlock, currentRound.selectedOracles);
@@ -267,7 +267,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     // Internal functions
     // ----------------------------------------------------------------------------------------------------------------
 
-    function clearOracleState() private {
+    function _clearOracleState() private {
         for (uint i = 0; i < currentRound.selectedOracles.length; i++) {
             OracleInfoLib.OracleRoundInfo storage data = oracleRoundInfo[currentRound.selectedOracles[i]];
             data.clearPoints();
@@ -275,7 +275,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     }
 
     /// @notice Distribute rewards to oracles, taking fees from this smart contract.
-    function distributeRewards() private {
+    function _distributeRewards() private {
         assert(currentRound.number > 0);
 
         uint256 availableRewardFees = token.balanceOf(address(this));
@@ -298,7 +298,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
     /// @notice Select top-stakers for the current round. Only subscribed oracles to this contract are
     /// considered for selection.
-    function selectOraclesForRound() private {
+    function _selectOraclesForRound() private {
 
         delete currentRound.selectedOracles;
         for (address addr = oracleManager.getRegisteredOracleHead();
@@ -315,7 +315,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
     /// @notice Recover signer address from v,r,s signature components and hash
     ///
-    function recoverSigner(uint8 v, bytes32 r, bytes32 s, bytes32 hash) internal pure returns (address) {
+    function _recoverSigner(uint8 v, bytes32 r, bytes32 s, bytes32 hash) internal pure returns (address) {
         if (r.length != 32 || s.length != 32) {
             return (address(0));
         }

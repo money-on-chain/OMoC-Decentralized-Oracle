@@ -84,6 +84,7 @@ const TESTS_TO_RUN = [
 ];
 contract("[ @skip-on-coverage ] CoinPairPrice", async (accounts) => {
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
+    const minStayBlocks = 10;
     const feeSourceAccount = accounts[0];
     let ORACLE_DATA;
     before(() => {
@@ -153,7 +154,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice", async (accounts) => {
                     "100000000", // bootstrapPrice
                     2, // numIdleRounds
                     this.oracleMgr.address);
-                await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5))
+                await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
                 await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
                 // Create sample coin pairs
                 await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);

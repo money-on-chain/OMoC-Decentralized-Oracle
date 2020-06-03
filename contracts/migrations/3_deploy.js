@@ -76,7 +76,9 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Initialize supporters", 'governor', governorAddr);
     const scall = await artifacts.require("SupportersWhitelisted").at(supporters.options.address);
-    await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address], TestMOC.address, params.supportersEarnPeriodInBlocks);
+    await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address], TestMOC.address,
+        params.supportersEarnPeriodInBlocks,
+        params.supportersMinStayBlocks);
 
     console.log("Initialize OracleManager", 'governor', governorAddr,);
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
@@ -84,7 +86,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Initialize Supporters Vested", 'governor', governorAddr);
     const svcall = await artifacts.require("SupportersVested").at(supportersVested.options.address);
-    await svcall.initialize(governorAddr, supporters.options.address, params.supportersMinStayBlocks);
+    await svcall.initialize(governorAddr, supporters.options.address);
 
     for (let i = 0; i < params.CurrencyPair.length; i++) {
         const coin = params.CurrencyPair[i];
