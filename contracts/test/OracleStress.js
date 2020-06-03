@@ -51,8 +51,8 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
         assert.equal(info.internetName, name);
         assert.equal(info.stake, stake);
         assert.equal((await token.balanceOf(ownerAddr)).toString(), initialBalance.sub(new BN(stake)).toString());
-        await oracleManager.suscribeCoinPair(oracleAddr, COINPAIR, {from: ownerAddr});
-        const subscribed = await oracleManager.isSuscribed(oracleAddr, COINPAIR);
+        await oracleManager.subscribeCoinPair(oracleAddr, COINPAIR, {from: ownerAddr});
+        const subscribed = await oracleManager.isSubscribed(oracleAddr, COINPAIR);
         assert.isTrue(subscribed);
     }
 
@@ -245,8 +245,8 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
 
     it("Should remove all oracles", async () => {
         for (let i = 0; i < oracleList.length; i++) {
-            await this.oracleMgr.unsuscribeCoinPair(oracleList[i].account, COINPAIR, {from: oracleList[i].owner_account});
-            const subscribed = await this.oracleMgr.isSuscribed(oracleList[i].account, COINPAIR);
+            await this.oracleMgr.unsubscribeCoinPair(oracleList[i].account, COINPAIR, {from: oracleList[i].owner_account});
+            const subscribed = await this.oracleMgr.isSubscribed(oracleList[i].account, COINPAIR);
             assert.isFalse(subscribed);
         }
 

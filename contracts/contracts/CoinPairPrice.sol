@@ -13,8 +13,8 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     // Contract configuration
     // ----------------------------------------------------------------------------------------------------------------
 
-    // The suscribed oracles to this coin-pair.
-    mapping(address => bool) suscribedOracles;
+    // The subscribed oracles to this coin-pair.
+    mapping(address => bool) subscribedOracles;
 
     struct Round
     {
@@ -59,31 +59,31 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     // -------------------------------------------------------------------------------------------------------------
 
 
-    /// @notice Suscribe an oracle to this coin pair , allowing it to be selected in rounds.
-    /// @param oracleAddr the oracle address to suscribe to this coin pair.
+    /// @notice subscribe an oracle to this coin pair , allowing it to be selected in rounds.
+    /// @param oracleAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function suscribe(address oracleAddr) external {
+    function subscribe(address oracleAddr) external {
         require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
-        require(suscribedOracles[oracleAddr] == false, "Oracle is already suscribed to this coin pair");
+        require(subscribedOracles[oracleAddr] == false, "Oracle is already subscribed to this coin pair");
 
-        suscribedOracles[oracleAddr] = true;
+        subscribedOracles[oracleAddr] = true;
     }
 
-    /// @notice Unsuscribe an oracle from this coin pair , disallowing it to be selected in rounds.
-    /// @param oracleAddr the oracle address to suscribe to this coin pair.
+    /// @notice Unsubscribe an oracle from this coin pair , disallowing it to be selected in rounds.
+    /// @param oracleAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function unsuscribe(address oracleAddr) external {
+    function unsubscribe(address oracleAddr) external {
         require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
-        require(suscribedOracles[oracleAddr] == true, "Oracle is not suscribed to this coin pair");
+        require(subscribedOracles[oracleAddr] == true, "Oracle is not subscribed to this coin pair");
 
-        suscribedOracles[oracleAddr] = false;
+        subscribedOracles[oracleAddr] = false;
     }
 
-    /// @notice Returns true if an oracle is suscribed to this contract' coin pair
+    /// @notice Returns true if an oracle is subscribed to this contract' coin pair
     /// @param oracleAddr the oracle address to lookup.
     /// @dev This is designed to be called from OracleManager.
-    function isSuscribed(address oracleAddr) external view returns (bool) {
-        return suscribedOracles[oracleAddr];
+    function isSubscribed(address oracleAddr) external view returns (bool) {
+        return subscribedOracles[oracleAddr];
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
@@ -120,7 +120,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
         require(currentRound.number > 0, "Round not open");
         OracleInfoLib.OracleRoundInfo storage data = oracleRoundInfo[msg.sender];
-        require(suscribedOracles[msg.sender], "Sender oracle not suscribed");
+        require(subscribedOracles[msg.sender], "Sender oracle not subscribed");
         require(data.isInRound(currentRound.number), "Voter oracle is not part of this round");
         require(msg.sender == votedOracle, "Your address does not match the voted oracle");
         require(version == 3, "This contract accepts only V3 format");
@@ -146,7 +146,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         for (uint i = 0; i < sig_s.length; i++) {
             address rec = recoverSigner(sig_v[i], sig_r[i], sig_s[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
-            require(suscribedOracles[rec], "Signing oracle not suscribed");
+            require(subscribedOracles[rec], "Signing oracle not subscribed");
             require(oracleRoundInfo[rec].isInRound(currentRound.number), "Address of signer not part of this round");
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
             lastAddr = rec;
@@ -296,7 +296,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         }
     }
 
-    /// @notice Select top-stakers for the current round. Only suscribed oracles to this contract are
+    /// @notice Select top-stakers for the current round. Only subscribed oracles to this contract are
     /// considered for selection.
     function selectOraclesForRound() private {
 
@@ -305,8 +305,8 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
             addr != address(0) && currentRound.selectedOracles.length < maxOraclesPerRound;
             addr = oracleManager.getRegisteredOracleNext(addr))
         {
-            // Select suscribed oracles here.
-            if (suscribedOracles[addr]) {
+            // Select subscribed oracles here.
+            if (subscribedOracles[addr]) {
                 currentRound.selectedOracles.push(addr);
                 oracleRoundInfo[addr].setSelectedInRound(currentRound.number);
             }

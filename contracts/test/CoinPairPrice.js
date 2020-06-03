@@ -116,11 +116,11 @@ contract("CoinPairPrice", async (accounts) => {
         assert.isTrue((await this.token.balanceOf(oracleData[2].owner)).eq(initialBalance3.sub(new BN(oracleData[2].stake))));
     });
 
-    it("Should suscribe oracles A,B,C to this coin pair", async () => {
+    it("Should subscribe oracles A,B,C to this coin pair", async () => {
         const thisCoinPair = await this.coinPairPrice.getCoinPair();
-        await this.oracleMgr.suscribeCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
-        await this.oracleMgr.suscribeCoinPair(oracleData[1].account, thisCoinPair, {from: oracleData[1].owner});
-        await this.oracleMgr.suscribeCoinPair(oracleData[2].account, thisCoinPair, {from: oracleData[2].owner});
+        await this.oracleMgr.subscribeCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
+        await this.oracleMgr.subscribeCoinPair(oracleData[1].account, thisCoinPair, {from: oracleData[1].owner});
+        await this.oracleMgr.subscribeCoinPair(oracleData[2].account, thisCoinPair, {from: oracleData[2].owner});
 
     });
 
@@ -239,7 +239,7 @@ contract("CoinPairPrice", async (accounts) => {
         await expectRevert(this.coinPairPrice.switchRound(), " The current round lock period is active");
     });
 
-    it("Should fail to publish price if some signer is not suscribed", async () => {
+    it("Should fail to publish price if some signer is not subscribed", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
 
@@ -254,7 +254,7 @@ contract("CoinPairPrice", async (accounts) => {
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
             {from: oracleData[0].account}),
-            "Signing oracle not suscribed");
+            "Signing oracle not subscribed");
     });
 
     it("Should fail to publish price if signature v-component is invalid", async () => {
@@ -320,7 +320,7 @@ contract("CoinPairPrice", async (accounts) => {
         assert.isFalse(not_valid);
     });
 
-    it("Should fail to publish price from  unsuscribed address", async () => {
+    it("Should fail to publish price from  unsubscribed address", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
@@ -333,7 +333,7 @@ contract("CoinPairPrice", async (accounts) => {
             [s1.v, s2.v, s3.v],
             [s1.r, s2.r, s3.r],
             [s1.s, s2.s, s3.s],
-            {from: accounts[7]}), "Sender oracle not suscribed");
+            {from: accounts[7]}), "Sender oracle not subscribed");
     });
 
     it("Should fail to publish price if sender is not a voted oracle", async () => {
@@ -413,12 +413,12 @@ contract("CoinPairPrice", async (accounts) => {
     });
 
 
-    it("Should register and suscribe oracle D while round is running", async () => {
+    it("Should register and subscribe oracle D while round is running", async () => {
         const thisCoinPair = await this.coinPairPrice.getCoinPair();
         const initialBalance1 = await this.token.balanceOf(oracleData[3].owner);
         await this.token.approve(this.oracleMgr.address, oracleData[3].stake, {from: oracleData[3].owner});
         await this.oracleMgr.registerOracle(oracleData[3].account, oracleData[3].name, oracleData[3].stake, {from: oracleData[3].owner});
-        await this.oracleMgr.suscribeCoinPair(oracleData[3].account, thisCoinPair, {from: oracleData[3].owner});
+        await this.oracleMgr.subscribeCoinPair(oracleData[3].account, thisCoinPair, {from: oracleData[3].owner});
         assert.isTrue((await this.token.balanceOf(oracleData[3].owner)).eq(initialBalance1.sub(new BN(oracleData[3].stake))));
     })
 
@@ -612,7 +612,7 @@ contract("CoinPairPrice", async (accounts) => {
         assert.equal(postFeeBalance.toString(), (BN(sourceBalance).sub(expectTotalReward)).toString());
     });
 
-    it("Should exclude from round unsuscribed oracles and let remove after that", async () => {
+    it("Should exclude from round unsubscribed oracles and let remove after that", async () => {
         const thisCoinPair = await this.coinPairPrice.getCoinPair();
 
         const roundInfo1 = await this.coinPairPrice.getRoundInfo();
@@ -625,7 +625,7 @@ contract("CoinPairPrice", async (accounts) => {
         const roundInfo2 = await this.coinPairPrice.getRoundInfo();
         assert.isTrue(roundInfo2.selectedOracles.includes(oracleData[0].account))
 
-        await this.oracleMgr.unsuscribeCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
+        await this.oracleMgr.unsubscribeCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
 
         await helpers.mineUntilNextRound(this.coinPairPrice);
         await this.coinPairPrice.switchRound();

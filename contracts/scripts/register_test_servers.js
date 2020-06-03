@@ -63,12 +63,12 @@ async function main() {
             await oracleManager.registerOracle(o.addr, o.name, o.quantity, {from: owner});
         }
         for (const coinPair of o.oracleCoinPairFilter) {
-            const isSubscribed = await oracleManager.isSuscribed(o.addr, web3.utils.fromAscii(coinPair));
+            const isSubscribed = await oracleManager.isSubscribed(o.addr, web3.utils.fromAscii(coinPair));
             if (isSubscribed) {
                 console.log(o.addr, "already subscribed to coinpair", coinPair);
             } else {
-                console.log("suscribe", o.addr, "to coinpair", coinPair);
-                await oracleManager.suscribeCoinPair(o.addr, web3.utils.fromAscii(coinPair));
+                console.log("subscribe", o.addr, "to coinpair", coinPair);
+                await oracleManager.subscribeCoinPair(o.addr, web3.utils.fromAscii(coinPair));
             }
         }
     }
