@@ -11,6 +11,7 @@ const ORACLE_QUANTITY = 40;
 const COINPAIR = web3.utils.asciiToHex("BTCUSD");
 const minOracleOwnerStake = 10000000000;
 const minStayBlocks = 10;
+const maxOraclesPerRound = 10;
 
 contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
 
@@ -27,7 +28,7 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
             [accounts[0]],
             COINPAIR,
             this.token.address,
-            10, // maxOraclesPerRound,
+            maxOraclesPerRound,
             5, // roundLockPeriodInBlocks,
             3, // validPricePeriodInBlocks
             1000000000000000, // bootstrapPrice,
@@ -45,7 +46,7 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
         await this.token.mint(accounts[6], '800000000000000000000');
     });
 
-    async function register(token, oracleManager, ownerAddr, stake, name, oracleAddr, prevEntry) {
+    async function register(coinPairPrice, token, oracleManager, ownerAddr, stake, name, oracleAddr, prevEntry) {
         const initialBalance = await token.balanceOf(ownerAddr);
         await token.approve(oracleManager.address, stake, {from: ownerAddr});
         await oracleManager.registerOracleWithHint(oracleAddr, name, stake, prevEntry, {from: ownerAddr});
@@ -53,10 +54,34 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
         assert.equal(info.internetName, name);
         assert.equal(info.stake, stake);
         assert.equal((await token.balanceOf(ownerAddr)).toString(), initialBalance.sub(new BN(stake)).toString());
+        const cant_prev = (await coinPairPrice.getRoundInfo()).selectedOracles.length
         await oracleManager.subscribeCoinPair(oracleAddr, COINPAIR, {from: ownerAddr});
         const subscribed = await oracleManager.isSubscribed(oracleAddr, COINPAIR);
         assert.isTrue(subscribed);
+
+        const round_info = await coinPairPrice.getRoundInfo()
+        if (round_info.round == 0) {
+            // We can't detect if the oracle is inside the round, so we don't add them
+        } else {
+            // We add to selected oracles right away
+            const cant_post = round_info.selectedOracles.length;
+            if (cant_prev < maxOraclesPerRound) {
+                assert.equal(cant_prev + 1, cant_post);
+            } else {
+                assert.equal(maxOraclesPerRound, cant_post);
+            }
+        }
+
     }
+
+    it("creation", async () => {
+        assert.equal(maxOraclesPerRound, (await this.coinPairPrice.maxOraclesPerRound()).toNumber());
+        assert.equal((await this.coinPairPrice.getRoundInfo()).selectedOracles.length, 0);
+        // This script tests the addition of oracles during registration
+        // for that we must switch round zero
+        await this.coinPairPrice.switchRound();
+        assert.equal((await this.coinPairPrice.getRoundInfo()).selectedOracles.length, 0);
+    });
 
     const oracleList = [];
     it("Get gas price", async () => {
@@ -105,16 +130,15 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
         for (let i = 0; i < oracleList.length; i++) {
             inserted.push(oracleList[i]);
             const prevEntry = getPrevEntries(inserted);
-            await register(this.token, this.oracleMgr, inserted[i].owner_account, inserted[i].stake, inserted[i].name, inserted[i].account, prevEntry[i]);
+            await register(this.coinPairPrice, this.token, this.oracleMgr, inserted[i].owner_account, inserted[i].stake, inserted[i].name, inserted[i].account, prevEntry[i]);
         }
     });
 
 
     it("Should select the maxOraclesPerRound oracles", async () => {
-        assert.equal((await this.coinPairPrice.getRoundInfo()).selectedOracles.length, 0);
+        assert.equal((await this.coinPairPrice.getRoundInfo()).selectedOracles.length, maxOraclesPerRound);
         await this.coinPairPrice.switchRound();
         const selOraclesPos = (await this.coinPairPrice.getRoundInfo()).selectedOracles;
-        const maxOraclesPerRound = (await this.coinPairPrice.maxOraclesPerRound()).toNumber();
         const selected = oracleList.concat().sort((a, b) => (b.stake - a.stake)).map(x => x.account).slice(0, maxOraclesPerRound);
         assert.equal(selOraclesPos.length, selected.length);
         for (let i = 0; i < selOraclesPos.length; i++) {

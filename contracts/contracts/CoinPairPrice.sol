@@ -67,6 +67,11 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         require(subscribedOracles[oracleAddr] == false, "Oracle is already subscribed to this coin pair");
 
         subscribedOracles[oracleAddr] = true;
+        if (currentRound.selectedOracles.length < maxOraclesPerRound
+            && currentRound.number > 0
+            && !(oracleRoundInfo[oracleAddr].isInRound(currentRound.number))) {
+            _addOracleToRound(oracleAddr);
+        }
     }
 
     /// @notice Unsubscribe an oracle from this coin pair , disallowing it to be selected in rounds.
@@ -232,7 +237,6 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         }
         return (currentRound.number, currentRound.startBlock, currentRound.lockPeriodEndBlock, currentRound.totalPoints,
         info, currentPrice, block.number, lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
-
     }
 
 
@@ -305,12 +309,15 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
             addr != address(0) && currentRound.selectedOracles.length < maxOraclesPerRound;
             addr = oracleManager.getRegisteredOracleNext(addr))
         {
-            // Select subscribed oracles here.
             if (subscribedOracles[addr]) {
-                currentRound.selectedOracles.push(addr);
-                oracleRoundInfo[addr].setSelectedInRound(currentRound.number);
+                _addOracleToRound(addr);
             }
         }
+    }
+
+    function _addOracleToRound(address addr) internal {
+        currentRound.selectedOracles.push(addr);
+        oracleRoundInfo[addr].setSelectedInRound(currentRound.number);
     }
 
     /// @notice Recover signer address from v,r,s signature components and hash

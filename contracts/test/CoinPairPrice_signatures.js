@@ -82,7 +82,7 @@ const TESTS_TO_RUN = [
         ]
     }
 ];
-contract("[ @skip-on-coverage ] CoinPairPrice", async (accounts) => {
+contract("[ @skip-on-coverage ] CoinPairPrice Signature", async (accounts) => {
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
     const minStayBlocks = 10;
     const feeSourceAccount = accounts[0];
