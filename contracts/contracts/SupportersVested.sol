@@ -9,19 +9,10 @@ import "./moc-gobernanza/Governance/Governed.sol";
 */
 contract SupportersVested is Governed {
     event AddStake(address indexed user, uint256 mocs, uint256 blockNum);
-    event Stop(address indexed user, uint256 mocs, uint256 blockNum);
-    event ReStake(address indexed user, uint256 mocs, uint256 blockNum);
+    event Stop(address indexed user, uint256 blockNum);
     event Withdraw(address indexed user, uint256 mocs, uint256 blockNum);
 
-
-    struct SupportersInfo
-    {
-        uint256 stakedInBlock;
-        uint256 stopInBlock;
-        uint256 stopBalanceInMocs;
-    }
-
-    mapping(address => SupportersInfo) supportersMap;
+    mapping(address => uint256) stopInBlockMap;
 
     // Supporters contract
     SupportersWhitelisted public supporters;
@@ -31,18 +22,11 @@ contract SupportersVested is Governed {
     // The minimum number of blocks that a user must stay staked after staking
     uint256 public minStayBlocks;
 
-    // The minimum number of blocks that a user must be stoped to be able to withdraw
-    uint256 public minStopBlocks;
-
-    // Total mocs that we store for users == sum(SupportersInfo.stopBalanceInMocs).
-    uint256 public totalStopBalanceInMocs;
-
-    function initialize(IGovernor _governor, SupportersWhitelisted _supporters, uint256 _minStayBlocks, uint256 _minStopBlocks) external initializer {
+    function initialize(IGovernor _governor, SupportersWhitelisted _supporters, uint256 _minStayBlocks) external initializer {
         Governed.initialize(_governor);
         supporters = _supporters;
         mocToken = _supporters.mocToken();
         minStayBlocks = _minStayBlocks;
-        minStopBlocks = _minStopBlocks;
     }
 
     /**
@@ -51,14 +35,6 @@ contract SupportersVested is Governed {
       */
     function setMinStayBlocks(uint256 _minStayBlocks) external onlyAuthorizedChanger() {
         minStayBlocks = _minStayBlocks;
-    }
-
-    /**
-      * @dev Sets the minStopBlocks by gobernanza
-      * @param _minStopBlocks- the override minStopBlocks
-      */
-    function setMinStopBlocks(uint256 _minStopBlocks) external onlyAuthorizedChanger() {
-        minStopBlocks = _minStopBlocks;
     }
 
 
@@ -70,9 +46,7 @@ contract SupportersVested is Governed {
     function distribute() external {
         // if somebody does a MOC transfer to our address, use the excess as rewards.
         uint256 mocs = mocToken.balanceOf(address(this));
-        if (mocs > totalStopBalanceInMocs) {
-            mocToken.transfer(address(supporters), mocs - totalStopBalanceInMocs);
-        }
+        mocToken.transfer(address(supporters), mocs);
         supporters.distribute();
     }
 
@@ -87,14 +61,36 @@ contract SupportersVested is Governed {
 
 
     /**
-      add MOCs to stake and receive earnings.
+      add MOCs to stake the approve must be done to this contract.
 
       @param _mocs amount of MOC to stake
     */
     function addStake(uint256 _mocs) external {
         // Transfer stake [should be approved by owner first]
         require(mocToken.transferFrom(msg.sender, address(this), _mocs), "error in transfer from");
-        _stakeAtSupporters(_mocs);
+        // Stake at Supporters contract
+        require(mocToken.approve(address(supporters), _mocs), "error in approve");
+        _stake(_mocs, address(this));
+    }
+
+    /**
+    add MOCs to stake the approve must be done directly to the SupportersWhitelisted contract.
+
+    @param _mocs amount of MOC to stake
+    */
+    function stakeDirectly(uint256 _mocs) external {
+        _stake(_mocs, msg.sender);
+    }
+
+    /**
+    add MOCs to stake
+
+    @param _mocs amount of MOC to stake
+    @param _source source account from which we must take funds
+    */
+    function _stake(uint256 _mocs, address _source) internal {
+        supporters.stakeAtFrom(_mocs, msg.sender, _source);
+        delete stopInBlockMap[msg.sender];
         emit AddStake(msg.sender, _mocs, block.number);
     }
 
@@ -102,29 +98,8 @@ contract SupportersVested is Governed {
       Stop staking some MOCs
     */
     function stop() external {
-        require(supportersMap[msg.sender].stakedInBlock != 0, "Can't stop must add some stake");
-        require(supportersMap[msg.sender].stakedInBlock + minStayBlocks < block.number, "Can't stop until minStayBlocks");
-
-        uint256 tokens = supporters.getBalanceAt(address(this), msg.sender);
-        uint256 mocs = supporters.withdrawFrom(tokens, msg.sender);
-
-        supportersMap[msg.sender].stopInBlock = block.number;
-        supportersMap[msg.sender].stopBalanceInMocs = supportersMap[msg.sender].stopBalanceInMocs + mocs;
-        totalStopBalanceInMocs = totalStopBalanceInMocs + mocs;
-        emit Stop(msg.sender, mocs, block.number);
-    }
-
-    /**
-      Restake MOCs
-    */
-    function reStake() external {
-        require(supportersMap[msg.sender].stopInBlock != 0, "Must be stop");
-        uint256 mocs = supportersMap[msg.sender].stopBalanceInMocs;
-        _stakeAtSupporters(mocs);
-        supportersMap[msg.sender].stopInBlock = 0;
-        supportersMap[msg.sender].stopBalanceInMocs = 0;
-        totalStopBalanceInMocs = totalStopBalanceInMocs - mocs;
-        emit ReStake(msg.sender, mocs, block.number);
+        stopInBlockMap[msg.sender] = block.number;
+        emit Stop(msg.sender, block.number);
     }
 
 
@@ -132,16 +107,12 @@ contract SupportersVested is Governed {
       Withdraw MOCs that were already stopped .
     */
     function withdraw() external {
-        require(supportersMap[msg.sender].stopInBlock != 0, "Must be stop");
-        require(supportersMap[msg.sender].stopInBlock + minStopBlocks < block.number, "Can't withdraw until minStopBlocks");
+        require(stopInBlockMap[msg.sender] != 0, "Must be stopped");
+        require(stopInBlockMap[msg.sender] + minStayBlocks < block.number, "Can't withdraw until minStayBlocks");
 
-        uint256 mocs = supportersMap[msg.sender].stopBalanceInMocs;
-        require(mocToken.transfer(msg.sender, mocs), "error in transfer");
-
-        supportersMap[msg.sender].stakedInBlock = block.number;
-        supportersMap[msg.sender].stopInBlock = 0;
-        supportersMap[msg.sender].stopBalanceInMocs = 0;
-        totalStopBalanceInMocs = totalStopBalanceInMocs - mocs;
+        uint256 tokens = supporters.getBalanceAt(address(this), msg.sender);
+        uint256 mocs = supporters.withdrawFromTo(tokens, msg.sender, msg.sender);
+        delete stopInBlockMap[msg.sender];
         emit Withdraw(msg.sender, mocs, block.number);
     }
 
@@ -149,33 +120,22 @@ contract SupportersVested is Governed {
       Balance of mocs.
 
       @param _account User address
-      @return bal the total staked and stopped mocs for _user
+      @return balance the balance of the user
     */
-    function balanceOf(address _account) external view returns (uint256 bal) {
-        (uint256 staked,, uint256 stopped,) = detailedBalanceOf(_account);
-        return staked + stopped;
+    function balanceOf(address _account) external view returns (uint256 balance) {
+        (balance,) = detailedBalanceOf(_account);
+        return balance;
     }
 
     /**
       Balance of mocs for _account.
 
       @param _account User address
-      @return staked the total staked mocs for _user
-      @return stakedInblock the block in which mocs were staked
-      @return stopped the total stopped mocs for _user
+      @return balance the balance of the user
       @return stoppedInblock the block in which the mocs where stopped
     */
-    function detailedBalanceOf(address _account) public view returns (uint256 staked, uint256 stakedInblock, uint256 stopped, uint256 stoppedInblock) {
+    function detailedBalanceOf(address _account) public view returns (uint256 balance, uint256 stoppedInblock) {
         require(_account != address(0), "Address must be != 0");
-        return (supporters.getMOCBalanceAt(address(this), _account), supportersMap[_account].stakedInBlock,
-        supportersMap[_account].stopBalanceInMocs, supportersMap[_account].stopInBlock);
-    }
-
-
-    function _stakeAtSupporters(uint256 _mocs) private {
-        // Stake at Supporters contract
-        require(mocToken.approve(address(supporters), _mocs), "error in approve");
-        supporters.stakeAt(_mocs, msg.sender);
-        supportersMap[msg.sender].stakedInBlock = block.number;
+        return (supporters.getMOCBalanceAt(address(this), _account), stopInBlockMap[_account]);
     }
 }

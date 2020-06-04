@@ -1,3 +1,4 @@
+markdown/build/*
 contracts/build
 contracts/.coverage*
 contracts/coverage.json

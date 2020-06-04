@@ -84,7 +84,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Initialize Supporters Vested", 'governor', governorAddr);
     const svcall = await artifacts.require("SupportersVested").at(supportersVested.options.address);
-    await svcall.initialize(governorAddr, supporters.options.address, params.supportersMinStayBlocks, params.supportersMinStopBlocks);
+    await svcall.initialize(governorAddr, supporters.options.address, params.supportersMinStayBlocks);
 
     for (let i = 0; i < params.CurrencyPair.length; i++) {
         const coin = params.CurrencyPair[i];
@@ -156,8 +156,7 @@ async function config(deployer, networkName, accounts) {
         roundLockPeriodInBlocks: parseEnvArray(process.env.roundLockPeriodInBlocks),
         validPricePeriodInBlocks: parseEnvArray(process.env.validPricePeriodInBlocks),
         supportersEarnPeriodInBlocks: 10,
-        supportersMinStayBlocks: 10,
-        supportersMinStopBlocks: 10,
+        supportersMinStayBlocks: 10
     }
     console.log("Contracts configuration", params);
     return params;
