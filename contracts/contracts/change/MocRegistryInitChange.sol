@@ -50,6 +50,7 @@ contract MocRegistryInitChange is ChangeContract {
         registry.setDecimal(get_keccak("ORACLE_PRICE_FALLBACK_DELTA_PCT"), 5, - 2);
         registry.setUint(get_keccak("ORACLE_PRICE_PUBLISH_BLOCKS"), 0);
         registry.setUint(get_keccak("ORACLE_PRICE_FALLBACK_BLOCKS"), 1);
+        registry.setBytes(get_keccak("ENTERING_FALLBACKS_AMOUNTS"), hex"020406080a");
         // usable just once!!!
         registry = EternalStorageGobernanza(0);
     }
