@@ -106,7 +106,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     function addStakeWithHint(address addr, uint stake, address removePrevEntry, address addPrevEntry) public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(addr);
         require(data.isRegistered(), "Oracle is not registered");
-        require(data.isOwner(msg.sender), "Must be called by oracle owner");
+        require(_isOwner(data), "Must be called by oracle owner");
 
         // Transfer stake [should be approved by oracle owner first]
         _addStake(msg.sender, addr, stake);
@@ -119,7 +119,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     function subscribeCoinPair(address oracleAddr, bytes32 coinPair) public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
-        require(data.isOwner(msg.sender), "Must be called by oracle owner");
+        require(_isOwner(data), "Must be called by oracle owner");
 
         CoinPairPrice ctAddr = (CoinPairPrice) (super.getContractAddress(coinPair));
         ctAddr.subscribe(oracleAddr);
@@ -132,7 +132,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     function unsubscribeCoinPair(address oracleAddr, bytes32 coinPair) public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
-        require(data.isOwner(msg.sender), "Must be called by oracle owner");
+        require(_isOwner(data), "Must be called by oracle owner");
 
         CoinPairPrice ctAddr = (CoinPairPrice) (super.getContractAddress(coinPair));
         ctAddr.unsubscribe(oracleAddr);
@@ -145,8 +145,8 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     function stop(address oracleAddr) public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
-        require(data.isOwner(msg.sender), "Must be called by oracle owner");
-        unsubscribeAll(oracleAddr);
+        require(_isOwner(data), "Must be called by oracle owner");
+        _unsubscribeAll(oracleAddr);
         supportersContract.stop(oracleAddr);
     }
 
@@ -222,7 +222,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     function setOracleName(address addr, string memory name) public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(addr);
         require(data.isRegistered(), "Oracle not registered");
-        require(data.isOwner(msg.sender), "This can be called by oracle owner only");
+        require(_isOwner(data), "This can be called by oracle owner only");
         data.setName(name);
     }
 
@@ -269,7 +269,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle not registered");
-        require(data.isOwner(msg.sender), "This can be called by oracle owner only");
+        require(_isOwner(data), "This can be called by oracle owner only");
         //(address[] memory subscribedTo, uint count) = getSubscribedCoinPairAddresses(oracleAddr);
 
         uint coinPairCount = super.getCoinPairCount();
@@ -282,7 +282,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
 
         require(canRemove, "Oracle cannot be removed at this time");
 
-        unsubscribeAll(oracleAddr);
+        _unsubscribeAll(oracleAddr);
         uint256 tokens = supportersContract.getBalanceAt(address(this), oracleAddr);
         supportersContract.withdrawFromTo(tokens, oracleAddr, data.getOwner());
         registeredOracles.remove(oracleAddr, prevEntry);
@@ -314,11 +314,11 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
 
     /// @dev Unsubscribe a registered oracle from participating in all registered coin-pairs
     /// @param oracleAddr Address of oracle
-    function unsubscribeAll(address oracleAddr) internal
+    function _unsubscribeAll(address oracleAddr) internal
     {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
-        require(data.isOwner(msg.sender), "Must be called by oracle owner");
+        require(_isOwner(data), "Must be called by oracle owner");
 
         (address[] memory coinpairs, uint count) = getSubscribedCoinPairAddresses(oracleAddr);
         for (uint i = 0; i < count; i++)
@@ -326,5 +326,10 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
             CoinPairPrice cp = (CoinPairPrice) (coinpairs[i]);
             cp.unsubscribe(oracleAddr);
         }
+    }
+
+    // A change contract can act as the owner of an Oracle
+    function _isOwner(OracleInfoLib.OracleRegisterInfo storage data) internal view returns (bool) {
+        return data.isOwner(msg.sender) || governor.isAuthorizedChanger(msg.sender);
     }
 }

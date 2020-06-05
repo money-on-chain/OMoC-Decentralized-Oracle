@@ -24,37 +24,33 @@ async function deploy(deployer, networkName, accounts) {
     console.log("proxyAdminAddr ", proxyAdminAddr);
 
     // Deployed in 3_deploy
-    const OracleManager = artifacts.require('../moc-gobernanza/contracts/Governance/OracleManager.sol');
+    const OracleManager = artifacts.require('OracleManager.sol');
     const oracleManager = await OracleManager.deployed();
     const oracleManagerAddr = oracleManager.address;
     console.log("oracleManagerAddr", oracleManagerAddr);
 
-    const SupportersVested = artifacts.require('../moc-gobernanza/contracts/Governance/SupportersVested.sol');
-    const supportersVested = await SupportersVested.deployed();
-    const supportersVestedAddr = supportersVested.address;
-    console.log("supportersVestedAddr", supportersVestedAddr);
+    const CoinPairPrice = artifacts.require('CoinPairPrice.sol');
+    const coinPairPrice = await CoinPairPrice.deployed();
+    const coinPairPriceAddr = coinPairPrice.address;
+    console.log("coinPairPriceAddr", coinPairPriceAddr);
 
 
-    console.log("Create EternalStorageGobernanza Proxy");
-    await scripts.add({contractsData: [{name: "EternalStorageGobernanza", alias: "EternalStorageGobernanza"}]});
-    await scripts.push({network, txParams});
-    const eternalStorage = await scripts.create({
+    console.log("Create UIInfoGetter Proxy");
+    await scripts.add({contractsData: [{name: "UIInfoGetter", alias: "UIInfoGetter"}]});
+    await scripts.push({network,  txParams: {...txParams, gas: 3000000}});
+    const uiInfoGetter = await scripts.create({
         admin: proxyAdminAddr,
-        contractAlias: "EternalStorageGobernanza",
+        contractAlias: "UIInfoGetter",
         network,
         txParams
     });
-    console.log("EternalStorageGobernanza: ", eternalStorage.options.address, 'proxyAdmin', proxyAdminAddr);
+    console.log("UIInfoGetter: ", uiInfoGetter.options.address, 'proxyAdmin', proxyAdminAddr);
 
-    console.log("Initialize eternalStorage governor", governorAddr);
-    const scall = await artifacts.require("EternalStorageGobernanza").at(eternalStorage.options.address);
-    await scall.initialize(governorAddr);
-
-    console.log("Deploy change contract", governorAddr);
-    const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
-    const change = await MocRegistryInitChange.new(eternalStorage.options.address, oracleManagerAddr, supportersVestedAddr);
-    console.log("Initialize registry/eternalStorage for MOC Oracles", change.address, 'via governor', governorAddr);
-    await governor.executeChange(change.address, {from: governorOwner});
+    console.log("Initialize UIInfoGetter governor", governorAddr,
+        "coinPairPrice", coinPairPriceAddr,
+        "oracleManager", oracleManagerAddr);
+    const scall = await artifacts.require("UIInfoGetter").at(uiInfoGetter.options.address);
+    await scall.initialize(governorAddr, coinPairPriceAddr, oracleManagerAddr);
 }
 
 async function truffle_main(deployer, networkName, accounts) {
