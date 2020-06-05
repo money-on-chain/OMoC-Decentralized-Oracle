@@ -328,7 +328,7 @@ class Console extends React.Component {
     }
 
     async _get_cp_oracle_data(oracle, pair) {
-        let subscribed = await this.oracle_mgr.isSuscribed(oracle, pair.raw);
+        let subscribed = await this.oracle_mgr.isSubscribed(oracle, pair.raw);
         if (!subscribed) {
             return null;
         }
@@ -789,7 +789,7 @@ class Console extends React.Component {
         const mgr = this.oracle_mgr;
         const rawcp = this.__find_raw_cp(cp);
 
-        let f = new_value ? mgr.suscribeCoinPair : mgr.unsuscribeCoinPair;
+        let f = new_value ? mgr.subscribeCoinPair : mgr.unsubscribeCoinPair;
         f(addr, rawcp, M())
             .then((tx) => {
                 this.__updating(addr, true, "sent");

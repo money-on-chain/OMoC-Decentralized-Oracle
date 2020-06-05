@@ -8,6 +8,7 @@ const TestMOC = artifacts.require("TestMOC");
 
 contract("Oracle-Supporters integration", (accounts) => {
     const minOracleOwnerStake = 1
+    const minStayBlocks = 10
     const oracle1 = accounts[2]
     const oracle2 = accounts[3]
     const INITIAL_BALANCE = web3.utils.toWei(new BN(10), "ether")
@@ -33,7 +34,7 @@ contract("Oracle-Supporters integration", (accounts) => {
             1, // numIdleRounds,
             this.oracleMgr.address);
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(10))
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(10), minStayBlocks)
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
@@ -50,7 +51,7 @@ contract("Oracle-Supporters integration", (accounts) => {
         let mocs
 
         await this.oracleMgr.registerOracle(oracle1, "oracle", STAKE, {from: oracle1});
-        await this.oracleMgr.suscribeCoinPair(oracle1, web3.utils.asciiToHex("BTCUSD"), {from: oracle1});
+        await this.oracleMgr.subscribeCoinPair(oracle1, web3.utils.asciiToHex("BTCUSD"), {from: oracle1});
 
         balance = await this.supporters.getBalanceAt(this.oracleMgr.address, oracle1)
         expect(balance, "Oracle1 token balance").to.be.bignumber.equal(STAKE)
@@ -75,7 +76,7 @@ contract("Oracle-Supporters integration", (accounts) => {
         expect(mocs, "Oracle1 MOC balance").to.be.bignumber.equal(INITIAL_BALANCE)
 
         await this.oracleMgr.registerOracle(oracle1, "oracle1", STAKE, {from: oracle1});
-        await this.oracleMgr.suscribeCoinPair(oracle1, web3.utils.asciiToHex("BTCUSD"), {from: oracle1});
+        await this.oracleMgr.subscribeCoinPair(oracle1, web3.utils.asciiToHex("BTCUSD"), {from: oracle1});
 
         balance = await this.supporters.getBalanceAt(this.oracleMgr.address, oracle1)
         expect(balance, "Oracle1 token balance").to.be.bignumber.equal(STAKE)
@@ -89,12 +90,12 @@ contract("Oracle-Supporters integration", (accounts) => {
         expect(balance, "Oracle1 token balance").to.be.bignumber.equal(STAKE.add(STAKE))
 
         await this.oracleMgr.registerOracle(oracle2, "oracle2", STAKE, {from: oracle2});
-        await this.oracleMgr.suscribeCoinPair(oracle2, web3.utils.asciiToHex("BTCUSD"), {from: oracle2});
+        await this.oracleMgr.subscribeCoinPair(oracle2, web3.utils.asciiToHex("BTCUSD"), {from: oracle2});
 
         balance = await this.supporters.getBalanceAt(this.oracleMgr.address, oracle2)
         expect(balance, "Oracle2 token balance").to.be.bignumber.equal(STAKE)
 
-        await this.oracleMgr.unsuscribeCoinPair(oracle1, web3.utils.asciiToHex("BTCUSD"), {from: oracle1});
+        await this.oracleMgr.unsubscribeCoinPair(oracle1, web3.utils.asciiToHex("BTCUSD"), {from: oracle1});
 
         balance = await this.supporters.getBalanceAt(this.oracleMgr.address, oracle1)
         expect(balance, "Oracle1 token balance").to.be.bignumber.equal(STAKE.add(STAKE))
@@ -104,6 +105,12 @@ contract("Oracle-Supporters integration", (accounts) => {
 
         await helpers.mineUntilNextRound(this.coinPairPrice)
         await this.coinPairPrice.switchRound();
+
+
+        // stop oracle as supporter
+        await expectRevert(this.oracleMgr.removeOracle(oracle1, {from: oracle1}), "Must be stopped");
+        await this.oracleMgr.stop(oracle1, {from: oracle1});
+        await helpers.mineBlocks(minStayBlocks);
 
         await this.oracleMgr.removeOracle(oracle1, {from: oracle1});
 

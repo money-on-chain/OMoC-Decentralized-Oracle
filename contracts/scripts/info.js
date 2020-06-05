@@ -13,7 +13,7 @@ async function oracleInfo(oracleManager) {
                 selectedInRound,
                 selectedInCurrentRound,
             } = await oracleManager.getOracleRoundInfo(addr, coinPair);
-            const isSubscribed = await oracleManager.isSuscribed(addr, coinPair);
+            const isSubscribed = await oracleManager.isSubscribed(addr, coinPair);
             const ret = await oracleManager.getOracleRegistrationInfo(addr);
             const {
                 internetName,

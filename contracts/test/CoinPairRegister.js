@@ -15,11 +15,12 @@ contract('CoinPairRegister', (accounts) => {
         const governor = await helpers.createGovernor(accounts[8]);
         const oracleManager = await OracleManager.new()
         const minOracleOwnerStake = "10000";
+        const minStayBlocks = 10;
         const SupportersWhitelisted = artifacts.require("SupportersWhitelisted");
         const supporters = await SupportersWhitelisted.new();
         const TestMOC = artifacts.require("TestMOC");
         const token = await TestMOC.new();
-        await supporters.initialize(governor.addr, [oracleManager.address], token.address, new BN(5))
+        await supporters.initialize(governor.addr, [oracleManager.address], token.address, new BN(5), minStayBlocks)
         await oracleManager.initialize(governor.addr, minOracleOwnerStake, supporters.address);
         this.coinPairRegister = {
             ...oracleManager,

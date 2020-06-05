@@ -92,6 +92,7 @@ async function createGovernor(owner) {
     return {
         addr: governor.address,
         address: governor.address,
+        governor,
         registerCoinPair: async (oracleManagerContract, coinPair, address) => {
             const change = await OracleManagerPairChange.new(oracleManagerContract.address, coinPair, address);
             await governor.executeChange(change.address, {from: owner});

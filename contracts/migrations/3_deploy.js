@@ -41,7 +41,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Create Supporters Proxy");
     await scripts.add({contractsData: [{name: "SupportersWhitelisted", alias: "Supporters"}]});
-    await scripts.push({network, txParams});
+    await scripts.push({network, txParams: {...txParams, gas: 4000000}});
     const supporters = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "Supporters",
@@ -50,10 +50,10 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
     });
     console.log("Supporters: ", supporters.options.address, 'proxyAdmin', proxyAdminAddr);
 
-
     console.log("Create OraclesManager");
     await scripts.add({contractsData: [{name: "OracleManager", alias: "OracleManager"}]});
-    await scripts.push({network, txParams});
+    // Give more gas!!!
+    await scripts.push({network, txParams: {...txParams, gas: 5000000}});
     const oracleManager = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "OracleManager",
@@ -76,7 +76,9 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Initialize supporters", 'governor', governorAddr);
     const scall = await artifacts.require("SupportersWhitelisted").at(supporters.options.address);
-    await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address], TestMOC.address, params.supportersEarnPeriodInBlocks);
+    await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address], TestMOC.address,
+        params.supportersEarnPeriodInBlocks,
+        params.supportersMinStayBlocks);
 
     console.log("Initialize OracleManager", 'governor', governorAddr,);
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
@@ -84,7 +86,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Initialize Supporters Vested", 'governor', governorAddr);
     const svcall = await artifacts.require("SupportersVested").at(supportersVested.options.address);
-    await svcall.initialize(governorAddr, supporters.options.address, params.supportersMinStayBlocks);
+    await svcall.initialize(governorAddr, supporters.options.address);
 
     for (let i = 0; i < params.CurrencyPair.length; i++) {
         const coin = params.CurrencyPair[i];
@@ -102,7 +104,8 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
         const alias = 'CoinPairPrice_' + coin;
         await scripts.add({contractsData: [{name: "CoinPairPrice", alias: alias}]});
-        await scripts.push({network, txParams});
+        // MORE GAS!!!
+        await scripts.push({network, txParams: {...txParams, gas: 6000000}});
         const coinPairPrice = await scripts.create({
                 admin: proxyAdminAddr,
                 contractAlias: alias,
@@ -122,7 +125,6 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
                 txParams
             }
         );
-
         console.log("coinPairPrice address: " + coinPairPrice.options.address, 'governor', governorAddr, 'proxyAdmin', proxyAdminAddr);
 
         console.log("Initialize coinpair price free for", coin);

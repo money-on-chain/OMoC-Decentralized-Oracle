@@ -13,12 +13,13 @@ contract SupportersAbstract {
 
     event CancelEarnings(uint256 earnings, uint256 start, uint256 end);
 
-    event AddStake(address indexed user, address indexed subaccount, uint256 amount, uint256 mocs);
+    event AddStake(address indexed user, address indexed subaccount, address indexed sender, uint256 amount, uint256 mocs);
 
-    event WithdrawStake(address indexed user, address indexed subaccount, uint256 amount, uint256 mocs);
+    event WithdrawStake(address indexed user, address indexed subaccount, address indexed destination, uint256 amount, uint256 mocs);
 
     // Balance in tokens for each supporter
     mapping(address => mapping(address => uint256)) internal tokenBalances;
+
     // Total of tokens created
     uint256 public totalSupply;
 
@@ -100,7 +101,7 @@ contract SupportersAbstract {
       @param _subaccount sub-account used to identify the stake
       @param _sender sender account that must approve and from which the funds are taken
     */
-    function _stakeAtFrom(uint256 _mocs, address _subaccount, address _sender) internal {
+    function _stakeAtFrom(uint256 _mocs, address _subaccount, address _sender) virtual internal {
         uint256 tokens = _mocToToken(_mocs);
 
         mocBalance = mocBalance.add(_mocs);
@@ -108,7 +109,7 @@ contract SupportersAbstract {
 
         __mintToken(msg.sender, tokens, _subaccount);
 
-        emit AddStake(msg.sender, _subaccount, tokens, _mocs);
+        emit AddStake(msg.sender, _subaccount, _sender, tokens, _mocs);
     }
 
 
@@ -117,23 +118,23 @@ contract SupportersAbstract {
 
       @param _tokens amount of tokens to convert to MOC
       @param _subaccount subaccount used to withdraw MOC
-      @param _destination destination address that gets the MOC
+      @param _receiver destination address that gets the MOC
       @return Amount of MOC transfered
     */
-    function _withdrawFromTo(uint256 _tokens, address _subaccount, address _destination) internal returns (uint256) {
+    function _withdrawFromTo(uint256 _tokens, address _subaccount, address _receiver) virtual internal returns (uint256) {
         uint mocs = _tokenToMoc(_tokens);
 
         _burnToken(msg.sender, _tokens, _subaccount);
 
         mocBalance = mocBalance.sub(mocs);
-        require(mocToken.transfer(_destination, mocs), "error in transfer");
+        require(mocToken.transfer(_receiver, mocs), "error in transfer");
 
         // When last supporter exits move pending earnings to next round
         if (totalSupply == 0) {
             _resetEarnings();
         }
 
-        emit WithdrawStake(msg.sender, _subaccount, _tokens, mocs);
+        emit WithdrawStake(msg.sender, _subaccount, _receiver, _tokens, mocs);
         return mocs;
     }
 

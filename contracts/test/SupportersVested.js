@@ -31,12 +31,12 @@ contract('SupportersVested', (accounts) => {
             token = await TestMOC.new()
             vested = await SupportersVested.new()
             whitelisted = await SupportersWhitelisted.new()
-            await whitelisted.initialize(GOVERNOR, [vested.address], token.address, new BN(10))
-
+            await whitelisted.initialize(GOVERNOR, [vested.address], token.address, new BN(10),
+                new BN(3)               // _minStayBlocks
+            )
             await vested.initialize(
                 GOVERNOR,
                 whitelisted.address,    // _supporters
-                new BN(3)               // _minStayBlocks
             )
         })
 
@@ -58,11 +58,13 @@ contract('SupportersVested', (accounts) => {
             token = await TestMOC.new()
             vested = await SupportersVested.new()
             whitelisted = await SupportersWhitelisted.new()
-            await whitelisted.initialize(GOVERNOR, [vested.address], token.address, new BN(10))
+            await whitelisted.initialize(GOVERNOR, [vested.address], token.address,
+                new BN(10), // period
+                new BN(5)              // _minStayBlocks
+            )
             await vested.initialize(
                 GOVERNOR,
                 whitelisted.address,   // _supporters
-                new BN(5)              // _minStayBlocks
             )
 
             await token.mint(user1, BALANCE_USER1)
@@ -103,27 +105,28 @@ contract('SupportersVested', (accounts) => {
             // Not ready to distribute because there is no staked mocs
             await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
             await vested.addStake(BALANCE_USER1, {from: user1})
+            expect(await vested.balanceOf(user1), "MOC balance").to.be.bignumber.equal(BALANCE_USER1)
 
             // The first distribute always succeeds
             await vested.distribute({from: payer})
             // Not ready to distribute the round is open.
             await expectRevert(vested.distribute({from: payer}), "Not ready to distribute")
-
             await helpers.mineBlocks(10)
             await vested.distribute({from: payer})
 
-            let receipt = await vested.stop({from: user1})
-            expectEvent(receipt, 'Stop')
+            expect(await vested.balanceOf(user1), "MOC balance before stop").to.be.bignumber.equal(FINAL_BALANCE)
 
-            let mocs = await vested.balanceOf(user1)
-            expect(mocs, "Final MOC balance after stop").to.be.bignumber.equal(FINAL_BALANCE)
+            let receipt = await vested.stop({from: user1})
+            // expectEvent(receipt, 'Stop')
+
+            expect(await vested.balanceOf(user1), "Final MOC balance after stop").to.be.bignumber.equal(FINAL_BALANCE)
 
             await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStayBlocks")
 
             await helpers.mineBlocks(5)
 
             receipt = await vested.withdraw({from: user1})
-            expectEvent(receipt, 'Withdraw')
+            // expectEvent(receipt, 'Withdraw')
 
             mocs = await vested.balanceOf(user1)
             expect(mocs, "Final vested MOC balance after withdraw").to.be.bignumber.equal(ZERO)
@@ -156,11 +159,12 @@ contract('SupportersVested', (accounts) => {
             token = await TestMOC.new()
             vested = await SupportersVested.new()
             whitelisted = await SupportersWhitelisted.new()
-            await whitelisted.initialize(GOVERNOR, [vested.address], token.address, new BN(10))
+            await whitelisted.initialize(GOVERNOR, [vested.address], token.address, new BN(10),
+                new BN(5)              // _minStayBlocks
+            )
             await vested.initialize(
                 GOVERNOR,
-                whitelisted.address,   // _supporters
-                new BN(5)              // _minStayBlocks
+                whitelisted.address   // _supporters
             )
             await token.mint(user1, BALANCE_USER1)
         })
@@ -187,13 +191,15 @@ contract('SupportersVested', (accounts) => {
 
             await expectRevert(vested.withdraw({from: user1}), "Must be stopped")
 
-            expectEvent(await vested.stop({from: user1}), 'Stop')
+            //expectEvent(await vested.stop({from: user1}), 'Stop')
+            await vested.stop({from: user1});
             expect(await vested.balanceOf(user1), "Final MOC balance after stop").to.be.bignumber.equal(BALANCE_USER1)
 
             await expectRevert(vested.withdraw({from: user1}), "Can't withdraw until minStayBlocks")
 
             await helpers.mineBlocks(5)
-            expectEvent(await vested.withdraw({from: user1}), 'Withdraw')
+            //expectEvent(await vested.withdraw({from: user1}), 'Withdraw')
+            await vested.withdraw({from: user1});
 
             expect(await vested.balanceOf(user1), "Final vested MOC balance after withdraw").to.be.bignumber.equal(ZERO)
             expect(await token.balanceOf(user1), "Final MOC balance after withdraw").to.be.bignumber.equal(BALANCE_USER1)

@@ -1,15 +1,16 @@
 // Most of the functionallity is tested via Supporters.js !!!
-const {BN, expectRevert, constants} = require("@openzeppelin/test-helpers")
+const {BN, expectRevert, constants, expectEvent} = require("@openzeppelin/test-helpers")
 const {expect} = require("chai")
 const Supporters = artifacts.require("SupportersWhitelisted")
 const TestMOC = artifacts.require("TestMOC")
 const MockGovernor = artifacts.require("MockGovernor")
+const helpers = require("./helpers")
 
 
 contract('SupportersWhitelisted', (accounts) => {
     let supporters
     let token
-
+    const minStayBlocks = 10
     const BALANCE_USER1 = new BN(web3.utils.toWei("1", "ether"))
     const BALANCE_USER2 = new BN(web3.utils.toWei("1", "ether"))
     const BALANCE_USER3 = new BN(web3.utils.toWei("1", "ether"))
@@ -24,7 +25,10 @@ contract('SupportersWhitelisted', (accounts) => {
         beforeEach(async () => {
             token = await TestMOC.new()
             supporters = await Supporters.new()
-            await supporters.initialize(GOVERNOR, [], token.address, new BN(10))
+            await supporters.initialize(GOVERNOR, [], token.address,
+                new BN(10),  // period
+                minStayBlocks
+            )
         })
 
         it('check creation', async () => {
@@ -56,7 +60,10 @@ contract('SupportersWhitelisted', (accounts) => {
         beforeEach(async () => {
             token = await TestMOC.new()
             supporters = await Supporters.new()
-            await supporters.initialize(GOVERNOR, [user1], token.address, new BN(10))
+            await supporters.initialize(GOVERNOR, [user1], token.address,
+                new BN(10), // period
+                minStayBlocks
+            );
 
             await token.mint(user1, INITIAL_BALANCE)
             await token.mint(user2, BALANCE_USER2)
@@ -69,7 +76,7 @@ contract('SupportersWhitelisted', (accounts) => {
         it('stake', async () => {
             await supporters.stakeAt(BALANCE_USER1, user1, {from: user1})
 
-            let tokens = await supporters.getBalance(user1)
+            let tokens = await supporters.getBalanceAt(user1, user1)
             expect(tokens, "Initial user token balance").to.be.bignumber.equal(BALANCE_USER1)
 
             let mocs = await token.balanceOf(user1)
@@ -77,10 +84,10 @@ contract('SupportersWhitelisted', (accounts) => {
 
             await supporters.stakeAt(BALANCE_USER1, user3, {from: user1})
 
-            tokens = await supporters.getBalance(user1)
+            tokens = await supporters.getBalanceAt(user1, user1)
             expect(tokens, "Final user token balance").to.be.bignumber.equal(BALANCE_USER1)
 
-            tokens = await supporters.getBalance(user3)
+            tokens = await supporters.getBalanceAt(user3, user3)
             expect(tokens, "Final user token balance").to.be.bignumber.equal(new BN(0))
 
             tokens = await supporters.getBalanceAt(user1, user3)
@@ -96,7 +103,7 @@ contract('SupportersWhitelisted', (accounts) => {
         it('withdraw', async () => {
             await supporters.stakeAt(BALANCE_USER1, user1, {from: user1})
 
-            let tokens = await supporters.getBalance(user1)
+            let tokens = await supporters.getBalanceAt(user1, user1)
             expect(tokens, "Initial user token balance").to.be.bignumber.equal(BALANCE_USER1)
 
             let mocs = await token.balanceOf(user1)
@@ -104,13 +111,25 @@ contract('SupportersWhitelisted', (accounts) => {
 
             await supporters.stakeAt(BALANCE_USER1, user3, {from: user1})
 
+            // stop oracle as supporter
+            await expectRevert(supporters.withdrawFrom(BALANCE_USER1, user1, {from: user1}), "Must be stopped");
+            let receipt = await supporters.stop(user1, {from: user1});
+            expectEvent(receipt, 'Stop')
+            await helpers.mineBlocks(minStayBlocks);
+
             await supporters.withdrawFrom(BALANCE_USER1, user1, {from: user1})
 
-            tokens = await supporters.getBalance(user1)
+            tokens = await supporters.getBalanceAt(user1, user1)
             expect(tokens, "User token balance").to.be.bignumber.equal(new BN(0))
 
             tokens = await supporters.getBalanceAt(user1, user3)
             expect(tokens, "User subaccount token balance").to.be.bignumber.equal(BALANCE_USER1)
+
+            // stop oracle as supporter
+            await expectRevert(supporters.withdrawFrom(BALANCE_USER1, user3, {from: user1}), "Must be stopped");
+            receipt = await supporters.stop(user3, {from: user1});
+            expectEvent(receipt, 'Stop')
+            await helpers.mineBlocks(minStayBlocks);
 
             await supporters.withdrawFrom(BALANCE_USER1, user3, {from: user1})
 
@@ -127,7 +146,10 @@ contract('SupportersWhitelisted', (accounts) => {
             this.governor = await MockGovernor.new(GOVERNOR);
             this.token = await TestMOC.new();
             this.supporters = await Supporters.new();
-            await this.supporters.initialize(this.governor.address, [], this.token.address, new BN(10));
+            await this.supporters.initialize(this.governor.address, [], this.token.address,
+                new BN(10), // period
+                minStayBlocks
+            );
         });
 
 
@@ -197,7 +219,10 @@ contract('SupportersWhitelisted', (accounts) => {
             this.governor = await MockGovernor.new(GOVERNOR);
             this.token = await TestMOC.new();
             this.supporters = await Supporters.new();
-            await this.supporters.initialize(this.governor.address, [], this.token.address, new BN(10));
+            await this.supporters.initialize(this.governor.address, [], this.token.address,
+                new BN(10), // period
+                minStayBlocks
+            );
         });
 
         it('should fail in if not a governor call', async () => {

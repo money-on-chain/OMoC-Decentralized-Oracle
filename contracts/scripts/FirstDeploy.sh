@@ -4,7 +4,7 @@ if [ "$1" == "testmode" ]; then
   varfile_suffix='_test'
 fi
 
-NETWORK=ganache_zos
+NETWORK=ganache_deploy
 if [ "$1" == "rsk_testnet" ]; then
     NETWORK="rsk_nodes"
     echo "RUNNING IN TEST MODE"
