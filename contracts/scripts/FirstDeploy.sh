@@ -35,7 +35,7 @@ else
     destroy;
 fi
 
-truffle migrate --network "$NETWORK" --compile-all 2>&1 | tee "$DIR/deploy.log"
+truffle migrate --network "$NETWORK" --compile-all 2>&1 | tee -a "$DIR/deploy.log"
 
 mv "$DIR/deploy.log" "$DIR/../build/"
 cp -r $DIR/../.openzeppelin/* "$DIR/../build/"
