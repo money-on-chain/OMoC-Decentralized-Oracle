@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import {ethers} from 'ethers';
 import * as TOKEN_DATA from './contracts/TestMOC.json';
-import * as CONTRACT_DATA from './contracts/OracleManager.json';
+import * as ORACLE_MANAGER_DATA from './contracts/OracleManager.json';
+import * as REGISTRY_DATA from './contracts/EternalStorageGobernanza.json';
 import * as CPP_DATA from './contracts/CoinPairPrice.json';
 import * as SUPVESTCPP_DATA from './contracts/SupportersVested.json';
 import * as SUPLISTCPP_DATA from './contracts/SupportersWhitelisted.json';
@@ -26,7 +27,7 @@ import {
     spantt,
     Table
 } from './helpers.js';
-import {CoinPairPriceAllInfo, SupportersInfo, SupportersWhitelist} from "./contractinfo.js";
+import {CoinPairPriceAllInfo, SupportersInfo, SupportersWhitelist, RegistryInfo} from "./contractinfo.js";
 import {close, edit, save, spinner, trash} from "./icons";
 import {getBalance, in_, is_empty_obj, null_href, Tabs} from "./helpers";
 
@@ -34,11 +35,13 @@ const SUPLISTCPP_ABI = SUPLISTCPP_DATA["abi"];
 const SUPPORTERS_VESTED_ABI = SUPVESTCPP_DATA["abi"];
 const CPP_ABI = CPP_DATA["abi"];
 const TOKEN_ABI = TOKEN_DATA["abi"];
-const CONTRACT_ABI = CONTRACT_DATA["abi"];
+const ORACLE_MANAGER_ABI = ORACLE_MANAGER_DATA["abi"];
+const REGISTRY_ABI = REGISTRY_DATA["abi"];
 
 
 const SUPPORTERS_VESTED_ADDR = process.env.REACT_APP_SupportersVested;
-const CONTRACT_ADDR = process.env.REACT_APP_OracleManager;
+const ORACLE_MANAGER_ADDR = process.env.REACT_APP_OracleManager;
+const REGISTRY_ADDR = process.env.REACT_APP_Registry;
 const NETWORK = process.env.REACT_APP_NetworkID;
 const SUPLISTCPP_ADDR = process.env.REACT_APP_SupportersWhitelisted;
 
@@ -47,7 +50,7 @@ const ICONS_ALWAYS = true;
 
 function get_networks() {
     let nets = [];
-    let obj = CONTRACT_DATA["networks"];
+    let obj = ORACLE_MANAGER_DATA["networks"];
     for (let prop in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, prop)) {
             nets.push(prop);
@@ -85,7 +88,8 @@ class Console extends React.Component {
         const self = this;
         this.web3Provider = new ethers.providers.Web3Provider(window.web3.currentProvider);
         this.signer = this.web3Provider.getSigner();
-        this.oracle_mgr = new ethers.Contract(CONTRACT_ADDR, CONTRACT_ABI, this.signer);
+        this.oracle_mgr = new ethers.Contract(ORACLE_MANAGER_ADDR, ORACLE_MANAGER_ABI, this.signer);
+        this.registry = new ethers.Contract(REGISTRY_ADDR, REGISTRY_ABI, this.signer);
         const ethereum = window['ethereum'];
 
         const sup_vest_contract = new ethers.Contract(SUPPORTERS_VESTED_ADDR, SUPPORTERS_VESTED_ABI, this.signer);
@@ -109,10 +113,16 @@ class Console extends React.Component {
 
         this.sup_stake = new SupportersStake("sup__", this, sup_vest_contract, "Supporters");
         this.mgr_stake = new OracleStake("mgr__", this, this.oracle_mgr, "Oracle Manager");
+
+        this.registry_info = new RegistryInfo("registry_info__", this, {
+            contract: this.registry,
+            abi: REGISTRY_ABI
+        });
         this.sup_info = new SupportersInfo("supp_info__", this, {
             contract: sup_vest_contract,
             abi: SUPPORTERS_VESTED_ABI
         });
+
 
         this.setState({
             connected: true,
@@ -144,6 +154,8 @@ class Console extends React.Component {
             connected: false,
             minOracleOwnerStake: null,
             mgr_token_addr: null,
+            oracle_manager_addr: ORACLE_MANAGER_ADDR,
+            registry_addr: REGISTRY_ADDR,
             cp: null,
             address: "",
             //temp
@@ -176,6 +188,7 @@ class Console extends React.Component {
 
         this.oracle_mgr = null;
         this.sup_stake = null;
+        this.registry_info = null;
         this.sup_info = null;
         this.mgr_stake = null;
         this.suplist = null;
@@ -187,6 +200,7 @@ class Console extends React.Component {
 
         (new SupportersStake("sup__", this)).init_state(this.state);
         (new OracleStake("mgr__", this)).init_state(this.state);
+        (new RegistryInfo("registry_info__", this)).init_state(this.state);
         (new SupportersInfo("supp_info__", this)).init_state(this.state);
         (new SupportersInfo("supp_wlist_", this)).init_state(this.state);
 
@@ -265,15 +279,14 @@ class Console extends React.Component {
             let block = await this.getBlock();
             newst.blocknr = block.number;
             newst.lastblock = block;
-            continue_fetch = (!pre_state) || (this.state.lastblock.hash!==block.hash);
+            continue_fetch = (!pre_state) || (this.state.lastblock.hash !== block.hash);
 
-            if (this.state.minOracleOwnerStake===null) {
+            if (this.state.minOracleOwnerStake === null) {
                 newst.minOracleOwnerStake = await this.oracle_mgr.minOracleOwnerStake();
             }
             if (this.state.mgr_token_addr === null) {
                 newst.mgr_token_addr = await this.oracle_mgr.token();
-                this.token = new ethers.Contract(newst.mgr_token_addr,
-                                                 TOKEN_ABI, this.signer);
+                this.token = new ethers.Contract(newst.mgr_token_addr, TOKEN_ABI, this.signer);
             }
         } catch (err) {
             console.error(1, err);
@@ -295,8 +308,8 @@ class Console extends React.Component {
 
     is_init_complete() {
         let varsok = (!is_empty_obj(this.contracts)) && (!is_empty_obj(this.cp_comps))
-        return (-1===[this.state.cp, this.state.minOracleOwnerStake,
-                this.token].indexOf(null) && varsok)
+        return (-1 === [this.state.cp, this.state.minOracleOwnerStake,
+            this.token].indexOf(null) && varsok)
     }
 
     new_coinpairs(cps) {
@@ -324,11 +337,16 @@ class Console extends React.Component {
 
     get_coinpairs_ready() {
         return this.state.cp ? this.state.cp.filter(
-                            cp => this.cp_comps[cp.pair]) : [];
+            cp => this.cp_comps[cp.pair]) : [];
     }
 
     async _get_cp_oracle_data(oracle, pair) {
-        let subscribed = await this.oracle_mgr.isSubscribed(oracle, pair.raw);
+        let subscribed;
+        if (this.oracle_mgr.isSuscribed) {
+            subscribed = await this.oracle_mgr.isSuscribed(oracle, pair.raw);
+        } else {
+            subscribed = await this.oracle_mgr.isSubscribed(oracle, pair.raw);
+        }
         if (!subscribed) {
             return null;
         }
@@ -390,28 +408,28 @@ class Console extends React.Component {
     }
 
     async global_update() {
-        if (this.token!==null) {
+        if (this.token !== null) {
             let tokenBalance = await this.token.balanceOf(
-                                        this.state.address);
+                this.state.address);
             this.setState({tokenBalance});
         }
     }
 
     async _a_update() {
         this.global_update = this.global_update.bind(this);
-
         let fs = [
-            {f: this.global_update, n:"global update"},
+            {f: this.global_update, n: "global update"},
             {f: this._manager_update, n: "manager update"},
-        ].concat((this.mgr_stake ? {f: this.mgr_stake.update, n: "mgr"} : []))
-        .concat((this.sup_stake ? {f: this.sup_stake.update, n: "sup"} : []))
-        .concat((this.c_suplist ? {f: this.c_suplist.update, n: "sup whitelist"} : []))
-        .concat((this.sup_info ? {f: this.sup_info.update, n: "supportersinfo"} : [])
-        );
+        ]
+            .concat((this.mgr_stake ? {f: this.mgr_stake.update, n: "mgr"} : []))
+            .concat((this.sup_stake ? {f: this.sup_stake.update, n: "sup"} : []))
+            .concat((this.c_suplist ? {f: this.c_suplist.update, n: "sup whitelist"} : []))
+            .concat((this.sup_info ? {f: this.sup_info.update, n: "supportersinfo"} : []))
+            .concat((this.registry_info ? {f: this.registry_info.update, n: "registryinfo"} : []));
 
         let new_block = await this._register_update();
         if (!new_block) {
-            console.log(new Date()+"+update skipped no new block.")
+            console.log(new Date() + "+update skipped no new block.")
         } else {
             for (let cp of this.get_coinpairs()) {
                 const comp = this.cp_comps[cp.pair];
@@ -422,7 +440,7 @@ class Console extends React.Component {
 
             for (let f of fs) {
                 try {
-                    console.log(new Date()+" -- "+f.n+"          //");
+                    console.log(new Date() + " -- " + f.n + "          //");
                     await f.f();
                 } catch (err) {
                     console.error(`Error: ${f.n} failed!!!! `);
@@ -441,15 +459,15 @@ class Console extends React.Component {
             return;
         }
         if (!this.in_update) {
-            console.log(new Date()+"update started..");
+            console.log(new Date() + "update started..");
             this.in_update = true;
             this._a_update()
                 .then((ret) => {
-                    console.log(new Date()+"+update ended")
+                    console.log(new Date() + "+update ended")
                     this.in_update = false
                 })
                 .catch((err) => {
-                    console.log(new Date()+"+update exception")
+                    console.log(new Date() + "+update exception")
                     console.error(2, err);
                     this.in_update = false;
                 });
@@ -493,28 +511,32 @@ class Console extends React.Component {
         if (!short) {
             short = false;
             pre = <>
-                minOracleOwnerStake: {formatEther(this.state.minOracleOwnerStake)} tokens <br/>
-                mgr_token_addr: {this.state.mgr_token_addr} <br/>
+                Minimum Oracle Stake: {formatEther(this.state.minOracleOwnerStake)} tokens <br/>
+                MOC Token smart contract address: {this.state.mgr_token_addr ? this.state.mgr_token_addr : "loading..."}
+                <br/>
+                Oracle Manager smart contract address: {this.state.oracle_manager_addr} <br/>
+                Registry smart contract address: {this.state.registry_addr} <br/>
+                <br/>
                 <h6> pairs </h6>
             </>
         }
 
-        let heads = short? ["Pair", ""] : ["Pair", "Address", ""];
+        let heads = short ? ["Pair", ""] : ["Pair", "Address", ""];
         if (short) {
             mapf = (x) => [x.pair,
-                        this.button("switch round", (e) => this.switch_round(e, x.pair))]
+                this.button("switch round", (e) => this.switch_round(e, x.pair))]
         } else {
             mapf = (x) => [x.pair, spantt(x.address), this.button("switch round",
-                                                                        (e) => this.switch_round(e, x.pair))]
+                (e) => this.switch_round(e, x.pair))]
         }
 
         return this.XCard(6,
             <>  {pre}
                 {Table(heads, this.get_coinpairs().map(mapf), {
-                            nonresponsive: true,
-                            classes: "table-sm  .w-auto",
-                            incidx: false
-                        })
+                    nonresponsive: true,
+                    classes: "table-sm  .w-auto",
+                    incidx: false
+                })
                 }
                 <div className="d-flex justify-content-between align-items-center">
                     <div className="btn-group">
@@ -569,7 +591,20 @@ class Console extends React.Component {
         }
 
         return Table(["", `Oracle ${oracle_addr} info`], this.oracle_to_table(oracle).map(
-                                                                    (field, idx) => [OracleColumns.slice(1)[idx], field]
+            (field, idx) => [OracleColumns.slice(1)[idx], field]
+        ), {nonresponsive: true, classes: " table-dark ", incidx: false});
+    }
+    oracle_info(oracle_addr) {
+        if (!oracle_addr || !(this.state.mgr_oracle_reg_info))
+            return <></>;
+
+        const oracle = this._get_oracle(oracle_addr);
+        if (oracle === null) {
+            return <><span>(loading..)</span></>;
+        }
+
+        return Table(["", `Oracle ${oracle_addr} info`], this.oracle_to_table(oracle).map(
+            (field, idx) => [OracleColumns.slice(1)[idx], field]
         ), {nonresponsive: true, classes: " table-dark ", incidx: false});
     }
 
@@ -653,19 +688,20 @@ class Console extends React.Component {
         function cb(newdata) {
             this.setState({current_tab: newdata})
         }
+
         let T = new Tabs(tabsdata, this.state.current_tab, cb.bind(this));
         return T.dump();
     }
 
     XCard(size, content, title) {
-        let gentitle = ()=>title? <h5 className="card-title">{title}</h5> : <></>
+        let gentitle = () => title ? <h5 className="card-title">{title}</h5> : <></>
         return (
-                <div className="card shadow p-3 mb-5 bg-white rounded">
-                    <div className="card-body">
-                        {gentitle()}
-                        {content}
-                    </div>
+            <div className="card shadow p-3 mb-5 bg-white rounded">
+                <div className="card-body">
+                    {gentitle()}
+                    {content}
                 </div>
+            </div>
         );
     }
 
@@ -691,7 +727,7 @@ class Console extends React.Component {
                     return round_to_str(pair, c[0], c[1], c[2]);
                 }
             })).join(" | ") : "-",
-            oracle.gas? ethers.utils.formatEther(oracle.gas) : "-"
+            oracle.gas ? ethers.utils.formatEther(oracle.gas) : "-"
         ];
     }
 
@@ -1037,41 +1073,41 @@ class Console extends React.Component {
             </>);
         } else {
             let t_manager = {
-                name: "Oracles", fn: (state, x)=> x.data, data: <>
-                <div className="card-deck">
-                    {this.global_info()}
-                </div>
+                name: "Oracles", fn: (state, x) => x.data, data: <>
+                    <div className="card-deck">
+                        {this.global_info()}
+                    </div>
 
-                <div className="card-deck">
-                    {this.XCard(6, <>
-                        {this.mgr_stake ? this.mgr_stake.dump() : <></>}
-                    </>, "Registration")}
+                    <div className="card-deck">
+                        {this.XCard(6, <>
+                            {this.mgr_stake ? this.mgr_stake.dump() : <></>}
+                        </>, "Registration")}
 
-                    {this.get_cp_short()}
-                </div>
+                        {this.get_cp_short()}
+                    </div>
 
-                <div className="card-deck">
-                    {this.XCard(6,
-                        Table(OracleColumns.concat([<>&nbsp;</>, <>&nbsp;</>,]),
-                            this.state.mgr_oracle_reg_info.map(this.oracle_to_table2), {
-                                rowattrs: this.ot_row_attrs,
-                                nonresponsive: false,
-                                classes: "table-striped",
-                                alignf: (idx) => in_(idx, [2,6])? align_left :
-                                                (in_(idx, [3])? align_right : align_center),
-                                odata: this.state.mgr_oracle_reg_info,
-                                rowclick: (e, idx) => {
-                                    e.preventDefault();
-                                    this._on_row_click(idx);
-                                }
-                            }),
-                        "Registered oracles")}
-                </div>
+                    <div className="card-deck">
+                        {this.XCard(6,
+                            Table(OracleColumns.concat([<>&nbsp;</>, <>&nbsp;</>,]),
+                                this.state.mgr_oracle_reg_info.map(this.oracle_to_table2), {
+                                    rowattrs: this.ot_row_attrs,
+                                    nonresponsive: false,
+                                    classes: "table-striped",
+                                    alignf: (idx) => in_(idx, [2, 6]) ? align_left :
+                                        (in_(idx, [3]) ? align_right : align_center),
+                                    odata: this.state.mgr_oracle_reg_info,
+                                    rowclick: (e, idx) => {
+                                        e.preventDefault();
+                                        this._on_row_click(idx);
+                                    }
+                                }),
+                            "Registered oracles")}
+                    </div>
                 </>
             };
 
             let t_supporters = {
-                name: "Supporters", fn: (state, x)=> x.data, data: <>
+                name: "Supporters", fn: (state, x) => x.data, data: <>
                     {this.global_info()}
                     {this.XCard(6, <>
                         {this.sup_stake ? this.sup_stake.dump() : <></>}
@@ -1084,10 +1120,13 @@ class Console extends React.Component {
                 </>
             };
             let t_info = {
-                name: "Info", fn: (state, x)=> x.data, data: <>
+                name: "Info", fn: (state, x) => x.data, data: <>
                     {this.global_info()}
                     {this.get_cp_name_address_switch()}
 
+                    {this.XCard(6, <>
+                        {this.registry_info ? this.registry_info.dump_text() : <></>}
+                    </>, "Registry")}
                     {this.XCard(6, <>
                         {this.sup_info ? this.sup_info.dump() : <></>}
                     </>, "Supporters Info")}
@@ -1100,7 +1139,7 @@ class Console extends React.Component {
 
             let cp_tab = (cp) => {
                 return {
-                    name: cp.pair, fn: (state, x)=> x.data, data: <>{this.global_info()}<span>
+                    name: cp.pair, fn: (state, x) => x.data, data: <>{this.global_info()}<span>
                     {this.card(<>
                         <form className="needs-validation" noValidate>
                             {this.cp_comps[cp.pair].dump_text()}
