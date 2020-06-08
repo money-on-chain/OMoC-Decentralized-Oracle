@@ -3,7 +3,7 @@ const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
 // VERY IMPORTANT, if this number is too big: near gasLimit (the default) transaction are QUEUED for
 // a long time, on the other hand if it is too small some big transactions can fail!!!
 // Tune it to your needs.
-const GAS_LIMIT = (1.5 * 1000 * 1000);
+const GAS_LIMIT = (4 * 1000 * 1000);
 
 
 // const HDWalletProvider = require('truffle-hdwallet-provider');
@@ -50,9 +50,9 @@ module.exports = {
             skipDryRun: true
         },
         rinkeby: {
-            from: "0xC69FBF17f088235085fa0D29E229D7C7b2C209f8",
+            from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
             provider: () => {
-                return new HDWalletProvider(["3b7fe967dfa11684539ceb1f3c8606aa5af6915bd1d31f32f7f8a59757dcc8a5"], "https://rinkeby.infura.io/v3/969e1fd3ca714562b67169f695159e1a");
+                return new HDWalletProvider(["94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7cdd2"], "https://rinkeby.infura.io/v3/969e1fd3ca714562b67169f695159e1a");
             },
             gas: GAS_LIMIT,
             network_id: "*",       // Any network (default: none)
@@ -66,21 +66,21 @@ module.exports = {
             skipDryRun: true
         },
         rsk_testnet: {
-            from: "0xC69FBF17f088235085fa0D29E229D7C7b2C209f8",
+            from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
             networkCheckTimeout: 1000000,
             provider: () => {
-                return new HDWalletProvider(["3b7fe967dfa11684539ceb1f3c8606aa5af6915bd1d31f32f7f8a59757dcc8a5"], "https://public-node.testnet.rsk.co");
+                return new HDWalletProvider(["94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7cdd2"], "https://public-node.testnet.rsk.co");
             },
             gasPrice: 59240000,
             gas: GAS_LIMIT,
             network_id: "*",       // Any network (default: none)
-            skipDryRun: true
+            skipDryRun: false
         },
         rsk_nodes: {
-            from: "0xC69FBF17f088235085fa0D29E229D7C7b2C209f8",
+            from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
             networkCheckTimeout: 1000000,
             provider: () => {
-                return new HDWalletProvider(["3b7fe967dfa11684539ceb1f3c8606aa5af6915bd1d31f32f7f8a59757dcc8a5"], "http://rsknodes:4446");
+                return new HDWalletProvider(["94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7cdd2"], "http://rsknodes:4446");
             },
             gasPrice: 59240000,
             gas: GAS_LIMIT,
@@ -126,5 +126,5 @@ module.exports = {
             }
         }
     },
-    plugins: ["solidity-coverage"]
+    plugins: ["solidity-coverage"],
 }
