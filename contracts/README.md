@@ -65,9 +65,6 @@ that shares the same location.
 - validPricePeriodInBlocks: "180:180"
   The valid price period blocks (1 hour).
 
-- triggerValidPublicationBlocks: "30:30"
-  The period it takes for oracles publish before price expiration (10 minutes).
-
 The following are configurations parameters for the OracleManager smart contract.        
 
 - minOracleOwnerStake: "10000000000" 
@@ -146,14 +143,10 @@ form a deployment and to manage the gobernanza system.
     valid price period in blocks of a CoinPairPrice contract.
     Example ```truffle exec --network development scripts/change_valid_price_period_in_blocks_by_gobernanza.js coin_pair_name new_val```
 
-- change_trigger_valid_publication_blocks_by_gobernanza.js: using a change contract (CoinPairPriceTriggerValidPublicationBlocksChange) change the
-    trigger valid publication blocks of a CoinPairPrice contract.
-    Example ```truffle exec --network development scripts/change_trigger_valid_publication_blocks_by_gobernanza.js coin_pair_name new_val```
-
 - change_supporters_period_gobernanza.js: using a change contract (SupportersWhitelistedPeriodChange) change the
     supporters round period in blocks of the SupportersWhitelisted contract (currently deployed, in the build directory).
     Example ```truffle exec --network development scripts/change_supporters_period_gobernanza.js new_val```
-  
+
 - deploy_coinpairprice_upgrade.js: Deploys a new implementation of CoinPairPrice smart contract. After that the
     change_implementation_by_gobernanza.js must be executed to upgrade the smart contract proxy.
 

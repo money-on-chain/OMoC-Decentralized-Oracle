@@ -195,11 +195,6 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         return validPricePeriodInBlocks;
     }
 
-    /// @notice Get the amount of blocks it takes for oracles to publish before the price expires
-    function getTriggerValidPublicationBlocks() public view returns (uint256) {
-        return triggerValidPublicationBlocks;
-    }
-
     /// @notice Return current round information
     function getRoundInfo() public view returns (uint256 round,
         uint256 startBlock,
@@ -225,8 +220,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         uint256 currentBlock,
         uint256 lastPubBlock,
         bytes32 lastPubBlockHash,
-        uint256 validPricePeriodInBlocks,
-        uint256 triggerValidPublicationBlocks
+        uint256 validPricePeriodInBlocks
     )
     {
         uint256 len = currentRound.selectedOracles.length;
@@ -242,8 +236,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
                 name);
         }
         return (currentRound.number, currentRound.startBlock, currentRound.lockPeriodEndBlock, currentRound.totalPoints,
-        info, currentPrice, block.number, lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks,
-        triggerValidPublicationBlocks);
+        info, currentPrice, block.number, lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
     }
 
 
