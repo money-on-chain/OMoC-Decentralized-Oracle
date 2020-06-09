@@ -15,6 +15,7 @@ import {
 import {MyBase} from './stake.js';
 import {spanColor} from "./helpers";
 import {ethers} from 'ethers';
+import {BigNumber} from "ethers/utils";
 
 
 export class ContractInfo extends MyBase {
@@ -92,7 +93,7 @@ export class ContractInfo extends MyBase {
         }
         val = !val ? "" : val;
         return (<>
-            <span>{SC(prop.fn)}: </span>
+            <span>{prop.title ? prop.title : SC(prop.fn)} : </span>
             <span>{HL(this.decorate(val))}</span><br/>
         </>)
     }
@@ -187,24 +188,8 @@ export class RegistryInfo extends ContractInfo {
                 .map(name => ({name, func: "getUint", procesor: (x) => x.toString()}))
         );
         this.result = {};
-        this.__funcs = this.keys.map(p => ({fn: p.name}));
+        this.__funcs = this.keys.map(p => ({fn: p.name, title: p.name}));
     }
-
-    dump_prop_text(state, prop) {
-        let pf = this.__getPF(prop);
-        let val;
-        try {
-            val = pf(state[prop.fn]);
-        } catch (err) {
-            console.error(err)
-        }
-        val = !val ? "Loading..." : val;
-        return (<>
-            <span>{prop.fn}: </span>
-            <span>{this.decorate(val)}</span><br/>
-        </>)
-    }
-
 
     async update() {
         for (const k of this.keys) {
@@ -259,6 +244,7 @@ export class CoinPairPriceAllInfo extends ContractInfo {
         super(name, parent, opts);
         this.selectedDisplay = this.selectedDisplay.bind(this);
         this.setRoundInfo = this.setRoundInfo.bind(this);
+        this.setLastPublicationBlock = this.setLastPublicationBlock.bind(this);
     }
 
     async get_prop(prop) {
@@ -266,11 +252,29 @@ export class CoinPairPriceAllInfo extends ContractInfo {
         return this.contract_fetch(prop.fn, [cust_from]);
     }
 
+    async setLastPublicationBlock(prop, retval, result) {
+        result["getLastPublicationBlock"] = retval;
+        const parent = this.parent_state();
+        if (parent && parent["blocknr"]) {
+            const curr = new BigNumber(parent["blocknr"]);
+            result["blocks_from_last_publication"] = curr.sub(new BigNumber(retval));
+        }
+    }
+
     async setRoundInfo(prop, retval, result) {
         result["round"] = retval.round;
         result["startBlock"] = retval.startBlock;
         result["lockPeriod"] = retval.lockPeriodEndBlock;
         result["totalPoints"] = retval.totalPoints;
+        const parent = this.parent_state();
+        if (parent && parent["blocknr"]) {
+            result["blocknr"] = parent["blocknr"];
+            const curr = new BigNumber(parent["blocknr"]);
+            if (retval.lockPeriodEndBlock) {
+                result["round_delta_blocks"] = new BigNumber(retval.lockPeriodEndBlock).sub(curr);
+            }
+        }
+
         let selected = [];
         result["selectedOracles"] = selected;
 
@@ -321,24 +325,30 @@ export class CoinPairPriceAllInfo extends ContractInfo {
 
     _funcs() {
         return [
-            {fn: "getAvailableRewardFees", pf: (x) => formatEther(x)},
+            {fn: "getRoundInfo", display: false, set: this.setRoundInfo},
+            {fn: "getLastPublicationBlock", display: false, set: this.setLastPublicationBlock},
             {
+                title: HL("Price"),
                 fn: "peek", pf: (x) => {
                     if (!x) {
                         return formatEther(x)
                     }
-                    return spanColor(formatEther(x[0]), x[1] ? "#00d717" : "#cc3300")
+                    return spanColor(formatEther(x[0]), x[1] ? "#0000FF" : "#cc3300")
                 }
             },
-            {fn: "getCoinPair", pf: (x) => parseBytes32String(x)},
-            {fn: "getLastPublicationBlock"},
+            // {title: "Coin Pair", fn: "getCoinPair", pf: (x) => parseBytes32String(x)},
+            {title: HL("Blocks from last publication"), fn: "blocks_from_last_publication", get: false},
+            {title: "Last publication block", fn: "getLastPublicationBlock", get: false},
 
-            {fn: "getRoundInfo", display: false, set: this.setRoundInfo},
+            {title: HL("Round number"), fn: "round", get: false},
+            {title: HL("Blocks to round end"), fn: "round_delta_blocks", get: false},
 
-            {fn: "startBlock", get: false},
-            {fn: "round", get: false},
-            {fn: "lockPeriod", get: false},
-            {fn: "totalPoints", get: false},
+            {title: "Round start block", fn: "startBlock", get: false},
+            {title: "Round end block", fn: "lockPeriod", get: false},
+            {title: "Current block", fn: "blocknr", get: false},
+
+            {title: "Total points", fn: "totalPoints", get: false},
+            {title: "Available rewards", fn: "getAvailableRewardFees", pf: (x) => formatEther(x)},
             {fn: "selectedOracles", get: false, display: this.selectedDisplay},
         ];
     }

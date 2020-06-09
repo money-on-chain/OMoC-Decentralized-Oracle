@@ -594,19 +594,7 @@ class Console extends React.Component {
             (field, idx) => [OracleColumns.slice(1)[idx], field]
         ), {nonresponsive: true, classes: " table-dark ", incidx: false});
     }
-    oracle_info(oracle_addr) {
-        if (!oracle_addr || !(this.state.mgr_oracle_reg_info))
-            return <></>;
 
-        const oracle = this._get_oracle(oracle_addr);
-        if (oracle === null) {
-            return <><span>(loading..)</span></>;
-        }
-
-        return Table(["", `Oracle ${oracle_addr} info`], this.oracle_to_table(oracle).map(
-            (field, idx) => [OracleColumns.slice(1)[idx], field]
-        ), {nonresponsive: true, classes: " table-dark ", incidx: false});
-    }
 
     global_info() {
         return <>

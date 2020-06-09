@@ -81,10 +81,10 @@ export class Address extends MyBase {
         const state = this.get_state();
         const val = this.get_value();
         if (val && parent_state && msg === null) {
-            const found = parent_state["mgr_oracle_reg_info"].some(x => x.address.toLowerCase() == val.toLowerCase());
+            const found = parent_state["mgr_oracle_reg_info"].some(x => x.address.toLowerCase() === val.toLowerCase());
             if (parent_state["mgr_oracle_reg_info"] && found) {
                 msg = <span style={{color: "#ff0000"}}>THIS ORACLE IS ALREADY REGISTERED</span>;
-            } else if (parent_state["address"] && val == parent_state["address"]) {
+            } else if (parent_state["address"] && val === parent_state["address"]) {
                 msg = <span style={{color: "#ff9966"}}>We suggest to avoid using owner address</span>;
             }
         }
