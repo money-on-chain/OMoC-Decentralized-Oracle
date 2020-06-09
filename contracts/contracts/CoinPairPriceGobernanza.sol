@@ -37,6 +37,9 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
     // The amount of block during which a price is considered valid
     uint256 public validPricePeriodInBlocks;
 
+    // The amount of blocks designated for a definite publication before price expiration
+    uint256 public triggerValidPublicationBlocks;
+
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
@@ -51,6 +54,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
     /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
     /// @param _roundLockPeriodInBlocks The minimum time span for each round before a new one can be started, in blocks.
     /// @param _validPricePeriodInBlocks The time span for which the last published price is valid.
+    /// @param _triggerValidPublicationBlocks The time span for which the publication definitely succeeds before price expiration.
     /// @param _bootstrapPrice A price to be set as a bootstraping value for this block
     /// @param _numIdleRounds The number of rounds an oracle must be idle (not participating) before a removal
     /// @param _oracleManager The contract of the oracle manager.
@@ -62,6 +66,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
         uint256 _maxOraclesPerRound,
         uint256 _roundLockPeriodInBlocks,
         uint256 _validPricePeriodInBlocks,
+        uint256 _triggerValidPublicationBlocks,
         uint256 _bootstrapPrice,
         uint8 _numIdleRounds,
         OracleManager _oracleManager
@@ -72,6 +77,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
         require(_tokenAddress != address(0), "The MOC token address must be provided in constructor");
         require(_roundLockPeriodInBlocks > 0, "The round lock period must be positive and non zero");
         require(_validPricePeriodInBlocks > 0, "The valid price period must be positive and non zero");
+        require(_triggerValidPublicationBlocks > 0, "The valid price period must be positive and non zero");
         require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
         require(_numIdleRounds >= 1, "The number of rounds an oracle must be idle must be >= 1");
 
@@ -83,6 +89,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
         maxOraclesPerRound = _maxOraclesPerRound;
         roundLockPeriodInBlocks = _roundLockPeriodInBlocks;
         validPricePeriodInBlocks = _validPricePeriodInBlocks;
+        triggerValidPublicationBlocks = _triggerValidPublicationBlocks;
         numIdleRounds = _numIdleRounds;
         token = IERC20(_tokenAddress);
         coinPair = _coinPair;
@@ -145,6 +152,14 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
      */
     function setValidPricePeriodInBlocks(uint256 _validPricePeriodInBlocks) public onlyAuthorizedChanger() {
         validPricePeriodInBlocks = _validPricePeriodInBlocks;
+    }
+
+    /**
+     * @dev Sets the triggerValidPublicationBlocks by gobernanza
+     * @param _triggerValidPublicationBlocks - the override triggerValidPublicationBlocks
+     */
+    function setTriggerValidPublicationBlocks(uint256 _triggerValidPublicationBlocks) public onlyAuthorizedChanger() {
+        triggerValidPublicationBlocks = _triggerValidPublicationBlocks;
     }
 
 

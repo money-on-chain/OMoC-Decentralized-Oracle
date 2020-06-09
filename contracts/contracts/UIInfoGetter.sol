@@ -70,6 +70,7 @@ contract UIInfoGetter is Initializable, Governed {
         uint256 lastPubBlock,
         bytes32 lastPubBlockHash,
         uint256 validPricePeriodInBlocks,
+        uint256 triggerValidPublicationBlocks,
         uint256 availableRewards)
     {
         address[] memory selectedOracles;
@@ -84,7 +85,8 @@ contract UIInfoGetter is Initializable, Governed {
         uint256 lastPublicationBlock = coinPairPrice.getLastPublicationBlock();
         return (round, startBlock, lockPeriodEndBlock, totalPoints,
         info, block.number, lastPublicationBlock, blockhash(lastPublicationBlock),
-        coinPairPrice.getValidPricePeriodInBlocks(), coinPairPrice.getAvailableRewardFees());
+        coinPairPrice.getValidPricePeriodInBlocks(), coinPairPrice.getTriggerValidPublicationBlocks(),
+        coinPairPrice.getAvailableRewardFees());
     }
 
     /// @notice Return information needed by the ui in one call.

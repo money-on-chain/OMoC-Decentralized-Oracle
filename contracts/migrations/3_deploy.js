@@ -118,6 +118,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
                     parseInt(params.maxOraclesPerRound[i]),
                     parseInt(params.roundLockPeriodInBlocks[i]),
                     parseInt(params.validPricePeriodInBlocks[i]),
+                    parseInt(params.triggerValidPublicationBlocks[i]),
                     params.bootstrapPrice[i],
                     parseInt(params.numIdleRounds[i]),
                     oracleManager.options.address],
@@ -157,6 +158,7 @@ async function config(deployer, networkName, accounts) {
         numIdleRounds: parseEnvArray(process.env.numIdleRounds),
         roundLockPeriodInBlocks: parseEnvArray(process.env.roundLockPeriodInBlocks),
         validPricePeriodInBlocks: parseEnvArray(process.env.validPricePeriodInBlocks),
+        triggerValidPublicationBlocks: parseEnvArray(process.env.triggerValidPublicationBlocks),
         supportersEarnPeriodInBlocks: 10,
         supportersMinStayBlocks: 10
     }

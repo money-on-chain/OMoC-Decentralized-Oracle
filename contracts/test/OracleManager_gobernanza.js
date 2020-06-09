@@ -35,6 +35,7 @@ contract("OracleManager by gobernanza", async (accounts) => {
             10,  // maxOraclesPerRound
             5, // roundLockPeriodInBlocks
             3, // validPricePeriodInBlocks
+            2, // triggerValidPublicationBlocks CONFIRM LATER
             "100000000", // bootstrapPrice
             2,  // numIdleRounds
             this.oracleMgr.address);

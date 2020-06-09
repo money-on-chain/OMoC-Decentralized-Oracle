@@ -40,6 +40,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
             maxOraclesPerRound,
             5, // roundLockPeriodInBlocks,
             3, // validPricePeriodInBlocks
+            2, // triggerValidPublicationBlocks CONFIRM LATER
             1000000000000000, // bootstrapPrice,
             2, // numIdleRounds,
             testobj.oracleMgr.address);

@@ -18,6 +18,7 @@ contract("CoinPairPrice", async (accounts) => {
     before(async () => {
         this.bootstrapPrice = new BN("100000000");
         this.validPricePeriodInBlocks = 3
+        this.triggerValidPublicationBlocks = 2
         this.governor = await helpers.createGovernor(accounts[8]);
 
         this.token = await TestMOC.new();
@@ -34,6 +35,7 @@ contract("CoinPairPrice", async (accounts) => {
             3, // maxOraclesPerRound
             5, // roundLockPeriodInBlocks
             this.validPricePeriodInBlocks,
+            this.triggerValidPublicationBlocks,
             this.bootstrapPrice,
             2, // numIdleRounds
             this.oracleMgr.address);
