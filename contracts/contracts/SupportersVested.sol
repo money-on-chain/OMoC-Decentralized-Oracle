@@ -94,6 +94,16 @@ contract SupportersVested is Governed {
       @return stoppedInblock the block in which the mocs where stopped
     */
     function vestingInfoOf(address _account) public view returns (uint256 balance, uint256 stoppedInblock) {
-        return supporters.vestingInfoOf(_account, _account);
+        return supporters.vestingInfoOf(address(this), _account);
+    }
+
+
+    /**
+      Get the minimum number of blocks that a user must stay staked after staking
+
+      @return the minimum number of blocks that a user must stay staked after staking
+    */
+    function getMinStayBlocks() public view returns (uint256) {
+        return supporters.minStayBlocks();
     }
 }
