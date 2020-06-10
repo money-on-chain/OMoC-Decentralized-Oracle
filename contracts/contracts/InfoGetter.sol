@@ -8,9 +8,18 @@ import "./moc-gobernanza/Governance/Governed.sol";
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract UIInfoGetter is Initializable, Governed {
+contract InfoGetter is Initializable, Governed {
     CoinPairPrice coinPairPrice;
     OracleManager oracleManager;
+
+    struct FullOracleRoundInfo {
+        uint256 stake;
+        uint256 points;
+        uint256 selectedInRound;
+        address addr;
+        address owner;
+        string name;
+    }
 
     struct ManagerUIOracleInfo {
         uint256 stake;
@@ -122,5 +131,40 @@ contract UIInfoGetter is Initializable, Governed {
         }
         nextEntry = addr;
     }
+
+    /// @notice Return all the information needed by the oracle server (one call, to avoid a lot of rpc)
+    function getOracleServerInfo() public view returns (
+        uint256 round, uint256 startBlock, uint256 lockPeriodEndBlock, uint256 totalPoints,
+        FullOracleRoundInfo[] memory info,
+        uint256 price,
+        uint256 currentBlock,
+        uint256 lastPubBlock,
+        bytes32 lastPubBlockHash,
+        uint256 validPricePeriodInBlocks
+    )
+    {
+        address[] memory selectedOracles;
+        (round, startBlock, lockPeriodEndBlock, totalPoints, selectedOracles) = coinPairPrice.getRoundInfo();
+        uint256 len = selectedOracles.length;
+        info = new FullOracleRoundInfo[](len);
+        for (uint i = 0; i < len; i++) {
+            address addr = selectedOracles[i];
+            (string memory name, uint stake, address owner) = oracleManager.getOracleRegistrationInfo(addr);
+            (uint points, uint256 selectedInRound,) = coinPairPrice.getOracleRoundInfo(addr);
+            info[i] = FullOracleRoundInfo(
+                stake,
+                points,
+                selectedInRound,
+                addr,
+                owner,
+                name);
+        }
+        uint256 lastPublicationBlock = coinPairPrice.getLastPublicationBlock();
+        validPricePeriodInBlocks = coinPairPrice.getValidPricePeriodInBlocks();
+        (bytes32 currentPrice,) = coinPairPrice.peek();
+        return (round, startBlock, lockPeriodEndBlock, totalPoints,
+        info, uint256(currentPrice), block.number, lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
+    }
+
 
 }

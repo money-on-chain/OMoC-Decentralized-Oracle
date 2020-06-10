@@ -1,3 +1,4 @@
+// TODO: This must be deployed before coinpairprice so we can add it to the whitelist!!!
 'use strict';
 const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
 
@@ -35,21 +36,21 @@ async function deploy(deployer, networkName, accounts) {
     console.log("coinPairPriceAddr", coinPairPriceAddr);
 
 
-    console.log("Create UIInfoGetter Proxy");
-    await scripts.add({contractsData: [{name: "UIInfoGetter", alias: "UIInfoGetter"}]});
+    console.log("Create InfoGetter Proxy");
+    await scripts.add({contractsData: [{name: "InfoGetter", alias: "InfoGetter"}]});
     await scripts.push({network,  txParams: {...txParams, gas: 3000000}});
-    const uiInfoGetter = await scripts.create({
+    const infoGetter = await scripts.create({
         admin: proxyAdminAddr,
-        contractAlias: "UIInfoGetter",
+        contractAlias: "InfoGetter",
         network,
         txParams
     });
-    console.log("UIInfoGetter: ", uiInfoGetter.options.address, 'proxyAdmin', proxyAdminAddr);
+    console.log("InfoGetter: ", infoGetter.options.address, 'proxyAdmin', proxyAdminAddr);
 
-    console.log("Initialize UIInfoGetter governor", governorAddr,
+    console.log("Initialize InfoGetter governor", governorAddr,
         "coinPairPrice", coinPairPriceAddr,
         "oracleManager", oracleManagerAddr);
-    const scall = await artifacts.require("UIInfoGetter").at(uiInfoGetter.options.address);
+    const scall = await artifacts.require("InfoGetter").at(infoGetter.options.address);
     await scall.initialize(governorAddr, coinPairPriceAddr, oracleManagerAddr);
 }
 
