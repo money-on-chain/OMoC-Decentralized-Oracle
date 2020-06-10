@@ -1,5 +1,4 @@
 pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
 
 import "./openzeppelin/math/SafeMath.sol";
 import "./libs/IPriceProvider.sol";
@@ -32,14 +31,6 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
         // The selected oracles that participate in this round.
         address[] selectedOracles;
-    }
-
-    struct FullOracleRoundInfo {
-        uint256 stake;
-        uint256 points;
-        address addr;
-        address owner;
-        string name;
     }
 
     Round currentRound;
@@ -211,34 +202,6 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         return (oracleRoundInfo[addr].points, oracleRoundInfo[addr].selectedInRound,
         oracleRoundInfo[addr].selectedInRound == currentRound.number);
     }
-
-    /// @notice Return all the information needed by the oracle server (one call, to avoid a lot of rpc)
-    function getOracleServerInfo() public view returns (
-        uint256 round, uint256 startBlock, uint256 lockPeriodEndBlock, uint256 totalPoints,
-        FullOracleRoundInfo[] memory info,
-        uint256 price,
-        uint256 currentBlock,
-        uint256 lastPubBlock,
-        bytes32 lastPubBlockHash,
-        uint256 validPricePeriodInBlocks
-    )
-    {
-        uint256 len = currentRound.selectedOracles.length;
-        info = new FullOracleRoundInfo[](len);
-        for (uint i = 0; i < len; i++) {
-            address addr = currentRound.selectedOracles[i];
-            (string memory name, uint stake, address owner) = oracleManager.getOracleRegistrationInfo(addr);
-            info[i] = FullOracleRoundInfo(
-                stake,
-                oracleRoundInfo[addr].points,
-                addr,
-                owner,
-                name);
-        }
-        return (currentRound.number, currentRound.startBlock, currentRound.lockPeriodEndBlock, currentRound.totalPoints,
-        info, currentPrice, block.number, lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
-    }
-
 
     /// @notice Switch contract context to a new round. With the objective of
     /// being a decentralized solution, this can be called by *anyone* if current
