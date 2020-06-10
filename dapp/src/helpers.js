@@ -4,11 +4,11 @@ import ReactTooltip from 'react-tooltip';
 
 
 export function in_(x, an_array) {
-    return -1!==an_array.indexOf(x);
+    return -1 !== an_array.indexOf(x);
 }
 
-export function addreq(a,b) {
-    return a.toLowerCase()===b.toLowerCase();
+export function addreq(a, b) {
+    return a.toLowerCase() === b.toLowerCase();
 }
 
 export function array_rm(arr, el) {
@@ -28,6 +28,9 @@ export function naive_copy(o) {
 }
 
 export function on_tx_ok(tx, msg) {
+    if (!tx["hash"]) {
+        return null;
+    }
     let provider = window.ethereum
     alert(`Tx: ${tx["hash"]} broadcasted.`)
     console.log(`Tx ${tx["hash"]} (${msg}) issued.`);
@@ -37,17 +40,17 @@ export function on_tx_ok(tx, msg) {
 export function on_tx_err(_err, msg) {
     console.error(_err);
     let err = get_err(_err);
-    msg = `Error on: ${msg} : ` +  err.toString();
+    msg = `Error on: ${msg} : ` + err.toString();
     alert(msg);
 }
 
 export function get_err(err) {
-    try{
+    try {
         if (err.data) {
             return err.data.message;
         }
         return err.message;
-    }catch (e) {
+    } catch (e) {
         return err.toString();
     }
 }
@@ -65,7 +68,7 @@ export async function getBalance(address) {
                 }
                 resolve(ethers.utils.bigNumberify(response.result));
             });
-        } catch(err) {
+        } catch (err) {
             reject(err);
         }
     });
@@ -84,17 +87,17 @@ export async function sendAsync(provider, fname, params) {
                 const transaction = response.result
                 resolve(transaction);
             });
-        } catch(err) {
+        } catch (err) {
             reject(err);
-        }     
+        }
     });
 }
 
 export async function asleep(ms) {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
         try {
             setTimeout(resolve, ms);
-        }catch(err) {
+        } catch (err) {
             reject(err);
         }
     });
@@ -103,17 +106,17 @@ export async function asleep(ms) {
 export async function awaitTx(provider, hash, msg) {
     //const notYet = 'response has no error or result';
     let finished = false;
-    while(!finished){
+    while (!finished) {
         let tx = await sendAsync(provider, 'eth_getTransactionByHash', [hash]);
-        if (tx.blockNumber!==null) {
+        if (tx.blockNumber !== null) {
             console.log(`Tx ${hash} / ${msg} included in block: ${tx.blockNumber}.`);
             let rec = await sendAsync(provider, 'eth_getTransactionReceipt', [hash]);
-            if (rec.status==="0x0") {
+            if (rec.status === "0x0") {
                 console.error(`Transaction ${hash} failed.`);
                 console.error(`Receipt ${JSON.stringify(rec)}`);
                 throw new Error("Transaction failed.")
             }
-            finished=true;
+            finished = true;
         } else {
             await asleep(500);
         }
@@ -124,7 +127,7 @@ export function check_or_ret(value, f, defvalue) {
     if (!defvalue) {
         defvalue = "-";
     }
-    if ((value === undefined)||(value === null))
+    if ((value === undefined) || (value === null))
         return defvalue;
     try {
         return f(value);
@@ -148,7 +151,7 @@ export function bigNumberifyAndFormat(x) {
 }
 
 export function bigNumberifyAndFormatInt(x) {
-    return check_or_ret(x, (y)=> ethers.utils.bigNumberify(y).toString(), loading);
+    return check_or_ret(x, (y) => ethers.utils.bigNumberify(y).toString(), loading);
 }
 
 export function get_props(contract_abi) {
@@ -169,12 +172,12 @@ export function SC(x) {
 
 export function TT(x, classes, limit) {
     let ret = {
-        className: "d-inline-block text-monospace "+classes,
+        className: "d-inline-block text-monospace " + classes,
         "data-toggle": "tooltip",
         title: x,
     }
     if (limit) {
-       // ret["style"] = limit;
+        // ret["style"] = limit;
     }
     return ret;
 }
@@ -185,35 +188,35 @@ export function Adr(addr) {
 
 export const id_f = (x) => x;
 
-export function spantt (addr, mode) {
-    let text_f=id_f, classes="";
+export function spantt(addr, mode) {
+    let text_f = id_f, classes = "";
     let limit = false;
-    if (mode===undefined) mode="auto";
-    addr = addr==null? "" : addr;
-    switch(mode) {
-    //     case "always":
-    //         text_f = Adr;
-    //         break
-    //     case "never":
-	//     break;
+    if (mode === undefined) mode = "auto";
+    addr = addr == null ? "" : addr;
+    switch (mode) {
+        //     case "always":
+        //         text_f = Adr;
+        //         break
+        //     case "never":
+        //     break;
         default:
             //classes = "text-truncate";
             limit = "max-width: 30em;"
             break
     }
     let tt = TT(addr, classes, limit);
-    tt['style'] = {fontWeight:'bold', 'color':'#000'};
-    return <span {... tt}>
+    tt['style'] = {fontWeight: 'bold', 'color': '#000'};
+    return <span {...tt}>
             {text_f(addr)}
         </span>
 }
 
-const RefreshTime = process.env.REACT_APP_RefreshTime?
-                        process.env.REACT_APP_RefreshTime : 1000;
+const RefreshTime = process.env.REACT_APP_RefreshTime ?
+    process.env.REACT_APP_RefreshTime : 1000;
 
 const Networks = {
-    30: { gas: "0x387ee40", update: RefreshTime },
-    31: { gas: "0x387ee40", update: RefreshTime },
+    30: {gas: "0x387ee40", update: RefreshTime},
+    31: {gas: "0x387ee40", update: RefreshTime},
     12341234: {update: 500},
 }
 
@@ -225,15 +228,15 @@ export function getTimeout() {
 }
 
 export function M(x) {
-    if ((x===undefined)||(x===null)) {
-        x = { };
+    if ((x === undefined) || (x === null)) {
+        x = {};
     }
     const ethereum = window['ethereum'];
     const network = ethereum.networkVersion;
     const netinfo = Networks[network];
-    const newgas = netinfo? netinfo.gas : null;
+    const newgas = netinfo ? netinfo.gas : null;
 
-    if(newgas) {
+    if (newgas) {
         x.gasPrice = newgas;
     }
     return x;
@@ -259,16 +262,15 @@ export function isValid(address) {
 }
 
 export function isValidNS(ns) {
-    return ns.startsWith("http://")||ns.startsWith("https://");
+    return ns.startsWith("http://") || ns.startsWith("https://");
 }
-
 
 
 export const align_center = {className: "text-center"};
 export const align_left = {className: "text-left"};
 export const align_right = {className: "text-right"};
 
-export const all_what = (what) => ( (idx)=>what )
+export const all_what = (what) => ((idx) => what)
 export const all_center = all_what(align_center)
 
 /*
@@ -287,19 +289,19 @@ Table Options:
 export function Table(heads, data, opts) {
     let RESP;
     let className = "table ";  // table-bordered
-    const responsive =opts? (opts.nonresponsive ? !opts.nonresponsive : true) : true;
-    const extra_classes = opts? (opts.classes? opts.classes : "") : "";
+    const responsive = opts ? (opts.nonresponsive ? !opts.nonresponsive : true) : true;
+    const extra_classes = opts ? (opts.classes ? opts.classes : "") : "";
     let st = Math.random().toString().replace(".", "");
-    let row2tt = opts? ( opts.row2ttf? opts.row2ttf : null) : null;
-    let odata = opts? (opts.odata? opts.odata : null) : null;
-    let incidx = opts? (opts.incidx!==undefined?opts.incidx:true) : true;
-    let col_align = opts? (opts.alignf!==undefined? opts.alignf: all_center): all_center;
+    let row2tt = opts ? (opts.row2ttf ? opts.row2ttf : null) : null;
+    let odata = opts ? (opts.odata ? opts.odata : null) : null;
+    let incidx = opts ? (opts.incidx !== undefined ? opts.incidx : true) : true;
+    let col_align = opts ? (opts.alignf !== undefined ? opts.alignf : all_center) : all_center;
 
-    let headalign = opts? (opts.headalignf!==undefined? opts.headalignf: all_center): all_center;
-    let rowclick = opts? (opts.rowclick? opts.rowclick : null) : null;
-    let rowattrs = opts? (opts.rowattrs? opts.rowattrs : null) : null;
+    let headalign = opts ? (opts.headalignf !== undefined ? opts.headalignf : all_center) : all_center;
+    let rowclick = opts ? (opts.rowclick ? opts.rowclick : null) : null;
+    let rowattrs = opts ? (opts.rowattrs ? opts.rowattrs : null) : null;
 
-    className += " "+extra_classes;
+    className += " " + extra_classes;
 
     if (responsive) {
         RESP = (x) => (<div className="table-responsive">{x}</div>);
@@ -308,10 +310,10 @@ export function Table(heads, data, opts) {
     }
 
     function _attrs(idx) {
-        if(odata && row2tt) {
+        if (odata && row2tt) {
             let row = odata[idx];
             let address = row.oracle;
-            return {"data-tip": true, "data-for":st+address};
+            return {"data-tip": true, "data-for": st + address};
         }
         return {};
     }
@@ -319,22 +321,24 @@ export function Table(heads, data, opts) {
     function attrs(idx) {
         let temp = _attrs(idx);
         if (rowclick) {
-            temp["onClick"] = (e)=>{
-                let tidx =  e.currentTarget.rowIndex-1;
-                let data = odata? odata[tidx] : null;
-                rowclick(e, tidx, data);}
+            temp["onClick"] = (e) => {
+                let tidx = e.currentTarget.rowIndex - 1;
+                let data = odata ? odata[tidx] : null;
+                rowclick(e, tidx, data);
+            }
         }
-        if(rowattrs) {
+        if (rowattrs) {
             temp = rowattrs(idx, temp);
         }
         return temp;
     }
 
     function gen_tooltips() {
-        if(odata && row2tt) {
-            return odata.map(row=><ReactTooltip id={st+row.oracle} aria-haspopup='true' backgroundColor='#343a40ff' effect='solid'>
-            {row2tt(row)}
-        </ReactTooltip>)
+        if (odata && row2tt) {
+            return odata.map(row => <ReactTooltip id={st + row.oracle} aria-haspopup='true' backgroundColor='#343a40ff'
+                                                  effect='solid'>
+                {row2tt(row)}
+            </ReactTooltip>)
         } else return <></>
     }
 
@@ -342,24 +346,25 @@ export function Table(heads, data, opts) {
         {gen_tooltips()}
         <table className={className}>
             <thead>
-                <tr>{heads.map((x,col)=><th scope="col" {... headalign(col)}>{x}</th>)}
-                </tr>
+            <tr>{heads.map((x, col) => <th scope="col" {...headalign(col)}>{x}</th>)}
+            </tr>
             </thead>
             <tbody>
-                {data.map((row, idx) => {
-                    let ini = incidx? (1+idx).toString() :row[0];
-                    if(!incidx) { row = row.slice(1) }
-                    return (
-                    <tr {... attrs(idx)}>
-                        <th scope="row" {... col_align(0)}>{ini}</th>
-                        {row.map((field, col) => <td {... col_align(col)}>{field}</td> )}
+            {data.map((row, idx) => {
+                let ini = incidx ? (1 + idx).toString() : row[0];
+                if (!incidx) {
+                    row = row.slice(1)
+                }
+                return (
+                    <tr {...attrs(idx)}>
+                        <th scope="row" {...col_align(0)}>{ini}</th>
+                        {row.map((field, col) => <td {...col_align(col)}>{field}</td>)}
                     </tr>)
-                })}
+            })}
             </tbody>
-        </table></>);
+        </table>
+    </>);
 }
-
-
 
 
 export class Tabs {
@@ -379,27 +384,29 @@ export class Tabs {
         if (!this.current) {
             this.current = this.tabs[0].name;
         }
-        const classes = (name) => name===this.current?
-                                    {className:"nav-link active"}:
-                                    {className:"nav-link"};
+        const classes = (name) => name === this.current ?
+            {className: "nav-link active"} :
+            {className: "nav-link"};
         return (
-        <div className="card-header">
-          <ul className="nav nav-tabs card-header-tabs">
-            {this.tabs.map((tab,idx)=><>
-                <li className="nav-item">
-                  <a href={null_href()}
-                     onClick={(e) => {this.cb_newstate(tab.name)}}
-                   { ... classes(tab.name)}
-                  >{tab.name}</a>
-                </li>
-            </>)}
-          </ul>
-        </div>)
+            <div className="card-header">
+                <ul className="nav nav-tabs card-header-tabs">
+                    {this.tabs.map((tab, idx) => <>
+                        <li className="nav-item">
+                            <a href={null_href()}
+                               onClick={(e) => {
+                                   this.cb_newstate(tab.name)
+                               }}
+                               {...classes(tab.name)}
+                            >{tab.name}</a>
+                        </li>
+                    </>)}
+                </ul>
+            </div>)
     }
 
     get_current() {
-        for(let tab of this.tabs) {
-            if (tab.name===this.current) {
+        for (let tab of this.tabs) {
+            if (tab.name === this.current) {
                 return tab;
             }
         }
@@ -421,12 +428,12 @@ export class Tabs {
         return f(<>
             {this.dump_header()}
             {this.dump_view()}
-            </>);
+        </>);
     }
 }
 
 export function null_href() {
-    let f = (x)=> "ript:vo";
+    let f = (x) => "ript:vo";
 
-    return "javasc"+f()+"id(0)";
+    return "javasc" + f() + "id(0)";
 }

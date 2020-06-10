@@ -13,7 +13,7 @@ import {
     spantt
 } from './helpers.js';
 import {MyBase} from './stake.js';
-import {spanColor} from "./helpers";
+import {M, on_tx_err, on_tx_ok, spanColor} from "./helpers";
 import {ethers} from 'ethers';
 import {BigNumber} from "ethers/utils";
 
@@ -204,7 +204,7 @@ export class RegistryInfo extends ContractInfo {
 }
 
 
-export class SupportersInfo extends ContractInfo {
+export class SupportersVestedInfo extends ContractInfo {
     constructor(name, parent, opts) {
         if (!opts) {
             opts = {};
@@ -215,7 +215,17 @@ export class SupportersInfo extends ContractInfo {
             opts.pf = pf;
         }
         super(name, parent, opts);
+        this.contract = opts.contract;
     }
+
+    distribute(event) {
+        event.preventDefault();
+        this.contract.distribute(M())
+            .then((tx) => on_tx_ok(tx, "distribute"))
+            .catch((err) => on_tx_err(err, "distribute"));
+    }
+
+
 }
 
 export class SupportersWhitelist extends ContractInfo {
@@ -235,7 +245,17 @@ export class SupportersWhitelist extends ContractInfo {
             opts.pf = pf;
         }
         super(name, parent, opts);
+        this.contract = opts.contract;
     }
+
+    distribute(event) {
+        event.preventDefault();
+        this.contract.distribute(M())
+            .then((tx) => on_tx_ok(tx, "distribute"))
+            .catch((err) => on_tx_err(err, "distribute"));
+    }
+
+
 }
 
 
@@ -244,7 +264,6 @@ export class CoinPairPriceAllInfo extends ContractInfo {
         super(name, parent, opts);
         this.selectedDisplay = this.selectedDisplay.bind(this);
         this.setRoundInfo = this.setRoundInfo.bind(this);
-        this.setLastPublicationBlock = this.setLastPublicationBlock.bind(this);
     }
 
     async get_prop(prop) {
@@ -252,13 +271,22 @@ export class CoinPairPriceAllInfo extends ContractInfo {
         return this.contract_fetch(prop.fn, [cust_from]);
     }
 
-    async setLastPublicationBlock(prop, retval, result) {
-        result["getLastPublicationBlock"] = retval;
-        const parent = this.parent_state();
-        if (parent && parent["blocknr"]) {
-            const curr = new BigNumber(parent["blocknr"]);
-            result["blocks_from_last_publication"] = curr.sub(new BigNumber(retval));
+    dump_coinpair() {
+        const state = this.get_state();
+        const x = state["peek"];
+        let price_dump;
+        if (!x) {
+            price_dump = formatEther(x);
+        } else {
+            price_dump = <>{spanColor(formatEther(x.price), x.valid ? "#0000FF" : "#cc3300")}
+                &nbsp; published in block {HL(x.published.toString())}
+                &nbsp; valid until block {HL(x.until.toString())}</>
         }
+        return <>
+            <div><h5>PRICE: {price_dump}</h5>
+            </div>
+            <div>{super.dump_text()}</div>
+        </>;
     }
 
     async setRoundInfo(prop, retval, result) {
@@ -271,7 +299,8 @@ export class CoinPairPriceAllInfo extends ContractInfo {
             result["blocknr"] = parent["blocknr"];
             const curr = new BigNumber(parent["blocknr"]);
             if (retval.lockPeriodEndBlock) {
-                result["round_delta_blocks"] = new BigNumber(retval.lockPeriodEndBlock).sub(curr);
+                const r = new BigNumber(retval.lockPeriodEndBlock).sub(curr);
+                result["round_delta_blocks"] = r.lt(0) ? "-" : r.toString();
             }
         }
 
@@ -323,19 +352,29 @@ export class CoinPairPriceAllInfo extends ContractInfo {
         );
     }
 
+    async update() {
+        await super.update();
+        const validPricePeriodInBlocks = await this.contract_fetch("validPricePeriodInBlocks", []);
+        const peek = await this.contract_fetch("peek", [{from: "0x0000000000000000000000000000000000000001"}]);
+        if (peek) {
+            const state = this.get_state();
+            let until = 0;
+            let published = state.getLastPublicationBlock;
+            if (published && validPricePeriodInBlocks) {
+                until = ethers.utils.bigNumberify(published).add(ethers.utils.bigNumberify(validPricePeriodInBlocks));
+            }
+            this.setState({
+                validPricePeriodInBlocks, peek: {price: peek[0], valid: peek[1], published, until}
+            });
+        }
+    }
+
     _funcs() {
         return [
             {fn: "getRoundInfo", display: false, set: this.setRoundInfo},
             {fn: "getLastPublicationBlock", display: false, set: this.setLastPublicationBlock},
-            {
-                title: HL("Price"),
-                fn: "peek", pf: (x) => {
-                    if (!x) {
-                        return formatEther(x)
-                    }
-                    return spanColor(formatEther(x[0]), x[1] ? "#0000FF" : "#cc3300")
-                }
-            },
+            {title: HL("Valid price period in blocks"), fn: "validPricePeriodInBlocks", get: false},
+            {title: "Available rewards", fn: "getAvailableRewardFees", pf: (x) => formatEther(x)},
             // {title: "Coin Pair", fn: "getCoinPair", pf: (x) => parseBytes32String(x)},
             {title: HL("Blocks from last publication"), fn: "blocks_from_last_publication", get: false},
             {title: "Last publication block", fn: "getLastPublicationBlock", get: false},

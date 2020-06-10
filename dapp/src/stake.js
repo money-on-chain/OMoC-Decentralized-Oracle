@@ -3,7 +3,7 @@ import './index.css';
 import {ethers} from 'ethers';
 import {bigNumberifyAndFormatInt, isValid, isValidNS, HL, obj_get_props, M, formatEther} from './helpers.js';
 import {on_tx_ok, on_tx_err} from "./helpers.js";
-import {null_href, Tabs} from "./helpers";
+import {get_err, null_href, Tabs} from "./helpers";
 
 
 const ALLOW_MINT = process.env.REACT_APP_AllowMint;
@@ -123,13 +123,9 @@ export class Stake extends MyBase {
     }
 
     async update() {
-        try {
-            let allowance = await this.token().allowance(this.parent_state().address,
-                this.sup_contract().address);
-            this.setState({allowance});
-        } catch (err) {
-            console.error(err);
-        }
+        let allowance = await this.token().allowance(this.parent_state().address,
+            this.sup_contract().address);
+        this.setState({allowance});
     }
 
     token() {
@@ -290,8 +286,8 @@ export class Stake extends MyBase {
         this.sup_contract().withdraw(M())
             .then((tx) => on_tx_ok(tx, "withdraw"))
             .catch((err) => {
-                debugger;
-                on_tx_err(err, "withdraw")
+                console.error(err);
+                alert("Not ready to withdraw not completly stopped");
             });
     }
 
@@ -307,7 +303,7 @@ export class Stake extends MyBase {
     }
 }
 
-export class SupportersStake extends Stake {
+export class SupportersVestedStake extends Stake {
     constructor(name, parent, contract, contract_name) {
         super(name, parent, contract, contract_name);
         this.dump_contract_info = this.dump_contract_info.bind(this);
@@ -317,50 +313,53 @@ export class SupportersStake extends Stake {
     init_state(st) {
         super.init_state(st);
         let xx = st[this.name];
-        xx.staked = null;
-        xx.stakedInBlock = null;
-        xx.stopped = null;
-        xx.stoppedInBlock = null;
         xx.minStayBlocks = null;
-        xx.minStopBlocks = null;
+        xx.stake = null;
+        xx.stoppedInblock = null;
     }
 
     dump_contract_info(state) {
+        const parent = this.parent_state();
+        const currentblk = parent.blocknr ? ethers.utils.bigNumberify(parent.blocknr) : null;
+        let withdrawMsg;
+        if (state.stoppedInblock) {
+            const stoppedblk = ethers.utils.bigNumberify(state.stoppedInblock);
+            if (!stoppedblk.eq(0)) {
+                const s = stoppedblk.add(ethers.utils.bigNumberify(state.minStayBlocks));
+                withdrawMsg = <><br/>Stopped in block: {HL(bigNumberifyAndFormatInt(stoppedblk))}</>
+                if (s.lt(currentblk)) {
+                    withdrawMsg = <>{withdrawMsg}<br/><span style={{color: "#009900"}}>Ready to withdraw</span></>;
+                } else {
+                    withdrawMsg = <>{withdrawMsg}<br/>
+                        <span
+                            style={{color: "#ffae42"}}>Will be able to withdraw in {HL(s.add(1).sub(currentblk).toString())} blocks
+                        </span></>
+                }
+            } else {
+                if (state.stake && !ethers.utils.bigNumberify(state.stake).eq(0))
+                    withdrawMsg = <span style={{color: "#ff0000"}}><br/>Call stop to withdraw</span>
+            }
+        }
         return <>
             {super.dump_contract_info(state)}<br/>
-            Detail:
+            Token balance: {HL(formatEther(parent.tokenBalance))}
             <br/>
-            Staked: {HL(formatEther(state.staked))} tokens at
-            block {bigNumberifyAndFormatInt(state.stakedInBlock)} you&quot;ll be abled to stop at block
-            {" " + bigNumberifyAndFormatInt(state.stakedInBlock ? state.stakedInBlock.add(state.minStayBlocks) :
-                null)}.
+            Staked: {HL(formatEther(state.stake))}
             <br/>
-            Stopped: {HL(formatEther(state.stopped))} tokens at
-            block {bigNumberifyAndFormatInt(state.stoppedInBlock)} you&quot;ll be abled to withdraw
-            {" " + bigNumberifyAndFormatInt(state.minStopBlocks)} blocks after stop.
-            <br/>
-            Total in stake: {HL(formatEther(state.stopped ? state.stopped.add(state.staked) : null))} tokens.
-            (staked+stopped)
+            Must stay for : {HL(bigNumberifyAndFormatInt(state.minStayBlocks))} blocks after stop
+            {withdrawMsg}
         </>;
     }
 
     async update() {
         await super.update();
-        try {
-            let result = await this.sup_contract().detailedBalanceOf(this.parent_state().address);
-            let minStayBlocks = await this.sup_contract().minStayBlocks();
-            let minStopBlocks = await this.sup_contract().minStopBlocks();
-            this.setState({
-                minStayBlocks,
-                minStopBlocks,
-                staked: result[0],
-                stakedInBlock: result[1],
-                stopped: result[2],
-                stoppedInBlock: result[3],
-            });
-        } catch (err) {
-            console.error(err)
-        }
+        let result = await this.sup_contract().vestingInfoOf(this.parent_state().address);
+        let minStayBlocks = await this.sup_contract().getMinStayBlocks();
+        this.setState({
+            minStayBlocks,
+            stake: result[0],
+            stoppedInblock: result[1],
+        });
     }
 
     _dump_stop() {
