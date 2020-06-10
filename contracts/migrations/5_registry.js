@@ -37,7 +37,7 @@ async function deploy(deployer, networkName, accounts) {
 
     console.log("Create EternalStorageGobernanza Proxy");
     await scripts.add({contractsData: [{name: "EternalStorageGobernanza", alias: "EternalStorageGobernanza"}]});
-    await scripts.push({network,  txParams: {...txParams, gas: 3500000}});
+    await scripts.push({network,  txParams: {...txParams, gas: 6000000}});
     const eternalStorage = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "EternalStorageGobernanza",

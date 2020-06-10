@@ -53,7 +53,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
     console.log("Create OraclesManager");
     await scripts.add({contractsData: [{name: "OracleManager", alias: "OracleManager"}]});
     // Give more gas!!!
-    await scripts.push({network, txParams: {...txParams, gas: 5000000}});
+    await scripts.push({network, txParams: {...txParams, gas: 6400000}});
     const oracleManager = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "OracleManager",
