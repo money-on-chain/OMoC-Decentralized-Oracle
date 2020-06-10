@@ -64,7 +64,7 @@ that shares the same location.
 
 - validPricePeriodInBlocks: "180:180"
   The valid price period blocks (1 hour).
-        
+
 The following are configurations parameters for the OracleManager smart contract.        
 
 - minOracleOwnerStake: "10000000000" 
@@ -146,7 +146,7 @@ form a deployment and to manage the gobernanza system.
 - change_supporters_period_gobernanza.js: using a change contract (SupportersWhitelistedPeriodChange) change the
     supporters round period in blocks of the SupportersWhitelisted contract (currently deployed, in the build directory).
     Example ```truffle exec --network development scripts/change_supporters_period_gobernanza.js new_val```
-  
+
 - deploy_coinpairprice_upgrade.js: Deploys a new implementation of CoinPairPrice smart contract. After that the
     change_implementation_by_gobernanza.js must be executed to upgrade the smart contract proxy.
 
