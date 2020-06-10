@@ -6,6 +6,7 @@ const rootDir = path.resolve(process.cwd(), '..');
 require('dotenv').config({path: path.resolve(rootDir, '.env')});
 const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
 const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
+const InfoGetter = artifacts.require('InfoGetter.sol');
 const OracleManagerPairChange = artifacts.require("OracleManagerPairChange");
 const CoinPairPriceFree = artifacts.require("CoinPairPriceFree");
 
@@ -17,8 +18,12 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
         from: accounts[0]
     });
 
+    // Deployed in 30_info_getter
+    const info_getter = await InfoGetter.deployed();
+    const info_getter_addr = info_getter.address;
+    console.log("infoGetterAddr", info_getter_addr);
 
-    // Deployed in 2_moc_gobernanza
+    // Deployed in 20_moc_gobernanza
     const governorOwner = accounts[0];
     const governor = await Governor.deployed();
     const governorAddr = governor.address;
@@ -112,7 +117,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
                 methodName: 'initialize',
                 methodArgs: [
                     governorAddr,
-                    [coinPairPriceFree.options.address],
+                    [coinPairPriceFree.options.address, info_getter_addr],
                     coinPair,
                     TestMOC.address,
                     parseInt(params.maxOraclesPerRound[i]),

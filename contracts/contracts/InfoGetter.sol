@@ -4,13 +4,10 @@ pragma experimental ABIEncoderV2;
 import "./openzeppelin/Initializable.sol";
 import "./CoinPairPrice.sol";
 import "./OracleManager.sol";
-import "./moc-gobernanza/Governance/Governed.sol";
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract InfoGetter is Initializable, Governed {
-    CoinPairPrice coinPairPrice;
-    OracleManager oracleManager;
+contract InfoGetter is Initializable {
 
     struct FullOracleRoundInfo {
         uint256 stake;
@@ -20,6 +17,20 @@ contract InfoGetter is Initializable, Governed {
         address owner;
         string name;
     }
+
+    struct OracleServerInfo {
+        uint256 round;
+        uint256 startBlock;
+        uint256 lockPeriodEndBlock;
+        uint256 totalPoints;
+        FullOracleRoundInfo[] info;
+        uint256 price;
+        uint256 currentBlock;
+        uint256 lastPubBlock;
+        bytes32 lastPubBlockHash;
+        uint256 validPricePeriodInBlocks;
+    }
+
 
     struct ManagerUIOracleInfo {
         uint256 stake;
@@ -41,130 +52,128 @@ contract InfoGetter is Initializable, Governed {
         address addr;
     }
 
-
-    function initialize(IGovernor _governor, CoinPairPrice _coinPairPrice, OracleManager _oracleManager) public initializer {
-        require(address(_coinPairPrice) != address(0), "CoinPairPrice contract address must be != 0");
-        require(address(_oracleManager) != address(0), "OracleManager contract address must be != 0");
-
-        Governed.initialize(_governor);
-        coinPairPrice = _coinPairPrice;
-        oracleManager = _oracleManager;
+    struct CoinPairPriceUIInfo {
+        uint256 round;
+        uint256 startBlock;
+        uint256 lockPeriodEndBlock;
+        uint256 totalPoints;
+        CoinPairUIOracleRoundInfo[] info;
+        uint256 currentBlock;
+        uint256 lastPubBlock;
+        bytes32 lastPubBlockHash;
+        uint256 validPricePeriodInBlocks;
+        uint256 availableRewards;
     }
+
+    function initialize() public initializer {}
+
 
 
     /**
-     * @dev Sets the CoinPairPrice address by gobernanza
-     * @param _coinPairPrice - the override coinPairPrice
-     */
-    function setCoinPairPriceAddr(CoinPairPrice _coinPairPrice) public onlyAuthorizedChanger() {
-        coinPairPrice = _coinPairPrice;
-    }
+        Return all the information needed by the ui (one call, to avoid a lot of rpc)
 
-
-    /**
-     * @dev Sets the OracleManager address by gobernanza
-     * @param _oracleManager - the override oracleManager
-     */
-    function setOracleManagerAddr(OracleManager _oracleManager) public onlyAuthorizedChanger() {
-        oracleManager = _oracleManager;
-    }
-
-
-
-    /// @notice Return all the information needed by the ui (one call, to avoid a lot of rpc)
-    function getCoinPairUIInfo() public view returns (
-        uint256 round, uint256 startBlock, uint256 lockPeriodEndBlock, uint256 totalPoints,
-        CoinPairUIOracleRoundInfo[] memory info,
-        uint256 currentBlock,
-        uint256 lastPubBlock,
-        bytes32 lastPubBlockHash,
-        uint256 validPricePeriodInBlocks,
-        uint256 availableRewards)
+        @param _coinPairPrice coinPairPrice contract
+    */
+    function getCoinPairUIInfo(CoinPairPrice _coinPairPrice) public view returns (CoinPairPriceUIInfo memory coinPairPriceUIInfo)
     {
-        address[] memory selectedOracles;
-        (round, startBlock, lockPeriodEndBlock, totalPoints, selectedOracles) = coinPairPrice.getRoundInfo();
+        (uint256 round,uint256 startBlock, uint256 lockPeriodEndBlock,uint256 totalPoints, address[] memory selectedOracles) = _coinPairPrice.getRoundInfo();
         uint256 len = selectedOracles.length;
-        info = new CoinPairUIOracleRoundInfo[](len);
+        CoinPairUIOracleRoundInfo[] memory info = new CoinPairUIOracleRoundInfo[](len);
         for (uint i = 0; i < len; i++) {
             address addr = selectedOracles[i];
-            (uint points, uint256 selectedInRound,) = coinPairPrice.getOracleRoundInfo(addr);
+            (uint points, uint256 selectedInRound,) = _coinPairPrice.getOracleRoundInfo(addr);
             info[i] = CoinPairUIOracleRoundInfo(points, selectedInRound, addr);
         }
-        uint256 lastPublicationBlock = coinPairPrice.getLastPublicationBlock();
-        return (round, startBlock, lockPeriodEndBlock, totalPoints,
-        info, block.number, lastPublicationBlock, blockhash(lastPublicationBlock),
-        coinPairPrice.getValidPricePeriodInBlocks(), coinPairPrice.getAvailableRewardFees());
+        uint256 lastPublicationBlock = _coinPairPrice.getLastPublicationBlock();
+        return CoinPairPriceUIInfo(round, startBlock, lockPeriodEndBlock, totalPoints,
+            info, block.number, lastPublicationBlock, blockhash(lastPublicationBlock),
+            _coinPairPrice.getValidPricePeriodInBlocks(), _coinPairPrice.getAvailableRewardFees());
     }
 
-    /// @notice Return information needed by the ui in one call.
-    /// @param offset take from this offset
-    /// @param limit take to this limit, limit == 0 => take all
-    function getManagerUICoinPairInfo(uint offset, uint limit) public view returns (ManagerUICoinPairInfo[] memory info) {
-        uint total = oracleManager.getCoinPairCount();
-        if (limit > total || limit == 0) {
-            limit = total;
+    /**
+        Return all the information needed by the ui (one call, to avoid a lot of rpc)
+
+        @param _oracleManager oracleManager contract
+        @param _offset take from this offset
+        @param _limit take to this limit, limit == 0 => take all
+    */
+    function getManagerUICoinPairInfo(OracleManager _oracleManager, uint _offset, uint _limit) public view returns (ManagerUICoinPairInfo[] memory info) {
+        uint total = _oracleManager.getCoinPairCount();
+        if (_limit > total || _limit == 0) {
+            _limit = total;
         }
-        if (offset > limit) {
-            offset = limit;
+        if (_offset > _limit) {
+            _offset = _limit;
         }
-        uint cant = (limit - offset);
+        uint cant = (_limit - _offset);
         info = new ManagerUICoinPairInfo[](cant);
         for (uint256 i = 0; i < cant; i++) {
-            bytes32 cp = oracleManager.getCoinPairAtIndex(i + offset);
-            info[i] = ManagerUICoinPairInfo(oracleManager.getContractAddress(cp), cp);
+            bytes32 cp = _oracleManager.getCoinPairAtIndex(i + _offset);
+            info[i] = ManagerUICoinPairInfo(_oracleManager.getContractAddress(cp), cp);
         }
     }
 
-    /// @notice Return information needed by the ui in one call.
-    /// @param prevEntry The address the entry to start iterating.
-    /// @param cant Number of items to return.
-    function getManagerUIOracleInfo(address prevEntry, uint cant) public view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
+    /**
+        Return all the information needed by the ui (one call, to avoid a lot of rpc)
+
+        @param _oracleManager oracleManager contract
+        @param _prevEntry The address the entry to start iterating.
+        @param _cant Number of items to return.
+    */
+    function getManagerUIOracleInfo(OracleManager _oracleManager, address _prevEntry, uint _cant) public view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
         address addr;
-        if (prevEntry == address(0)) {
-            addr = oracleManager.getRegisteredOracleHead();
+        if (_prevEntry == address(0)) {
+            addr = _oracleManager.getRegisteredOracleHead();
         }
 
-        info = new ManagerUIOracleInfo[](cant);
-        for (uint256 i = 0; addr != address(0) && i < cant; addr = oracleManager.getRegisteredOracleNext(addr)) {
-            (string memory name, uint stake, address owner) = oracleManager.getOracleRegistrationInfo(addr);
-            info[i] = ManagerUIOracleInfo(stake, oracleManager.token().balanceOf(addr), addr.balance, addr, owner, name);
+        info = new ManagerUIOracleInfo[](_cant);
+        for (uint256 i = 0; addr != address(0) && i < _cant; addr = _oracleManager.getRegisteredOracleNext(addr)) {
+            (string memory name, uint stake, address owner) = _oracleManager.getOracleRegistrationInfo(addr);
+            info[i] = ManagerUIOracleInfo(stake, _oracleManager.token().balanceOf(addr), addr.balance, addr, owner, name);
         }
         nextEntry = addr;
     }
 
-    /// @notice Return all the information needed by the oracle server (one call, to avoid a lot of rpc)
-    function getOracleServerInfo() public view returns (
-        uint256 round, uint256 startBlock, uint256 lockPeriodEndBlock, uint256 totalPoints,
-        FullOracleRoundInfo[] memory info,
-        uint256 price,
-        uint256 currentBlock,
-        uint256 lastPubBlock,
-        bytes32 lastPubBlockHash,
-        uint256 validPricePeriodInBlocks
-    )
+    /**
+        Return all the information needed by the oracle server (one call, to avoid a lot of rpc)
+
+        @param _oracleManager oracleManager contract
+        @param _coinPairPrice coinPairPrice contract
+    */
+    function getOracleServerInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice) public view returns (OracleServerInfo memory oracleServerInfo)
     {
-        address[] memory selectedOracles;
-        (round, startBlock, lockPeriodEndBlock, totalPoints, selectedOracles) = coinPairPrice.getRoundInfo();
-        uint256 len = selectedOracles.length;
+        uint256 lastPubBlock = _coinPairPrice.getLastPublicationBlock();
+        (bytes32 currentPrice,) = _coinPairPrice.peek();
+
+        (uint256 round, uint256  startBlock, uint256  lockPeriodEndBlock, uint256  totalPoints, address[] memory selectedOracles) = _coinPairPrice.getRoundInfo();
+
+        return OracleServerInfo(round, startBlock, lockPeriodEndBlock, totalPoints,
+            _createFullRoundInfo(_oracleManager, _coinPairPrice, selectedOracles),
+            uint256(currentPrice), block.number, lastPubBlock, blockhash(lastPubBlock), _coinPairPrice.getValidPricePeriodInBlocks());
+    }
+
+    /**
+        Create the FullOracleRoundInfo array from slected oracles
+        @param _oracleManager oracleManager contract
+        @param _coinPairPrice coinPairPrice contract
+        @param _selectedOracles selected oracles addresses
+    */
+    function _createFullRoundInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice,
+        address[] memory _selectedOracles) public view returns (FullOracleRoundInfo[] memory info)
+    {
+        uint256 len = _selectedOracles.length;
         info = new FullOracleRoundInfo[](len);
         for (uint i = 0; i < len; i++) {
-            address addr = selectedOracles[i];
-            (string memory name, uint stake, address owner) = oracleManager.getOracleRegistrationInfo(addr);
-            (uint points, uint256 selectedInRound,) = coinPairPrice.getOracleRoundInfo(addr);
+            (string memory name, uint stake, address owner) = _oracleManager.getOracleRegistrationInfo(_selectedOracles[i]);
+            (uint points, uint256 selectedInRound,) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
             info[i] = FullOracleRoundInfo(
                 stake,
                 points,
                 selectedInRound,
-                addr,
+                _selectedOracles[i],
                 owner,
                 name);
         }
-        uint256 lastPublicationBlock = coinPairPrice.getLastPublicationBlock();
-        validPricePeriodInBlocks = coinPairPrice.getValidPricePeriodInBlocks();
-        (bytes32 currentPrice,) = coinPairPrice.peek();
-        return (round, startBlock, lockPeriodEndBlock, totalPoints,
-        info, uint256(currentPrice), block.number, lastPublicationBlock, blockhash(lastPublicationBlock), validPricePeriodInBlocks);
+        return info;
     }
-
-
 }

@@ -3,7 +3,7 @@ const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
 // VERY IMPORTANT, if this number is too big: near gasLimit (the default) transaction are QUEUED for
 // a long time, on the other hand if it is too small some big transactions can fail!!!
 // Tune it to your needs.
-const GAS_LIMIT = (4 * 1000 * 1000);
+const GAS_LIMIT = (2 * 1000 * 1000);
 
 
 // const HDWalletProvider = require('truffle-hdwallet-provider');

@@ -1,4 +1,3 @@
-// TODO: This must be deployed before coinpairprice so we can add it to the whitelist!!!
 'use strict';
 const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
 
@@ -10,12 +9,6 @@ async function deploy(deployer, networkName, accounts) {
         from: accounts[0]
     });
 
-    // Deployed in 2_moc_gobernanza
-    const governorOwner = accounts[0];
-    const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
-    const governor = await Governor.deployed();
-    const governorAddr = governor.address;
-    console.log("governorAddr", governorAddr, 'owner', governorOwner);
     // We will use the project's proxy admin as upgradeability admin of this instance
     const networkFile = new files.NetworkFile(
         new files.ProjectFile(),
@@ -24,21 +17,9 @@ async function deploy(deployer, networkName, accounts) {
     const proxyAdminAddr = networkFile.proxyAdminAddress;
     console.log("proxyAdminAddr ", proxyAdminAddr);
 
-    // Deployed in 3_deploy
-    const OracleManager = artifacts.require('OracleManager.sol');
-    const oracleManager = await OracleManager.deployed();
-    const oracleManagerAddr = oracleManager.address;
-    console.log("oracleManagerAddr", oracleManagerAddr);
-
-    const CoinPairPrice = artifacts.require('CoinPairPrice.sol');
-    const coinPairPrice = await CoinPairPrice.deployed();
-    const coinPairPriceAddr = coinPairPrice.address;
-    console.log("coinPairPriceAddr", coinPairPriceAddr);
-
-
     console.log("Create InfoGetter Proxy");
     await scripts.add({contractsData: [{name: "InfoGetter", alias: "InfoGetter"}]});
-    await scripts.push({network,  txParams: {...txParams, gas: 3000000}});
+    await scripts.push({network,  txParams: {...txParams, gas: 6000000}});
     const infoGetter = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "InfoGetter",
@@ -47,11 +28,9 @@ async function deploy(deployer, networkName, accounts) {
     });
     console.log("InfoGetter: ", infoGetter.options.address, 'proxyAdmin', proxyAdminAddr);
 
-    console.log("Initialize InfoGetter governor", governorAddr,
-        "coinPairPrice", coinPairPriceAddr,
-        "oracleManager", oracleManagerAddr);
+    console.log("Initialize InfoGetter");
     const scall = await artifacts.require("InfoGetter").at(infoGetter.options.address);
-    await scall.initialize(governorAddr, coinPairPriceAddr, oracleManagerAddr);
+    await scall.initialize();
 }
 
 async function truffle_main(deployer, networkName, accounts) {

@@ -9,7 +9,7 @@ async function deploy(deployer, networkName, accounts) {
         from: accounts[0]
     });
 
-    // Deployed in 2_moc_gobernanza
+    // Deployed in 20_moc_gobernanza
     const governorOwner = accounts[0];
     const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
     const governor = await Governor.deployed();
