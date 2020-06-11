@@ -273,7 +273,11 @@ class Console extends React.Component {
                         console.error("Web3 Error getting latest block", err);
                         reject(err);
                     }
-                    resolve(blocknr);
+                    if (!blocknr) {
+                        reject("Error getting block number, check metamask connection");
+                    } else {
+                        resolve(blocknr);
+                    }
                 });
             } catch (err) {
                 console.error("Error getting latest block", err);
