@@ -120,7 +120,7 @@ export class ContractInfo extends MyBase {
     }
 
     dump_text() {
-        return <p className="card-text"> {Grey(this._dump(this.dump_prop_text.bind(this), "text"))}</p>
+        return <span className="card-text"> {Grey(this._dump(this.dump_prop_text.bind(this), "text"))}</span>
     }
 
 
@@ -374,7 +374,6 @@ export class CoinPairPriceAllInfo extends ContractInfo {
             {fn: "getRoundInfo", display: false, set: this.setRoundInfo},
             {fn: "getLastPublicationBlock", display: false, set: this.setLastPublicationBlock},
             {title: HL("Valid price period in blocks"), fn: "validPricePeriodInBlocks", get: false},
-            {title: "Available rewards", fn: "getAvailableRewardFees", pf: (x) => formatEther(x)},
             // {title: "Coin Pair", fn: "getCoinPair", pf: (x) => parseBytes32String(x)},
             {title: HL("Blocks from last publication"), fn: "blocks_from_last_publication", get: false},
             {title: "Last publication block", fn: "getLastPublicationBlock", get: false},

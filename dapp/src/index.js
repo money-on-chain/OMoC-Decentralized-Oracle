@@ -270,11 +270,13 @@ class Console extends React.Component {
             try {
                 window.web3.eth.getBlock("latest", (err, blocknr) => {
                     if (err) {
+                        console.error("Web3 Error getting latest block", err);
                         reject(err);
                     }
                     resolve(blocknr);
                 });
             } catch (err) {
+                console.error("Error getting latest block", err);
                 reject(err);
             }
         })
@@ -466,10 +468,12 @@ class Console extends React.Component {
             this._a_update()
                 .then((ret) => {
                     this.in_update = false
+                    this.setState({error: null});
                 })
                 .catch((err) => {
                     console.log(new Date(), "update exception", err)
                     this.in_update = false;
+                    this.setState({error: err});
                 });
         }
     }
@@ -582,12 +586,15 @@ class Console extends React.Component {
 
 
     global_info() {
+        const error = this.state.error;
         return <>
             {this.XCard(6,
                 <p className="card-text"> {Grey(<>
                     Current block: {HL(bigNumberifyAndFormatInt(this.state.blocknr))}.
                     Your address is: {spantt(this.state.address)}.
                     Current (on chain) balance: {HL(formatEther(this.state.tokenBalance))} tokens.
+                    {error ? <><br/><span
+                        style={{color: "red"}}>ERROR : {error.message ? error.message : error.toString()}</span></> : null}
                 </>)}
                 </p>, "")}
 
@@ -1102,16 +1109,18 @@ class Console extends React.Component {
                     </>, "Registry")}
                     {this.XCard(6, <>
                         {this.c_supporters_vested_info ? this.c_supporters_vested_info.dump_text() : <></>}
+                        <br/>
                         <div className="d-flex justify-content-between align-items-center">
                             <div className="btn-group">
                                 <button type="button" className="btn btn-sm btn-outline-secondary"
-                                        onClick={(e) =>  this.c_supporters_vested_info.distribute(e)}>Distribute
+                                        onClick={(e) => this.c_supporters_vested_info.distribute(e)}>Distribute
                                 </button>
                             </div>
                         </div>
                     </>, "Supporters Vested Info")}
                     {this.XCard(6, <>
                         {this.c_supporters_whitelisted ? this.c_supporters_whitelisted.dump_text() : <></>}
+                        <br/>
                         <div className="d-flex justify-content-between align-items-center">
                             <div className="btn-group">
                                 <button type="button" className="btn btn-sm btn-outline-secondary"
