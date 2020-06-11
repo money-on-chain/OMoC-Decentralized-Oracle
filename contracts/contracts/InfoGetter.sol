@@ -12,7 +12,6 @@ contract InfoGetter is Initializable {
     struct FullOracleRoundInfo {
         uint256 stake;
         uint256 points;
-        uint256 selectedInRound;
         address addr;
         address owner;
         string name;
@@ -165,11 +164,10 @@ contract InfoGetter is Initializable {
         info = new FullOracleRoundInfo[](len);
         for (uint i = 0; i < len; i++) {
             (string memory name, uint stake, address owner) = _oracleManager.getOracleRegistrationInfo(_selectedOracles[i]);
-            (uint points, uint256 selectedInRound,) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
+            (uint points,,) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
             info[i] = FullOracleRoundInfo(
                 stake,
                 points,
-                selectedInRound,
                 _selectedOracles[i],
                 owner,
                 name);
