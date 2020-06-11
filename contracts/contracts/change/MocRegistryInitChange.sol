@@ -12,15 +12,24 @@ contract MocRegistryInitChange is ChangeContract {
     EternalStorageGobernanza public registry;
     address public oracle_manager;
     address public supporters_vested;
+    address public supporters_whitelisted;
+    address public info_getter;
 
 
     /**
       @notice Constructor
     */
-    constructor(EternalStorageGobernanza _registry, address _oracle_manager, address _supporters_vested) public {
+    constructor(EternalStorageGobernanza _registry,
+        address _oracle_manager,
+        address _supporters_vested,
+        address _supporters_whitelisted,
+        address _info_getter) public
+    {
         registry = _registry;
         oracle_manager = _oracle_manager;
         supporters_vested = _supporters_vested;
+        supporters_whitelisted = _supporters_whitelisted;
+        info_getter = _info_getter;
     }
 
     /**
@@ -33,6 +42,8 @@ contract MocRegistryInitChange is ChangeContract {
 
         registry.setAddress(get_keccak("ORACLE_MANAGER_ADDR"), oracle_manager);
         registry.setAddress(get_keccak("SUPPORTERS_VESTED_ADDR"), supporters_vested);
+        registry.setAddress(get_keccak("SUPPORTERS_ADDR"), supporters_whitelisted);
+        registry.setAddress(get_keccak("INFO_ADDR"), info_getter);
 
         registry.setUint(get_keccak("ORACLE_PRICE_FETCH_RATE"), 5);
         registry.setUint(get_keccak("ORACLE_BLOCKCHAIN_INFO_INTERVAL"), 3);
@@ -41,6 +52,7 @@ contract MocRegistryInitChange is ChangeContract {
         registry.setDecimal(get_keccak("ORACLE_PRICE_REJECT_DELTA_PCT"), 5, 1);
         registry.setUint(get_keccak("ORACLE_CONFIGURATION_TASK_INTERVAL"), 240);
         registry.setUint(get_keccak("ORACLE_GATHER_SIGNATURE_TIMEOUT"), 60);
+        registry.setUint(get_keccak("ORACLE_MAIN_EXECUTOR_TASK_INTERVAL"), 20);
         registry.setUint(get_keccak("SCHEDULER_POOL_DELAY"), 10);
         registry.setUint(get_keccak("SCHEDULER_ROUND_DELAY"), 60 * 60 * 24);
         registry.setUint(get_keccak("ORACLE_PRICE_DIGITS"), 18);

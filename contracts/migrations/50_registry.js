@@ -3,6 +3,12 @@ const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
 
 stdout.silent(false);
 
+async function getAddr(json_file) {
+    const artifact = artifacts.require(json_file);
+    const contract = await artifact.deployed();
+    return contract.address;
+}
+
 async function deploy(deployer, networkName, accounts) {
     const {network, txParams} = await ConfigManager.initNetworkConfiguration({
         network: networkName,
@@ -24,20 +30,22 @@ async function deploy(deployer, networkName, accounts) {
     console.log("proxyAdminAddr ", proxyAdminAddr);
 
     // Deployed in 3_deploy
-    const OracleManager = artifacts.require('OracleManager.sol');
-    const oracleManager = await OracleManager.deployed();
-    const oracleManagerAddr = oracleManager.address;
+    const oracleManagerAddr = await getAddr('OracleManager.sol');
     console.log("oracleManagerAddr", oracleManagerAddr);
 
-    const SupportersVested = artifacts.require('SupportersVested.sol');
-    const supportersVested = await SupportersVested.deployed();
-    const supportersVestedAddr = supportersVested.address;
+    const supportersVestedAddr = await getAddr('SupportersVested.sol');
     console.log("supportersVestedAddr", supportersVestedAddr);
+
+    const supportersWhitelistedAddr = await getAddr('SupportersWhitelisted.sol');
+    console.log("supportersWhitelistedAddr", supportersWhitelistedAddr);
+
+    const infoGetterAddr = await getAddr('InfoGetter.sol');
+    console.log("infoGetterAddr", infoGetterAddr);
 
 
     console.log("Create EternalStorageGobernanza Proxy");
     await scripts.add({contractsData: [{name: "EternalStorageGobernanza", alias: "EternalStorageGobernanza"}]});
-    await scripts.push({network,  txParams: {...txParams, gas: 6000000}});
+    await scripts.push({network, txParams: {...txParams, gas: 6000000}});
     const eternalStorage = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "EternalStorageGobernanza",
@@ -52,7 +60,12 @@ async function deploy(deployer, networkName, accounts) {
 
     console.log("Deploy change contract", governorAddr);
     const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
-    const change = await MocRegistryInitChange.new(eternalStorage.options.address, oracleManagerAddr, supportersVestedAddr);
+    const change = await MocRegistryInitChange.new(eternalStorage.options.address,
+        oracleManagerAddr,
+        supportersVestedAddr,
+        supportersWhitelistedAddr,
+        infoGetterAddr,
+    );
     console.log("Initialize registry/eternalStorage for MOC Oracles", change.address, 'via governor', governorAddr);
     await governor.executeChange(change.address, {from: governorOwner});
 }
