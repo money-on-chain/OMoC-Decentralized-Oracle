@@ -272,15 +272,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         require(_isOwner(data), "This can be called by oracle owner only");
         //(address[] memory subscribedTo, uint count) = getSubscribedCoinPairAddresses(oracleAddr);
 
-        uint coinPairCount = super.getCoinPairCount();
-
-        bool canRemove = true;
-        for (uint i = 0; i < coinPairCount && canRemove; i++) {
-            CoinPairPrice cp = (CoinPairPrice) (super.getContractAddress(super.getCoinPairAtIndex(i)));
-            canRemove = canRemove && cp.canRemoveOracle(oracleAddr);
-        }
-
-        require(canRemove, "Oracle cannot be removed at this time");
+        require(_canRemoveOracle(oracleAddr), "Oracle cannot be removed at this time");
 
         _unsubscribeAll(oracleAddr);
         uint256 tokens = supportersContract.getBalanceAt(address(this), oracleAddr);
@@ -288,6 +280,14 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         registeredOracles.remove(oracleAddr, prevEntry);
         emit OracleRemoved(msg.sender, oracleAddr);
     }
+
+    /// @notice Returns true if an oracle satisfies conditions to be removed from system.
+    /// @param oracleAddr the oracle address to lookup.
+    function canRemoveOracle(address oracleAddr) public view returns (bool) {
+        OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
+        return data.isRegistered() && _canRemoveOracle(oracleAddr) && supportersContract.canWithdraw(oracleAddr);
+    }
+
 
     /// @notice Get the stake in MOCs that an oracle has.
     /// @param addr The address of the oracle.
@@ -299,6 +299,18 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     /// @param addr The address of the oracle.
     function vestingInfoOf(address addr) external view returns (uint256 balance, uint256 stoppedInblock) {
         return supportersContract.vestingInfoOf(address(this), addr);
+    }
+
+    /// @notice Returns true if an oracle satisfies conditions to be removed from system.
+    /// @param oracleAddr the oracle address to lookup.
+    function _canRemoveOracle(address oracleAddr) internal view returns (bool) {
+        uint coinPairCount = super.getCoinPairCount();
+        bool canRemove = true;
+        for (uint i = 0; i < coinPairCount && canRemove; i++) {
+            CoinPairPrice cp = (CoinPairPrice) (super.getContractAddress(super.getCoinPairAtIndex(i)));
+            canRemove = canRemove && cp.canRemoveOracle(oracleAddr);
+        }
+        return canRemove;
     }
 
     /// @dev Add stake internal

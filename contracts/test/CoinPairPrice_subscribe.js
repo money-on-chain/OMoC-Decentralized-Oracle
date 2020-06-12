@@ -44,7 +44,11 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
             2, // numIdleRounds,
             testobj.oracleMgr.address);
 
-        await testobj.supporters.initialize(testobj.governor.addr, [testobj.oracleMgr.address], testobj.token.address, new BN(5), minStayBlocks)
+        await testobj.supporters.initialize(testobj.governor.addr, [testobj.oracleMgr.address], testobj.token.address,
+            new BN(10), // period
+            new BN(5),  // _minStayBlocks
+            new BN(2)   // _afterStopBlocks
+        );
         await testobj.oracleMgr.initialize(testobj.governor.addr, minOracleOwnerStake, testobj.supporters.address);
         // Create sample coin pairs
         await testobj.governor.registerCoinPair(testobj.oracleMgr, COINPAIR, testobj.coinPairPrice.address);

@@ -76,10 +76,11 @@ The following are configurations parameters for the Supporters smart contract.
   The supporters round length in block.
   
 - supportersMinStayBlocks: 10
-  The minimum amount of blocks a supporter must stay after staking before he can stop the operating.
+  The minimum amount of blocks a supporter must stay after a stop to be able to withdraw.
   
-- supportersMinStopBlocks: 10
-  The minimum amount of blocks a supporter must stay stop before he can recover his stake.
+- supportersAfterStopBlocks: 10
+  The period of blocks that you have after a stop and staying minStayBlock to do withdraw.
+  
 
 ## Tests
 

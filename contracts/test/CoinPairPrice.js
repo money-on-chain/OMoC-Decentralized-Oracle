@@ -9,7 +9,9 @@ const ethers = require('ethers');
 contract("CoinPairPrice", async (accounts) => {
 
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
+    const period = 20;
     const minStayBlocks = 10;
+    const afterStopBlocks = 5;
     const feeSourceAccount = accounts[0];
 
     /* Account is the simulated oracle server address. The stake 
@@ -39,7 +41,8 @@ contract("CoinPairPrice", async (accounts) => {
             this.oracleMgr.address);
 
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
+            period, minStayBlocks, afterStopBlocks);
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
@@ -424,8 +427,7 @@ contract("CoinPairPrice", async (accounts) => {
     })
 
     it("Should fail to publish if voter/sender is D (not a selected-in-round oracle)", async () => {
-
-        console.log(await this.coinPairPrice.getRoundInfo());
+        // console.log(await this.coinPairPrice.getRoundInfo());
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[3].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));

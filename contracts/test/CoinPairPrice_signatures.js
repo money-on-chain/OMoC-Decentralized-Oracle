@@ -154,7 +154,11 @@ contract("[ @skip-on-coverage ] CoinPairPrice Signature", async (accounts) => {
                     "100000000", // bootstrapPrice
                     2, // numIdleRounds
                     this.oracleMgr.address);
-                await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
+                await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
+                    new BN(10), // period
+                    new BN(5),  // _minStayBlocks
+                    new BN(2)   // _afterStopBlocks
+                );
                 await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
                 // Create sample coin pairs
                 await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);

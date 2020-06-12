@@ -15,7 +15,6 @@ CurrencyPair+="BTCUSD;"
   bootstrapPrice+="$DEFAULT_BOOTSTRAPPRICE;"
   numIdleRounds+="$DEFAULT_NUMIDLEROUNDS;"
 
-
 CurrencyPair+="RIFBTC;"
   roundLockPeriodInBlocks+="$DEFAULT_ROUNDLOCKPERIODINBLOCKS;"
   validPricePeriodInBlocks+="$DEFAULT_VALIDPRICEPERIODINBLOCKS;"
@@ -24,6 +23,10 @@ CurrencyPair+="RIFBTC;"
   bootstrapPrice+="$DEFAULT_BOOTSTRAPPRICE;"
   numIdleRounds+="$DEFAULT_NUMIDLEROUNDS;"
 
+supportersEarnPeriodInBlocks=360
+supportersAfterStopBlocks=90
+supportersMinStayBlocks=30
+
 export CurrencyPair
 export roundLockPeriodInBlocks
 export validPricePeriodInBlocks
@@ -31,4 +34,6 @@ export minOracleOwnerStake
 export maxOraclesPerRound
 export bootstrapPrice
 export numIdleRounds
-
+export supportersEarnPeriodInBlocks
+export supportersAfterStopBlocks
+export supportersMinStayBlocks

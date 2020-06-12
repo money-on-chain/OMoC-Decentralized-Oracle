@@ -66,6 +66,11 @@ contract SupportersVested is Governed {
         supporters.stop(msg.sender);
     }
 
+    /// @notice Returns true if a supporter can withdraw his money
+    //  @param _subaccount subaccount used to withdraw MOC
+    function canWithdraw(address _subaccount) external view returns (bool) {
+        return supporters.canWithdraw(_subaccount);
+    }
 
     /**
       Withdraw MOCs that were already stopped .
@@ -105,5 +110,15 @@ contract SupportersVested is Governed {
     */
     function getMinStayBlocks() public view returns (uint256) {
         return supporters.minStayBlocks();
+    }
+
+
+    /**
+      Return the period of blocks a user have after a stop and minStayBlock to withdraw
+
+      @return the period of blocks that a user have
+    */
+    function getAfterStopBlocks() public view returns (uint256) {
+        return supporters.afterStopBlocks();
     }
 }

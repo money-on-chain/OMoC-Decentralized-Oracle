@@ -17,14 +17,18 @@ contract SupportersVestedAbstract is SupportersAbstract {
     // The minimum number of blocks that a user must stay staked after staking
     uint256 public minStayBlocks;
 
+    // The period of blocks a user have after a stop and minStayBlock to withdraw
+    uint256 public afterStopBlocks;
+
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
     constructor () internal {}
     // solhint-disable-previous-line no-empty-blocks
 
-    function _initialize(IERC20 _mocToken, uint256 _period, uint256 _minStayBlocks) internal {
+    function _initialize(IERC20 _mocToken, uint256 _period, uint256 _minStayBlocks, uint256 _afterStopBlocks) internal {
         super._initialize(_mocToken, _period);
         minStayBlocks = _minStayBlocks;
+        afterStopBlocks = _afterStopBlocks;
     }
 
     /**
@@ -33,6 +37,14 @@ contract SupportersVestedAbstract is SupportersAbstract {
       */
     function _setMinStayBlocks(uint256 _minStayBlocks) internal {
         minStayBlocks = _minStayBlocks;
+    }
+
+    /**
+      * @dev Sets the afterStopBlocks by gobernanza
+      * @param _afterStopBlocks - the override afterStopBlocks
+      */
+    function _setAfterStopBlocks(uint256 _afterStopBlocks) internal {
+        afterStopBlocks = _afterStopBlocks;
     }
 
     /**
@@ -55,11 +67,19 @@ contract SupportersVestedAbstract is SupportersAbstract {
     function _withdrawFromTo(uint256 _tokens, address _subaccount, address _receiver) override internal returns (uint256) {
         require(stopInBlockMap[_subaccount] != 0, "Must be stopped");
         require(stopInBlockMap[_subaccount] + minStayBlocks < block.number, "Can't withdraw until minStayBlocks");
+        require(stopInBlockMap[_subaccount] + minStayBlocks + afterStopBlocks >= block.number, "Must withdraw before afterStopBlocks");
 
         uint256 mocs = super._withdrawFromTo(_tokens, _subaccount, _receiver);
         delete stopInBlockMap[_subaccount];
         emit Withdraw(msg.sender, _subaccount, _receiver, mocs, block.number);
         return mocs;
+    }
+
+    /// @notice Returns true if a supporter can withdraw his money
+    //  @param _subaccount subaccount used to withdraw MOC
+    function _canWithdraw(address _subaccount) internal view returns (bool) {
+        return ((stopInBlockMap[_subaccount] + minStayBlocks < block.number) &&
+        (stopInBlockMap[_subaccount] + minStayBlocks + afterStopBlocks >= block.number));
     }
 
     /**
@@ -73,6 +93,7 @@ contract SupportersVestedAbstract is SupportersAbstract {
         require(_account != address(0), "Address must be != 0");
         return (super._getMOCBalanceAt(address(this), _account), stopInBlockMap[_account]);
     }
+
 
     /**
     add MOCs to stake

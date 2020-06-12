@@ -10,7 +10,9 @@ const helpers = require("./helpers")
 contract('SupportersWhitelisted', (accounts) => {
     let supporters
     let token
-    const minStayBlocks = 10
+    const period = 10;
+    const minStayBlocks = 5;
+    const afterStopBlocks = 2;
     const BALANCE_USER1 = new BN(web3.utils.toWei("1", "ether"))
     const BALANCE_USER2 = new BN(web3.utils.toWei("1", "ether"))
     const BALANCE_USER3 = new BN(web3.utils.toWei("1", "ether"))
@@ -26,9 +28,7 @@ contract('SupportersWhitelisted', (accounts) => {
             token = await TestMOC.new()
             supporters = await Supporters.new()
             await supporters.initialize(GOVERNOR, [], token.address,
-                new BN(10),  // period
-                minStayBlocks
-            )
+                period, minStayBlocks, afterStopBlocks)
         })
 
         it('check creation', async () => {
@@ -61,9 +61,7 @@ contract('SupportersWhitelisted', (accounts) => {
             token = await TestMOC.new()
             supporters = await Supporters.new()
             await supporters.initialize(GOVERNOR, [user1], token.address,
-                new BN(10), // period
-                minStayBlocks
-            );
+                period, minStayBlocks, afterStopBlocks)
 
             await token.mint(user1, INITIAL_BALANCE)
             await token.mint(user2, BALANCE_USER2)
@@ -147,9 +145,7 @@ contract('SupportersWhitelisted', (accounts) => {
             this.token = await TestMOC.new();
             this.supporters = await Supporters.new();
             await this.supporters.initialize(this.governor.address, [], this.token.address,
-                new BN(10), // period
-                minStayBlocks
-            );
+                period, minStayBlocks, afterStopBlocks)
         });
 
 
@@ -220,9 +216,7 @@ contract('SupportersWhitelisted', (accounts) => {
             this.token = await TestMOC.new();
             this.supporters = await Supporters.new();
             await this.supporters.initialize(this.governor.address, [], this.token.address,
-                new BN(10), // period
-                minStayBlocks
-            );
+                period, minStayBlocks, afterStopBlocks)
         });
 
         it('should fail in if not a governor call', async () => {

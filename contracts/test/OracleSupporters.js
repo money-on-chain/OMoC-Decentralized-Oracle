@@ -8,7 +8,9 @@ const TestMOC = artifacts.require("TestMOC");
 
 contract("Oracle-Supporters integration", (accounts) => {
     const minOracleOwnerStake = 1
+    const period = 20
     const minStayBlocks = 10
+    const afterStopBlocks = 5
     const oracle1 = accounts[2]
     const oracle2 = accounts[3]
     const INITIAL_BALANCE = web3.utils.toWei(new BN(10), "ether")
@@ -34,7 +36,9 @@ contract("Oracle-Supporters integration", (accounts) => {
             1, // numIdleRounds,
             this.oracleMgr.address);
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(10), minStayBlocks)
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
+            period, minStayBlocks, afterStopBlocks);
+
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);

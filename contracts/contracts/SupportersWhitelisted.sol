@@ -15,9 +15,10 @@ import "./moc-gobernanza/Governance/Governed.sol";
 */
 contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVestedAbstract, Governed {
 
-    function initialize(IGovernor _governor, address[] memory wlist, IERC20 _mocToken, uint256 _period, uint256 _minStayBlocks) public initializer {
+    function initialize(IGovernor _governor, address[] memory wlist, IERC20 _mocToken, uint256 _period
+    , uint256 _minStayBlocks, uint256 _afterStopBlocks) public initializer {
         Governed.initialize(_governor);
-        SupportersVestedAbstract._initialize(_mocToken, _period, _minStayBlocks);
+        SupportersVestedAbstract._initialize(_mocToken, _period, _minStayBlocks, _afterStopBlocks);
         for (uint256 i = 0; i < wlist.length; i++) {
             super.add(wlist[i]);
         }
@@ -115,6 +116,12 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVe
         return super._withdrawFromTo(_tokens, _subaccount, _receiver);
     }
 
+    /// @notice Returns true if a supporter can withdraw his money
+    //  @param _subaccount subaccount used to withdraw MOC
+    function canWithdraw(address _subaccount) external view returns (bool) {
+        return super._canWithdraw(_subaccount);
+    }
+
     /**
       Amount of tokens for _user in a _subaccount.
 
@@ -193,6 +200,14 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVe
       */
     function setMinStayBlocks(uint256 _minStayBlocks) external onlyWhitelisted(msg.sender) {
         super._setMinStayBlocks(_minStayBlocks);
+    }
+
+    /**
+      * @dev Sets the afterStopBlocks by gobernanza
+      * @param _afterStopBlocks - the override afterStopBlocks
+    */
+    function setAfterStopBlocks(uint256 _afterStopBlocks) external onlyWhitelisted(msg.sender) {
+        super._setAfterStopBlocks(_afterStopBlocks);
     }
 
     /**

@@ -10,7 +10,9 @@ const SupportersWhitelisted = artifacts.require("SupportersWhitelisted");
 const ORACLE_QUANTITY = 40;
 const COINPAIR = web3.utils.asciiToHex("BTCUSD");
 const minOracleOwnerStake = 10000000000;
+const period = 20;
 const minStayBlocks = 10;
+const afterStopBlocks = 5;
 const maxOraclesPerRound = 10;
 
 contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
@@ -35,7 +37,9 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
             2, // numIdleRounds,
             this.oracleMgr.address);
 
-        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
+        await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
+            period, minStayBlocks, afterStopBlocks);
+
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, COINPAIR, this.coinPairPrice.address);

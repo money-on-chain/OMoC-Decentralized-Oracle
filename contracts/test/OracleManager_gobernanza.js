@@ -9,7 +9,9 @@ const ethers = require('ethers');
 contract("OracleManager by gobernanza", async (accounts) => {
 
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
+    const period = 20;
     const minStayBlocks = 10;
+    const afterStopBlocks = 5;
     const GOBERNOR = accounts[8];
     const oracleData = [
         {
@@ -39,7 +41,8 @@ contract("OracleManager by gobernanza", async (accounts) => {
             2,  // numIdleRounds
             this.oracleMgr.address);
 
-        await this.supporters.initialize(this.governor_data.addr, [this.oracleMgr.address], this.token.address, new BN(5), minStayBlocks)
+        await this.supporters.initialize(this.governor_data.addr, [this.oracleMgr.address], this.token.address,
+            period, minStayBlocks, afterStopBlocks);
         await this.oracleMgr.initialize(this.governor_data.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor_data.registerCoinPair(this.oracleMgr, this.coinPair, this.coinPairPrice.address);

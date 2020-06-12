@@ -83,7 +83,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
     const scall = await artifacts.require("SupportersWhitelisted").at(supporters.options.address);
     await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address], TestMOC.address,
         params.supportersEarnPeriodInBlocks,
-        params.supportersMinStayBlocks);
+        params.supportersMinStayBlocks,params.supportersAfterStopBlocks);
 
     console.log("Initialize OracleManager", 'governor', governorAddr,);
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
@@ -162,8 +162,9 @@ async function config(deployer, networkName, accounts) {
         numIdleRounds: parseEnvArray(process.env.numIdleRounds),
         roundLockPeriodInBlocks: parseEnvArray(process.env.roundLockPeriodInBlocks),
         validPricePeriodInBlocks: parseEnvArray(process.env.validPricePeriodInBlocks),
-        supportersEarnPeriodInBlocks: 10,
-        supportersMinStayBlocks: 10
+        supportersEarnPeriodInBlocks: process.env.supportersEarnPeriodInBlocks,
+        supportersMinStayBlocks: process.env.supportersMinStayBlocks,
+        supportersAfterStopBlocks: process.env.supportersAfterStopBlocks
     }
     console.log("Contracts configuration", params);
     return params;

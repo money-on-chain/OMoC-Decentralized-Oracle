@@ -29,6 +29,10 @@ CurrencyPair+="RIFBTC;"
   bootstrapPrice+="$DEFAULT_BOOTSTRAPPRICE;"
   numIdleRounds+="$DEFAULT_NUMIDLEROUNDS;"
 
+supportersEarnPeriodInBlocks=129600
+supportersAfterStopBlocks=129600
+supportersMinStayBlocks=8640
+
 export CurrencyPair
 export roundLockPeriodInBlocks
 export validPricePeriodInBlocks
@@ -36,4 +40,6 @@ export minOracleOwnerStake
 export maxOraclesPerRound
 export bootstrapPrice
 export numIdleRounds
-
+export supportersEarnPeriodInBlocks
+export supportersAfterStopBlocks
+export supportersMinStayBlocks
