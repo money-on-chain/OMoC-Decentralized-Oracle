@@ -59,9 +59,8 @@ contract MocRegistryInitChange is ChangeContract {
         registry.setUint(get_keccak("ORACLE_QUEUE_LEN"), 30);
         registry.setUint(get_keccak("MESSAGE_VERSION"), 3);
         registry.setUint(get_keccak("ORACLE_STAKE_LIMIT_MULTIPLICATOR"), 2);
-        registry.setDecimal(get_keccak("ORACLE_PRICE_FALLBACK_DELTA_PCT"), 5, - 2);
+        registry.setDecimal(get_keccak("ORACLE_PRICE_DELTA_PCT"), 5, - 2);
         registry.setUint(get_keccak("ORACLE_PRICE_PUBLISH_BLOCKS"), 0);
-        registry.setUint(get_keccak("ORACLE_PRICE_FALLBACK_BLOCKS"), 1);
         registry.setBytes(get_keccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"020406080a");
         registry.setUint(get_keccak("ORACLE_TRIGGER_VALID_PUBLICATION_BLOCKS"), 30);
         // usable just once!!!
