@@ -3,7 +3,7 @@ import './index.css';
 import {ethers} from 'ethers';
 import {bigNumberifyAndFormatInt, isValid, isValidNS, HL, obj_get_props, M, formatEther} from './helpers.js';
 import {on_tx_ok, on_tx_err} from "./helpers.js";
-import {get_err, null_href, Tabs} from "./helpers";
+import {null_href, Tabs} from "./helpers";
 
 
 const ALLOW_MINT = process.env.REACT_APP_AllowMint;
