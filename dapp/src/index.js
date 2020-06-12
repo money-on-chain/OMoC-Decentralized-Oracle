@@ -29,7 +29,7 @@ import {
     bigNumberifyAndFormatInt
 } from './helpers.js';
 import {CoinPairPriceAllInfo, SupportersVestedInfo, SupportersWhitelist, RegistryInfo} from "./contractinfo.js";
-import {close, edit, save, spinner, trash} from "./icons";
+import {close_icon, edit_icon, save_icon, spinner_icon, trash_icon, stop_icon} from "./icons";
 import {getBalance, in_, is_empty_obj, null_href, Tabs} from "./helpers";
 
 
@@ -74,7 +74,7 @@ function get_networks() {
     return nets;
 }
 
-const OracleColumns = ["#", "owner", "address", "net address", "stake", "pairs", "rounds", "gas"];
+const OracleColumns = ["#", "owner", "address", "net address", "stake", "pairs", "rounds", "gas", "stop block", ""];
 
 async function new_iaddr(contract, oracle_addr, iaddr, cb) {
     if (!isValid(oracle_addr) || !isValidNS(iaddr)) {
@@ -351,14 +351,6 @@ class Console extends React.Component {
             cp => this.cp_comps[cp.pair]) : [];
     }
 
-    async _get_cp_oracle_data(oracle, pair) {
-        let subscribed;
-        subscribed = await this.oracle_mgr.isSubscribed(oracle, pair.raw);
-        if (!subscribed) {
-            return null;
-        }
-        return await this.oracle_mgr.getOracleRoundInfo(oracle, pair.raw);
-    }
 
     async _manager_update() {
         let oracle_reg_info = [];
@@ -372,17 +364,6 @@ class Console extends React.Component {
         this.setState({
             mgr_oracle_reg_info: oracle_reg_info
         });
-
-        let copy = naive_copy(oracle_reg_info);
-        for (let oc of copy) {
-            // const provider = window.ethereum;
-            // const balance = await provider.eth_getBalance(oc.address);
-            const balance = await getBalance(oc.address);
-            oc.gas = balance;
-        }
-        this.setState({
-            mgr_oracle_reg_info: copy
-        });
     }
 
     async _get_oracle_info(address, cp) {
@@ -390,14 +371,25 @@ class Console extends React.Component {
             cp = this.get_coinpairs();
         }
         let pairs = [];
+        const subscribed = {};
+        const can_remove = await this.oracle_mgr.canRemoveOracle(address);
+        const vi = await this.oracle_mgr.vestingInfoOf(address);
         let allinfo = {};
+        let num_idle_rounds = ethers.utils.bigNumberify(0);
         for (let pair of cp) {
-            let info = await this._get_cp_oracle_data(address, pair);
+            const info = await this.oracle_mgr.getOracleRoundInfo(address, pair.raw);
             if (info !== null) {
-                pairs.push(pair.pair);
-                allinfo[pair.pair] = info;
+                const contract = this.contracts[pair.pair];
+                const nir = await contract.numIdleRounds();
+                if (num_idle_rounds.lt(nir)) {
+                    num_idle_rounds = ethers.utils.bigNumberify(nir);
+                }
+                subscribed[pair.pair] = await this.oracle_mgr.isSubscribed(address, pair.raw);
+                if (subscribed[pair.pair]) pairs.push(pair.pair);
+                allinfo[pair.pair] = {...info, subscribed};
             }
         }
+        const gas = await getBalance(address);
 
         let x = await this.oracle_mgr.getOracleRegistrationInfo(address);
         return {
@@ -406,8 +398,12 @@ class Console extends React.Component {
             stake: x[1],
             owner: x[2],
             roundinfo: allinfo,
-            gas: null,
-            pairs
+            gas,
+            stoppedInblock: vi[1],
+            num_idle_rounds,
+            pairs,
+            subscribed,
+            can_remove
         };
     }
 
@@ -540,10 +536,6 @@ class Console extends React.Component {
                 }
             </>,
             "Coin pairs");
-    }
-
-    get_cp_short() {
-        return this.get_cp_name_address_switch(true);
     }
 
 
@@ -691,11 +683,12 @@ class Console extends React.Component {
 
     //------ oracle table -----
     oracle_to_table(oracle) {
+        const state = this.get_state();
         let round_to_str = (pair, a, b, c) => {
             let pts = ethers.utils.bigNumberify(a).toString();
             let sel = ethers.utils.bigNumberify(b).toString();
-            let cur = c.toString();
-            return `${pair}: ${pts} pts, ${sel} sel, now: ${cur}`;
+            // let cur = c.toString();
+            return `${pair}: pts ${pts}, last round ${sel}`;
         }
         return [
             spantt(oracle.owner, "always"),
@@ -703,15 +696,16 @@ class Console extends React.Component {
             oracle.ns,
             ethers.utils.formatEther(oracle.stake),
             oracle.pairs ? oracle.pairs.join(", ") : "-",
-            oracle.pairs ? (oracle.pairs.map((pair) => {
-                const c = oracle.roundinfo[pair];
+            state.cp ? (state.cp.map((pair) => {
+                const c = oracle.roundinfo[pair.pair];
                 try {
-                    return round_to_str(pair, c.points, c.selectedInRound, c.selectedInCurrentRound);
+                    return round_to_str(pair.pair, c.points, c.selectedInRound, c.selectedInCurrentRound);
                 } catch (err) {
-                    return round_to_str(pair, c[0], c[1], c[2]);
+                    return round_to_str(pair.pair, c[0], c[1], c[2]);
                 }
             })).join(" | ") : "-",
-            oracle.gas ? ethers.utils.formatEther(oracle.gas) : "-"
+            oracle.gas ? ethers.utils.formatEther(oracle.gas) : "-",
+            bigNumberifyAndFormatInt(oracle.stoppedInblock),
         ];
     }
 
@@ -822,6 +816,29 @@ class Console extends React.Component {
                     .then((xxx) => {
                         this.__updating(addr, true, "updating");
                         this._update_oracle(addr).then(() => {
+                            this.__updating(addr, false);
+                        });
+                    })
+                    .catch((err) => {
+                        this.__updating(addr, false);
+                        on_tx_err(err, "update cp subscription")
+                    });
+            })
+            .catch((err) => on_tx_err(err, "update cp subscription"));
+    }
+
+    _stop_oracle(e, idx) {
+        e.preventDefault();
+        let oracle = this.state.mgr_oracle_reg_info[idx];
+        const addr = oracle.address;
+        this.oracle_mgr.stop(addr, M())
+            .then((tx) => {
+                this.__updating(addr, true, "sent");
+                this._reset_edit();
+                on_tx_ok(tx, "update cp subscription")
+                    .then((xxx) => {
+                        this.__updating(addr, true, "updating");
+                        this._manager_update().then(() => {
                             this.__updating(addr, false);
                         });
                     })
@@ -957,7 +974,6 @@ class Console extends React.Component {
         let lastidx = state.ot_last_idx;
         let base = this.oracle_to_table(oracle);
         let updating = this.__updating_get(oracle.address);
-
         if (addreq(oracle.owner, this.state.address) &&
             (ICONS_ALWAYS || (idx === this.state.highlight_idx))) {
             let klasses = "badge ";
@@ -969,24 +985,36 @@ class Console extends React.Component {
                     <a href={null_href()}
                        className={klasses + "badge-info"}
                        onClick={(e) => this._select_edit(e, idx)}>
-                        {edit()}
+                        {edit_icon()}
                     </a>
                 </>
             );
-            base = base.concat(
-                <a href={null_href()}
-                   className={klasses + "badge-danger"}
-                   onClick={(e) => this._remove_oracle(e, idx)}>
-                    {trash()}
-                </a>
-            );
+
+            if (oracle.can_remove) {
+                base = base.concat(
+                    <a href={null_href()}
+                       className={klasses + "badge-danger"}
+                       onClick={(e) => this._remove_oracle(e, idx)}>
+                        {trash_icon()}
+                    </a>
+                );
+            } else {
+                base = base.concat(
+                    <a href={null_href()}
+                       className={klasses + "badge-warning"}
+                       onClick={(e) => this._stop_oracle(e, idx)}>
+                        {stop_icon()}
+                    </a>
+                );
+            }
         } else {
             base = base.concat([<>&nbsp;</>, <>&nbsp;</>])  //, <>&nbsp;</>
         }
 
         if (idx === lastidx) {
             function checked(cp) {
-                return -1 !== oracle.pairs.indexOf(cp.pair.toString());
+                return oracle.subscribed[cp.pair];
+                //return -1 !== oracle.pairs.indexOf(cp.pair.toString());
             }
 
             base[2] = <><label className="sr-only" htmlFor="inlineFormInputGroupUsername2">net address</label>
@@ -999,11 +1027,11 @@ class Console extends React.Component {
                     <div className="input-group-append">
                         <button className="btn btn-outline-secondary" type="button"
                                 onClick={(e) => this._save_ns(e)}>
-                            {save()}
+                            {save_icon()}
                         </button>
                         <button className="btn btn-outline-secondary" type="button"
                                 onClick={(e) => this._reset_ns(e)}>
-                            {close()}
+                            {close_icon()}
                         </button>
                     </div>
                 </div>
@@ -1019,11 +1047,11 @@ class Console extends React.Component {
                     <div className="input-group-append">
                         <button className="btn btn-outline-secondary" type="button"
                                 onClick={(e) => this._save_stake(e)}>
-                            {save()}
+                            {save_icon()}
                         </button>
                         <button className="btn btn-outline-secondary" type="button"
                                 onClick={(e) => this._reset_stake(e)}>
-                            {close()}
+                            {close_icon()}
                         </button>
                     </div>
                 </div>
@@ -1043,7 +1071,7 @@ class Console extends React.Component {
             )
         }
         if (updating) {
-            base[5] = <span>{spinner()} ({updating}) </span>;
+            base[5] = <span>{spinner_icon()} ({updating}) </span>;
         }
         return base;
     }
@@ -1061,6 +1089,7 @@ class Console extends React.Component {
                 {this.network_connect()}
             </>);
         } else {
+            const supp_state = this.c_supporters_vested_stake.get_state()
             let t_manager = {
                 name: "Oracles", fn: (state, x) => x.data, data: <>
                     <div className="card-deck">
@@ -1072,24 +1101,42 @@ class Console extends React.Component {
                             {this.mgr_stake ? this.mgr_stake.dump() : <></>}
                         </>, "Registration")}
 
-                        {this.get_cp_short()}
+                        {this.get_cp_name_address_switch(true)}
                     </div>
 
                     <div className="card-deck">
                         {this.XCard(6,
-                            Table(OracleColumns.concat([<>&nbsp;</>, <>&nbsp;</>,]),
-                                this.state.mgr_oracle_reg_info.map(this.oracle_to_table2), {
-                                    rowattrs: this.ot_row_attrs,
-                                    nonresponsive: false,
-                                    classes: "table-striped",
-                                    alignf: (idx) => in_(idx, [2, 6]) ? align_left :
-                                        (in_(idx, [3]) ? align_right : align_center),
-                                    odata: this.state.mgr_oracle_reg_info,
-                                    rowclick: (e, idx) => {
-                                        e.preventDefault();
-                                        this._on_row_click(idx);
-                                    }
-                                }),
+                            <>
+                                {Table(OracleColumns.concat([<>&nbsp;</>, <>&nbsp;</>,]),
+                                    this.state.mgr_oracle_reg_info.map(this.oracle_to_table2), {
+                                        rowattrs: this.ot_row_attrs,
+                                        nonresponsive: false,
+                                        classes: "table-striped",
+                                        alignf: (idx) => in_(idx, [2, 6]) ? align_left :
+                                            (in_(idx, [3]) ? align_right : align_center),
+                                        odata: this.state.mgr_oracle_reg_info,
+                                        rowclick: (e, idx) => {
+                                            e.preventDefault();
+                                            this._on_row_click(idx);
+                                        }
+                                    })}
+                                <p>To withdraw your funds you must unregister from all coin pair and wait
+                                    {' '}{bigNumberifyAndFormatInt(this.state.mgr_oracle_reg_info
+                                        .map(x => x.num_idle_rounds)
+                                        .reduce((acc, val) => acc.gt(val) ? acc : val,
+                                            ethers.utils.bigNumberify(0)))} {' '}
+                                    rounds.</p>
+                                <p>
+                                    After that you must call stop and wait another
+                                    {' '}{bigNumberifyAndFormatInt(supp_state.minStayBlocks)}{' '}
+                                    blocks then you must withdraw before the next
+                                    {' '}{bigNumberifyAndFormatInt(supp_state.afterStopBlocks)}{' '}
+                                    blocks or you will need to call stop again.
+                                </p>
+                                <span className="badge badge-info">{edit_icon()}</span> edit oracle
+                                <span className="badge badge-warning">{stop_icon()}</span> stop oracle
+                                <span className="badge badge-danger">{trash_icon()}</span> remove oracle
+                            </>,
                             "Registered oracles")}
                     </div>
                 </>

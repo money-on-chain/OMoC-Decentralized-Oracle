@@ -1,6 +1,6 @@
 import React from "react";
 
-export function save() {
+export function save_icon() {
     return <svg className="bi bi-check" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg">
         <path fillRule="evenodd"
@@ -9,7 +9,7 @@ export function save() {
     </svg>
 }
 
-export function edit() {
+export function edit_icon() {
     return <svg className="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg">
         <path
@@ -20,7 +20,7 @@ export function edit() {
     </svg>
 }
 
-export function close() {
+export function close_icon() {
     return <svg className="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg">
         <path fillRule="evenodd" d="M11.854 4.146a.5.5 0 010 .708l-7 7a.5.5 0 01-.708-.708l7-7a.5.5 0 01.708 0z"
@@ -31,7 +31,7 @@ export function close() {
 }
 
 // <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
-export function spinner() {
+export function spinner_icon() {
     return <svg width="15" height="15" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient x1="8.042%" y1="0%" x2="65.682%" y2="23.865%" id="a">
@@ -65,7 +65,7 @@ export function spinner() {
     </svg>
 }
 
-export function trash() {
+export function trash_icon() {
     // https://icons.getbootstrap.com/icons/trash/
     return <svg className="bi bi-trash" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg">
@@ -74,6 +74,15 @@ export function trash() {
         <path fillRule="evenodd"
               d="M14.5 3a1 1 0 01-1 1H13v9a2 2 0 01-2 2H5a2 2 0 01-2-2V4h-.5a1 1 0 01-1-1V2a1 1 0 011-1H6a1 1 0 011-1h2a1 1 0 011 1h3.5a1 1 0 011 1v1zM4.118 4L4 4.059V13a1 1 0 001 1h6a1 1 0 001-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
               clipRule="evenodd"/>
+    </svg>
+}
+
+export function stop_icon() {
+    // https://icons.getbootstrap.com/icons/mic-mute/
+    return <svg className="bi bi-mic-mute" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+         xmlns="http://www.w3.org/2000/svg">
+        <path fillRule="evenodd"
+              d="M12.734 9.613A4.995 4.995 0 0 0 13 8V7a.5.5 0 0 0-1 0v1c0 .274-.027.54-.08.799l.814.814zm-2.522 1.72A4 4 0 0 1 4 8V7a.5.5 0 0 0-1 0v1a5 5 0 0 0 4.5 4.975V15h-3a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-3v-2.025a4.973 4.973 0 0 0 2.43-.923l-.718-.719zM11 7.88V3a3 3 0 0 0-5.842-.963l.845.845A2 2 0 0 1 10 3v3.879l1 1zM8.738 9.86l.748.748A3 3 0 0 1 5 8V6.121l1 1V8a2 2 0 0 0 2.738 1.86zm4.908 3.494l-12-12 .708-.708 12 12-.708.707z"/>
     </svg>
 }
 

@@ -173,7 +173,9 @@ export class RegistryInfo extends ContractInfo {
         this.keys = [].concat(
             ["ORACLE_MANAGER_ADDR", "SUPPORTERS_VESTED_ADDR"]
                 .map(name => ({name, func: "getAddress", procesor: (x) => x})),
-            ["ORACLE_PRICE_REJECT_DELTA_PCT", "ORACLE_PRICE_FALLBACK_DELTA_PCT"]
+            ["ORACLE_ENTERING_FALLBACKS_AMOUNTS"]
+                .map(name => ({name, func: "getBytes", procesor: (x) => x})),
+            ["ORACLE_PRICE_REJECT_DELTA_PCT", "ORACLE_PRICE_DELTA_PCT"]
                 .map(name => ({
                     name,
                     func: "getDecimal",
@@ -184,7 +186,7 @@ export class RegistryInfo extends ContractInfo {
                 "ORACLE_CONFIGURATION_TASK_INTERVAL", "ORACLE_GATHER_SIGNATURE_TIMEOUT",
                 "SCHEDULER_POOL_DELAY", "SCHEDULER_ROUND_DELAY", "ORACLE_PRICE_DIGITS",
                 "ORACLE_QUEUE_LEN", "MESSAGE_VERSION", "ORACLE_STAKE_LIMIT_MULTIPLICATOR",
-                "ORACLE_PRICE_PUBLISH_BLOCKS", "ORACLE_PRICE_FALLBACK_BLOCKS",]
+                "ORACLE_PRICE_PUBLISH_BLOCKS"]
                 .map(name => ({name, func: "getUint", procesor: (x) => x.toString()}))
         );
         this.result = {};

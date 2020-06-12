@@ -314,6 +314,7 @@ export class SupportersVestedStake extends Stake {
         super.init_state(st);
         let xx = st[this.name];
         xx.minStayBlocks = null;
+        xx.afterStopBlocks = null;
         xx.stake = null;
         xx.stoppedInblock = null;
     }
@@ -324,11 +325,15 @@ export class SupportersVestedStake extends Stake {
         let withdrawMsg;
         if (state.stoppedInblock) {
             const stoppedblk = ethers.utils.bigNumberify(state.stoppedInblock);
-            if (!stoppedblk.eq(0)) {
-                const s = stoppedblk.add(ethers.utils.bigNumberify(state.minStayBlocks));
+            const s = stoppedblk.add(ethers.utils.bigNumberify(state.minStayBlocks));
+            const s1 = s.add(ethers.utils.bigNumberify(state.afterStopBlocks)).add(1).sub(currentblk);
+            if (!stoppedblk.eq(0) && s1.gt(0)) {
                 withdrawMsg = <><br/>Stopped in block: {HL(bigNumberifyAndFormatInt(stoppedblk))}</>
                 if (s.lt(currentblk)) {
-                    withdrawMsg = <>{withdrawMsg}<br/><span style={{color: "#009900"}}>Ready to withdraw</span></>;
+                    withdrawMsg = <>{withdrawMsg}<br/>
+                        <span style={{color: "#009900"}}>
+                        You have {HL(s1.toString())} blocks to withdraw
+                    </span></>;
                 } else {
                     withdrawMsg = <>{withdrawMsg}<br/>
                         <span
@@ -355,8 +360,10 @@ export class SupportersVestedStake extends Stake {
         await super.update();
         let result = await this.sup_contract().vestingInfoOf(this.parent_state().address);
         let minStayBlocks = await this.sup_contract().getMinStayBlocks();
+        let afterStopBlocks = await this.sup_contract().getAfterStopBlocks();
         this.setState({
             minStayBlocks,
+            afterStopBlocks,
             stake: result[0],
             stoppedInblock: result[1],
         });
@@ -393,11 +400,13 @@ export class OracleStake extends Stake {
 
     _dump_register() {
         const state = this.get_state();
+        const parent = this.parent_state();
         return this._dump_card_template(state, <>
             {this._card_text(<>
                 {this.address.dump_with_addr_check(this.parent_state())}
                 {this.iaddress.dump()}
-                {this._dump_input_amount(state, "Stake")}
+                {this._dump_input_amount(state, "Stake")}<br/>
+                <>Must stake at least: {HL(formatEther(parent.minOracleOwnerStake))} tokens</>
             </>)}
             {this._dump_g_button("register", (e) => this.new_register(e))}
         </>)

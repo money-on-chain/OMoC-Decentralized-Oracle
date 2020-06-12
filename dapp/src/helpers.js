@@ -167,7 +167,11 @@ export function obj_get_props(x) {
 }
 
 export function SC(x) {
-    return x.split(/(?=[A-Z])/).join(" ");
+    const words = x.split(/(?=[A-Z])/);
+    if (words[0] && words[0] === "get") {
+        words.shift();
+    }
+    return words.join(" ");
 }
 
 export function TT(x, classes, limit) {
