@@ -46,7 +46,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Create Supporters Proxy");
     await scripts.add({contractsData: [{name: "SupportersWhitelisted", alias: "Supporters"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 4000000}});
+    await scripts.push({network, txParams: {...txParams, gas: 5000000}});
     const supporters = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "Supporters",
