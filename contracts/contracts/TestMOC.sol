@@ -1,5 +1,6 @@
 pragma solidity 0.6.0;
-import "./openzeppelin/token/ERC20/ERC20.sol";
+
+import {ERC20} from "./openzeppelin/token/ERC20/ERC20.sol";
 
 contract TestMOC is ERC20
 {

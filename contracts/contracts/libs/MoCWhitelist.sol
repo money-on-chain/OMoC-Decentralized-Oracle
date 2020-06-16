@@ -4,16 +4,12 @@ pragma solidity 0.6.0;
  */
 contract MoCWhitelist {
 
-    mapping(address => bool) whitelist;
+    mapping(address => bool) public whitelist;
     /**
      * @dev Check if an account is whitelisted
      * @return Bool
      */
-    function isWhitelisted(address account)
-    public
-    view
-    returns (bool)
-    {
+    function isWhitelisted(address account) public view returns (bool) {
         require(account != address(0), "Account must not be 0x0");
         return whitelist[account];
     }

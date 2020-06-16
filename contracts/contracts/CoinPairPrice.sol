@@ -1,8 +1,9 @@
 pragma solidity 0.6.0;
 
-import "./openzeppelin/math/SafeMath.sol";
-import "./libs/IPriceProvider.sol";
-import "./CoinPairPriceGobernanza.sol";
+import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {IPriceProvider} from "./libs/IPriceProvider.sol";
+import {CoinPairPriceGobernanza} from "./CoinPairPriceGobernanza.sol";
+import {OracleInfoLib} from "./libs/OracleInfo.sol";
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
@@ -59,7 +60,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
         subscribedOracles[oracleAddr] = true;
         if (currentRound.selectedOracles.length < maxOraclesPerRound
-            && currentRound.number > 0
+        && currentRound.number > 0
             && !(oracleRoundInfo[oracleAddr].isInRound(currentRound.number))) {
             _addOracleToRound(oracleAddr);
         }
@@ -160,7 +161,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     function peek() public override view returns (bytes32, bool) {
         // We use address(1) to allow calls from outside the block chain
         require(super.isWhitelisted(msg.sender) || msg.sender == address(1), "Address is not whitelisted");
-        require((block.number - lastPublicationBlock) >= 0, "Wrong lastPublicationBlock");
+        require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
 
         return (bytes32(currentPrice), (block.number - lastPublicationBlock) < validPricePeriodInBlocks);
     }
@@ -243,7 +244,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
 
     /// @notice Distribute rewards to oracles, taking fees from this smart contract.
     function _distributeRewards() private {
-        assert(currentRound.number > 0);
+        require(currentRound.number > 0, "round number must be >0");
 
         uint256 availableRewardFees = token.balanceOf(address(this));
         if (currentRound.totalPoints == 0 || availableRewardFees == 0)
@@ -286,9 +287,6 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     /// @notice Recover signer address from v,r,s signature components and hash
     ///
     function _recoverSigner(uint8 v, bytes32 r, bytes32 s, bytes32 hash) internal pure returns (address) {
-        if (r.length != 32 || s.length != 32) {
-            return (address(0));
-        }
         uint8 v0 = v;
 
         // Version of signature should be 27 or 28, but 0 and 1 are also possible versions

@@ -1,10 +1,11 @@
 pragma solidity 0.6.0;
 
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-import "./openzeppelin/Initializable.sol";
-import "./libs/IterableWhitelist.sol";
-import "./SupportersVestedAbstract.sol";
-import "./moc-gobernanza/Governance/Governed.sol";
+import {Initializable} from "./openzeppelin/Initializable.sol";
+import {IterableWhitelist} from "./libs/IterableWhitelist.sol";
+import {SupportersVestedAbstract} from "./SupportersVestedAbstract.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 
 /*
     Right now we have two things implemented in the same smart-contract:

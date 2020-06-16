@@ -1,11 +1,11 @@
 pragma solidity 0.6.0;
 
-import "./MoCWhitelist.sol";
+import {MoCWhitelist} from "./MoCWhitelist.sol";
 /**
   @dev Provides access control between all MoC Contracts
  */
 contract IterableWhitelist is MoCWhitelist {
-    address[] public keyList;
+    address[] internal keyList;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.

@@ -3,7 +3,8 @@ pragma solidity 0.6.0;
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {SupportersVestedAbstract} from "./SupportersVestedAbstract.sol";
-import "./moc-gobernanza/Governance/Governed.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 
 /*
     Implementation of SupportersVestedAbstract used by regular supporters.
@@ -32,7 +33,7 @@ contract SupportersVested is Governed {
     function distribute() external {
         // if somebody does a MOC transfer to our address, use the excess as rewards.
         uint256 mocs = mocToken.balanceOf(address(this));
-        mocToken.transfer(address(supporters), mocs);
+        require(mocToken.transfer(address(supporters), mocs), "Error in transfe");
         supporters.distribute();
     }
 

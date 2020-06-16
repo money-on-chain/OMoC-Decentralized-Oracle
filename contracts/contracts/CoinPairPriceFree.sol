@@ -1,7 +1,7 @@
 pragma solidity 0.6.0;
 
-import "./libs/IPriceProvider.sol";
-import "./openzeppelin/Initializable.sol";
+import {IPriceProvider} from "./libs/IPriceProvider.sol";
+import {Initializable} from "./openzeppelin/Initializable.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,

@@ -2,8 +2,8 @@ pragma solidity 0.6.0;
 
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import "./openzeppelin/Initializable.sol";
-import "./SupportersAbstract.sol";
+import {Initializable} from "./openzeppelin/Initializable.sol";
+import {SupportersAbstract} from "./SupportersAbstract.sol";
 
 /*
     Original supporter contract that has no restrictions.

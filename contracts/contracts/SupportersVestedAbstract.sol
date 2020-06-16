@@ -1,7 +1,7 @@
 pragma solidity 0.6.0;
 
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-import "./SupportersAbstract.sol";
+import {SupportersAbstract} from "./SupportersAbstract.sol";
 
 /*
     Supporters must stop and some time later we let them withdraw.

@@ -69,8 +69,6 @@ contract SupportersAbstract {
       Earnings will be credited periodically through several blocks.
     */
     function _distribute() internal {
-        // require(totalSupply > 0, "Cannot distribute earnings without minted tokens");
-        // require(block.number > endEarnings, "Cannot distribute earnings before previous round is complete");
         require(_isReadyToDistribute(), "Not ready to distribute");
 
         // Calculate deposited earnings that are unaccounted for

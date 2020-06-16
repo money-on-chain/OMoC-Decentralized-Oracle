@@ -12,7 +12,6 @@ library RegisteredOraclesLib {
 
     struct SList {
         OracleInfoLib.OracleRegisterInfo data;
-        // LIST_ENTRY();
         address sle_next;
     }
 

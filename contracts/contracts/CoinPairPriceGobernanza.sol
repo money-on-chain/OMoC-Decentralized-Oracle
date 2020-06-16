@@ -1,11 +1,12 @@
 pragma solidity 0.6.0;
 
-import "./openzeppelin/token/ERC20/IERC20.sol";
-import "./openzeppelin/math/SafeMath.sol";
-import "./openzeppelin/Initializable.sol";
-import "./libs/IterableWhitelist.sol";
-import "./OracleManager.sol";
-import "./moc-gobernanza/Governance/Governed.sol";
+import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
+import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {Initializable} from "./openzeppelin/Initializable.sol";
+import {IterableWhitelist} from "./libs/IterableWhitelist.sol";
+import {OracleManager} from "./OracleManager.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 
 /*
     Abstract contract meant to be reused with all the configurable parameters of CoinPairPrice.
@@ -14,7 +15,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
     using SafeMath for uint;
 
     // The coin-pair for which prices are reported in this contract.
-    bytes32 coinPair;
+    bytes32 public coinPair;
 
     // The maximum count of oracles selected to participate each round
     uint256 public maxOraclesPerRound;
