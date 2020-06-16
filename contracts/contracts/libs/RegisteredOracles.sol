@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
 import {SafeMath} from "../openzeppelin/math/SafeMath.sol";
 import {OracleInfoLib} from "./OracleInfo.sol";

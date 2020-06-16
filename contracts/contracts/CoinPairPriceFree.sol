@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
 import "./libs/IPriceProvider.sol";
 import "./openzeppelin/Initializable.sol";

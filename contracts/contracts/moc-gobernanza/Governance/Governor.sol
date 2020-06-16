@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
 import "../../openzeppelin/ownership/Ownable.sol";
 import "../../openzeppelin/utils/ReentrancyGuard.sol";

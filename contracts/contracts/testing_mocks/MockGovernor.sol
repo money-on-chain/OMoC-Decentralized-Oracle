@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
 import "../moc-gobernanza/Governance/ChangeContract.sol";
 import "../moc-gobernanza/Governance/IGovernor.sol";

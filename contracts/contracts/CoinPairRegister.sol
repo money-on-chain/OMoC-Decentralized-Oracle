@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
 /// @title This contract registers which CoinPairPrice contract will serve
 ///        prices for a particular coin-pair. Clients can query coin-pair

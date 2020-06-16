@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
 import "./openzeppelin/math/SafeMath.sol";
 import "./libs/IPriceProvider.sol";

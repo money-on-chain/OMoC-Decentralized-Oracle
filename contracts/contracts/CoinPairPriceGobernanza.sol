@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
 import "./openzeppelin/token/ERC20/IERC20.sol";
 import "./openzeppelin/math/SafeMath.sol";

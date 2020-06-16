@@ -1,6 +1,6 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.0;
 
-import "./moc-gobernanza/Governance/Governed.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 
 // Based on https://github.com/fravoll/solidity-patterns EternalStorage
 contract EternalStorageGobernanza is Governed {
