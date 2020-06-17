@@ -377,9 +377,9 @@ class Console extends React.Component {
         let allinfo = {};
         let num_idle_rounds = ethers.utils.bigNumberify(0);
         for (let pair of cp) {
-            const info = await this.oracle_mgr.getOracleRoundInfo(address, pair.raw);
-            if (info !== null) {
                 const contract = this.contracts[pair.pair];
+            const info = await contract.getOracleRoundInfo(address, pair.raw);
+            if (info !== null) {
                 const nir = await contract.numIdleRounds();
                 if (num_idle_rounds.lt(nir)) {
                     num_idle_rounds = ethers.utils.bigNumberify(nir);
