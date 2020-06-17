@@ -25,7 +25,7 @@
     "rsk_testnet": "truffle migrate --network rsk_testnet",
     "rsk_regtest": "truffle migrate --network rsk_regtest",
     "test_rsk": "truffle test --network rsk_testnet",
-    "test": "truffle test --network ganache_testing",
+    "test": "truffle test",
     "coverage": "truffle run coverage"
   },
   "author": "",
