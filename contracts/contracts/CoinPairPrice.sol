@@ -10,11 +10,18 @@ import {OracleInfoLib} from "./libs/OracleInfo.sol";
 contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     using SafeMath for uint;
 
+    // We use address(1) to allow calls from outside the block chain to peek
+    // The call must use msg.sender == 1 (or { from: 1 }) something that only can be done from outside the blockchain.
+    address constant ADDRESS_ONE = address(1);
+
+    // The publish message has a version field
+    uint256 constant PUBLISH_MESSAGE_VERSION = 3;
+
     // Contract configuration
     // ----------------------------------------------------------------------------------------------------------------
 
     // The subscribed oracles to this coin-pair.
-    mapping(address => bool) subscribedOracles;
+    mapping(address => bool) internal subscribedOracles;
 
     struct Round
     {
@@ -120,7 +127,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
         require(subscribedOracles[msg.sender], "Sender oracle not subscribed");
         require(data.isInRound(currentRound.number), "Voter oracle is not part of this round");
         require(msg.sender == votedOracle, "Your address does not match the voted oracle");
-        require(version == 3, "This contract accepts only V3 format");
+        require(version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
         require(price > 0, "Price must be positive and non-zero");
         require(blockNumber == lastPublicationBlock, "Blocknumber does not match the last publication block");
         require(coinpair == getCoinPair(), "Coin pair - contract mismatch");
@@ -160,7 +167,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     /// @notice Return the current price, compatible with old MOC Oracle
     function peek() public override view returns (bytes32, bool) {
         // We use address(1) to allow calls from outside the block chain
-        require(super.isWhitelisted(msg.sender) || msg.sender == address(1), "Address is not whitelisted");
+        require(isWhitelisted(msg.sender) || msg.sender == ADDRESS_ONE, "Address is not whitelisted");
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
 
         return (bytes32(currentPrice), (block.number - lastPublicationBlock) < validPricePeriodInBlocks);

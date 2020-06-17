@@ -11,7 +11,7 @@ import {SupportersAbstract} from "./SupportersAbstract.sol";
 contract Supporters is Initializable, SupportersAbstract {
 
     function initialize(IERC20 _mocToken, uint256 _period) external initializer {
-        super._initialize(_mocToken, _period);
+        _initialize(_mocToken, _period);
     }
 
     /**
@@ -19,7 +19,7 @@ contract Supporters is Initializable, SupportersAbstract {
       Earnings will be credited periodically through several blocks.
     */
     function distribute() external {
-        super._distribute();
+        _distribute();
     }
 
     /**
@@ -28,7 +28,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @param _mocs amount of MOC to stake
     */
     function stake(uint256 _mocs) external {
-        super._stakeAtFrom(_mocs, msg.sender, msg.sender);
+        _stakeAtFrom(_mocs, msg.sender, msg.sender);
     }
 
     /**
@@ -38,7 +38,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @param _subaccount sub-account used to identify the stake
     */
     function stakeAt(uint256 _mocs, address _subaccount) external {
-        super._stakeAtFrom(_mocs, _subaccount, msg.sender);
+        _stakeAtFrom(_mocs, _subaccount, msg.sender);
     }
 
     /**
@@ -48,7 +48,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return Amount of MOC transfered
     */
     function withdraw(uint256 _tokens) external returns (uint256) {
-        return super._withdrawFromTo(_tokens, msg.sender, msg.sender);
+        return _withdrawFromTo(_tokens, msg.sender, msg.sender);
     }
 
     /**
@@ -59,7 +59,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return Amount of MOC transfered
     */
     function withdrawFrom(uint256 _tokens, address _subaccount) external returns (uint256) {
-        return super._withdrawFromTo(_tokens, _subaccount, msg.sender);
+        return _withdrawFromTo(_tokens, _subaccount, msg.sender);
     }
 
     /**
@@ -69,7 +69,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return tokens for _user
     */
     function getBalance(address _user) external view returns (uint256) {
-        return super._getBalanceAt(_user, _user);
+        return _getBalanceAt(_user, _user);
     }
 
     /**
@@ -80,7 +80,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return tokens for _user at _subaccount
     */
     function getBalanceAt(address _user, address _subaccount) external view returns (uint256) {
-        return super._getBalanceAt(_user, _subaccount);
+        return _getBalanceAt(_user, _subaccount);
     }
 
     /**
@@ -90,7 +90,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return MOC for _user
     */
     function getMOCBalance(address _user) external view returns (uint256) {
-        return super._getMOCBalanceAt(_user, _user);
+        return _getMOCBalanceAt(_user, _user);
     }
 
     /**
@@ -101,7 +101,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return MOC for _user
     */
     function getMOCBalanceAt(address _user, address _subaccount) external view returns (uint256) {
-        return super._getMOCBalanceAt(_user, _subaccount);
+        return _getMOCBalanceAt(_user, _subaccount);
     }
 
     /**
@@ -110,7 +110,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return total amount of tokens
     */
     function getTokens() external view returns (uint256) {
-        return super._getTokens();
+        return _getTokens();
     }
 
     /**
@@ -119,7 +119,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return total amount of MOC
     */
     function getAvailableMOC() external view returns (uint256) {
-        return super._getAvailableMOC();
+        return _getAvailableMOC();
     }
 
     /**
@@ -129,7 +129,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return Earnings to be paid
     */
     function getEarningsAt(uint256 _block) external view returns (uint256) {
-        return super._getEarningsAt(_block);
+        return _getEarningsAt(_block);
     }
 
     /**
@@ -139,7 +139,7 @@ contract Supporters is Initializable, SupportersAbstract {
       @return Locked amount of earnings in MOC
     */
     function getLockedAt(uint256 _block) external view returns (uint256) {
-        return super._getLockedAt(_block);
+        return _getLockedAt(_block);
     }
 
     /**
@@ -148,6 +148,6 @@ contract Supporters is Initializable, SupportersAbstract {
       @return Information about earnings
     */
     function getEarningsInfo() external view returns (uint256, uint256, uint256) {
-        return super._getEarningsInfo();
+        return _getEarningsInfo();
     }
 }

@@ -4,8 +4,8 @@ pragma solidity 0.6.0;
 ///        prices for a particular coin-pair. Clients can query coin-pair
 ///        data and associated contract addresses.
 contract CoinPairRegister {
-    mapping(bytes32 => address) coinPairMap;
-    bytes32[] coinPairList;
+    mapping(bytes32 => address) internal coinPairMap;
+    bytes32[] internal coinPairList;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
@@ -23,6 +23,24 @@ contract CoinPairRegister {
         coinPairMap[coinPair] = addr;
         coinPairList.push(coinPair);
     }
+
+    /// @notice Unregister a coin pair contract.
+    /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
+    /// @param hint Optional hint to start traversing the coinPairList array.
+    function _unRegisterCoinPair(bytes32 coinPair, uint256 hint) internal
+    {
+        require(hint < coinPairList.length, "Invalid index");
+        require(coinPairMap[coinPair] != address(0x0), "This coin pair is already unregistered");
+        delete coinPairMap[coinPair];
+        for (uint256 i = hint; i < coinPairList.length; i++) {
+            if (coinPairList[i] == coinPair) {
+                coinPairList[i] = coinPairList[coinPairList.length - 1];
+                coinPairList.pop();
+                break;
+            }
+        }
+    }
+
 
     /// @notice Return the contract address for a specified registered coin pair.
     /// @param coinpair Coin-pair string to lookup (e.g: BTCUSD)

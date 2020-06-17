@@ -62,7 +62,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     /// @param addr The contract address associated to the coinpair.
     function registerCoinPair(bytes32 coinPair, address addr) public onlyAuthorizedChanger()
     {
-        super._registerCoinPair(coinPair, addr);
+        _registerCoinPair(coinPair, addr);
     }
 
     /// Register an oracle in the system with an initial stake.
@@ -122,7 +122,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         require(data.isRegistered(), "Oracle is not registered");
         require(_isOwner(data), "Must be called by oracle owner");
 
-        CoinPairPrice ctAddr = (CoinPairPrice) (super.getContractAddress(coinPair));
+        CoinPairPrice ctAddr = getCoinPairAddress(coinPair);
         ctAddr.subscribe(oracleAddr);
 
         emit OracleSubscribed(msg.sender, oracleAddr, coinPair);
@@ -135,7 +135,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         require(data.isRegistered(), "Oracle is not registered");
         require(_isOwner(data), "Must be called by oracle owner");
 
-        CoinPairPrice ctAddr = (CoinPairPrice) (super.getContractAddress(coinPair));
+        CoinPairPrice ctAddr = getCoinPairAddress(coinPair);
         ctAddr.unsubscribe(oracleAddr);
 
         emit OracleUnsubscribed(msg.sender, oracleAddr, coinPair);
@@ -156,23 +156,23 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
 
-        CoinPairPrice ctAddr = (CoinPairPrice) (super.getContractAddress(coinPair));
+        CoinPairPrice ctAddr = getCoinPairAddress(coinPair);
         return ctAddr.isSubscribed(oracleAddr);
     }
 
     /// @notice Returns the list of subscribed coinpair contract address for an oracle
     /// @return addresses Array of subscribed coin pairs addresses.
     /// @return count The count of valid entries in the addresses param.
-    function getSubscribedCoinPairAddresses(address oracleAddr) public view returns (address[] memory addresses, uint count) {
-        uint coinPairCount = super.getCoinPairCount();
-        address[] memory subscribedCoinpairs = new address[](coinPairCount);
+    function getSubscribedCoinPairAddresses(address oracleAddr) public view returns (CoinPairPrice[] memory addresses, uint count) {
+        uint coinPairCount = getCoinPairCount();
+        CoinPairPrice[] memory subscribedCoinpairs = new CoinPairPrice[](coinPairCount);
         uint256 valid = 0;
         for (uint256 i = 0; i < coinPairCount; i++)
         {
-            bytes32 cp = super.getCoinPairAtIndex(i);
+            bytes32 cp = getCoinPairAtIndex(i);
             if (isSubscribed(oracleAddr, cp))
             {
-                subscribedCoinpairs[i] = (super.getContractAddress(cp));
+                subscribedCoinpairs[i] = getCoinPairAddress(cp);
                 valid = valid.add(1);
             }
         }
@@ -251,7 +251,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     /// @param coinpair The coin pair to lookup.
     function getOracleRoundInfo(address oracleAddr, bytes32 coinpair) public view returns (uint points, uint selectedInRound,
         bool selectedInCurrentRound) {
-        CoinPairPrice ctAddr = (CoinPairPrice) (super.getContractAddress(coinpair));
+        CoinPairPrice ctAddr = getCoinPairAddress(coinpair);
         (points, selectedInRound, selectedInCurrentRound) = ctAddr.getOracleRoundInfo(oracleAddr);
     }
 
@@ -272,7 +272,6 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle not registered");
         require(_isOwner(data), "This can be called by oracle owner only");
-        //(address[] memory subscribedTo, uint count) = getSubscribedCoinPairAddresses(oracleAddr);
 
         require(_canRemoveOracle(oracleAddr), "Oracle cannot be removed at this time");
 
@@ -306,10 +305,10 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param oracleAddr the oracle address to lookup.
     function _canRemoveOracle(address oracleAddr) internal view returns (bool) {
-        uint coinPairCount = super.getCoinPairCount();
+        uint coinPairCount = getCoinPairCount();
         bool canRemove = true;
         for (uint i = 0; i < coinPairCount && canRemove; i++) {
-            CoinPairPrice cp = (CoinPairPrice) (super.getContractAddress(super.getCoinPairAtIndex(i)));
+            CoinPairPrice cp = getCoinPairAddress(getCoinPairAtIndex(i));
             canRemove = canRemove && cp.canRemoveOracle(oracleAddr);
         }
         return canRemove;
@@ -334,11 +333,9 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         require(data.isRegistered(), "Oracle is not registered");
         require(_isOwner(data), "Must be called by oracle owner");
 
-        (address[] memory coinpairs, uint count) = getSubscribedCoinPairAddresses(oracleAddr);
-        for (uint i = 0; i < count; i++)
-        {
-            CoinPairPrice cp = (CoinPairPrice) (coinpairs[i]);
-            cp.unsubscribe(oracleAddr);
+        (CoinPairPrice[] memory coinpairs, uint count) = getSubscribedCoinPairAddresses(oracleAddr);
+        for (uint i = 0; i < count; i++) {
+            coinpairs[i].unsubscribe(oracleAddr);
         }
     }
 
@@ -346,4 +343,12 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
     function _isOwner(OracleInfoLib.OracleRegisterInfo storage data) internal view returns (bool) {
         return data.isOwner(msg.sender) || governor.isAuthorizedChanger(msg.sender);
     }
+
+    /// @notice Return the contract address for a specified registered coin pair.
+    /// @param coinpair Coin-pair string to lookup (e.g: BTCUSD)
+    /// @return address Address of contract or zero if does not exist or was deleted.
+    function getCoinPairAddress(bytes32 coinpair) internal view returns (CoinPairPrice)    {
+        return CoinPairPrice(getContractAddress(coinpair));
+    }
+
 }
