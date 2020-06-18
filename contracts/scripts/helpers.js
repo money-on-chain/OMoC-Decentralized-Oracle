@@ -85,3 +85,15 @@ function coinPairStr(hex) {
 
 module.exports.coinPairStr = coinPairStr;
 
+function getScriptArgs(filename) {
+    const scriptName = path.basename(filename);
+    const script_in_args = process.argv.map(x => x.indexOf(scriptName) > 0);
+    const idx = script_in_args.indexOf(true);
+    if (idx < 0) {
+        console.error("INVALID ARGS", script_in_args);
+        process.exit();
+    }
+    return process.argv.splice(idx + 1);
+}
+
+module.exports.getScriptArgs = getScriptArgs;

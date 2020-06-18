@@ -53,8 +53,8 @@ contract MocRegistryInitChange is ChangeContract {
         registry.setUint(get_keccak("ORACLE_CONFIGURATION_TASK_INTERVAL"), 240);
         registry.setUint(get_keccak("ORACLE_GATHER_SIGNATURE_TIMEOUT"), 60);
         registry.setUint(get_keccak("ORACLE_MAIN_EXECUTOR_TASK_INTERVAL"), 20);
-        registry.setUint(get_keccak("SCHEDULER_POOL_DELAY"), 10);
-        registry.setUint(get_keccak("SCHEDULER_ROUND_DELAY"), 60 * 60 * 24);
+        registry.setUint(get_keccak("SCHEDULER_POOL_DELAY"), 1 * 60);
+        registry.setUint(get_keccak("SCHEDULER_ROUND_DELAY"), 30 * 60);
         registry.setUint(get_keccak("ORACLE_PRICE_DIGITS"), 18);
         registry.setUint(get_keccak("ORACLE_QUEUE_LEN"), 30);
         registry.setUint(get_keccak("MESSAGE_VERSION"), 3);
