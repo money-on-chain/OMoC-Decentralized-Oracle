@@ -24,6 +24,30 @@ contract CoinPairRegister {
         coinPairList.push(coinPair);
     }
 
+    /// @notice Set the address for a coinpair (the old one is lost!!!!)
+    /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
+    /// @param addr The contract address associated to the coinpair.
+    function _setCoinPair(bytes32 coinPair, address addr) internal
+    {
+        require(addr != address(0), "Address cannot be zero");
+        require(coinPairMap[coinPair] != address(0x0), "This coin pair is not registered");
+        coinPairMap[coinPair] = addr;
+    }
+
+
+    /// @notice Unregister a coin pair contract.
+    /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
+    /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
+    function _unRegisterCoinPair(bytes32 coinPair, uint256 hint) internal
+    {
+        require(coinPairMap[coinPair] != address(0x0), "This coin pair is already unregistered");
+        uint256 idx = getCoinPairIndex(coinPair, hint);
+        require(idx < coinPairList.length, "Coin pair not found");
+        delete coinPairMap[coinPair];
+        coinPairList[idx] = coinPairList[coinPairList.length - 1];
+        coinPairList.pop();
+    }
+
     /// @notice Return the contract address for a specified registered coin pair.
     /// @param coinpair Coin-pair string to lookup (e.g: BTCUSD)
     /// @return address Address of contract or zero if does not exist or was deleted.
@@ -45,6 +69,20 @@ contract CoinPairRegister {
     {
         require(i < coinPairList.length, "Illegal index");
         return coinPairList[i];
+    }
+
+    /// @notice Searches a coinpair in coinPairList
+    /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
+    /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
+    function getCoinPairIndex(bytes32 coinPair, uint256 hint) public view returns (uint256)
+    {
+        require(hint < coinPairList.length, "Illegal index");
+        for (uint256 i = hint; i < coinPairList.length; i++) {
+            if (coinPairList[i] == coinPair) {
+                return i;
+            }
+        }
+        return coinPairList.length;
     }
 
     // Reserved storage space to allow for layout changes in the future.
