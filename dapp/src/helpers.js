@@ -45,6 +45,9 @@ export function on_tx_err(_err, msg) {
 }
 
 export function get_err(err) {
+    if (!err) {
+        return "undefined error?";
+    }
     try {
         if (err.data) {
             return err.data.message;
@@ -97,7 +100,7 @@ export async function asleep(ms) {
     return new Promise((resolve, reject) => {
         try {
             setTimeout(resolve, ms);
-        } catch (err) {
+        }catch(err) {
             reject(err);
         }
     });
