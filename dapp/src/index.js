@@ -43,22 +43,25 @@ const TOKEN_ABI = TOKEN_DATA["abi"];
 
 const NETWORK = process.env.REACT_APP_NetworkID;
 
-function getFromEnvOrData(name, envVal, networks) {
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+function getFromEnvOrData(name, envName, networks) {
+    const envVal = process.env[envName]
+    if (process.env.REACT_APP_SKIP_BUILD_DIR !== "true" && (!process.env.NODE_ENV || process.env.NODE_ENV === 'development')) {
         // dev code
         const netid = Object.keys(networks)[0];
-        console.log("USING DEVELOPMENT NETWORK", netid, "ADDRESS", networks[netid].address, "FOR", name, "INSTEAD OF", envVal);
-        return networks[netid].address;
+        console.log("USING DEVELOPMENT NETWORK", netid, "ADDRESS", networks[netid].address, "FOR", name, "INSTEAD OF", envName, envVal);
+        const ret = networks[netid].address;
+        console.log(envName, "=", ret)
+        return ret;
     } else {
-        console.log("USING PRODUCTION ADDRESS", envVal, "FOR", name);
+        console.log("USING PRODUCTION ADDRESS", envName, "->", envVal, "FOR", name);
         return envVal;
     }
 }
 
-const ORACLE_MANAGER_ADDR = getFromEnvOrData("ORACLE MANAGER", process.env.REACT_APP_OracleManager, ORACLE_MANAGER_DATA["networks"]);
-const REGISTRY_ADDR = getFromEnvOrData("REGISTRY", process.env.REACT_APP_Registry, REGISTRY_DATA["networks"]);
-const SUPPORTERS_VESTED_ADDR = getFromEnvOrData("SUPPORTERS VESTED", process.env.REACT_APP_SupportersVested, SUPPORTERS_VESTED_DATA["networks"]);
-const SUPPORTERS_WHITELISTED_ADDR = getFromEnvOrData("SUPPORTERS WHITELISTED", process.env.REACT_APP_SupportersWhitelisted, SUPPORTERS_WHITELISTED_DATA["networks"]);
+const ORACLE_MANAGER_ADDR = getFromEnvOrData("ORACLE MANAGER", "REACT_APP_OracleManager", ORACLE_MANAGER_DATA["networks"]);
+const REGISTRY_ADDR = getFromEnvOrData("REGISTRY", "REACT_APP_Registry", REGISTRY_DATA["networks"]);
+const SUPPORTERS_VESTED_ADDR = getFromEnvOrData("SUPPORTERS VESTED", "REACT_APP_SupportersVested", SUPPORTERS_VESTED_DATA["networks"]);
+const SUPPORTERS_WHITELISTED_ADDR = getFromEnvOrData("SUPPORTERS WHITELISTED", "REACT_APP_SupportersWhitelisted", SUPPORTERS_WHITELISTED_DATA["networks"]);
 
 const ICONS_ALWAYS = true;
 
