@@ -238,9 +238,9 @@ class Console extends React.Component {
     }
 
     async fetch_cpr_data() {
-        let cpr = this.oracle_mgr;
+        let oracle_manager = this.oracle_mgr;
         let data = [];
-        let pairs = await cpr.getCoinPairCount();
+        let pairs = await oracle_manager.getCoinPairCount();
         let et = ethers.utils.bigNumberify(pairs);
         pairs = parseInt(et);
         if (pairs === 0) {
@@ -249,8 +249,8 @@ class Console extends React.Component {
             console.log(`There are ${pairs} coinpairs registered!`);
         }
         for (let idx = 0; idx < pairs; idx++) {
-            let cp = await cpr.getCoinPairAtIndex(idx);
-            let cp_addr = await cpr.getContractAddress(cp);
+            let cp = await oracle_manager.getCoinPairAtIndex(idx);
+            let cp_addr = await oracle_manager.getContractAddress(cp);
             data.push({
                 pair: ethers.utils.parseBytes32String(cp),
                 raw: cp,
@@ -377,8 +377,8 @@ class Console extends React.Component {
         let allinfo = {};
         let num_idle_rounds = ethers.utils.bigNumberify(0);
         for (let pair of cp) {
-                const contract = this.contracts[pair.pair];
-            const info = await contract.getOracleRoundInfo(address, pair.raw);
+            const contract = this.contracts[pair.pair];
+            const info = await contract.getOracleRoundInfo(address);
             if (info !== null) {
                 const nir = await contract.numIdleRounds();
                 if (num_idle_rounds.lt(nir)) {
@@ -504,8 +504,11 @@ class Console extends React.Component {
     get_cp_name_address_switch(short) {
         let pre = "";
         let mapf;
+        let heads;
         if (!short) {
-            short = false;
+            heads = ["Pair", "Address", ""];
+            mapf = (x) => [x.pair, spantt(x.address), this.button("switch round",
+                (e) => this.switch_round(e, x.pair))]
             pre = <>
                 Minimum Oracle Stake: {formatEther(this.state.minOracleOwnerStake)} tokens <br/>
                 MOC Token smart contract address: {this.state.mgr_token_addr ? this.state.mgr_token_addr : "loading..."}
@@ -515,15 +518,10 @@ class Console extends React.Component {
                 <br/>
                 <h6> pairs </h6>
             </>
-        }
-
-        let heads = short ? ["Pair", ""] : ["Pair", "Address", ""];
-        if (short) {
+        } else {
+            heads = ["Pair", ""];
             mapf = (x) => [x.pair,
                 this.button("switch round", (e) => this.switch_round(e, x.pair))]
-        } else {
-            mapf = (x) => [x.pair, spantt(x.address), this.button("switch round",
-                (e) => this.switch_round(e, x.pair))]
         }
 
         return this.XCard(6,

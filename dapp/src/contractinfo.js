@@ -360,21 +360,30 @@ export class CoinPairPriceAllInfo extends ContractInfo {
         const peek = await this.contract_fetch("peek", [{from: "0x0000000000000000000000000000000000000001"}]);
         if (peek) {
             const state = this.get_state();
+            const blocknr = this.parent_state().blocknr;
             let until = 0;
             let published = state.getLastPublicationBlock;
-            if (published && validPricePeriodInBlocks) {
-                until = ethers.utils.bigNumberify(published).add(ethers.utils.bigNumberify(validPricePeriodInBlocks));
+            let blocks_from_last_publication = 0;
+            if (published) {
+                if (validPricePeriodInBlocks) {
+                    until = ethers.utils.bigNumberify(published).add(ethers.utils.bigNumberify(validPricePeriodInBlocks));
+                }
+                if (blocknr) {
+                    blocks_from_last_publication = ethers.utils.bigNumberify(blocknr).sub(ethers.utils.bigNumberify(published));
+                }
             }
             this.setState({
-                validPricePeriodInBlocks, peek: {price: peek[0], valid: peek[1], published, until}
+                validPricePeriodInBlocks,
+                peek: {price: peek[0], valid: peek[1], published, until},
+                blocks_from_last_publication
             });
         }
     }
 
     _funcs() {
         return [
-            {fn: "getRoundInfo", display: false, set: this.setRoundInfo},
-            {fn: "getLastPublicationBlock", display: false, set: this.setLastPublicationBlock},
+            {fn: "getRoundInfo", display: false, get: true, set: this.setRoundInfo},
+            {fn: "getLastPublicationBlock", display: false, get: true},
             {title: HL("Valid price period in blocks"), fn: "validPricePeriodInBlocks", get: false},
             // {title: "Coin Pair", fn: "getCoinPair", pf: (x) => parseBytes32String(x)},
             {title: HL("Blocks from last publication"), fn: "blocks_from_last_publication", get: false},
@@ -385,9 +394,11 @@ export class CoinPairPriceAllInfo extends ContractInfo {
 
             {title: "Round start block", fn: "startBlock", get: false},
             {title: "Round end block", fn: "lockPeriod", get: false},
-            {title: "Current block", fn: "blocknr", get: false},
 
             {title: "Total points", fn: "totalPoints", get: false},
+            {title: "Max oracles per round", fn: "maxOraclesPerRound", get: true},
+            {title: "Number of idle rounds to withdraw", fn: "numIdleRounds", get: true},
+
             {title: "Available rewards", fn: "getAvailableRewardFees", pf: (x) => formatEther(x)},
             {fn: "selectedOracles", get: false, display: this.selectedDisplay},
         ];
