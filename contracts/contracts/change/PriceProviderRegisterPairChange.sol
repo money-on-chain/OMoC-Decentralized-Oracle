@@ -39,6 +39,8 @@ contract PriceProviderRegisterPairChange is ChangeContract {
      */
     function execute() external override {
         priceProviderRegister.registerCoinPair(coinPair, contractAddr);
+        // OVERRIDE THE OLD ONE !!!
+        // priceProviderRegister.setCoinPair(coinPair,contractAddr);
         // usable just once!!!
         // priceProviderRegister = address(0);
     }

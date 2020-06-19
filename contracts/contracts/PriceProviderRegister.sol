@@ -20,9 +20,9 @@ contract PriceProviderRegister is Initializable, Governed, CoinPairRegister {
     /// @notice Set the address for a coinpair (the old one is lost!!!!)
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.
-    function setCoinPair(bytes32 coinPair, address addr) public onlyAuthorizedChanger()
+    function setCoinPair(bytes32 coinPair, IPriceProviderRegisterEntry addr) public onlyAuthorizedChanger()
     {
-        _setCoinPair(coinPair, addr);
+        _setCoinPair(coinPair, address(addr));
     }
 
     /// @notice Unregister a coin pair contract.

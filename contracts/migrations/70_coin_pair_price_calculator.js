@@ -35,14 +35,14 @@ async function deploy(deployer, networkName, accounts) {
 
 
     const baseMultiplicator = 1;
-    const baseDivisor = 1;
-    const multiplyByPairs = ["BTCUSD"];
-    const divideByPairs = ["RIFBTC"];
+    const baseDivisor = web3.utils.toBN(10 ** 18);
+    const multiplyByPairs = ["BTCUSD", "RIFBTC"];
+    const divideByPairs = [];
     const multiplyBy = await Promise.all(multiplyByPairs.map(x => priceProviderRegister.getContractAddress(web3.utils.fromAscii(x))));
     const divideBy = await Promise.all(divideByPairs.map(x => priceProviderRegister.getContractAddress(web3.utils.fromAscii(x))));
 
-    console.log("coinPairPrice multiply", baseMultiplicator, multiplyByPairs, multiplyBy);
-    console.log("coinPairPrice divide", baseDivisor, divideByPairs, divideBy);
+    console.log("coinPairPrice multiply", baseMultiplicator.toString(), multiplyByPairs, multiplyBy);
+    console.log("coinPairPrice divide", baseDivisor.toString(), divideByPairs, divideBy);
 
 
     console.log("Deploying CalculatedPriceProvider");
