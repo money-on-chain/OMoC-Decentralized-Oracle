@@ -299,13 +299,13 @@ contract("CoinPairPrice", async (accounts) => {
 
     it("Should retrieve the last price published from address 1", async () => {
 
-        const p = await this.coinPairPrice.getPrice({from: "0x0000000000000000000000000000000000000001"});
+        const p = await this.coinPairPrice.getPrice({from: helpers.ADDRESS_ONE});
         assert.equal(p.toString(), (10 ** 18).toString());
     });
 
     it("Should retrieve the last price published from whitelisted address", async () => {
 
-        const p = await this.coinPairPrice.getPrice({from: "0x0000000000000000000000000000000000000001"});
+        const p = await this.coinPairPrice.getPrice({from: helpers.ADDRESS_ONE});
         assert.equal(p.toString(), (10 ** 18).toString());
     });
 
@@ -315,11 +315,11 @@ contract("CoinPairPrice", async (accounts) => {
     });
 
     it("Price should be valid for validPricePeriodInBlocks blocks", async () => {
-        const {0: price, 1: valid} = await this.coinPairPrice.peek({from: "0x0000000000000000000000000000000000000001"});
+        const {0: price, 1: valid} = await this.coinPairPrice.peek({from: helpers.ADDRESS_ONE});
         assert.equal(helpers.bytes32toBN(price).toString(), (10 ** 18).toString());
         assert.isTrue(valid);
         await helpers.mineBlocks(this.validPricePeriodInBlocks);
-        const {0: price_after, 1: not_valid} = await this.coinPairPrice.peek({from: "0x0000000000000000000000000000000000000001"});
+        const {0: price_after, 1: not_valid} = await this.coinPairPrice.peek({from: helpers.ADDRESS_ONE});
         assert.equal(helpers.bytes32toBN(price_after).toString(), (10 ** 18).toString());
         assert.isFalse(not_valid);
     });

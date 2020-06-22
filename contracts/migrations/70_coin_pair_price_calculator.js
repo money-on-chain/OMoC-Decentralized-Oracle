@@ -3,6 +3,8 @@ const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
 
 stdout.silent(false);
 
+const coin = "RIFUSD";
+const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
 
 async function deploy(deployer, networkName, accounts) {
     const {network, txParams} = await ConfigManager.initNetworkConfiguration({
@@ -26,44 +28,68 @@ async function deploy(deployer, networkName, accounts) {
     console.log("proxyAdminAddr ", proxyAdminAddr);
 
     // Deployed in 60_price_provider_registry
-
-    // Deployed in 3_deploy
     const PriceProviderRegister = artifacts.require('PriceProviderRegister.sol');
     const priceProviderRegister = await PriceProviderRegister.deployed();
     const priceProviderRegisterAddr = priceProviderRegister.address;
     console.log("priceProviderRegisterAddr", priceProviderRegisterAddr);
 
 
-    const baseMultiplicator = 1;
-    const baseDivisor = web3.utils.toBN(10 ** 18);
+    console.log("Deploy a CoinPairPriceFree");
+    await scripts.add({contractsData: [{name: "CoinPairPriceFree", alias: "CoinPairPriceFree"}]});
+    await scripts.push({network, txParams});
+    const coinPairPriceFree = await scripts.create({
+        admin: proxyAdminAddr,
+        contractAlias: "CoinPairPriceFree",
+        network,
+        txParams
+    });
+    console.log("coinPairPriceFree address: ", coinPairPriceFree.options.address, 'for coin', coin, 'proxyAdmin', proxyAdminAddr);
+
+
+    console.log("Deploying CalculatedPriceProviderWhitelisted");
+    const baseMultiplicator = "1";
+    const baseDivisor = (web3.utils.toBN(10 ** 18)).toString();
     const multiplyByPairs = ["BTCUSD", "RIFBTC"];
     const divideByPairs = [];
     const multiplyBy = await Promise.all(multiplyByPairs.map(x => priceProviderRegister.getContractAddress(web3.utils.fromAscii(x))));
     const divideBy = await Promise.all(divideByPairs.map(x => priceProviderRegister.getContractAddress(web3.utils.fromAscii(x))));
+    console.log("coinPairPrice multiply", baseMultiplicator, multiplyByPairs, multiplyBy);
+    console.log("coinPairPrice divide", baseDivisor, divideByPairs, divideBy);
+    await scripts.add({
+        contractsData: [{
+            name: "CalculatedPriceProviderWhitelisted",
+            alias: "CalculatedPriceProviderWhitelisted"
+        }]
+    });
+    await scripts.push({network, txParams: {...txParams, gas: 3000000}});
+    const calculatedPriceProviderWhitelisted = await scripts.create({
+        methodName: 'initialize',
+        methodArgs: [governorAddr, [coinPairPriceFree.options.address], baseMultiplicator, multiplyBy, baseDivisor, divideBy],
+        admin: proxyAdminAddr,
+        contractAlias: "CalculatedPriceProviderWhitelisted",
+        network,
+        txParams
+    });
+    console.log("calculatedPriceProviderWhitelisted: ", calculatedPriceProviderWhitelisted.options.address);
 
-    console.log("coinPairPrice multiply", baseMultiplicator.toString(), multiplyByPairs, multiplyBy);
-    console.log("coinPairPrice divide", baseDivisor.toString(), divideByPairs, divideBy);
 
+    console.log("Initialize coinpair price free for", coin);
+    const CoinPairPriceFree = artifacts.require('CoinPairPriceFree.sol');
+    const cpfcall = await CoinPairPriceFree.at(coinPairPriceFree.options.address);
+    await cpfcall.initialize(calculatedPriceProviderWhitelisted.options.address);
 
-    console.log("Deploying CalculatedPriceProvider");
-    const CalculatedPriceProvider = artifacts.require("CalculatedPriceProvider");
-    await deployer.deploy(CalculatedPriceProvider, baseMultiplicator, multiplyBy, baseDivisor, divideBy);
-    const calculatedPriceProvider = await CalculatedPriceProvider.deployed();
-    console.log("calculatedPriceProvider: ", calculatedPriceProvider.address);
 
     console.log("Deploy change contract to add the calculator to the whitelist", governorAddr);
     const CoinPairPriceAddCalculatedPriceProviderChange = artifacts.require("CoinPairPriceAddCalculatedPriceProviderChange");
-    const change = await CoinPairPriceAddCalculatedPriceProviderChange.new(calculatedPriceProvider.address,
+    const change = await CoinPairPriceAddCalculatedPriceProviderChange.new(calculatedPriceProviderWhitelisted.options.address,
         [...multiplyBy, ...divideBy]);
     console.log("Whitelist CalculatedCoinPairPrice in", [...multiplyBy, ...divideBy]);
     await governor.executeChange(change.address, {from: governorOwner});
 
 
-    const coin = "RIFUSD";
-    const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
     console.log("Register coin", coin, 'via governor', governorAddr);
     const PriceProviderRegisterPairChange = artifacts.require("PriceProviderRegisterPairChange");
-    const change2 = await PriceProviderRegisterPairChange.new(priceProviderRegisterAddr, coinPair, calculatedPriceProvider.address);
+    const change2 = await PriceProviderRegisterPairChange.new(priceProviderRegisterAddr, coinPair, calculatedPriceProviderWhitelisted.address);
     console.log("Register coin via governor", governorAddr, 'coin', coin, "change contract addr", change2.address, 'governor owner', governorOwner);
     await governor.executeChange(change2.address, {from: governorOwner});
 

@@ -3,15 +3,21 @@ pragma solidity 0.6.0;
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
+import {Initializable} from "./openzeppelin/Initializable.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD
-contract CalculatedPriceProvider is IPriceProvider, IPriceProviderRegisterEntry {
+contract CalculatedPriceProvider is Initializable {
     using SafeMath for uint;
     IPriceProvider[] public multiplyBy;
     IPriceProvider[] public divideBy;
     uint public multiplicator;
     uint public divisor;
+
+    // Empty internal constructor, to prevent people from mistakenly deploying
+    // an instance of this contract, which should be used via inheritance.
+    constructor () internal {}
+    // solhint-disable-previous-line no-empty-blocks
 
     /**
     Contract creation.
@@ -21,36 +27,32 @@ contract CalculatedPriceProvider is IPriceProvider, IPriceProviderRegisterEntry 
     @param _divisor base value used to scale the result by dividing it.
     @param _divideBy list of IPriceProvider to query the and then divide the result
     */
-    constructor(uint _multiplicator, IPriceProvider[] memory _multiplyBy,
-        uint _divisor, IPriceProvider[] memory _divideBy) public {
+    function _initialize(uint _multiplicator, IPriceProvider[] memory _multiplyBy,
+        uint _divisor, IPriceProvider[] memory _divideBy) internal initializer {
         multiplicator = _multiplicator;
         multiplyBy = _multiplyBy;
         divisor = _divisor;
         divideBy = _divideBy;
     }
 
-    /// @notice return the type of provider
-    function getPriceProviderType() external override view returns (IPriceProviderType) {
-        return IPriceProviderType.Calculated;
-    }
 
     /**
     Get the calculated price
 
     */
-    function peek() external override view returns (bytes32, bool) {
+    function _peek() internal view returns (uint256, bool) {
         bool valid = true;
         uint den;
         (den, valid) = _multiplyAll(multiplicator, multiplyBy);
         if (!valid) {
-            return (bytes32(0), false);
+            return (0, false);
         }
         uint div;
         (div, valid) = _multiplyAll(divisor, divideBy);
         if (!valid || div == 0) {
-            return (bytes32(0), false);
+            return (0, false);
         }
-        return (bytes32(den.div(div)), true);
+        return (den.div(div), true);
     }
 
     /**
@@ -71,4 +73,7 @@ contract CalculatedPriceProvider is IPriceProvider, IPriceProviderRegisterEntry 
         }
         return (val, true);
     }
+
+    // Reserved storage space to allow for layout changes in the future.
+    uint256[50] private ______gap;
 }
