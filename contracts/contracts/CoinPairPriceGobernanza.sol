@@ -79,7 +79,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
         Governed.initialize(_governor);
 
         for (uint256 i = 0; i < _wlist.length; i++) {
-            super.add(_wlist[i]);
+            IterableWhitelist.add(_wlist[i]);
         }
         maxOraclesPerRound = _maxOraclesPerRound;
         roundLockPeriodInBlocks = _roundLockPeriodInBlocks;
@@ -97,7 +97,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
      * @param  _whitelisted - the override coinPair
      */
     function addToWhitelist(address _whitelisted) public onlyAuthorizedChanger() {
-        super.add(_whitelisted);
+        IterableWhitelist.add(_whitelisted);
     }
 
     /**
@@ -105,7 +105,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
      * @param  _whitelisted - the override coinPair
      */
     function removeFromWhitelist(address _whitelisted) public onlyAuthorizedChanger() {
-        super.remove(_whitelisted);
+        IterableWhitelist.remove(_whitelisted);
     }
 
     /**

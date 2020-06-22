@@ -43,6 +43,12 @@ contract SupportersAbstract {
     constructor () internal {}
     // solhint-disable-previous-line no-empty-blocks
 
+    /**
+    Contract creation
+
+    @param _mocToken MOC token address
+    @param _period Number of blocks to distribute earnings, round length
+    */
     function _initialize(IERC20 _mocToken, uint256 _period) internal {
         mocToken = _mocToken;
         period = _period;

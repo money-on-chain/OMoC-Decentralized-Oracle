@@ -25,8 +25,16 @@ contract SupportersVestedAbstract is SupportersAbstract {
     constructor () internal {}
     // solhint-disable-previous-line no-empty-blocks
 
+    /**
+    Contract creation
+
+    @param _mocToken MOC token address
+    @param _period Number of blocks to distribute earnings, round length
+    @param _minStayBlocks The minimum number of blocks that a user must stay staked after staking
+    @param _afterStopBlocks The period of blocks a user have after a stop and minStayBlock to withdraw
+    */
     function _initialize(IERC20 _mocToken, uint256 _period, uint256 _minStayBlocks, uint256 _afterStopBlocks) internal {
-        super._initialize(_mocToken, _period);
+        SupportersAbstract._initialize(_mocToken, _period);
         minStayBlocks = _minStayBlocks;
         afterStopBlocks = _afterStopBlocks;
     }
@@ -69,7 +77,7 @@ contract SupportersVestedAbstract is SupportersAbstract {
         require(stopInBlockMap[_subaccount] + minStayBlocks < block.number, "Can't withdraw until minStayBlocks");
         require(stopInBlockMap[_subaccount] + minStayBlocks + afterStopBlocks >= block.number, "Must withdraw before afterStopBlocks");
 
-        uint256 mocs = super._withdrawFromTo(_tokens, _subaccount, _receiver);
+        uint256 mocs = SupportersAbstract._withdrawFromTo(_tokens, _subaccount, _receiver);
         delete stopInBlockMap[_subaccount];
         emit Withdraw(msg.sender, _subaccount, _receiver, mocs, block.number);
         return mocs;
@@ -91,7 +99,7 @@ contract SupportersVestedAbstract is SupportersAbstract {
     */
     function _vestingInfoOf(address _account) internal view returns (uint256 balance, uint256 stoppedInblock) {
         require(_account != address(0), "Address must be != 0");
-        return (super._getMOCBalanceAt(address(this), _account), stopInBlockMap[_account]);
+        return (SupportersAbstract._getMOCBalanceAt(address(this), _account), stopInBlockMap[_account]);
     }
 
 
@@ -103,7 +111,7 @@ contract SupportersVestedAbstract is SupportersAbstract {
     @param _sender source account from which we must take funds
     */
     function _stakeAtFrom(uint256 _mocs, address _subacount, address _sender) override internal {
-        super._stakeAtFrom(_mocs, _subacount, _sender);
+        SupportersAbstract._stakeAtFrom(_mocs, _subacount, _sender);
         delete stopInBlockMap[_sender];
         emit AddStake(msg.sender, _subacount, _sender, _mocs, block.number);
     }

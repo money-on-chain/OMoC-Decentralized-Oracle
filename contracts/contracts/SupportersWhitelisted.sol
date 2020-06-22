@@ -16,12 +16,22 @@ import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 */
 contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVestedAbstract, Governed {
 
-    function initialize(IGovernor _governor, address[] memory wlist, IERC20 _mocToken, uint256 _period
+    /**
+    Contract creation
+
+    @param _governor The address of the contract which governs this one
+    @param _wlist Initial whitelist addresses
+    @param _mocToken The address of the contract which governs this one
+    @param _period The address of the contract which governs this one
+    @param _minStayBlocks The address of the contract which governs this one
+    @param _afterStopBlocks The address of the contract which governs this one
+    */
+    function initialize(IGovernor _governor, address[] memory _wlist, IERC20 _mocToken, uint256 _period
     , uint256 _minStayBlocks, uint256 _afterStopBlocks) public initializer {
         Governed.initialize(_governor);
         SupportersVestedAbstract._initialize(_mocToken, _period, _minStayBlocks, _afterStopBlocks);
-        for (uint256 i = 0; i < wlist.length; i++) {
-            super.add(wlist[i]);
+        for (uint256 i = 0; i < _wlist.length; i++) {
+            IterableWhitelist.add(_wlist[i]);
         }
     }
 
@@ -30,7 +40,7 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVe
      * @param  _whitelisted - the override coinPair
      */
     function addToWhitelist(address _whitelisted) public onlyAuthorizedChanger() {
-        super.add(_whitelisted);
+        IterableWhitelist.add(_whitelisted);
     }
 
     /**
@@ -38,7 +48,7 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVe
      * @param  _whitelisted - the override coinPair
      */
     function removeFromWhitelist(address _whitelisted) public onlyAuthorizedChanger() {
-        super.remove(_whitelisted);
+        IterableWhitelist.remove(_whitelisted);
     }
 
     /**

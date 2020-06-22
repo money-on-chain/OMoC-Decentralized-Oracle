@@ -4,15 +4,13 @@ import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {CoinPairPriceGobernanza} from "./CoinPairPriceGobernanza.sol";
 import {OracleInfoLib} from "./libs/OracleInfo.sol";
+import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
+
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
+contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProviderRegisterEntry {
     using SafeMath for uint;
-
-    // We use address(1) to allow calls from outside the block chain to peek
-    // The call must use msg.sender == 1 (or { from: 1 }) something that only can be done from outside the blockchain.
-    address constant ADDRESS_ONE = address(1);
 
     // The publish message has a version field
     uint256 constant PUBLISH_MESSAGE_VERSION = 3;
@@ -57,6 +55,11 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     //
     // -------------------------------------------------------------------------------------------------------------
 
+
+    /// @notice return the type of provider
+    function getPriceProviderType() external override view returns (IPriceProviderType) {
+        return IPriceProviderType.Published;
+    }
 
     /// @notice subscribe an oracle to this coin pair , allowing it to be selected in rounds.
     /// @param oracleAddr the oracle address to subscribe to this coin pair.
@@ -165,9 +168,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider {
     }
 
     /// @notice Return the current price, compatible with old MOC Oracle
-    function peek() public override view returns (bytes32, bool) {
-        // We use address(1) to allow calls from outside the block chain
-        require(isWhitelisted(msg.sender) || msg.sender == ADDRESS_ONE, "Address is not whitelisted");
+    function peek() public override view whitelistedOrExternal(msg.sender) returns (bytes32, bool) {
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
 
         return (bytes32(currentPrice), (block.number - lastPublicationBlock) < validPricePeriodInBlocks);
