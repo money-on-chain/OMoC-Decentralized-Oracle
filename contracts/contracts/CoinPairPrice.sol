@@ -57,7 +57,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProvide
 
 
     /// @notice return the type of provider
-    function getPriceProviderType() external override view returns (IPriceProviderType) {
+    function getPriceProviderType() external override pure returns (IPriceProviderType) {
         return IPriceProviderType.Published;
     }
 
@@ -108,36 +108,36 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProvide
     }
 
     /// @notice Publish a price.
-    /// @param version Version number of message format (3)
-    /// @param coinpair The coin pair to report (must match this contract)
-    /// @param price Price to report.
-    /// @param votedOracle The address of the oracle voted as a publisher by the network.
-    /// @param blockNumber The blocknumber acting as nonce to prevent replay attacks.
-    /// @param sig_v The array of V-component of Oracle signatures.
-    /// @param sig_r The array of R-component of Oracle signatures.
-    /// @param sig_s The array of S-component of Oracle signatures.
-    function publishPrice(uint256 version,
-        bytes32 coinpair,
-        uint256 price,
-        address votedOracle,
-        uint256 blockNumber,
-        uint8[]  memory sig_v,
-        bytes32[] memory sig_r,
-        bytes32[] memory sig_s) public {
+    /// @param _version Version number of message format (3)
+    /// @param _coinpair The coin pair to report (must match this contract)
+    /// @param _price Price to report.
+    /// @param _votedOracle The address of the oracle voted as a publisher by the network.
+    /// @param _blockNumber The blocknumber acting as nonce to prevent replay attacks.
+    /// @param _sig_v The array of V-component of Oracle signatures.
+    /// @param _sig_r The array of R-component of Oracle signatures.
+    /// @param _sig_s The array of S-component of Oracle signatures.
+    function publishPrice(uint256 _version,
+        bytes32 _coinpair,
+        uint256 _price,
+        address _votedOracle,
+        uint256 _blockNumber,
+        uint8[]  memory _sig_v,
+        bytes32[] memory _sig_r,
+        bytes32[] memory _sig_s) public {
 
         require(currentRound.number > 0, "Round not open");
         OracleInfoLib.OracleRoundInfo storage data = oracleRoundInfo[msg.sender];
         require(subscribedOracles[msg.sender], "Sender oracle not subscribed");
         require(data.isInRound(currentRound.number), "Voter oracle is not part of this round");
-        require(msg.sender == votedOracle, "Your address does not match the voted oracle");
-        require(version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
-        require(price > 0, "Price must be positive and non-zero");
-        require(blockNumber == lastPublicationBlock, "Blocknumber does not match the last publication block");
-        require(coinpair == getCoinPair(), "Coin pair - contract mismatch");
+        require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
+        require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
+        require(_price > 0, "Price must be positive and non-zero");
+        require(_blockNumber == lastPublicationBlock, "Blocknumber does not match the last publication block");
+        require(_coinpair == coinPair, "Coin pair - contract mismatch");
 
         // Verify signatures
-        require(sig_s.length == sig_r.length && sig_r.length == sig_v.length, "Inconsistent signature count");
-        require(sig_s.length > currentRound.selectedOracles.length / 2,
+        require(_sig_s.length == _sig_r.length && _sig_r.length == _sig_v.length, "Inconsistent signature count");
+        require(_sig_s.length > currentRound.selectedOracles.length / 2,
             "Signature count must exceed 50% of active oracles");
 
         //
@@ -146,12 +146,12 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProvide
         //
 
         bytes memory hData = abi.encodePacked("\x19Ethereum Signed Message:\n148",
-            version, coinpair, price, votedOracle, blockNumber);
+            _version, _coinpair, _price, _votedOracle, _blockNumber);
         bytes32 messageHash = keccak256(hData);
 
         address lastAddr = address(0);
-        for (uint i = 0; i < sig_s.length; i++) {
-            address rec = _recoverSigner(sig_v[i], sig_r[i], sig_s[i], messageHash);
+        for (uint i = 0; i < _sig_s.length; i++) {
+            address rec = _recoverSigner(_sig_v[i], _sig_r[i], _sig_s[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
             require(subscribedOracles[rec], "Signing oracle not subscribed");
             require(oracleRoundInfo[rec].isInRound(currentRound.number), "Address of signer not part of this round");
@@ -162,9 +162,9 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProvide
         oracleRoundInfo[msg.sender].addPoints(1);
         currentRound.totalPoints = currentRound.totalPoints + 1;
         lastPublicationBlock = block.number;
-        currentPrice = price;
+        currentPrice = _price;
 
-        emit PricePublished(msg.sender, price, votedOracle, blockNumber);
+        emit PricePublished(msg.sender, _price, _votedOracle, _blockNumber);
     }
 
     /// @notice Return the current price, compatible with old MOC Oracle
@@ -178,21 +178,6 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProvide
     function getPrice() external view returns (uint256) {
         (bytes32 cp,) = peek();
         return uint256(cp);
-    }
-
-    /// @notice Return the coin pair for this contract
-    function getCoinPair() public view returns (bytes32) {
-        return coinPair;
-    }
-
-    /// @notice Get the last publication block
-    function getLastPublicationBlock() public view returns (uint256) {
-        return lastPublicationBlock;
-    }
-
-    /// @notice Get the valid price period in blocks
-    function getValidPricePeriodInBlocks() public view returns (uint256) {
-        return validPricePeriodInBlocks;
     }
 
     /// @notice Return current round information

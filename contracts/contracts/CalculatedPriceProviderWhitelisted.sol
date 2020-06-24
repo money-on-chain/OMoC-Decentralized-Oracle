@@ -29,7 +29,7 @@ IterableWhitelist, IPriceProvider, IPriceProviderRegisterEntry {
     function initialize(IGovernor _governor, address[] memory _wlist,
         uint _multiplicator, IPriceProvider[] memory _multiplyBy,
         uint _divisor, IPriceProvider[] memory _divideBy) public initializer {
-        Governed.initialize(_governor);
+        Governed._initialize(_governor);
         CalculatedPriceProvider._initialize(_multiplicator, _multiplyBy, _divisor, _divideBy);
         for (uint256 i = 0; i < _wlist.length; i++) {
             IterableWhitelist.add(_wlist[i]);
@@ -90,7 +90,7 @@ IterableWhitelist, IPriceProvider, IPriceProviderRegisterEntry {
 
 
     /// @notice return the type of provider
-    function getPriceProviderType() external override view returns (IPriceProviderType) {
+    function getPriceProviderType() external override pure returns (IPriceProviderType) {
         return IPriceProviderType.Calculated;
     }
 

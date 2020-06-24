@@ -10,6 +10,16 @@ import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
 /// only the coin pairs that are published by oracles.
 contract PriceProviderRegister is Initializable, Governed, CoinPairRegister {
 
+    /**
+      @notice Initialize the contract with the basic settings
+      @dev This initialize replaces the constructor but it is not called automatically.
+      It is necessary because of the upgradeability of the contracts
+      @param _governor Governor address
+     */
+    function initialize(IGovernor _governor) external initializer {
+        Governed._initialize(_governor);
+    }
+
     /// @notice Register a new coin pair contract.
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.

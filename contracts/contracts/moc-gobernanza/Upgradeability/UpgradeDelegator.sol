@@ -16,7 +16,7 @@ contract UpgradeDelegator is Governed {
     IOZProxyAdmin public proxyAdmin;
 
     function initialize(IGovernor _governor, IOZProxyAdmin _proxyAdmin) public initializer {
-        Governed.initialize(_governor);
+        Governed._initialize(_governor);
         proxyAdmin = _proxyAdmin;
     }
 

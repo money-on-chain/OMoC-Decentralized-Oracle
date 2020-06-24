@@ -21,7 +21,8 @@ library RegisteredOraclesLib {
         address slh_first; /* first element */
     }
 
-    function init(function (address) internal view returns (uint256) getStake) internal pure returns (RegisteredOracles memory){
+    function init(function (address) internal view returns (uint256) getStake)
+    internal pure returns (RegisteredOracles memory) {
         return RegisteredOracles(getStake, address(0));
     }
 

@@ -83,10 +83,10 @@ contract InfoGetter is Initializable {
             (uint points, uint256 selectedInRound,) = _coinPairPrice.getOracleRoundInfo(addr);
             info[i] = CoinPairUIOracleRoundInfo(points, selectedInRound, addr);
         }
-        uint256 lastPublicationBlock = _coinPairPrice.getLastPublicationBlock();
+        uint256 lastPublicationBlock = _coinPairPrice.lastPublicationBlock();
         return CoinPairPriceUIInfo(round, startBlock, lockPeriodEndBlock, totalPoints,
             info, block.number, lastPublicationBlock, blockhash(lastPublicationBlock),
-            _coinPairPrice.getValidPricePeriodInBlocks(), _coinPairPrice.getAvailableRewardFees());
+            _coinPairPrice.validPricePeriodInBlocks(), _coinPairPrice.getAvailableRewardFees());
     }
 
     /**
@@ -141,14 +141,14 @@ contract InfoGetter is Initializable {
     */
     function getOracleServerInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice) public view returns (OracleServerInfo memory oracleServerInfo)
     {
-        uint256 lastPubBlock = _coinPairPrice.getLastPublicationBlock();
+        uint256 lastPubBlock = _coinPairPrice.lastPublicationBlock();
         (bytes32 currentPrice,) = _coinPairPrice.peek();
 
         (uint256 round, uint256  startBlock, uint256  lockPeriodEndBlock, uint256  totalPoints, address[] memory selectedOracles) = _coinPairPrice.getRoundInfo();
 
         return OracleServerInfo(round, startBlock, lockPeriodEndBlock, totalPoints,
             _createFullRoundInfo(_oracleManager, _coinPairPrice, selectedOracles),
-            uint256(currentPrice), block.number, lastPubBlock, blockhash(lastPubBlock), _coinPairPrice.getValidPricePeriodInBlocks());
+            uint256(currentPrice), block.number, lastPubBlock, blockhash(lastPubBlock), _coinPairPrice.validPricePeriodInBlocks());
     }
 
     /**

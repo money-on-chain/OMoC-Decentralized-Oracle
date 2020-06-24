@@ -1,6 +1,7 @@
 pragma solidity 0.6.0;
 
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 
 // Based on https://github.com/fravoll/solidity-patterns EternalStorage
 contract EternalStorageGobernanza is Governed {
@@ -13,14 +14,23 @@ contract EternalStorageGobernanza is Governed {
     struct DecimalVal {bool b; int232 base; int16 exp;}
 
 
-    mapping(bytes32 => DecimalVal) decimalStorage;
-    mapping(bytes32 => UIntVal) uIntStorage;
-    mapping(bytes32 => string) stringStorage;
-    mapping(bytes32 => address) addressStorage;
-    mapping(bytes32 => bytes) bytesStorage;
-    mapping(bytes32 => BoolVal) boolStorage;
-    mapping(bytes32 => IntVal) intStorage;
+    mapping(bytes32 => DecimalVal) internal decimalStorage;
+    mapping(bytes32 => UIntVal) internal uIntStorage;
+    mapping(bytes32 => string) internal stringStorage;
+    mapping(bytes32 => address) internal addressStorage;
+    mapping(bytes32 => bytes) internal bytesStorage;
+    mapping(bytes32 => BoolVal) internal boolStorage;
+    mapping(bytes32 => IntVal) internal intStorage;
 
+    /**
+      @notice Initialize the contract with the basic settings
+      @dev This initialize replaces the constructor but it is not called automatically.
+      It is necessary because of the upgradeability of the contracts
+      @param _governor Governor address
+     */
+    function initialize(IGovernor _governor) external initializer {
+        Governed._initialize(_governor);
+    }
 
     // *** Getter Methods ***
     function getDecimal(bytes32 _key) external view returns (int232 base, int16 exp) {

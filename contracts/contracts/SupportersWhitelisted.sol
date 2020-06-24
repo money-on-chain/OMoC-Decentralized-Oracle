@@ -28,7 +28,7 @@ contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVe
     */
     function initialize(IGovernor _governor, address[] memory _wlist, IERC20 _mocToken, uint256 _period
     , uint256 _minStayBlocks, uint256 _afterStopBlocks) public initializer {
-        Governed.initialize(_governor);
+        Governed._initialize(_governor);
         SupportersVestedAbstract._initialize(_mocToken, _period, _minStayBlocks, _afterStopBlocks);
         for (uint256 i = 0; i < _wlist.length; i++) {
             IterableWhitelist.add(_wlist[i]);

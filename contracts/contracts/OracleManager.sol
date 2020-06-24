@@ -12,7 +12,7 @@ import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 
 contract OracleManager is CoinPairRegister, Initializable, Governed {
-    RegisteredOraclesLib.RegisteredOracles  registeredOracles;
+    RegisteredOraclesLib.RegisteredOracles  internal registeredOracles;
     SupportersWhitelisted public            supportersContract;
     uint256 public                          minOracleOwnerStake;
     IERC20 public                           token;
@@ -41,7 +41,7 @@ contract OracleManager is CoinPairRegister, Initializable, Governed {
         require(address(_supportersContract.mocToken()) != address(0), "Token contract address must be != 0");
         require(_minOracleOwnerStake > 0, "The minimum oracle owner stake amount cannot be zero");
 
-        Governed.initialize(_governor);
+        Governed._initialize(_governor);
         supportersContract = _supportersContract;
         token = _supportersContract.mocToken();
 

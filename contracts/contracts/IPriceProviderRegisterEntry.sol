@@ -5,6 +5,6 @@ interface IPriceProviderRegisterEntry  {
     enum IPriceProviderType {None, Published, Calculated}
 
     /// @notice return the type of provider
-    function getPriceProviderType() external view returns (IPriceProviderType);
+    function getPriceProviderType() external pure returns (IPriceProviderType);
 
 }

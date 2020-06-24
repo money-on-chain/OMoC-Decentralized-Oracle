@@ -35,7 +35,7 @@ contract Governed is Initializable {
       It is necessary because of the upgradeability of the contracts
       @param _governor Governor address
      */
-    function initialize(IGovernor _governor) public initializer {
+    function _initialize(IGovernor _governor) internal initializer {
         governor = _governor;
     }
 
@@ -43,7 +43,7 @@ contract Governed is Initializable {
       @notice Change the contract's governor. Should be called through the old governance system
       @param newIGovernor New governor address
      */
-    function changeIGovernor(IGovernor newIGovernor) public onlyAuthorizedChanger {
+    function changeIGovernor(IGovernor newIGovernor) external onlyAuthorizedChanger {
         governor = newIGovernor;
     }
 

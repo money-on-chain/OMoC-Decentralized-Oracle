@@ -33,7 +33,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
     OracleManager public oracleManager;
 
     // The block where the last price publication occurred.
-    uint256 lastPublicationBlock;
+    uint256 public lastPublicationBlock;
 
     // The amount of block during which a price is considered valid
     uint256 public validPricePeriodInBlocks;
@@ -76,7 +76,7 @@ contract CoinPairPriceGobernanza is Initializable, Governed, IterableWhitelist {
         require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
         require(_numIdleRounds >= 1, "The number of rounds an oracle must be idle must be >= 1");
 
-        Governed.initialize(_governor);
+        Governed._initialize(_governor);
 
         for (uint256 i = 0; i < _wlist.length; i++) {
             IterableWhitelist.add(_wlist[i]);

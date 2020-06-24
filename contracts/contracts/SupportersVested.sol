@@ -19,7 +19,7 @@ contract SupportersVested is Governed {
         require(address(_supporters) != address(0), "Supporters contract address must be != 0");
         require(address(_supporters.mocToken()) != address(0), "Token contract address must be != 0");
 
-        Governed.initialize(_governor);
+        Governed._initialize(_governor);
 
         supporters = _supporters;
         mocToken = _supporters.mocToken();
