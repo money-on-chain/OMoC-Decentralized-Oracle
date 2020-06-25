@@ -25,7 +25,9 @@ contract('SupportersWhitelisted', (accounts) => {
     const GOVERNOR = accounts[8];
     describe('Creation', () => {
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(GOVERNOR, [], token.address,
                 period, minStayBlocks, afterStopBlocks)
@@ -58,15 +60,17 @@ contract('SupportersWhitelisted', (accounts) => {
         const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS)
 
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(GOVERNOR, [user1], token.address,
                 period, minStayBlocks, afterStopBlocks)
 
-            await token.mint(user1, INITIAL_BALANCE)
-            await token.mint(user2, BALANCE_USER2)
-            await token.mint(user3, BALANCE_USER3)
-            await token.mint(payer, BALANCE_PAYER)
+            await governor.mint(token.address, user1, INITIAL_BALANCE)
+            await governor.mint(token.address, user2, BALANCE_USER2)
+            await governor.mint(token.address, user3, BALANCE_USER3)
+            await governor.mint(token.address, payer, BALANCE_PAYER)
 
             await token.approve(supporters.address, INITIAL_BALANCE, {from: user1})
         })
@@ -143,6 +147,7 @@ contract('SupportersWhitelisted', (accounts) => {
         beforeEach(async () => {
             this.governor = await MockGovernor.new(GOVERNOR);
             this.token = await TestMOC.new();
+            await this.token.initialize(this.governor.address);
             this.supporters = await Supporters.new();
             await this.supporters.initialize(this.governor.address, [], this.token.address,
                 period, minStayBlocks, afterStopBlocks)
@@ -214,6 +219,7 @@ contract('SupportersWhitelisted', (accounts) => {
         beforeEach(async () => {
             this.governor = await MockGovernor.new(GOVERNOR);
             this.token = await TestMOC.new();
+            await this.token.initialize(this.governor.address);
             this.supporters = await Supporters.new();
             await this.supporters.initialize(this.governor.address, [], this.token.address,
                 period, minStayBlocks, afterStopBlocks)

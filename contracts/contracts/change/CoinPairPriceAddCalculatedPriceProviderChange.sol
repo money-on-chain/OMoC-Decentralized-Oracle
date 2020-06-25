@@ -1,25 +1,29 @@
 pragma solidity 0.6.0;
+pragma experimental ABIEncoderV2;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {CoinPairPriceGobernanza} from "../CoinPairPriceGobernanza.sol";
+import {GovernedAbstract} from "../GovernedAbstract.sol";
 import {CalculatedPriceProvider} from "../CalculatedPriceProvider.sol";
+import {IterableWhitelist} from "../libs/IterableWhitelist.sol";
 
 /**
   @title CoinPairPriceAddCoinPairCalculatorChange
   @notice This contract is a ChangeContract intended to be used to whitelist a coinPairPriceCalculator
   in various CoinPaiPrice contracts at once.
  */
-contract CoinPairPriceAddCalculatedPriceProviderChange is ChangeContract {
+contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceGobernanza, ChangeContract {
 
-    CalculatedPriceProvider calculatedPriceProvider;
-    CoinPairPriceGobernanza[] coinPairPrices;
+    GovernedAbstract[] coinPairPrices;
+    bytes encodedData;
+
     /**
       @notice Constructor
       @param _calculatedPriceProvider Address of coin pair price calculator to add to whitelists
       @param _coinPairPrices List of coinPairPrice contracts that must whitelist the _coinPairPriceCalculator Address
     */
-    constructor(CalculatedPriceProvider _calculatedPriceProvider, CoinPairPriceGobernanza[] memory _coinPairPrices) public {
-        calculatedPriceProvider = _calculatedPriceProvider;
+    constructor(address _calculatedPriceProvider, GovernedAbstract[] memory _coinPairPrices) public {
+        encodedData = abi.encode(_calculatedPriceProvider);
         coinPairPrices = _coinPairPrices;
     }
 
@@ -30,10 +34,16 @@ contract CoinPairPriceAddCalculatedPriceProviderChange is ChangeContract {
      */
     function execute() external override {
         for (uint i = 0; i < coinPairPrices.length; i++) {
-            coinPairPrices[i].addToWhitelist(address(calculatedPriceProvider));
+            coinPairPrices[i].delegateCallToChanger(encodedData);
         }
-        //        // usable just once!!!
-        //        coinPairPrice = address(0);
+        // TODO: Make it usable just once.
     }
 
+    /**
+        Called by the Governed contract delegateCallToChanger method
+        This methods runs in the Governed contract storage.
+    */
+    function impersonate(bytes calldata data) external {
+        IterableWhitelist.add(abi.decode(data, (address)));
+    }
 }

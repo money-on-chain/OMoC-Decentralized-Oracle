@@ -5,11 +5,17 @@ import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {CoinPairPriceGobernanza} from "./CoinPairPriceGobernanza.sol";
 import {OracleInfoLib} from "./libs/OracleInfo.sol";
 import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
+import {Initializable} from "./openzeppelin/Initializable.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {OracleManager} from "./OracleManager.sol";
+import {IterableWhitelist} from "./libs/IterableWhitelist.sol";
+import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProviderRegisterEntry {
+contract CoinPairPrice is CoinPairPriceGobernanza, Initializable, IPriceProvider, IPriceProviderRegisterEntry {
     using SafeMath for uint;
 
     // The publish message has a version field
@@ -55,6 +61,54 @@ contract CoinPairPrice is CoinPairPriceGobernanza, IPriceProvider, IPriceProvide
     //
     // -------------------------------------------------------------------------------------------------------------
 
+
+    /// @notice Construct a new contract
+    /// @param _governor The governor address.
+    /// @param _wlist List of whitelisted contracts (those that can get the price).
+    /// @param _coinPair The coinpair, ex: USDBTC.
+    /// @param _tokenAddress The address of the MOC token to use.
+    /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
+    /// @param _roundLockPeriodInBlocks The minimum time span for each round before a new one can be started, in blocks.
+    /// @param _validPricePeriodInBlocks The time span for which the last published price is valid.
+    /// @param _bootstrapPrice A price to be set as a bootstraping value for this block
+    /// @param _numIdleRounds The number of rounds an oracle must be idle (not participating) before a removal
+    /// @param _oracleManager The contract of the oracle manager.
+    function initialize(
+        IGovernor _governor,
+        address[] memory _wlist,
+        bytes32 _coinPair,
+        address _tokenAddress,
+        uint256 _maxOraclesPerRound,
+        uint256 _roundLockPeriodInBlocks,
+        uint256 _validPricePeriodInBlocks,
+        uint256 _bootstrapPrice,
+        uint8 _numIdleRounds,
+        OracleManager _oracleManager
+    ) public initializer
+    {
+        require(_wlist.length != 0, "Whitelist must have at least one element");
+        require(_coinPair != bytes32(0), "Coin pair must be valid");
+        require(_tokenAddress != address(0), "The MOC token address must be provided in constructor");
+        require(_roundLockPeriodInBlocks > 0, "The round lock period must be positive and non zero");
+        require(_validPricePeriodInBlocks > 0, "The valid price period must be positive and non zero");
+        require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
+        require(_numIdleRounds >= 1, "The number of rounds an oracle must be idle must be >= 1");
+
+        Governed._initialize(_governor);
+
+        for (uint256 i = 0; i < _wlist.length; i++) {
+            IterableWhitelist.add(_wlist[i]);
+        }
+        maxOraclesPerRound = _maxOraclesPerRound;
+        roundLockPeriodInBlocks = _roundLockPeriodInBlocks;
+        validPricePeriodInBlocks = _validPricePeriodInBlocks;
+        numIdleRounds = _numIdleRounds;
+        token = IERC20(_tokenAddress);
+        coinPair = _coinPair;
+        oracleManager = _oracleManager;
+        lastPublicationBlock = block.number;
+        currentPrice = _bootstrapPrice;
+    }
 
     /// @notice return the type of provider
     function getPriceProviderType() external override pure returns (IPriceProviderType) {

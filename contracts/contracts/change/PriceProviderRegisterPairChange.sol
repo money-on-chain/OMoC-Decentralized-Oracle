@@ -41,8 +41,7 @@ contract PriceProviderRegisterPairChange is ChangeContract {
         priceProviderRegister.registerCoinPair(coinPair, contractAddr);
         // OVERRIDE THE OLD ONE !!!
         // priceProviderRegister.setCoinPair(coinPair,contractAddr);
-        // usable just once!!!
-        // priceProviderRegister = address(0);
+        // TODO: Make it usable just once.
     }
 
 }

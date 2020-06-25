@@ -1,7 +1,6 @@
 pragma solidity 0.6.0;
 
-import "./IGovernor.sol";
-import "../../openzeppelin/Initializable.sol";
+import {IGovernor} from "./IGovernor.sol";
 
 /**
   @title Governed
@@ -10,7 +9,7 @@ import "../../openzeppelin/Initializable.sol";
   The only purpose of this contract is to define some useful modifiers and functions to be used on the
   governance aspect of the child contract
   */
-contract Governed is Initializable {
+contract Governed {
 
     /**
       @notice The address of the contract which governs this one
@@ -35,7 +34,7 @@ contract Governed is Initializable {
       It is necessary because of the upgradeability of the contracts
       @param _governor Governor address
      */
-    function _initialize(IGovernor _governor) internal initializer {
+    function _initialize(IGovernor _governor) internal {
         governor = _governor;
     }
 

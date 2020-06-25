@@ -1,14 +1,15 @@
 pragma solidity 0.6.0;
 
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {Initializable} from "./openzeppelin/Initializable.sol";
 import {CoinPairRegister} from "./CoinPairRegister.sol";
 import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
 
 /// @title A registry for the coin pair prices, this is more general than OracleManager that stores
 /// only the coin pairs that are published by oracles.
-contract PriceProviderRegister is Initializable, Governed, CoinPairRegister {
+contract PriceProviderRegister is Initializable, GovernedAbstract, CoinPairRegister {
 
     /**
       @notice Initialize the contract with the basic settings

@@ -8,19 +8,19 @@ import "../CoinPairPriceGobernanza.sol";
   @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
   parameter validPricePeriodInBlocks
  */
-contract CoinPairPriceValidPricePeriodInBlocksChange is ChangeContract {
+contract CoinPairPriceValidPricePeriodInBlocksChange is CoinPairPriceGobernanza, ChangeContract {
 
-    CoinPairPriceGobernanza public coinPairPrice;
-    uint256 validPricePeriodInBlocks;
+    GovernedAbstract public coinPairPrice;
+    bytes encodedData;
 
     /**
       @notice Constructor
       @param _coinPairPrice Address of coin pair price to upgrade
       @param _validPricePeriodInBlocks The period in which the price is valid after a publication
     */
-    constructor(CoinPairPriceGobernanza _coinPairPrice, uint256 _validPricePeriodInBlocks) public {
+    constructor(GovernedAbstract _coinPairPrice, uint256 _validPricePeriodInBlocks) public {
         coinPairPrice = _coinPairPrice;
-        validPricePeriodInBlocks = _validPricePeriodInBlocks;
+        encodedData = abi.encode(_validPricePeriodInBlocks);
     }
 
     /**
@@ -29,9 +29,15 @@ contract CoinPairPriceValidPricePeriodInBlocksChange is ChangeContract {
       the current architecture
      */
     function execute() external override {
-        coinPairPrice.setValidPricePeriodInBlocks(validPricePeriodInBlocks);
-        //        // usable just once!!!
-        //        coinPairPrice = address(0);
+        coinPairPrice.delegateCallToChanger(encodedData);
+        // TODO: Make it usable just once.
     }
 
+    /**
+        Called by the Governed contract delegateCallToChanger method
+        This methods runs in the Governed contract storage.
+    */
+    function impersonate(bytes calldata data) external {
+        validPricePeriodInBlocks = abi.decode(data, (uint256));
+    }
 }

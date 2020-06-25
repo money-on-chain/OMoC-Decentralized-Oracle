@@ -25,6 +25,7 @@ contract("OracleManager by gobernanza", async (accounts) => {
     it("Creation", async () => {
         this.governor_data = await helpers.createGovernor(GOBERNOR);
         this.token = await TestMOC.new();
+        await this.token.initialize(this.governor_data.address);
         this.oracleMgr = await OracleManager.new();
         this.supporters = await SupportersWhitelisted.new();
         this.coinPairPrice = await CoinPairPrice.new();
@@ -46,8 +47,8 @@ contract("OracleManager by gobernanza", async (accounts) => {
         await this.oracleMgr.initialize(this.governor_data.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor_data.registerCoinPair(this.oracleMgr, this.coinPair, this.coinPairPrice.address);
-        await this.token.mint(accounts[0], '800000000000000000000');
-        await this.token.mint(accounts[2], '800000000000000000000');
+        await this.governor_data.mint(this.token.address,accounts[0], '800000000000000000000');
+        await this.governor_data.mint(this.token.address,accounts[2], '800000000000000000000');
     });
 
     it("Registration and subscription", async () => {

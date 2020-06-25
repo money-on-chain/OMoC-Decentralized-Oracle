@@ -21,6 +21,7 @@ contract("OracleManager", async (accounts) => {
         this.governor = await helpers.createGovernor(accounts[8]);
 
         this.token = await TestMOC.new();
+        await this.token.initialize(this.governor.address);
         this.oracleMgr = await OracleManager.new();
         this.supporters = await SupportersWhitelisted.new();
 
@@ -57,10 +58,10 @@ contract("OracleManager", async (accounts) => {
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice_btcusd.address);
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("RIFBTC"), this.coinPairPrice_RIFBTC.address);
-        await this.token.mint(accounts[0], '800000000000000000000');
-        await this.token.mint(accounts[2], '800000000000000000000');
-        await this.token.mint(accounts[4], '800000000000000000000');
-        await this.token.mint(accounts[6], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[0], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[2], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[4], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[6], '800000000000000000000');
     });
 
     const oracleData = [

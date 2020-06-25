@@ -36,8 +36,7 @@ contract OracleManagerPairChange is ChangeContract {
      */
     function execute() external override {
         oracleManager.registerCoinPair(coinPair, contractAddr);
-//        // usable just once!!!
-//        oracleManager = address(0);
+        // TODO: Make it usable just once.
     }
 
 }

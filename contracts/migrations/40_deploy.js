@@ -38,15 +38,22 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
 
     console.log("Deploying TestMOC");
-    const TestMOC = artifacts.require("TestMOC");
-    await deployer.deploy(TestMOC);
-    const testMOC = await TestMOC.deployed();
-    console.log("TestMOC: ", testMOC.address);
+    await scripts.add({contractsData: [{name: "TestMOC", alias: "TestMOC"}]});
+    await scripts.push({network, txParams: {...txParams}, force: true});
+    const testMOC = await scripts.create({
+        methodName: 'initialize',
+        methodArgs: [governorAddr],
+        admin: proxyAdminAddr,
+        contractAlias: "TestMOC",
+        network,
+        txParams
+    });
+    console.log("TestMOC: ", testMOC.options.address);
 
 
     console.log("Create Supporters Proxy");
     await scripts.add({contractsData: [{name: "SupportersWhitelisted", alias: "Supporters"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 5000000}});
+    await scripts.push({network, txParams: {...txParams, gas: 5000000}, force: true});
     const supporters = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "Supporters",
@@ -58,7 +65,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
     console.log("Create OraclesManager");
     await scripts.add({contractsData: [{name: "OracleManager", alias: "OracleManager"}]});
     // Give more gas!!!
-    await scripts.push({network, txParams: {...txParams, gas: 6400000}});
+    await scripts.push({network, txParams: {...txParams, gas: 6400000}, force: true});
     const oracleManager = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "OracleManager",
@@ -69,7 +76,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Create Supporters Vested");
     await scripts.add({contractsData: [{name: "SupportersVested", alias: "SupportersVested"}]});
-    await scripts.push({network, txParams});
+    await scripts.push({network, txParams, force: true});
     const supportersVested = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "SupportersVested",
@@ -81,9 +88,10 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Initialize supporters", 'governor', governorAddr);
     const scall = await artifacts.require("SupportersWhitelisted").at(supporters.options.address);
-    await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address], TestMOC.address,
+    await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address],
+        testMOC.options.address,
         params.supportersEarnPeriodInBlocks,
-        params.supportersMinStayBlocks,params.supportersAfterStopBlocks);
+        params.supportersMinStayBlocks, params.supportersAfterStopBlocks);
 
     console.log("Initialize OracleManager", 'governor', governorAddr,);
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
@@ -110,7 +118,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
         const alias = 'CoinPairPrice_' + coin;
         await scripts.add({contractsData: [{name: "CoinPairPrice", alias: alias}]});
         // MORE GAS!!!
-        await scripts.push({network, txParams: {...txParams, gas: 6000000}});
+        await scripts.push({network, txParams: {...txParams, gas: 6000000}, force: true});
         const coinPairPrice = await scripts.create({
                 admin: proxyAdminAddr,
                 contractAlias: alias,
@@ -119,7 +127,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
                     governorAddr,
                     [coinPairPriceFree.options.address, info_getter_addr],
                     coinPair,
-                    TestMOC.address,
+                    testMOC.options.address,
                     parseInt(params.maxOraclesPerRound[i]),
                     parseInt(params.roundLockPeriodInBlocks[i]),
                     parseInt(params.validPricePeriodInBlocks[i]),

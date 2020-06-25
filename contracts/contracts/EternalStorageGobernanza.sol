@@ -1,10 +1,12 @@
 pragma solidity 0.6.0;
 
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {Initializable} from "./openzeppelin/Initializable.sol";
 
 // Based on https://github.com/fravoll/solidity-patterns EternalStorage
-contract EternalStorageGobernanza is Governed {
+contract EternalStorageGobernanza is Initializable, GovernedAbstract {
     struct UIntVal {bool b; uint248 v;}
 
     struct BoolVal {bool b; bool v;}

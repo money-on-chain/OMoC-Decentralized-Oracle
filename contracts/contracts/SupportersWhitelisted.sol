@@ -4,8 +4,9 @@ import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {Initializable} from "./openzeppelin/Initializable.sol";
 import {IterableWhitelist} from "./libs/IterableWhitelist.sol";
 import {SupportersVestedAbstract} from "./SupportersVestedAbstract.sol";
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 
 /*
     Right now we have two things implemented in the same smart-contract:
@@ -14,7 +15,7 @@ import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
     This can be split in the future in two smart-contracts if we want to add a specific set
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
-contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVestedAbstract, Governed {
+contract SupportersWhitelisted is Initializable, IterableWhitelist, SupportersVestedAbstract, GovernedAbstract {
 
     /**
     Contract creation

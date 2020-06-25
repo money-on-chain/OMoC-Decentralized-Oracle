@@ -41,8 +41,7 @@ contract PriceProviderOracleManagerRegisterPairChange is ChangeContract {
             address contractAddr = oracleManager.getContractAddress(coinPair);
             priceProviderRegister.registerCoinPair(coinPair, IPriceProviderRegisterEntry(contractAddr));
         }
-        // usable just once!!!
-        // priceProviderRegister = address(0);
+        // TODO: Make it usable just once.;
     }
 
 }

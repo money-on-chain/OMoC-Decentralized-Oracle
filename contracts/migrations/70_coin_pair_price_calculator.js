@@ -61,7 +61,7 @@ async function deploy(deployer, networkName, accounts) {
             alias: "CalculatedPriceProviderWhitelisted"
         }]
     });
-    await scripts.push({network, txParams: {...txParams, gas: 3000000}});
+    await scripts.push({network, txParams: {...txParams, gas: 3000000}, force: true});
     const calculatedPriceProviderWhitelisted = await scripts.create({
         methodName: 'initialize',
         methodArgs: [governorAddr, [coinPairPriceFree.options.address], baseMultiplicator, multiplyBy, baseDivisor, divideBy],

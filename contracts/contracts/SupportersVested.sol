@@ -1,17 +1,19 @@
 pragma solidity 0.6.0;
 
+import {Initializable} from  "./openzeppelin/Initializable.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {SupportersVestedAbstract} from "./SupportersVestedAbstract.sol";
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 
 /*
     Implementation of SupportersVestedAbstract used by regular supporters.
     This can be merged into SupportersWhitelisted directly, but we choose separate it so
     we can add other contracts with different kind of restrictions to the supporters smart-contract.
 */
-contract SupportersVested is Governed {
+contract SupportersVested is Initializable, GovernedAbstract {
     SupportersWhitelisted public            supporters;
     IERC20 public                           mocToken;
 
@@ -33,7 +35,7 @@ contract SupportersVested is Governed {
     function distribute() external {
         // if somebody does a MOC transfer to our address, use the excess as rewards.
         uint256 mocs = mocToken.balanceOf(address(this));
-        require(mocToken.transfer(address(supporters), mocs), "Error in transfe");
+        require(mocToken.transfer(address(supporters), mocs), "Error in transfer");
         supporters.distribute();
     }
 

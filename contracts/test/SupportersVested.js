@@ -30,7 +30,9 @@ contract('SupportersVested', (accounts) => {
     const GOVERNOR = accounts[8];
     describe('Creation', () => {
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             vested = await SupportersVested.new()
             whitelisted = await SupportersWhitelisted.new()
             await whitelisted.initialize(GOVERNOR, [vested.address], token.address,
@@ -56,7 +58,9 @@ contract('SupportersVested', (accounts) => {
         const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS)
 
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             vested = await SupportersVested.new()
             whitelisted = await SupportersWhitelisted.new()
             await whitelisted.initialize(GOVERNOR, [vested.address], token.address,
@@ -66,8 +70,8 @@ contract('SupportersVested', (accounts) => {
                 whitelisted.address,   // _supporters
             )
 
-            await token.mint(user1, BALANCE_USER1)
-            await token.mint(payer, BALANCE_PAYER)
+            await governor.mint(token.address, user1, BALANCE_USER1)
+            await governor.mint(token.address, payer, BALANCE_PAYER)
 
             await token.approve(vested.address, BALANCE_USER1, {from: user1})
         })
@@ -179,7 +183,9 @@ contract('SupportersVested', (accounts) => {
         const BALANCE_USER1 = new BN(web3.utils.toWei("1", "ether"))
 
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             vested = await SupportersVested.new()
             whitelisted = await SupportersWhitelisted.new()
             await whitelisted.initialize(GOVERNOR, [vested.address], token.address,
@@ -188,7 +194,7 @@ contract('SupportersVested', (accounts) => {
                 GOVERNOR,
                 whitelisted.address   // _supporters
             )
-            await token.mint(user1, BALANCE_USER1)
+            await governor.mint(token.address, user1, BALANCE_USER1)
         })
 
 

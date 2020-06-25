@@ -93,6 +93,7 @@ exports.findEvent = findEvent;
 async function createGovernor(owner) {
     const Governor = artifacts.require("Governor");
     const OracleManagerPairChange = artifacts.require("OracleManagerPairChange");
+    const TestMOCMintChange = artifacts.require('TestMOCMintChange');
     const governor = await Governor.new();
     await governor.initialize(owner);
     return {
@@ -101,6 +102,10 @@ async function createGovernor(owner) {
         governor,
         registerCoinPair: async (oracleManagerContract, coinPair, address) => {
             const change = await OracleManagerPairChange.new(oracleManagerContract.address, coinPair, address);
+            await governor.executeChange(change.address, {from: owner});
+        },
+        mint: async (tokenAddr, addr, quantity) => {
+            const change = await TestMOCMintChange.new(tokenAddr, addr, quantity);
             await governor.executeChange(change.address, {from: owner});
         }
     }

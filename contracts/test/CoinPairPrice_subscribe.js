@@ -29,6 +29,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
     async function init_contracts(testobj) {
         testobj.governor = await helpers.createGovernor(accounts[8]);
         testobj.token = await TestMOC.new();
+        await testobj.token.initialize(testobj.governor.address);
         testobj.oracleMgr = await OracleManager.new();
         testobj.supporters = await SupportersWhitelisted.new();
         testobj.coinPairPrice = await CoinPairPrice.new();
@@ -53,10 +54,10 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
         // Create sample coin pairs
         await testobj.governor.registerCoinPair(testobj.oracleMgr, COINPAIR, testobj.coinPairPrice.address);
 
-        await testobj.token.mint(accounts[0], '800000000000000000000');
-        await testobj.token.mint(accounts[2], '800000000000000000000');
-        await testobj.token.mint(accounts[4], '800000000000000000000');
-        await testobj.token.mint(accounts[6], '800000000000000000000');
+        await testobj.governor.mint(testobj.token.address, accounts[0], '800000000000000000000');
+        await testobj.governor.mint(testobj.token.address, accounts[2], '800000000000000000000');
+        await testobj.governor.mint(testobj.token.address, accounts[4], '800000000000000000000');
+        await testobj.governor.mint(testobj.token.address, accounts[6], '800000000000000000000');
         assert.equal(maxOraclesPerRound, (await testobj.coinPairPrice.maxOraclesPerRound()).toNumber());
         assert.equal((await testobj.coinPairPrice.getRoundInfo()).selectedOracles.length, 0);
         assert.equal((await testobj.coinPairPrice.getRoundInfo()).round, 0);

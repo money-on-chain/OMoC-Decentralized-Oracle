@@ -21,6 +21,7 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
         this.governor = await helpers.createGovernor(accounts[8]);
 
         this.token = await TestMOC.new();
+        await this.token.initialize(this.governor.address);
         this.oracleMgr = await OracleManager.new();
         this.supporters = await SupportersWhitelisted.new();
 
@@ -44,10 +45,10 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, COINPAIR, this.coinPairPrice.address);
 
-        await this.token.mint(accounts[0], '800000000000000000000');
-        await this.token.mint(accounts[2], '800000000000000000000');
-        await this.token.mint(accounts[4], '800000000000000000000');
-        await this.token.mint(accounts[6], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[0], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[2], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[4], '800000000000000000000');
+        await this.governor.mint(this.token.address,accounts[6], '800000000000000000000');
     });
 
     async function register(coinPairPrice, token, oracleManager, ownerAddr, stake, name, oracleAddr, prevEntry) {
@@ -235,7 +236,7 @@ contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
         for (let k = 0; k < 10; k++) {
             for (let i = 0; i < selOracles.length; i++) {
                 const o = selOracles[i]
-                const lastPub = (await this.coinPairPrice.getLastPublicationBlock()).toString();
+                const lastPub = (await this.coinPairPrice.lastPublicationBlock()).toString();
                 const price = Math.floor(Math.random() * 1000000);
                 const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", price.toString(), o.account, lastPub);
                 const signatures = []

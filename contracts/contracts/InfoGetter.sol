@@ -4,10 +4,14 @@ pragma experimental ABIEncoderV2;
 import {Initializable} from  "./openzeppelin/Initializable.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {OracleManager} from "./OracleManager.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract InfoGetter is Initializable {
+contract InfoGetter is Initializable, GovernedAbstract {
 
     struct FullOracleRoundInfo {
         uint256 stake;
@@ -64,7 +68,15 @@ contract InfoGetter is Initializable {
         uint256 availableRewards;
     }
 
-    function initialize() public initializer {}
+    /**
+      @notice Initialize the contract with the basic settings
+      @dev This initialize replaces the constructor but it is not called automatically.
+      It is necessary because of the upgradeability of the contracts
+      @param _governor Governor address
+     */
+    function initialize(IGovernor _governor) external initializer {
+        Governed._initialize(_governor);
+    }
 
 
 

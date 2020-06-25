@@ -8,10 +8,11 @@ import {OracleInfoLib} from "./libs/OracleInfo.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {Initializable} from "./openzeppelin/Initializable.sol";
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 
-contract OracleManager is CoinPairRegister, Initializable, Governed {
+contract OracleManager is CoinPairRegister, Initializable, GovernedAbstract {
     RegisteredOraclesLib.RegisteredOracles  internal registeredOracles;
     SupportersWhitelisted public            supportersContract;
     uint256 public                          minOracleOwnerStake;

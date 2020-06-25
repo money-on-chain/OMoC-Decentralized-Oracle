@@ -33,10 +33,10 @@ async function deploy(deployer, networkName, accounts) {
     console.log("Create PriceProviderRegister");
     await scripts.add({contractsData: [{name: "PriceProviderRegister", alias: "PriceProviderRegister"}]});
     // Give more gas!!!
-    await scripts.push({network, txParams: {...txParams}});
+    await scripts.push({network, txParams: {...txParams}, force: true});
     const priceProviderRegister = await scripts.create({
         methodName: 'initialize',
-        methodArgs: [governorAddr,],
+        methodArgs: [governorAddr],
         admin: proxyAdminAddr,
         contractAlias: "PriceProviderRegister",
         network,

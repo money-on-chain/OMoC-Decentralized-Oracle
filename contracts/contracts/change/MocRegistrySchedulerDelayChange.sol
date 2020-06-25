@@ -27,8 +27,7 @@ contract MocRegistrySchedulerDelayChange is ChangeContract {
     function execute() external override {
         registry.setUint(get_keccak("SCHEDULER_POOL_DELAY"), 1 * 60);
         registry.setUint(get_keccak("SCHEDULER_ROUND_DELAY"), 30 * 60);
-        // usable just once!!!
-        // registry = EternalStorageGobernanza(0);
+        // TODO: Make it usable just once.
     }
 
     function get_keccak(string memory k) internal pure returns (bytes32) {

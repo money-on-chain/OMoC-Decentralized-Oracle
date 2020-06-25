@@ -30,8 +30,7 @@ contract SupportersWhitelistedPeriodChange is ChangeContract {
      */
     function execute() external override {
         supporters.setPeriod(period);
-        //        // usable just once!!!
-        //        coinPairPrice = address(0);
+        // TODO: Make it usable just once.
     }
 
 }

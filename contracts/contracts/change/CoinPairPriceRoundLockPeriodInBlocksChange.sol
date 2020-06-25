@@ -8,19 +8,19 @@ import "../CoinPairPriceGobernanza.sol";
   @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
   parameter roundLockPeriodInBlocks
  */
-contract CoinPairPriceRoundLockPeriodInBlocksChange is ChangeContract {
+contract CoinPairPriceRoundLockPeriodInBlocksChange is CoinPairPriceGobernanza, ChangeContract {
 
-    CoinPairPriceGobernanza public coinPairPrice;
-    uint256 roundLockPeriodInBlocks;
+    GovernedAbstract public coinPairPrice;
+    bytes encodedData;
 
     /**
       @notice Constructor
       @param _coinPairPrice Address of coin pair price to upgrade
       @param _roundLockPeriodInBlocks The maximum count of oracles selected to participate each round
     */
-    constructor(CoinPairPriceGobernanza _coinPairPrice, uint256 _roundLockPeriodInBlocks) public {
+    constructor(GovernedAbstract _coinPairPrice, uint256 _roundLockPeriodInBlocks) public {
         coinPairPrice = _coinPairPrice;
-        roundLockPeriodInBlocks = _roundLockPeriodInBlocks;
+        encodedData = abi.encode(_roundLockPeriodInBlocks);
     }
 
     /**
@@ -29,9 +29,15 @@ contract CoinPairPriceRoundLockPeriodInBlocksChange is ChangeContract {
       the current architecture
      */
     function execute() external override {
-        coinPairPrice.setRoundLockPeriodInBlocks(roundLockPeriodInBlocks);
-        //        // usable just once!!!
-        //        coinPairPrice = address(0);
+        coinPairPrice.delegateCallToChanger(encodedData);
+        // TODO: Make it usable just once.
     }
 
+    /**
+        Called by the Governed contract delegateCallToChanger method
+        This methods runs in the Governed contract storage.
+    */
+    function impersonate(bytes calldata data) external {
+        roundLockPeriodInBlocks = abi.decode(data, (uint256));
+    }
 }

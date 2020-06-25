@@ -26,7 +26,9 @@ contract('Supporters', (accounts) => {
 
     describe('Creation', () => {
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(token.address, new BN(10))
         })
@@ -52,12 +54,15 @@ contract('Supporters', (accounts) => {
         const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS)
 
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
+
             supporters = await Supporters.new()
             await supporters.initialize(token.address, new BN(10))
 
-            await token.mint(user1, BALANCE_USER1)
-            await token.mint(payer, BALANCE_PAYER)
+            await governor.mint(token.address, user1, BALANCE_USER1)
+            await governor.mint(token.address, payer, BALANCE_PAYER)
 
             await token.approve(supporters.address, BALANCE_USER1, {from: user1})
         })
@@ -128,13 +133,15 @@ contract('Supporters', (accounts) => {
         const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS)
 
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(token.address, new BN(10))
 
 
-            await token.mint(user1, BALANCE_USER1)
-            await token.mint(payer, BALANCE_PAYER)
+            await governor.mint(token.address, user1, BALANCE_USER1)
+            await governor.mint(token.address, payer, BALANCE_PAYER)
 
             // Need to stake twice
             await token.approve(supporters.address, BALANCE_USER1.mul(new BN(2)), {from: user1})
@@ -274,15 +281,17 @@ contract('Supporters', (accounts) => {
         let endBlock
 
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(token.address, new BN(10))
 
 
-            await token.mint(user1, BALANCE_USER1)
-            await token.mint(user2, BALANCE_USER2)
-            await token.mint(user3, BALANCE_USER3)
-            await token.mint(payer, BALANCE_PAYER)
+            await governor.mint(token.address, user1, BALANCE_USER1)
+            await governor.mint(token.address, user2, BALANCE_USER2)
+            await governor.mint(token.address, user3, BALANCE_USER3)
+            await governor.mint(token.address, payer, BALANCE_PAYER)
 
             await token.approve(supporters.address, BALANCE_USER1, {from: user1})
             await token.approve(supporters.address, BALANCE_USER2, {from: user2})
@@ -399,14 +408,16 @@ contract('Supporters', (accounts) => {
         const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS)
 
         beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8])
             token = await TestMOC.new()
+            await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(token.address, new BN(10))
 
-            await token.mint(user1, INITIAL_BALANCE)
-            await token.mint(user2, BALANCE_USER2)
-            await token.mint(user3, BALANCE_USER3)
-            await token.mint(payer, BALANCE_PAYER)
+            await governor.mint(token.address, user1, INITIAL_BALANCE)
+            await governor.mint(token.address, user2, BALANCE_USER2)
+            await governor.mint(token.address, user3, BALANCE_USER3)
+            await governor.mint(token.address, payer, BALANCE_PAYER)
 
             await token.approve(supporters.address, INITIAL_BALANCE, {from: user1})
         })

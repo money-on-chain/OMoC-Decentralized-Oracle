@@ -101,7 +101,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Signature", async (accounts) => {
         for (o of oracleData.slice(0, cant_oracles)) {
             await this.token.approve(this.oracleMgr.address, o.stake, {from: o.owner});
             await this.oracleMgr.registerOracle(o.account, o.name, o.stake, {from: o.owner});
-            const thisCoinPair = await this.coinPairPrice.getCoinPair();
+            const thisCoinPair = await this.coinPairPrice.coinPair();
             await this.oracleMgr.subscribeCoinPair(o.account, thisCoinPair, {from: o.owner});
         }
         const FEES = new BN((0.33 * 10 ** 18).toString());
@@ -115,8 +115,8 @@ contract("[ @skip-on-coverage ] CoinPairPrice Signature", async (accounts) => {
     async function sign_with_owner(oracleData, cant_signatures) {
         // sender signature is assumed
         const sender = oracleData[0].account;
-        const thisCoinPair = await this.coinPairPrice.getCoinPair();
-        const lastPubBlock = (await this.coinPairPrice.getLastPublicationBlock()).toString();
+        const thisCoinPair = await this.coinPairPrice.coinPair();
+        const lastPubBlock = (await this.coinPairPrice.lastPublicationBlock()).toString();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, helpers.coinPairStr(thisCoinPair),
             (10 ** 18).toString(), sender, lastPubBlock);
         // Add my own signature.
@@ -140,6 +140,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Signature", async (accounts) => {
             before(async () => {
                 this.governor = await helpers.createGovernor(accounts[0]);
                 this.token = await TestMOC.new();
+                await this.token.initialize(this.governor.address);
                 this.oracleMgr = await OracleManager.new();
                 this.supporters = await SupportersWhitelisted.new();
                 this.coinPairPrice = await CoinPairPrice.new();
@@ -162,7 +163,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Signature", async (accounts) => {
                 await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
                 // Create sample coin pairs
                 await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
-                await this.token.mint(accounts[0], '800000000000000000000');
+                await this.governor.mint(this.token.address, accounts[0], '800000000000000000000');
 
                 await register.call(this, ORACLE_DATA, t.oracles);
             });

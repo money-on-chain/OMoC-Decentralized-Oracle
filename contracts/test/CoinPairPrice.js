@@ -23,6 +23,8 @@ contract("CoinPairPrice", async (accounts) => {
         this.governor = await helpers.createGovernor(accounts[8]);
 
         this.token = await TestMOC.new();
+        await this.token.initialize(this.governor.address);
+
         this.oracleMgr = await OracleManager.new();
         this.supporters = await SupportersWhitelisted.new();
 
@@ -46,11 +48,11 @@ contract("CoinPairPrice", async (accounts) => {
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
-        await this.token.mint(accounts[0], '800000000000000000000');
-        await this.token.mint(accounts[2], '800000000000000000000');
-        await this.token.mint(accounts[4], '800000000000000000000');
-        await this.token.mint(accounts[6], '800000000000000000000');
-        await this.token.mint(accounts[8], '800000000000000000000');
+        await this.governor.mint(this.token.address, accounts[0], '800000000000000000000');
+        await this.governor.mint(this.token.address, accounts[2], '800000000000000000000');
+        await this.governor.mint(this.token.address, accounts[4], '800000000000000000000');
+        await this.governor.mint(this.token.address, accounts[6], '800000000000000000000');
+        await this.governor.mint(this.token.address, accounts[8], '800000000000000000000');
 
     });
 
@@ -121,7 +123,7 @@ contract("CoinPairPrice", async (accounts) => {
     });
 
     it("Should subscribe oracles A,B,C to this coin pair", async () => {
-        const thisCoinPair = await this.coinPairPrice.getCoinPair();
+        const thisCoinPair = await this.coinPairPrice.coinPair();
         await this.oracleMgr.subscribeCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
         await this.oracleMgr.subscribeCoinPair(oracleData[1].account, thisCoinPair, {from: oracleData[1].owner});
         await this.oracleMgr.subscribeCoinPair(oracleData[2].account, thisCoinPair, {from: oracleData[2].owner});
@@ -143,12 +145,12 @@ contract("CoinPairPrice", async (accounts) => {
 
     it("Should fail to publish price before the first switch-round call", async () => {
 
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -179,12 +181,12 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish with mismatching coinpair", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "ARSBTC", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "ARSBTC", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex(msg.coinpair), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex(msg.coinpair), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -195,12 +197,12 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish with zero price", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", 0 * (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", 0 * (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -210,12 +212,12 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish with non-V3 format", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(1, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(1, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -225,12 +227,12 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish with inconsistent signature count", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r],
             [s3.s, s2.s, s1.s],
@@ -247,13 +249,13 @@ contract("CoinPairPrice", async (accounts) => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
 
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[3].account));
 
         await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle,
-            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -264,14 +266,14 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish price if signature v-component is invalid", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
         s1.v = 100;
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -282,7 +284,7 @@ contract("CoinPairPrice", async (accounts) => {
     it("Oracle A should publish a valid price message signed by A,B and C", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
@@ -290,7 +292,7 @@ contract("CoinPairPrice", async (accounts) => {
         await this.coinPairPrice.publishPrice(msg.version,
             web3.utils.asciiToHex("BTCUSD"),
             msg.price, msg.votedOracle,
-            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -327,13 +329,13 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish price from  unsubscribed address", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
 
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s1.v, s2.v, s3.v],
             [s1.r, s2.r, s3.r],
             [s1.s, s2.s, s3.s],
@@ -343,13 +345,13 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish price if sender is not a voted oracle", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
 
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s1.v, s2.v, s3.v],
             [s1.r, s2.r, s3.r],
             [s1.s, s2.s, s3.s],
@@ -376,11 +378,11 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish price if signature count is  less than 50% of participating oracles", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
 
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s1.v],
             [s1.r],
             [s1.s],
@@ -390,12 +392,12 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish if signatures are not unique", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s1.v, s1.v, s1.v],
             [s1.r, s1.r, s1.r],
             [s1.s, s1.s, s1.s],
@@ -405,11 +407,11 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should fail to publish if signatures are in the wrong order", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s1.v, s2.v, s3.v],
             [s1.r, s2.r, s3.r],
             [s1.s, s2.s, s3.s],
@@ -418,7 +420,7 @@ contract("CoinPairPrice", async (accounts) => {
 
 
     it("Should register and subscribe oracle D while round is running", async () => {
-        const thisCoinPair = await this.coinPairPrice.getCoinPair();
+        const thisCoinPair = await this.coinPairPrice.coinPair();
         const initialBalance1 = await this.token.balanceOf(oracleData[3].owner);
         await this.token.approve(this.oracleMgr.address, oracleData[3].stake, {from: oracleData[3].owner});
         await this.oracleMgr.registerOracle(oracleData[3].account, oracleData[3].name, oracleData[3].stake, {from: oracleData[3].owner});
@@ -428,12 +430,12 @@ contract("CoinPairPrice", async (accounts) => {
 
     it("Should fail to publish if voter/sender is D (not a selected-in-round oracle)", async () => {
         // console.log(await this.coinPairPrice.getRoundInfo());
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[3].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[3].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s1.v, s2.v, s3.v],
             [s1.r, s2.r, s2.r],
             [s1.s, s2.s, s3.s],
@@ -442,12 +444,12 @@ contract("CoinPairPrice", async (accounts) => {
 
     it("Should fail to publish if any signer is not part of round", async () => {
 
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[3].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await expectRevert(this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s1.v, s2.v, s3.v],
             [s1.r, s2.r, s2.r],
             [s1.s, s2.s, s3.s],
@@ -464,11 +466,11 @@ contract("CoinPairPrice", async (accounts) => {
         // Oracle A    publications.
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
             const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
             const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
             const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -478,11 +480,11 @@ contract("CoinPairPrice", async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
             const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
             const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
             const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -492,11 +494,11 @@ contract("CoinPairPrice", async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
             const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
             const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
             const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -508,11 +510,11 @@ contract("CoinPairPrice", async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[1].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[1].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
             const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
             const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
             const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -522,11 +524,11 @@ contract("CoinPairPrice", async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[1].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[1].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
             const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
             const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
             const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -536,11 +538,11 @@ contract("CoinPairPrice", async (accounts) => {
         // Oracle C  publications.
         roundInfo = await this.coinPairPrice.getRoundInfo();
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[2].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (0.3 * 10 ** 18).toString(), oracleData[2].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
             const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
             const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
             const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+            await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -556,12 +558,12 @@ contract("CoinPairPrice", async (accounts) => {
     it("Should be possible for Oracle A to publish a valid price message after the lock period ", async () => {
 
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.getLastPublicationBlock()).toString());
+        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(3, "BTCUSD", (10 ** 18).toString(), oracleData[0].account, (await this.coinPairPrice.lastPublicationBlock()).toString());
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        await this.coinPairPrice.publishPrice(msg.version, web3.utils.asciiToHex("BTCUSD"), msg.price, msg.votedOracle, (await this.coinPairPrice.lastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -616,7 +618,7 @@ contract("CoinPairPrice", async (accounts) => {
     });
 
     it("Should exclude from round unsubscribed oracles and let remove after that", async () => {
-        const thisCoinPair = await this.coinPairPrice.getCoinPair();
+        const thisCoinPair = await this.coinPairPrice.coinPair();
 
         const roundInfo1 = await this.coinPairPrice.getRoundInfo();
         assert.isTrue(roundInfo1.selectedOracles.includes(oracleData[0].account))

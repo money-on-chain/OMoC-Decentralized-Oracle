@@ -8,19 +8,19 @@ import "../CoinPairPriceGobernanza.sol";
   @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
   parameter maxOraclesPerRound
  */
-contract CoinPairPriceMaxOraclesPerRoundChange is ChangeContract {
+contract CoinPairPriceMaxOraclesPerRoundChange is CoinPairPriceGobernanza, ChangeContract {
 
-    CoinPairPriceGobernanza public coinPairPrice;
-    uint256 maxOraclesPerRound;
+    GovernedAbstract public coinPairPrice;
+    bytes encodedData;
 
     /**
       @notice Constructor
       @param _coinPairPrice Address of coin pair price to upgrade
       @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
     */
-    constructor(CoinPairPriceGobernanza _coinPairPrice, uint256 _maxOraclesPerRound) public {
+    constructor(GovernedAbstract _coinPairPrice, uint256 _maxOraclesPerRound) public {
         coinPairPrice = _coinPairPrice;
-        maxOraclesPerRound = _maxOraclesPerRound;
+        encodedData = abi.encode(_maxOraclesPerRound);
     }
 
     /**
@@ -29,9 +29,15 @@ contract CoinPairPriceMaxOraclesPerRoundChange is ChangeContract {
       the current architecture
      */
     function execute() external override {
-        coinPairPrice.setMaxOraclesPerRound(maxOraclesPerRound);
-//        // usable just once!!!
-//        coinPairPrice = address(0);
+        coinPairPrice.delegateCallToChanger(encodedData);
+        // TODO: Make it usable just once.
     }
 
+    /**
+        Called by the Governed contract delegateCallToChanger method
+        This methods runs in the Governed contract storage.
+    */
+    function impersonate(bytes calldata data) external {
+        maxOraclesPerRound = abi.decode(data, (uint256));
+    }
 }

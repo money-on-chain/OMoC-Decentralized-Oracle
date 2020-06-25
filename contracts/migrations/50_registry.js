@@ -45,18 +45,16 @@ async function deploy(deployer, networkName, accounts) {
 
     console.log("Create EternalStorageGobernanza Proxy");
     await scripts.add({contractsData: [{name: "EternalStorageGobernanza", alias: "EternalStorageGobernanza"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 6000000}});
+    await scripts.push({network, txParams: {...txParams, gas: 6000000}, force: true});
     const eternalStorage = await scripts.create({
+        methodName: 'initialize',
+        methodArgs: [governorAddr],
         admin: proxyAdminAddr,
         contractAlias: "EternalStorageGobernanza",
         network,
         txParams
     });
     console.log("EternalStorageGobernanza: ", eternalStorage.options.address, 'proxyAdmin', proxyAdminAddr);
-
-    console.log("Initialize eternalStorage governor", governorAddr);
-    const scall = await artifacts.require("EternalStorageGobernanza").at(eternalStorage.options.address);
-    await scall.initialize(governorAddr);
 
     console.log("Deploy change contract", governorAddr);
     const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");

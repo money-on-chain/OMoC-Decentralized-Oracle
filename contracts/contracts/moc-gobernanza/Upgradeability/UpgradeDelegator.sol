@@ -1,9 +1,11 @@
 pragma solidity 0.6.0;
 
 
-import "../IOZAdminUpgradeabilityProxy.sol";
-import "../IOZProxyAdmin.sol";
-import "../Governance/Governed.sol";
+import {IOZAdminUpgradeabilityProxy} from "../IOZAdminUpgradeabilityProxy.sol";
+import {IOZProxyAdmin} from "../IOZProxyAdmin.sol";
+import {Governed} from "../Governance/Governed.sol";
+import {IGovernor} from "../Governance/IGovernor.sol";
+import {Initializable} from "../../openzeppelin/Initializable.sol";
 
 /**
   @title UpgradeDelegator
@@ -12,7 +14,7 @@ import "../Governance/Governed.sol";
   needed to be able to upgrade governance through the same system
 
  */
-contract UpgradeDelegator is Governed {
+contract UpgradeDelegator is Initializable, Governed {
     IOZProxyAdmin public proxyAdmin;
 
     function initialize(IGovernor _governor, IOZProxyAdmin _proxyAdmin) public initializer {

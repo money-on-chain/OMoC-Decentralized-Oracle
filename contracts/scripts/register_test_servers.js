@@ -33,6 +33,11 @@ async function main() {
     const oracleManager = await artifacts.require('OracleManager').deployed();
     console.log("OracleManager: ", oracleManager.address);
 
+    const governor = await artifacts.require('Governor').deployed();
+    const governorOwner = await governor.owner();
+    console.log("Governor: ", governor.address, "owner", governorOwner);
+
+    const TestMOCMintChange = artifacts.require('TestMOCMintChange');
     const testMOC = await artifacts.require('TestMOC').deployed();
     console.log("TestMOC: ", testMOC.address);
 
@@ -45,7 +50,8 @@ async function main() {
     console.log("balance of mocs pre:", balance.toString(), "needed", quantity.toString());
     if (balance.lt(quantity)) {
         console.log(testMOC.address, "calling mint", owner, quantity.toString());
-        await testMOC.mint(owner, quantity, {from: owner});
+        const testMOCMintChange = await TestMOCMintChange.new(testMOC.address, owner, quantity);
+        await governor.executeChange(testMOCMintChange.address, {from: governorOwner});
         console.log("balance pos:", (await testMOC.balanceOf(owner)).toString());
     }
 

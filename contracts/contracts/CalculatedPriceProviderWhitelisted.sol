@@ -7,11 +7,11 @@ import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
 import {Initializable} from "./openzeppelin/Initializable.sol";
 import {CalculatedPriceProvider} from "./CalculatedPriceProvider.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD
-contract CalculatedPriceProviderWhitelisted is Initializable, Governed, CalculatedPriceProvider,
+contract CalculatedPriceProviderWhitelisted is Initializable, GovernedAbstract, CalculatedPriceProvider,
 IterableWhitelist, IPriceProvider, IPriceProviderRegisterEntry {
 
     using SafeMath for uint;
@@ -29,7 +29,7 @@ IterableWhitelist, IPriceProvider, IPriceProviderRegisterEntry {
     function initialize(IGovernor _governor, address[] memory _wlist,
         uint _multiplicator, IPriceProvider[] memory _multiplyBy,
         uint _divisor, IPriceProvider[] memory _divideBy) public initializer {
-        Governed._initialize(_governor);
+        _initialize(_governor);
         CalculatedPriceProvider._initialize(_multiplicator, _multiplyBy, _divisor, _divideBy);
         for (uint256 i = 0; i < _wlist.length; i++) {
             IterableWhitelist.add(_wlist[i]);

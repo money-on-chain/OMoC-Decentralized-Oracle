@@ -20,6 +20,7 @@ contract("Oracle-Supporters integration", (accounts) => {
         this.governor = await helpers.createGovernor(accounts[8]);
 
         this.token = await TestMOC.new();
+        await this.token.initialize(this.governor.address);
         this.oracleMgr = await OracleManager.new();
         this.supporters = await SupportersWhitelisted.new();
 
@@ -43,8 +44,8 @@ contract("Oracle-Supporters integration", (accounts) => {
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
 
-        await this.token.mint(oracle1, INITIAL_BALANCE)
-        await this.token.mint(oracle2, INITIAL_BALANCE)
+        await this.governor.mint(this.token.address,oracle1, INITIAL_BALANCE)
+        await this.governor.mint(this.token.address,oracle2, INITIAL_BALANCE)
 
         await this.token.approve(this.oracleMgr.address, INITIAL_BALANCE, {from: oracle1})
         await this.token.approve(this.oracleMgr.address, INITIAL_BALANCE, {from: oracle2})

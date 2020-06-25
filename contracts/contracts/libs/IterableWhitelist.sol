@@ -30,17 +30,17 @@ contract IterableWhitelist is MoCWhitelist {
      * @dev Add account to whitelist
      */
     function add(address account) internal override {
-        if (!super.isWhitelisted(account)) {
+        if (!MoCWhitelist.isWhitelisted(account)) {
             keyList.push(account);
         }
-        super.add(account);
+        MoCWhitelist.add(account);
     }
 
     /**
      * @dev Remove account to whitelist
      */
     function remove(address account) internal override {
-        super.remove(account);
+        MoCWhitelist.remove(account);
         for (uint256 i = 0; i < keyList.length; i++) {
             if (keyList[i] == account) {
                 keyList[i] = keyList[keyList.length - 1];

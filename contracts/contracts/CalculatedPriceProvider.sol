@@ -3,11 +3,10 @@ pragma solidity 0.6.0;
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD
-contract CalculatedPriceProvider is Initializable {
+contract CalculatedPriceProvider {
     using SafeMath for uint;
     IPriceProvider[] public multiplyBy;
     IPriceProvider[] public divideBy;
@@ -28,7 +27,7 @@ contract CalculatedPriceProvider is Initializable {
     @param _divideBy list of IPriceProvider to query the and then divide the result
     */
     function _initialize(uint _multiplicator, IPriceProvider[] memory _multiplyBy,
-        uint _divisor, IPriceProvider[] memory _divideBy) internal initializer {
+        uint _divisor, IPriceProvider[] memory _divideBy) internal {
         multiplicator = _multiplicator;
         multiplyBy = _multiplyBy;
         divisor = _divisor;
