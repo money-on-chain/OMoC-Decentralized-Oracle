@@ -81,10 +81,12 @@ async function deploy(deployer, networkName, accounts) {
 
     console.log("Deploy change contract to add the calculator to the whitelist", governorAddr);
     const CoinPairPriceAddCalculatedPriceProviderChange = artifacts.require("CoinPairPriceAddCalculatedPriceProviderChange");
-    const change = await CoinPairPriceAddCalculatedPriceProviderChange.new(calculatedPriceProviderWhitelisted.options.address,
+    const change1 = await CoinPairPriceAddCalculatedPriceProviderChange.new(calculatedPriceProviderWhitelisted.options.address,
         [...multiplyBy, ...divideBy]);
     console.log("Whitelist CalculatedCoinPairPrice in", [...multiplyBy, ...divideBy]);
-    await governor.executeChange(change.address, {from: governorOwner});
+    console.log("Whitelist CalculatedCoinPairPrice via governor", governorAddr, 'coin', coin,
+        "change contract addr", change1.address, 'governor owner', governorOwner);
+    await governor.executeChange(change1.address, {from: governorOwner});
 
 
     console.log("Register coin", coin, 'via governor', governorAddr);
