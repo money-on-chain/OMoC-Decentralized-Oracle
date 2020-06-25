@@ -6,7 +6,7 @@ import {Initializable} from "./openzeppelin/Initializable.sol";
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract CoinPairPriceFree is IPriceProvider, Initializable {
+contract CoinPairPriceFree is Initializable, IPriceProvider {
     IPriceProvider public coinPairPrice;
 
     function initialize(IPriceProvider _coinPairPrice) public initializer {

@@ -1,28 +1,24 @@
 pragma solidity 0.6.0;
 
-import {Initializable} from  "./openzeppelin/Initializable.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
-import {SupportersVestedAbstract} from "./SupportersVestedAbstract.sol";
-import {GovernedAbstract} from "./GovernedAbstract.sol";
+import {SupportersVestedLib} from "./libs/SupportersVestedLib.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {SupportersVestedStorage} from "./SupportersVestedStorage.sol";
 
 /*
     Implementation of SupportersVestedAbstract used by regular supporters.
     This can be merged into SupportersWhitelisted directly, but we choose separate it so
     we can add other contracts with different kind of restrictions to the supporters smart-contract.
 */
-contract SupportersVested is Initializable, GovernedAbstract {
-    SupportersWhitelisted public            supporters;
-    IERC20 public                           mocToken;
+contract SupportersVested is SupportersVestedStorage {
 
     function initialize(IGovernor _governor, SupportersWhitelisted _supporters) external initializer {
         require(address(_supporters) != address(0), "Supporters contract address must be != 0");
         require(address(_supporters.mocToken()) != address(0), "Token contract address must be != 0");
 
         Governed._initialize(_governor);
-
         supporters = _supporters;
         mocToken = _supporters.mocToken();
     }
@@ -101,7 +97,7 @@ contract SupportersVested is Initializable, GovernedAbstract {
       @return balance the balance of the user
       @return stoppedInblock the block in which the mocs where stopped
     */
-    function vestingInfoOf(address _account) public view returns (uint256 balance, uint256 stoppedInblock) {
+    function vestingInfoOf(address _account) external view returns (uint256 balance, uint256 stoppedInblock) {
         return supporters.vestingInfoOf(address(this), _account);
     }
 
@@ -111,8 +107,8 @@ contract SupportersVested is Initializable, GovernedAbstract {
 
       @return the minimum number of blocks that a user must stay staked after staking
     */
-    function getMinStayBlocks() public view returns (uint256) {
-        return supporters.minStayBlocks();
+    function getMinStayBlocks() external view returns (uint256) {
+        return supporters.getMinStayBlocks();
     }
 
 
@@ -121,7 +117,7 @@ contract SupportersVested is Initializable, GovernedAbstract {
 
       @return the period of blocks that a user have
     */
-    function getAfterStopBlocks() public view returns (uint256) {
-        return supporters.afterStopBlocks();
+    function getAfterStopBlocks() external view returns (uint256) {
+        return supporters.getAfterStopBlocks();
     }
 }

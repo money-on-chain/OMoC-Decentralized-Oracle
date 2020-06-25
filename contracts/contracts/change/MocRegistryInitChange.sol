@@ -1,7 +1,7 @@
 pragma solidity 0.6.0;
 
-import "../moc-gobernanza/Governance/ChangeContract.sol";
-import "../EternalStorageGobernanza.sol";
+import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
 
 /**
   @title MocRegistryInitChange
@@ -24,7 +24,7 @@ contract MocRegistryInitChange is ChangeContract {
         address _supporters_vested,
         address _supporters_whitelisted,
         address _info_getter) public
-    {
+ {
         registry = _registry;
         oracle_manager = _oracle_manager;
         supporters_vested = _supporters_vested;

@@ -1,7 +1,7 @@
 pragma solidity 0.6.0;
 
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
-import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "../moc-gobernanza/Governance/Governed.sol";
+import {IGovernor} from "../moc-gobernanza/Governance/IGovernor.sol";
 
 /**
   @title GovernedAbstract

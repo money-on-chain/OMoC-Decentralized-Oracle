@@ -1,7 +1,7 @@
 pragma solidity 0.6.0;
 
-import "../moc-gobernanza/Governance/ChangeContract.sol";
-import "../EternalStorageGobernanza.sol";
+import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
 
 /**
   @title MocRegistryInitChange
@@ -15,7 +15,7 @@ contract MocRegistrySchedulerDelayChange is ChangeContract {
       @notice Constructor
     */
     constructor(EternalStorageGobernanza _registry) public
-    {
+ {
         registry = _registry;
     }
 

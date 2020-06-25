@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const CalculatedPriceProviderWhitelisted = artifacts.require("CalculatedPriceProviderWhitelisted");
+const CalculatedPriceProvider = artifacts.require("CalculatedPriceProvider");
 const MockIPriceProvider = artifacts.require("MockIPriceProvider");
 const MockGovernor = artifacts.require("MockGovernor");
 const {expectRevert, BN, time} = require('@openzeppelin/test-helpers')
@@ -11,15 +11,15 @@ contract("CalculatedPriceProvider", async (accounts) => {
     async function constructCalculatedPriceProvider(multiplicator, multiplyBy, divisor, divideBy) {
         const governor = await MockGovernor.new(GOVERNOR);
         const whitelist = [];
-        const ret = await CalculatedPriceProviderWhitelisted.new();
+        const ret = await CalculatedPriceProvider.new();
         await ret.initialize(governor.address, whitelist, multiplicator, multiplyBy, divisor, divideBy);
         return ret;
     }
 
     it("Check type", async () => {
         const CalculatedType = 2;
-        const calculatedPriceProviderWhitelisted = await CalculatedPriceProviderWhitelisted.new(1, [], 1, []);
-        assert.equal(await calculatedPriceProviderWhitelisted.getPriceProviderType(), CalculatedType);
+        const calculatedPriceProvider = await CalculatedPriceProvider.new(1, [], 1, []);
+        assert.equal(await calculatedPriceProvider.getPriceProviderType(), CalculatedType);
     });
 
     it("Check mock", async () => {
@@ -37,23 +37,23 @@ contract("CalculatedPriceProvider", async (accounts) => {
     });
 
     it("Result can be zero", async () => {
-        const calculatedPriceProviderWhitelisted = await constructCalculatedPriceProvider(0, [], 1, []);
-        const val = await calculatedPriceProviderWhitelisted.peek({from: helpers.ADDRESS_ONE});
+        const calculatedPriceProvider = await constructCalculatedPriceProvider(0, [], 1, []);
+        const val = await calculatedPriceProvider.peek({from: helpers.ADDRESS_ONE});
         expect(val[1], "valid").to.be.true;
         expect(web3.utils.toBN(val[0]), "price").to.be.bignumber.equal(new BN(0));
     });
 
     it("Should fail to divide by zero", async () => {
         const price = 0;
-        const calculatedPriceProviderWhitelisted = await constructCalculatedPriceProvider(1, [], 0, []);
-        const val = await calculatedPriceProviderWhitelisted.peek({from: helpers.ADDRESS_ONE});
+        const calculatedPriceProvider = await constructCalculatedPriceProvider(1, [], 0, []);
+        const val = await calculatedPriceProvider.peek({from: helpers.ADDRESS_ONE});
         expect(val[1], "valid").to.be.false;
     });
 
     it("After multiply and divide by the same return 1", async () => {
         const mock1 = await MockIPriceProvider.new(321, true);
-        const calculatedPriceProviderWhitelisted = await constructCalculatedPriceProvider(123, [mock1.address], 123, [mock1.address]);
-        const val = await calculatedPriceProviderWhitelisted.peek({from: helpers.ADDRESS_ONE});
+        const calculatedPriceProvider = await constructCalculatedPriceProvider(123, [mock1.address], 123, [mock1.address]);
+        const val = await calculatedPriceProvider.peek({from: helpers.ADDRESS_ONE});
         expect(val[1], "valid").to.be.true;
         expect(web3.utils.toBN(val[0]), "price").to.be.bignumber.equal(new BN(1));
     });

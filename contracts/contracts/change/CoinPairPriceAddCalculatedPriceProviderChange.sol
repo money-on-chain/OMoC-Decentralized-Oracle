@@ -2,17 +2,16 @@ pragma solidity 0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
-import {CoinPairPriceGobernanza} from "../CoinPairPriceGobernanza.sol";
-import {GovernedAbstract} from "../GovernedAbstract.sol";
-import {CalculatedPriceProvider} from "../CalculatedPriceProvider.sol";
-import {IterableWhitelist} from "../libs/IterableWhitelist.sol";
+import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
+import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+//import {IterableWhitelist} from "../libs/IterableWhitelist.sol";
 
 /**
   @title CoinPairPriceAddCoinPairCalculatorChange
   @notice This contract is a ChangeContract intended to be used to whitelist a coinPairPriceCalculator
   in various CoinPaiPrice contracts at once.
  */
-contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceGobernanza, ChangeContract {
+contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceStorage, ChangeContract {
 
     GovernedAbstract[] public coinPairPrices;
     bytes public encodedData;
@@ -29,8 +28,8 @@ contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceGobernanz
 
     /**
       @notice Execute the changes.
-      @dev Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in
-      the current architecture
+      @dev Should be called by the governor, but this contract does not check that explicitly
+      because it is not its responsability in the current architecture
      */
     function execute() external override {
         for (uint i = 0; i < coinPairPrices.length; i++) {
@@ -44,6 +43,6 @@ contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceGobernanz
         This methods runs in the Governed contract storage.
     */
     function impersonate(bytes calldata data) external {
-        IterableWhitelist.add(abi.decode(data, (address)));
+        //IterableWhitelist.add(abi.decode(data, (address)));
     }
 }

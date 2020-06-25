@@ -1,17 +1,27 @@
 pragma solidity 0.6.0;
 
-import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
-import {SupportersAbstract} from "./SupportersAbstract.sol";
+import {IERC20} from "../openzeppelin/token/ERC20/IERC20.sol";
+import {SafeMath} from "../openzeppelin/math/SafeMath.sol";
+import {Initializable} from "../openzeppelin/Initializable.sol";
+import {SupportersLib} from "../libs/SupportersLib.sol";
 
 /*
     Original supporter contract that has no restrictions.
 */
-contract Supporters is SupportersAbstract, Initializable  {
+contract Supporters is Initializable {
+    SupportersLib.SupportersData internal supportersData;
+    using SupportersLib for SupportersLib.SupportersData;
+
+    // Emitted by SupportersLib
+    event PayEarnings(uint256 earnings, uint256 start, uint256 end);
+    event CancelEarnings(uint256 earnings, uint256 start, uint256 end);
+    event AddStake(address indexed user, address indexed subaccount,
+        address indexed sender, uint256 amount, uint256 mocs);
+    event WithdrawStake(address indexed user, address indexed subaccount,
+        address indexed destination, uint256 amount, uint256 mocs);
 
     function initialize(IERC20 _mocToken, uint256 _period) external initializer {
-        _initialize(_mocToken, _period);
+        supportersData._initialize(_mocToken, _period);
     }
 
     /**
@@ -19,7 +29,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       Earnings will be credited periodically through several blocks.
     */
     function distribute() external {
-        _distribute();
+        supportersData._distribute();
     }
 
     /**
@@ -28,7 +38,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @param _mocs amount of MOC to stake
     */
     function stake(uint256 _mocs) external {
-        _stakeAtFrom(_mocs, msg.sender, msg.sender);
+        supportersData._stakeAtFrom(_mocs, msg.sender, msg.sender);
     }
 
     /**
@@ -38,7 +48,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @param _subaccount sub-account used to identify the stake
     */
     function stakeAt(uint256 _mocs, address _subaccount) external {
-        _stakeAtFrom(_mocs, _subaccount, msg.sender);
+        supportersData._stakeAtFrom(_mocs, _subaccount, msg.sender);
     }
 
     /**
@@ -48,7 +58,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return Amount of MOC transfered
     */
     function withdraw(uint256 _tokens) external returns (uint256) {
-        return _withdrawFromTo(_tokens, msg.sender, msg.sender);
+        return supportersData._withdrawFromTo(_tokens, msg.sender, msg.sender);
     }
 
     /**
@@ -59,7 +69,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return Amount of MOC transfered
     */
     function withdrawFrom(uint256 _tokens, address _subaccount) external returns (uint256) {
-        return _withdrawFromTo(_tokens, _subaccount, msg.sender);
+        return supportersData._withdrawFromTo(_tokens, _subaccount, msg.sender);
     }
 
     /**
@@ -69,7 +79,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return tokens for _user
     */
     function getBalance(address _user) external view returns (uint256) {
-        return _getBalanceAt(_user, _user);
+        return supportersData._getBalanceAt(_user, _user);
     }
 
     /**
@@ -80,7 +90,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return tokens for _user at _subaccount
     */
     function getBalanceAt(address _user, address _subaccount) external view returns (uint256) {
-        return _getBalanceAt(_user, _subaccount);
+        return supportersData._getBalanceAt(_user, _subaccount);
     }
 
     /**
@@ -90,7 +100,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return MOC for _user
     */
     function getMOCBalance(address _user) external view returns (uint256) {
-        return _getMOCBalanceAt(_user, _user);
+        return supportersData._getMOCBalanceAt(_user, _user);
     }
 
     /**
@@ -101,7 +111,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return MOC for _user
     */
     function getMOCBalanceAt(address _user, address _subaccount) external view returns (uint256) {
-        return _getMOCBalanceAt(_user, _subaccount);
+        return supportersData._getMOCBalanceAt(_user, _subaccount);
     }
 
     /**
@@ -110,7 +120,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return total amount of tokens
     */
     function getTokens() external view returns (uint256) {
-        return _getTokens();
+        return supportersData._getTokens();
     }
 
     /**
@@ -119,7 +129,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return total amount of MOC
     */
     function getAvailableMOC() external view returns (uint256) {
-        return _getAvailableMOC();
+        return supportersData._getAvailableMOC();
     }
 
     /**
@@ -129,7 +139,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return Earnings to be paid
     */
     function getEarningsAt(uint256 _block) external view returns (uint256) {
-        return _getEarningsAt(_block);
+        return supportersData._getEarningsAt(_block);
     }
 
     /**
@@ -139,7 +149,7 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return Locked amount of earnings in MOC
     */
     function getLockedAt(uint256 _block) external view returns (uint256) {
-        return _getLockedAt(_block);
+        return supportersData._getLockedAt(_block);
     }
 
     /**
@@ -148,6 +158,14 @@ contract Supporters is SupportersAbstract, Initializable  {
       @return Information about earnings
     */
     function getEarningsInfo() external view returns (uint256, uint256, uint256) {
-        return _getEarningsInfo();
+        return supportersData._getEarningsInfo();
     }
+
+    /**
+      @return The moc token address
+    */
+    function mocToken() external view returns (IERC20) {
+        return supportersData.mocToken;
+    }
+
 }

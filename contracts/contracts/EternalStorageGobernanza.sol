@@ -1,6 +1,6 @@
 pragma solidity 0.6.0;
 
-import {GovernedAbstract} from "./GovernedAbstract.sol";
+import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {Initializable} from "./openzeppelin/Initializable.sol";

@@ -1,14 +1,14 @@
 pragma solidity 0.6.0;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
-import {CoinPairPriceGobernanza} from "../CoinPairPriceGobernanza.sol";
-import {GovernedAbstract} from "../GovernedAbstract.sol";
+import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
+import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
 /**
   @title CoinPairPriceValidPricePeriodInBlocksChange
   @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
   parameter validPricePeriodInBlocks
  */
-contract CoinPairPriceValidPricePeriodInBlocksChange is CoinPairPriceGobernanza, ChangeContract {
+contract CoinPairPriceValidPricePeriodInBlocksChange is CoinPairPriceStorage, ChangeContract {
 
     GovernedAbstract public coinPairPrice;
     bytes public encodedData;
@@ -25,8 +25,8 @@ contract CoinPairPriceValidPricePeriodInBlocksChange is CoinPairPriceGobernanza,
 
     /**
       @notice Execute the changes.
-      @dev Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in
-      the current architecture
+      @dev Should be called by the governor, but this contract does not check that explicitly because
+      it is not its responsability in the current architecture
      */
     function execute() external override {
         coinPairPrice.delegateCallToChanger(encodedData);

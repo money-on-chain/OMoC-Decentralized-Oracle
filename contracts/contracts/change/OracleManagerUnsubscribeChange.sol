@@ -1,7 +1,7 @@
 pragma solidity 0.6.0;
 
-import "../moc-gobernanza/Governance/ChangeContract.sol";
-import "../OracleManager.sol";
+import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {OracleManager} from "../OracleManager.sol";
 
 /**
   @title UpgraderTemplate

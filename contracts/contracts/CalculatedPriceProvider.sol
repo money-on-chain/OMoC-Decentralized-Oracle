@@ -2,77 +2,76 @@ pragma solidity 0.6.0;
 
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
-import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
+import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
+import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
+import {CalculatedPriceProviderLib} from "./libs/CalculatedPriceProviderLib.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {CalculatedPriceProviderStorage} from "./CalculatedPriceProviderStorage.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD
-contract CalculatedPriceProvider {
+contract CalculatedPriceProvider is CalculatedPriceProviderStorage, IPriceProvider, IPriceProviderRegisterEntry {
     using SafeMath for uint;
-    IPriceProvider[] public multiplyBy;
-    IPriceProvider[] public divideBy;
-    uint public multiplicator;
-    uint public divisor;
-
-    // Empty internal constructor, to prevent people from mistakenly deploying
-    // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
-    // solhint-disable-previous-line no-empty-blocks
 
     /**
     Contract creation.
 
+    @param _governor The address of the contract which governs this one
+    @param _wlist Initial whitelist addresses
     @param _multiplicator base value used to scale the result by multiplying it.
     @param _multiplyBy list of IPriceProvider to query the price and then multiply the result
     @param _divisor base value used to scale the result by dividing it.
     @param _divideBy list of IPriceProvider to query the and then divide the result
     */
-    function _initialize(uint _multiplicator, IPriceProvider[] memory _multiplyBy,
-        uint _divisor, IPriceProvider[] memory _divideBy) internal {
-        multiplicator = _multiplicator;
-        multiplyBy = _multiplyBy;
-        divisor = _divisor;
-        divideBy = _divideBy;
+    function initialize(IGovernor _governor, address[] calldata _wlist,
+        uint _multiplicator, IPriceProvider[] calldata _multiplyBy,
+        uint _divisor, IPriceProvider[] calldata _divideBy) external initializer {
+        _initialize(_governor);
+        calculatedPriceProviderData._initialize(_multiplicator, _multiplyBy, _divisor, _divideBy);
+        for (uint256 i = 0; i < _wlist.length; i++) {
+            iterableWhitelistData._addToWhitelist(_wlist[i]);
+        }
     }
 
+
+    /**
+     * @dev Add to the list of contracts that can stake in this contract
+     * @param  _whitelisted - the override coinPair
+     */
+    function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+        iterableWhitelistData._addToWhitelist(_whitelisted);
+    }
+
+    /**
+     * @dev Remove from the list of contracts that can stake in this contract
+     * @param  _whitelisted - the override coinPair
+     */
+    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+        iterableWhitelistData._removeFromWhitelist(_whitelisted);
+    }
+
+    /// @notice Returns the count of whitelisted addresses.
+    function getWhiteListLen() external view returns (uint256) {
+        return iterableWhitelistData._getWhiteListLen();
+    }
+
+    /// @notice Returns the address at index.
+    /// @param i index to query.
+    function getWhiteListAtIndex(uint256 i) external view returns (address) {
+        return iterableWhitelistData._getWhiteListAtIndex(i);
+    }
+
+    /// @notice return the type of provider
+    function getPriceProviderType() external override pure returns (IPriceProviderType) {
+        return IPriceProviderType.Calculated;
+    }
 
     /**
     Get the calculated price
 
     */
-    function _peek() internal view returns (uint256, bool) {
-        bool valid = true;
-        uint den;
-        (den, valid) = _multiplyAll(multiplicator, multiplyBy);
-        if (!valid) {
-            return (0, false);
-        }
-        uint div;
-        (div, valid) = _multiplyAll(divisor, divideBy);
-        if (!valid || div == 0) {
-            return (0, false);
-        }
-        return (den.div(div), true);
+    function peek() external override view whitelistedOrExternal(iterableWhitelistData) returns (bytes32, bool) {
+        (uint256 price, bool valid) = calculatedPriceProviderData._peek();
+        return (bytes32(price), valid);
     }
-
-    /**
-    Multiply a base val by the result of calling peek in the providers contacts
-
-    @param val a base value used to scale things up.this
-    @param providers a list of IPriceProvider that are queried for prices, all the prices are multiplied.
-    */
-    function _multiplyAll(uint val, IPriceProvider[] memory providers) internal view returns (uint, bool) {
-        bytes32 current32;
-        bool valid;
-        for (uint256 i = 0; i < providers.length; i++) {
-            (current32, valid) = providers[i].peek();
-            if (!valid) {
-                return (0, false);
-            }
-            val = val.mul(uint(current32));
-        }
-        return (val, true);
-    }
-
-    // Reserved storage space to allow for layout changes in the future.
-    uint256[50] private ______gap;
 }

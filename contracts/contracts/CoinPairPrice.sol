@@ -2,21 +2,19 @@ pragma solidity 0.6.0;
 
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
-import {CoinPairPriceGobernanza} from "./CoinPairPriceGobernanza.sol";
-import {OracleInfoLib} from "./libs/OracleInfo.sol";
-import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
+import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
+import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
+import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
-import {GovernedAbstract} from "./GovernedAbstract.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {IterableWhitelist} from "./libs/IterableWhitelist.sol";
+import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract CoinPairPrice is CoinPairPriceGobernanza, Initializable, GovernedAbstract, IPriceProvider, IPriceProviderRegisterEntry {
+contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRegisterEntry {
     using SafeMath for uint;
 
     // The publish message has a version field
@@ -98,7 +96,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, Initializable, GovernedAbstra
         Governed._initialize(_governor);
 
         for (uint256 i = 0; i < _wlist.length; i++) {
-            IterableWhitelist.add(_wlist[i]);
+            iterableWhitelistData._addToWhitelist(_wlist[i]);
         }
         maxOraclesPerRound = _maxOraclesPerRound;
         roundLockPeriodInBlocks = _roundLockPeriodInBlocks;
@@ -223,7 +221,7 @@ contract CoinPairPrice is CoinPairPriceGobernanza, Initializable, GovernedAbstra
     }
 
     /// @notice Return the current price, compatible with old MOC Oracle
-    function peek() public override view whitelistedOrExternal(msg.sender) returns (bytes32, bool) {
+    function peek() public override view whitelistedOrExternal(iterableWhitelistData) returns (bytes32, bool) {
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
 
         return (bytes32(currentPrice), (block.number - lastPublicationBlock) < validPricePeriodInBlocks);

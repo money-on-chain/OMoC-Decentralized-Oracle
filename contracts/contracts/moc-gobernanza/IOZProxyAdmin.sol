@@ -42,7 +42,8 @@ interface IOZProxyAdmin {
       * It should include the signature and the parameters of the function to be called, as described in
       * https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding.
       */
-    function upgradeAndCall(IOZAdminUpgradeabilityProxy proxy, address implementation, bytes calldata data) payable external;
+    function upgradeAndCall(IOZAdminUpgradeabilityProxy proxy, address implementation, bytes calldata data)
+    payable external;
 
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);

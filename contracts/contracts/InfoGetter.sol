@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import {Initializable} from  "./openzeppelin/Initializable.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {GovernedAbstract} from "./GovernedAbstract.sol";
+import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 
@@ -85,8 +85,8 @@ contract InfoGetter is Initializable, GovernedAbstract {
 
         @param _coinPairPrice coinPairPrice contract
     */
-    function getCoinPairUIInfo(CoinPairPrice _coinPairPrice) public view returns (CoinPairPriceUIInfo memory coinPairPriceUIInfo)
-    {
+    function getCoinPairUIInfo(CoinPairPrice _coinPairPrice)
+    external view returns (CoinPairPriceUIInfo memory coinPairPriceUIInfo) {
         (uint256 round,uint256 startBlock, uint256 lockPeriodEndBlock,uint256 totalPoints, address[] memory selectedOracles) = _coinPairPrice.getRoundInfo();
         uint256 len = selectedOracles.length;
         CoinPairUIOracleRoundInfo[] memory info = new CoinPairUIOracleRoundInfo[](len);
@@ -108,7 +108,8 @@ contract InfoGetter is Initializable, GovernedAbstract {
         @param _offset take from this offset
         @param _limit take to this limit, limit == 0 => take all
     */
-    function getManagerUICoinPairInfo(OracleManager _oracleManager, uint _offset, uint _limit) public view returns (ManagerUICoinPairInfo[] memory info) {
+    function getManagerUICoinPairInfo(OracleManager _oracleManager, uint _offset, uint _limit)
+    external view returns (ManagerUICoinPairInfo[] memory info) {
         uint total = _oracleManager.getCoinPairCount();
         if (_limit > total || _limit == 0) {
             _limit = total;
@@ -131,7 +132,8 @@ contract InfoGetter is Initializable, GovernedAbstract {
         @param _prevEntry The address the entry to start iterating.
         @param _cant Number of items to return.
     */
-    function getManagerUIOracleInfo(OracleManager _oracleManager, address _prevEntry, uint _cant) public view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
+    function getManagerUIOracleInfo(OracleManager _oracleManager, address _prevEntry, uint _cant)
+    external view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
         address addr;
         if (_prevEntry == address(0)) {
             addr = _oracleManager.getRegisteredOracleHead();
@@ -151,8 +153,8 @@ contract InfoGetter is Initializable, GovernedAbstract {
         @param _oracleManager oracleManager contract
         @param _coinPairPrice coinPairPrice contract
     */
-    function getOracleServerInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice) public view returns (OracleServerInfo memory oracleServerInfo)
-    {
+    function getOracleServerInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice)
+    external view returns (OracleServerInfo memory oracleServerInfo) {
         uint256 lastPubBlock = _coinPairPrice.lastPublicationBlock();
         (bytes32 currentPrice,) = _coinPairPrice.peek();
 
@@ -170,8 +172,8 @@ contract InfoGetter is Initializable, GovernedAbstract {
         @param _selectedOracles selected oracles addresses
     */
     function _createFullRoundInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice,
-        address[] memory _selectedOracles) public view returns (FullOracleRoundInfo[] memory info)
-    {
+        address[] memory _selectedOracles) internal view returns (FullOracleRoundInfo[] memory info)
+ {
         uint256 len = _selectedOracles.length;
         info = new FullOracleRoundInfo[](len);
         for (uint i = 0; i < len; i++) {

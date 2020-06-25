@@ -22,14 +22,14 @@ contract('SupportersWhitelisted', (accounts) => {
     const user2 = accounts[2]
     const user3 = accounts[3]
     const payer = accounts[9]
-    const GOVERNOR = accounts[8];
+    const GOVERNOR_OWNER = accounts[8];
     describe('Creation', () => {
         beforeEach(async () => {
-            const governor = await helpers.createGovernor(accounts[8])
+            const governor = await helpers.createGovernor(GOVERNOR_OWNER)
             token = await TestMOC.new()
             await token.initialize(governor.address);
             supporters = await Supporters.new()
-            await supporters.initialize(GOVERNOR, [], token.address,
+            await supporters.initialize(governor.address, [], token.address,
                 period, minStayBlocks, afterStopBlocks)
         })
 
@@ -64,7 +64,7 @@ contract('SupportersWhitelisted', (accounts) => {
             token = await TestMOC.new()
             await token.initialize(governor.address);
             supporters = await Supporters.new()
-            await supporters.initialize(GOVERNOR, [user1], token.address,
+            await supporters.initialize(governor.address, [user1], token.address,
                 period, minStayBlocks, afterStopBlocks)
 
             await governor.mint(token.address, user1, INITIAL_BALANCE)
@@ -145,7 +145,7 @@ contract('SupportersWhitelisted', (accounts) => {
 
     describe('IterableWhiteList', () => {
         beforeEach(async () => {
-            this.governor = await MockGovernor.new(GOVERNOR);
+            this.governor = await MockGovernor.new(GOVERNOR_OWNER);
             this.token = await TestMOC.new();
             await this.token.initialize(this.governor.address);
             this.supporters = await Supporters.new();
@@ -155,12 +155,12 @@ contract('SupportersWhitelisted', (accounts) => {
 
 
         it('add and remove', async () => {
-            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR});
-            await this.supporters.addToWhitelist(accounts[5], {from: GOVERNOR});
+            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER});
+            await this.supporters.addToWhitelist(accounts[5], {from: GOVERNOR_OWNER});
             expect(await this.supporters.isWhitelisted(accounts[1])).to.be.false;
             expect(await this.supporters.isWhitelisted(accounts[4])).to.be.true;
             expect(await this.supporters.isWhitelisted(accounts[5])).to.be.true;
-            await this.supporters.removeFromWhitelist(accounts[4], {from: GOVERNOR});
+            await this.supporters.removeFromWhitelist(accounts[4], {from: GOVERNOR_OWNER});
             expect(await this.supporters.isWhitelisted(accounts[1])).to.be.false;
             expect(await this.supporters.isWhitelisted(accounts[4])).to.be.false;
             expect(await this.supporters.isWhitelisted(accounts[5])).to.be.true;
@@ -175,22 +175,22 @@ contract('SupportersWhitelisted', (accounts) => {
 
         it('should fail to add address zero', async () => {
             await expectRevert(
-                this.supporters.addToWhitelist(constants.ZERO_ADDRESS, {from: GOVERNOR}),
+                this.supporters.addToWhitelist(constants.ZERO_ADDRESS, {from: GOVERNOR_OWNER}),
                 "Account must not be 0x0"
             )
         });
 
         it('should fail to remove address zero', async () => {
             await expectRevert(
-                this.supporters.removeFromWhitelist(constants.ZERO_ADDRESS, {from: GOVERNOR}),
+                this.supporters.removeFromWhitelist(constants.ZERO_ADDRESS, {from: GOVERNOR_OWNER}),
                 "Account must not be 0x0"
             );
         });
 
         it('should fail if added twice', async () => {
-            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR});
+            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER});
             await expectRevert(
-                this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR}),
+                this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER}),
                 "Account not allowed to add accounts into white list"
             );
         });
@@ -198,10 +198,10 @@ contract('SupportersWhitelisted', (accounts) => {
         // require(!isWhitelisted(account), "Account not allowed to add accounts into white list");
 
         it('iterate', async () => {
-            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR});
-            await this.supporters.addToWhitelist(accounts[5], {from: GOVERNOR});
-            await this.supporters.addToWhitelist(accounts[6], {from: GOVERNOR});
-            await this.supporters.addToWhitelist(accounts[7], {from: GOVERNOR});
+            await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER});
+            await this.supporters.addToWhitelist(accounts[5], {from: GOVERNOR_OWNER});
+            await this.supporters.addToWhitelist(accounts[6], {from: GOVERNOR_OWNER});
+            await this.supporters.addToWhitelist(accounts[7], {from: GOVERNOR_OWNER});
             expect(await this.supporters.getWhiteListLen()).to.be.bignumber.equal(new BN(4));
             expect(await this.supporters.getWhiteListAtIndex(0)).to.be.equal(accounts[4]);
             expect(await this.supporters.getWhiteListAtIndex(1)).to.be.equal(accounts[5]);
@@ -217,7 +217,9 @@ contract('SupportersWhitelisted', (accounts) => {
 
     describe('Governance', () => {
         beforeEach(async () => {
-            this.governor = await MockGovernor.new(GOVERNOR);
+            const Governor = artifacts.require("Governor")
+            this.governor = await Governor.new();
+            await this.governor.initialize(GOVERNOR_OWNER);
             this.token = await TestMOC.new();
             await this.token.initialize(this.governor.address);
             this.supporters = await Supporters.new();
@@ -228,13 +230,15 @@ contract('SupportersWhitelisted', (accounts) => {
         it('should fail in if not a governor call', async () => {
             await expectRevert(
                 this.supporters.addToWhitelist(constants.ZERO_ADDRESS, {from: accounts[0]}),
-                "Invalid changer"
+                "not_authorized_changer"
             )
         });
 
         it('should set period', async () => {
             expect(await this.supporters.period()).to.be.bignumber.equal(new BN(10))
-            await this.supporters.setPeriod(123, {from: GOVERNOR});
+            const change = await artifacts.require('SupportersWhitelistedPeriodChange').new(this.supporters.address, 123);
+            await this.governor.executeChange(change.address, {from: GOVERNOR_OWNER});
+            // await this.supporters.setPeriod(123, {from: GOVERNOR});
             expect(await this.supporters.period()).to.be.bignumber.equal(new BN(123))
         });
     })

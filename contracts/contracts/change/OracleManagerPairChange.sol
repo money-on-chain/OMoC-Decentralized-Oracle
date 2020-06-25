@@ -1,7 +1,7 @@
 pragma solidity 0.6.0;
 
-import "../moc-gobernanza/Governance/ChangeContract.sol";
-import "../OracleManager.sol";
+import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {OracleManager} from "../OracleManager.sol";
 
 /**
   @title UpgraderTemplate
@@ -30,9 +30,10 @@ contract OracleManagerPairChange is ChangeContract {
 
     /**
       @notice Execute the changes.
-      @dev Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in
-      the current architecture
-      IMPORTANT: This function should not be overriden, you should only redefine the _beforeUpgrade and _afterUpgrade to use this template
+      @dev Should be called by the governor, but this contract does not check that explicitly because
+      it is not its responsability in the current architecture
+      IMPORTANT: This function should not be overriden, you should only
+      redefine the _beforeUpgrade and _afterUpgrade to use this template
      */
     function execute() external override {
         oracleManager.registerCoinPair(coinPair, contractAddr);
