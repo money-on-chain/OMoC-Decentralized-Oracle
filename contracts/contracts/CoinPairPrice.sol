@@ -8,6 +8,7 @@ import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
 import {Initializable} from "./openzeppelin/Initializable.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {GovernedAbstract} from "./GovernedAbstract.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {IterableWhitelist} from "./libs/IterableWhitelist.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
@@ -15,7 +16,7 @@ import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract CoinPairPrice is CoinPairPriceGobernanza, Initializable, IPriceProvider, IPriceProviderRegisterEntry {
+contract CoinPairPrice is CoinPairPriceGobernanza, Initializable, GovernedAbstract, IPriceProvider, IPriceProviderRegisterEntry {
     using SafeMath for uint;
 
     // The publish message has a version field

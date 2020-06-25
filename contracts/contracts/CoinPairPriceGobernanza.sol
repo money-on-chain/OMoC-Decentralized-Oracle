@@ -4,12 +4,11 @@ import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IterableWhitelist} from "./libs/IterableWhitelist.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {GovernedAbstract} from "./GovernedAbstract.sol";
 
 /*
     Abstract contract meant to be reused with all the configurable parameters of CoinPairPrice.
 */
-contract CoinPairPriceGobernanza is GovernedAbstract, IterableWhitelist {
+contract CoinPairPriceGobernanza is IterableWhitelist {
     using SafeMath for uint;
 
     // The coin-pair for which prices are reported in this contract.
