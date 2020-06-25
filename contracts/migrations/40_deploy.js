@@ -39,7 +39,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Deploying TestMOC");
     await scripts.add({contractsData: [{name: "TestMOC", alias: "TestMOC"}]});
-    await scripts.push({network, txParams: {...txParams}, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 4000000}, force: true});
     const testMOC = await scripts.create({
         methodName: 'initialize',
         methodArgs: [governorAddr],
@@ -76,7 +76,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Create Supporters Vested");
     await scripts.add({contractsData: [{name: "SupportersVested", alias: "SupportersVested"}]});
-    await scripts.push({network, txParams, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 5000000}, force: true});
     const supportersVested = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "SupportersVested",
