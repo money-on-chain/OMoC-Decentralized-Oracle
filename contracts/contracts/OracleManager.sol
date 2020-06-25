@@ -50,14 +50,6 @@ contract OracleManager is CoinPairRegister, Initializable, GovernedAbstract {
         registeredOracles = RegisteredOraclesLib.init(getStake);
     }
 
-    /**
-     * @dev Sets the minOracleOwnerStake by gobernanza
-     * @param _minOracleOwnerStake - the override minOracleOwnerStake
-     */
-    function setMinOracleOwnerStake(uint _minOracleOwnerStake) public onlyAuthorizedChanger() {
-        minOracleOwnerStake = _minOracleOwnerStake;
-    }
-
     /// @notice Register a new coin pair contract.
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.

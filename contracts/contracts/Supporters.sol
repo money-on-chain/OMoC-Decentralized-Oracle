@@ -8,7 +8,7 @@ import {SupportersAbstract} from "./SupportersAbstract.sol";
 /*
     Original supporter contract that has no restrictions.
 */
-contract Supporters is Initializable, SupportersAbstract {
+contract Supporters is SupportersAbstract, Initializable  {
 
     function initialize(IERC20 _mocToken, uint256 _period) external initializer {
         _initialize(_mocToken, _period);

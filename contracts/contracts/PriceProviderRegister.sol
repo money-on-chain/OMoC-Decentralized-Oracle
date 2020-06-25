@@ -9,7 +9,7 @@ import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
 
 /// @title A registry for the coin pair prices, this is more general than OracleManager that stores
 /// only the coin pairs that are published by oracles.
-contract PriceProviderRegister is Initializable, GovernedAbstract, CoinPairRegister {
+contract PriceProviderRegister is CoinPairRegister, Initializable, GovernedAbstract {
 
     /**
       @notice Initialize the contract with the basic settings
