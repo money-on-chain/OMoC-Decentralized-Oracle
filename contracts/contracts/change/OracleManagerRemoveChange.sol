@@ -13,7 +13,7 @@ import "../OracleManager.sol";
 contract OracleManagerRemoveChange is ChangeContract {
 
     OracleManager public oracleManager;
-    address oracleAddr;
+    address public oracleAddr;
 
     /**
       @notice Constructor

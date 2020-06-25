@@ -14,8 +14,8 @@ import {IterableWhitelist} from "../libs/IterableWhitelist.sol";
  */
 contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceGobernanza, ChangeContract {
 
-    GovernedAbstract[] coinPairPrices;
-    bytes encodedData;
+    GovernedAbstract[] public coinPairPrices;
+    bytes public encodedData;
 
     /**
       @notice Constructor

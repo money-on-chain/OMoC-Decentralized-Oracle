@@ -10,8 +10,8 @@ import {TestMOC} from "../TestMOC.sol";
 contract TestMOCMintChange is ChangeContract {
 
     TestMOC public token;
-    address user;
-    uint256 amount;
+    address public user;
+    uint256 public amount;
 
     /**
       @notice Constructor

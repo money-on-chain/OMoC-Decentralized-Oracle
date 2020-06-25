@@ -13,8 +13,8 @@ import "../OracleManager.sol";
 contract OracleManagerPairChange is ChangeContract {
 
     OracleManager public oracleManager;
-    bytes32 coinPair;
-    address contractAddr;
+    bytes32 public coinPair;
+    address public contractAddr;
 
     /**
       @notice Constructor

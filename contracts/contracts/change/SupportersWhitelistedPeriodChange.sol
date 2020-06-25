@@ -11,7 +11,7 @@ import "../SupportersWhitelisted.sol";
 contract SupportersWhitelistedPeriodChange is ChangeContract {
 
     SupportersWhitelisted public supporters;
-    uint256 period;
+    uint256 public period;
 
     /**
       @notice Constructor

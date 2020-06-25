@@ -1,8 +1,8 @@
 pragma solidity 0.6.0;
 
-import "../moc-gobernanza/Governance/ChangeContract.sol";
-import "../CoinPairPriceGobernanza.sol";
-
+import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {CoinPairPriceGobernanza} from "../CoinPairPriceGobernanza.sol";
+import {GovernedAbstract} from "../GovernedAbstract.sol";
 /**
   @title CoinPairPriceValidPricePeriodInBlocksChange
   @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
@@ -11,7 +11,7 @@ import "../CoinPairPriceGobernanza.sol";
 contract CoinPairPriceValidPricePeriodInBlocksChange is CoinPairPriceGobernanza, ChangeContract {
 
     GovernedAbstract public coinPairPrice;
-    bytes encodedData;
+    bytes public encodedData;
 
     /**
       @notice Constructor

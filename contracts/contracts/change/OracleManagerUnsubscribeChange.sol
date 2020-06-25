@@ -13,8 +13,8 @@ import "../OracleManager.sol";
 contract OracleManagerUnsubscribeChange is ChangeContract {
 
     OracleManager public oracleManager;
-    address oracleAddr;
-    bytes32 coinPair;
+    address public oracleAddr;
+    bytes32 public coinPair;
 
     /**
       @notice Constructor
