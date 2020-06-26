@@ -16,8 +16,7 @@ contract TestMOCMintChange is ChangeContract {
     /**
       @notice Constructor
     */
-    constructor(TestMOC _token, address _user, uint256 _amount) public
- {
+    constructor(TestMOC _token, address _user, uint256 _amount) public {
         token = _token;
         user = _user;
         amount = _amount;

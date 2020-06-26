@@ -160,7 +160,7 @@ export class CoinPairPriceInfo extends ContractInfo {
         return [
             {fn: "getAvailableRewardFees", pf: (x) => formatEther(x)},
             {fn: "getCoinPair", pf: (x) => parseBytes32String(x)},
-            {fn: "getLastPublicationBlock"},
+            {fn: "lastPublicationBlock"},
             {fn: "getRoundInfo"},
         ];
     }
@@ -362,7 +362,7 @@ export class CoinPairPriceAllInfo extends ContractInfo {
             const state = this.get_state();
             const blocknr = this.parent_state().blocknr;
             let until = 0;
-            let published = state.getLastPublicationBlock;
+            let published = state.lastPublicationBlock;
             let blocks_from_last_publication = 0;
             if (published) {
                 if (validPricePeriodInBlocks) {
@@ -383,11 +383,11 @@ export class CoinPairPriceAllInfo extends ContractInfo {
     _funcs() {
         return [
             {fn: "getRoundInfo", display: false, get: true, set: this.setRoundInfo},
-            {fn: "getLastPublicationBlock", display: false, get: true},
+            {fn: "lastPublicationBlock", display: false, get: true},
             {title: HL("Valid price period in blocks"), fn: "validPricePeriodInBlocks", get: false},
             // {title: "Coin Pair", fn: "getCoinPair", pf: (x) => parseBytes32String(x)},
             {title: HL("Blocks from last publication"), fn: "blocks_from_last_publication", get: false},
-            {title: "Last publication block", fn: "getLastPublicationBlock", get: false},
+            {title: "Last publication block", fn: "lastPublicationBlock", get: false},
 
             {title: HL("Round number"), fn: "round", get: false},
             {title: HL("Blocks to round end"), fn: "round_delta_blocks", get: false},

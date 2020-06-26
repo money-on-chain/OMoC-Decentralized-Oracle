@@ -178,9 +178,10 @@ export class Stake extends MyBase {
 
     _dump_mint() {
         const state = this.get_state();
+        // {this._dump_g_button("mint", (e) => this.new_mint(e))}
+        // {this._card_text(this._dump_input_amount(state, "Amount to mint"))}
         return this._dump_card_template(state, <>
-            {this._card_text(this._dump_input_amount(state, "Amount to mint"))}
-            {this._dump_g_button("mint", (e) => this.new_mint(e))}
+            <b>MINTING MUST BE DONE BY GOBERNANZA, ASK FOR TOKENS!!!</b>
         </>)
     }
 
