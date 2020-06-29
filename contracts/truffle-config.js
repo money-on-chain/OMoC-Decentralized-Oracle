@@ -5,13 +5,14 @@ const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
 // Tune it to your needs.
 const GAS_LIMIT = (2 * 1000 * 1000);
 
+const optimizer_enabled = process.argv.some(x => x.trim() == "--network")
+if (optimizer_enabled) console.log("USING OPTIMIZER!!!");
 
 // const HDWalletProvider = require('truffle-hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
-
 module.exports = {
     /**
      * Networks define how you connect to your ethereum client and let you set the
@@ -40,7 +41,7 @@ module.exports = {
             port: 8545,            // Standard Ethereum port (default: none)
             gas: GAS_LIMIT,
             network_id: "*",       // Any network (default: none)
-            skipDryRun: true
+            skipDryRun: true,
         },
         rsk_regtest: {
             host: "127.0.0.1",
@@ -119,7 +120,8 @@ module.exports = {
             // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
             settings: {          // See the solidity docs for advice about optimization and evmVersion
                 optimizer: {
-                    enabled: false,
+                    // default network doesn't use optimizer, the rest use it.
+                    enabled: optimizer_enabled,
                     runs: 200
                 },
                 //  evmVersion: "byzantium"
