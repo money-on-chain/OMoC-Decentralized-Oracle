@@ -3,7 +3,6 @@ pragma solidity 0.6.0;
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
-import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
 import {PriceProviderRegisterStorage} from "./PriceProviderRegisterStorage.sol";
 

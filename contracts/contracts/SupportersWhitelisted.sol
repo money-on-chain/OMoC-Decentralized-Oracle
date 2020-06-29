@@ -1,9 +1,7 @@
 pragma solidity 0.6.0;
 
+import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
-import {SupportersVestedLib} from "./libs/SupportersVestedLib.sol";
-import {SupportersLib} from "./libs/SupportersLib.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {SupportersWhitelistedStorage} from "./SupportersWhitelistedStorage.sol";
@@ -16,17 +14,30 @@ import {SupportersWhitelistedStorage} from "./SupportersWhitelistedStorage.sol";
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
 contract SupportersWhitelisted is SupportersWhitelistedStorage {
+    using SafeMath for uint;
 
-    using SupportersLib for SupportersLib.SupportersData;
+    // Emitted by SupportersLib and SupportersVestedLib
+    event PayEarnings(uint256 earnings, uint256 start, uint256 end);
+    event CancelEarnings(uint256 earnings, uint256 start, uint256 end);
+    event AddStake(address indexed user, address indexed subaccount,
+        address indexed sender, uint256 amount, uint256 mocs);
+    event WithdrawStake(address indexed user, address indexed subaccount,
+        address indexed destination, uint256 amount, uint256 mocs);
+
+    event Stop(address indexed msg_sender, address indexed user, uint256 blockNum);
+    event Withdraw(address indexed msg_sender, address indexed subacount,
+        address indexed receiver, uint256 mocs, uint256 blockNum);
+
+
     /**
-    Contract creation
+     @notice Contract creation
 
-    @param _governor The address of the contract which governs this one
-    @param _wlist Initial whitelist addresses
-    @param _mocToken The address of the contract which governs this one
-    @param _period The address of the contract which governs this one
-    @param _minStayBlocks The address of the contract which governs this one
-    @param _afterStopBlocks The address of the contract which governs this one
+     @param _governor The address of the contract which governs this one
+     @param _wlist Initial whitelist addresses
+     @param _mocToken The address of the contract which governs this one
+     @param _period The address of the contract which governs this one
+     @param _minStayBlocks The address of the contract which governs this one
+     @param _afterStopBlocks The address of the contract which governs this one
     */
     function initialize(IGovernor _governor, address[] calldata _wlist, IERC20 _mocToken, uint256 _period
     , uint256 _minStayBlocks, uint256 _afterStopBlocks)
@@ -39,32 +50,34 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-     * @dev Add to the list of contracts that can stake in this contract
-     * @param  _whitelisted - the override coinPair
-     */
+     @notice Add to the list of contracts that can stake in this contract
+
+     @param  _whitelisted - the override coinPair
+    */
     function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
         iterableWhitelistData._addToWhitelist(_whitelisted);
     }
 
     /**
-     * @dev Remove from the list of contracts that can stake in this contract
-     * @param  _whitelisted - the override coinPair
-     */
+     @notice Remove from the list of contracts that can stake in this contract
+
+     @param _whitelisted - the override coinPair
+    */
     function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
-        iterableWhitelistData._removeFromWhitelist(_whitelisted);
+        iterableWhitelistData._removeFromWhitelist(_whitelisted, 0);
     }
 
 
     /**
-      Deposit earnings that will be credited to supporters.
-      Earnings will be credited periodically through several blocks.
+      @notice Deposit earnings that will be credited to supporters.
+      @dev Earnings will be credited periodically through several blocks.
     */
     function distribute() external {
         supportersVestedData.supportersData._distribute();
     }
 
     /**
-      Return true if is ready to do a distribute call
+      @notice Return true if is ready to do a distribute call
 
       @return true if ready
     */
@@ -73,10 +86,10 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-      Stake MOC to receive earnings on a subaccount.
+     Stake MOC to receive earnings on a subaccount.
 
-      @param _mocs amount of MOC to stake
-      @param _subaccount sub-account used to identify the stake
+     @param _mocs amount of MOC to stake
+     @param _subaccount sub-account used to identify the stake
     */
     function stakeAt(uint256 _mocs, address _subaccount)
     external onlyWhitelisted(iterableWhitelistData) {
@@ -84,11 +97,11 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-    Stake MOC to receive earnings on a subaccount.
+     Stake MOC to receive earnings on a subaccount.
 
-    @param _mocs amount of MOC to stake
-    @param _subaccount sub-account used to identify the stake
-    @param _sender sender account that must approve and from which the funds are taken
+     @param _mocs amount of MOC to stake
+     @param _subaccount sub-account used to identify the stake
+     @param _sender sender account that must approve and from which the funds are taken
     */
     function stakeAtFrom(uint256 _mocs, address _subaccount, address _sender)
     external onlyWhitelisted(iterableWhitelistData) {
@@ -120,14 +133,17 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         return supportersVestedData._withdrawFromTo(_tokens, _subaccount, _receiver);
     }
 
-    /// @notice Returns true if a supporter can withdraw his money
-    //  @param _subaccount subaccount used to withdraw MOC
+    /**
+     @notice Returns true if a supporter can withdraw his money
+
+     @param _subaccount subaccount used to withdraw MOC
+    */
     function canWithdraw(address _subaccount) external view returns (bool) {
         return supportersVestedData._canWithdraw(_subaccount);
     }
 
     /**
-      Amount of tokens for _user in a _subaccount.
+      @notice Amount of tokens for _user in a _subaccount.
 
       @param _user User address
       @param _subaccount subaccount to get balance
@@ -138,7 +154,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-      MOC available for withdrawal by _user.
+      @notice MOC available for withdrawal by _user.
 
       @param _user User address
       @param _subaccount subaccount to get MOC balance
@@ -149,7 +165,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-      Total tokens created.
+      @notice Total tokens created.
 
       @return total amount of tokens
     */
@@ -158,7 +174,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-      MOC available for withdrawal.
+      @notice MOC available for withdrawal.
 
       @return total amount of MOC
     */
@@ -167,7 +183,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-      Calculate earnings to be paid at a block
+      @notice Calculate earnings to be paid at a block
 
       @param _block Block used to calculate
       @return Earnings to be paid
@@ -177,7 +193,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-      Calculate locked earnings at a block
+      @notice Calculate locked earnings at a block
 
       @param _block Block used for calculations
       @return Locked amount of earnings in MOC
@@ -187,7 +203,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-      @dev Return information about earnings
+      @notice Return information about earnings
 
       @return Information about earnings
     */
@@ -196,15 +212,16 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
 
-    /**
-      @return The moc token address
-    */
+    /// @notice The moc token address
     function mocToken() external view returns (IERC20) {
         return supportersVestedData.supportersData.mocToken;
     }
 
     /**
-      @return Number of blocks to distribute earnings
+     @notice Return the round length in blocks .
+     @dev During each round rewards are collected and distributed during next round.
+
+     @return Number of blocks to distribute earnings
     */
     function period() external view returns (uint256) {
         return supportersVestedData.supportersData.period;
@@ -212,13 +229,15 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
 
     /**
      Stop staking some MOCs
+
+     @param _addr User address
     */
-    function stop(address addr) external onlyWhitelisted(iterableWhitelistData) {
-        supportersVestedData._stop(addr);
+    function stop(address _addr) external onlyWhitelisted(iterableWhitelistData) {
+        supportersVestedData._stop(_addr);
     }
 
     /**
-      Vesting information for _account.
+      Vesting information for an account.
 
       @param _user User address
       @param _subaccount subaccount to get MOC balance
@@ -232,20 +251,12 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         supportersVestedData.stopInBlockMap[_subaccount]);
     }
 
-    /**
-      Get the minimum number of blocks that a user must stay staked after staking
-
-      @return the minimum number of blocks that a user must stay staked after staking
-    */
+    /// @notice Get the minimum number of blocks that a user must stay staked after staking
     function getMinStayBlocks() external view returns (uint256) {
         return supportersVestedData.minStayBlocks;
     }
 
-    /**
-      Return the period of blocks a user have after a stop and minStayBlock to withdraw
-
-      @return the period of blocks that a user have
-    */
+    /// @notice  Get the period of blocks a user have after a stop and minStayBlock to withdraw
     function getAfterStopBlocks() external view returns (uint256) {
         return supportersVestedData.afterStopBlocks;
     }
@@ -255,17 +266,21 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         return iterableWhitelistData._getWhiteListLen();
     }
 
-    /// @notice Returns the address at index.
-    /// @param i index to query.
-    function getWhiteListAtIndex(uint256 i) external view returns (address) {
-        return iterableWhitelistData._getWhiteListAtIndex(i);
+    /**
+     @notice Returns the address at index.
+
+     @param _idx index to query.
+    */
+    function getWhiteListAtIndex(uint256 _idx) external view returns (address) {
+        return iterableWhitelistData._getWhiteListAtIndex(_idx);
     }
 
     /**
-     * @dev Check if an account is whitelisted
-     * @return Bool
-     */
-    function isWhitelisted(address account) external view returns (bool) {
-        return iterableWhitelistData._isWhitelisted(account);
+     @notice Check if an account is whitelisted
+
+     @param _account The account to check
+    */
+    function isWhitelisted(address _account) external view returns (bool) {
+        return iterableWhitelistData._isWhitelisted(_account);
     }
 }

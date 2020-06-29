@@ -1,11 +1,9 @@
 pragma solidity 0.6.0;
 
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
-import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
-import {CalculatedPriceProviderLib} from "./libs/CalculatedPriceProviderLib.sol";
-import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {CalculatedPriceProviderStorage} from "./CalculatedPriceProviderStorage.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
@@ -44,10 +42,11 @@ contract CalculatedPriceProvider is CalculatedPriceProviderStorage, IPriceProvid
 
     /**
      * @dev Remove from the list of contracts that can stake in this contract
-     * @param  _whitelisted - the override coinPair
+     * @param _whitelisted - the override coinPair
+     * @param _hint Optional hint to start traversing the array, zero is to search all the array.
      */
-    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
-        iterableWhitelistData._removeFromWhitelist(_whitelisted);
+    function removeFromWhitelist(address _whitelisted, uint256 _hint) external onlyAuthorizedChanger() {
+        iterableWhitelistData._removeFromWhitelist(_whitelisted, _hint);
     }
 
     /// @notice Returns the count of whitelisted addresses.
@@ -56,9 +55,9 @@ contract CalculatedPriceProvider is CalculatedPriceProviderStorage, IPriceProvid
     }
 
     /// @notice Returns the address at index.
-    /// @param i index to query.
-    function getWhiteListAtIndex(uint256 i) external view returns (address) {
-        return iterableWhitelistData._getWhiteListAtIndex(i);
+    /// @param _idx index to query.
+    function getWhiteListAtIndex(uint256 _idx) external view returns (address) {
+        return iterableWhitelistData._getWhiteListAtIndex(_idx);
     }
 
     /// @notice return the type of provider

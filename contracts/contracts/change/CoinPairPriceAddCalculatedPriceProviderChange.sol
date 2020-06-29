@@ -43,6 +43,6 @@ contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceStorage, 
         This methods runs in the Governed contract storage.
     */
     function impersonate(bytes calldata data) external {
-        //IterableWhitelist.add(abi.decode(data, (address)));
+        pricePeekWhitelistData._addToWhitelist(abi.decode(data, (address)));
     }
 }

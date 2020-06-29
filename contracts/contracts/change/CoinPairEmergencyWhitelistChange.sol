@@ -3,13 +3,11 @@ pragma solidity 0.6.0;
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
-
 /**
-  @title CoinPairPriceRoundLockPeriodInBlocksChange
-  @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
-  parameter roundLockPeriodInBlocks
+  @title CoinPairEmergencyWhitelistChange
+  @notice This contract is a ChangeContract intended to be used to add an emergency publisher to the whitelist.
  */
-contract CoinPairPriceRoundLockPeriodInBlocksChange is CoinPairPriceStorage, ChangeContract {
+contract CoinPairEmergencyWhitelistChange is CoinPairPriceStorage, ChangeContract {
 
     GovernedAbstract public coinPairPrice;
     bytes public encodedData;
@@ -17,11 +15,11 @@ contract CoinPairPriceRoundLockPeriodInBlocksChange is CoinPairPriceStorage, Cha
     /**
       @notice Constructor
       @param _coinPairPrice Address of coin pair price to upgrade
-      @param _roundLockPeriodInBlocks The maximum count of oracles selected to participate each round
+      @param _emergencyPublisher The address of the publisher to whitelist
     */
-    constructor(GovernedAbstract _coinPairPrice, uint256 _roundLockPeriodInBlocks) public {
+    constructor(GovernedAbstract _coinPairPrice, address _emergencyPublisher) public {
         coinPairPrice = _coinPairPrice;
-        encodedData = abi.encode(_roundLockPeriodInBlocks);
+        encodedData = abi.encode(_emergencyPublisher);
     }
 
     /**
@@ -39,6 +37,6 @@ contract CoinPairPriceRoundLockPeriodInBlocksChange is CoinPairPriceStorage, Cha
         This methods runs in the Governed contract storage.
     */
     function impersonate(bytes calldata data) external {
-        roundInfo.roundLockPeriodInBlocks = abi.decode(data, (uint256));
+        emergencyPublishWhitelistData._addToWhitelist(abi.decode(data, (address)));
     }
 }

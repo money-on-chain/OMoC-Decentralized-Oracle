@@ -172,7 +172,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         @param _selectedOracles selected oracles addresses
     */
     function _createFullRoundInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice,
-        address[] memory _selectedOracles) internal view returns (FullOracleRoundInfo[] memory info)
+        address[] memory _selectedOracles) private view returns (FullOracleRoundInfo[] memory info)
  {
         uint256 len = _selectedOracles.length;
         info = new FullOracleRoundInfo[](len);

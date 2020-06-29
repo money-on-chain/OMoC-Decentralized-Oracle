@@ -41,6 +41,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
             maxOraclesPerRound,
             5, // roundLockPeriodInBlocks,
             3, // validPricePeriodInBlocks
+            2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
             2, // numIdleRounds,
             testobj.oracleMgr.address);
@@ -161,7 +162,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
             assert.isTrue((await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(ORACLE_WITH_A_LOT_OF_STAKE.oracle_addr) >= 0);
         });
 
-        it("If we ORACLE_WITH_A_LOT_OF_STAKE unsubscribe then he looses its place in next round", async () => {
+        it("If ORACLE_WITH_A_LOT_OF_STAKE unsubscribes then he looses its place in next round", async () => {
             const {oracle_addr, owner_addr} = ORACLE_WITH_A_LOT_OF_STAKE;
             assert.isTrue(await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR));
             assert.isTrue((await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracle_addr) >= 0);

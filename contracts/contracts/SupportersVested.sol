@@ -1,10 +1,10 @@
 pragma solidity 0.6.0;
 
+import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
-import {SupportersVestedLib} from "./libs/SupportersVestedLib.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {SupportersVestedStorage} from "./SupportersVestedStorage.sol";
 
 /*
@@ -13,6 +13,7 @@ import {SupportersVestedStorage} from "./SupportersVestedStorage.sol";
     we can add other contracts with different kind of restrictions to the supporters smart-contract.
 */
 contract SupportersVested is SupportersVestedStorage {
+    using SafeMath for uint;
 
     function initialize(IGovernor _governor, SupportersWhitelisted _supporters) external initializer {
         require(address(_supporters) != address(0), "Supporters contract address must be != 0");

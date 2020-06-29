@@ -38,6 +38,6 @@ contract CoinPairPriceMaxOraclesPerRoundChange is CoinPairPriceStorage, ChangeCo
         This methods runs in the Governed contract storage.
     */
     function impersonate(bytes calldata data) external {
-        maxOraclesPerRound = abi.decode(data, (uint256));
+        roundInfo.maxOraclesPerRound = abi.decode(data, (uint256));
     }
 }

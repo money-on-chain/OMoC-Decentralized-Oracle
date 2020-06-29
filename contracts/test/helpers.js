@@ -107,6 +107,9 @@ async function createGovernor(owner) {
         mint: async (tokenAddr, addr, quantity) => {
             const change = await TestMOCMintChange.new(tokenAddr, addr, quantity);
             await governor.executeChange(change.address, {from: owner});
+        },
+        execute: async (change) => {
+            await governor.executeChange(change.address, {from: owner});
         }
     }
 }
