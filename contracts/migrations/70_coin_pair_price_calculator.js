@@ -61,7 +61,7 @@ async function deploy(deployer, networkName, accounts) {
             alias: "CalculatedPriceProvider"
         }]
     });
-    await scripts.push({network, txParams: {...txParams, gas: 3000000}, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 1800000}, force: true});
     const calculatedPriceProvider = await scripts.create({
         methodName: 'initialize',
         methodArgs: [governorAddr, [coinPairPriceFree.options.address], baseMultiplicator, multiplyBy, baseDivisor, divideBy],

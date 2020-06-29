@@ -39,7 +39,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Deploying TestMOC");
     await scripts.add({contractsData: [{name: "TestMOC", alias: "TestMOC"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 3000000}, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 1800000}, force: true});
     const testMOC = await scripts.create({
         methodName: 'initialize',
         methodArgs: [governorAddr],
@@ -53,7 +53,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Create Supporters Proxy");
     await scripts.add({contractsData: [{name: "SupportersWhitelisted", alias: "Supporters"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 4500000}, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 3500000}, force: true});
     const supporters = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "Supporters",
@@ -65,7 +65,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
     console.log("Create OraclesManager");
     await scripts.add({contractsData: [{name: "OracleManager", alias: "OracleManager"}]});
     // Give more gas!!!
-    await scripts.push({network, txParams: {...txParams, gas: 6300000}, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 4300000}, force: true});
     const oracleManager = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "OracleManager",
@@ -76,7 +76,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Create Supporters Vested");
     await scripts.add({contractsData: [{name: "SupportersVested", alias: "SupportersVested"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 3500000}, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 1800000}, force: true});
     const supportersVested = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "SupportersVested",
@@ -118,7 +118,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
         const alias = 'CoinPairPrice_' + coin;
         await scripts.add({contractsData: [{name: "CoinPairPrice", alias: alias}]});
         // MORE GAS!!!
-        await scripts.push({network, txParams: {...txParams, gas: 5000000}, force: true});
+        await scripts.push({network, txParams: {...txParams, gas: 4000000}, force: true});
         const coinPairPrice = await scripts.create({
                 admin: proxyAdminAddr,
                 contractAlias: alias,
@@ -131,6 +131,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
                     parseInt(params.maxOraclesPerRound[i]),
                     parseInt(params.roundLockPeriodInBlocks[i]),
                     parseInt(params.validPricePeriodInBlocks[i]),
+                    parseInt(params.emergencyPublishingPeriodInBlocks[i]),
                     params.bootstrapPrice[i],
                     parseInt(params.numIdleRounds[i]),
                     oracleManager.options.address],
@@ -170,6 +171,7 @@ async function config(deployer, networkName, accounts) {
         numIdleRounds: parseEnvArray(process.env.numIdleRounds),
         roundLockPeriodInBlocks: parseEnvArray(process.env.roundLockPeriodInBlocks),
         validPricePeriodInBlocks: parseEnvArray(process.env.validPricePeriodInBlocks),
+        emergencyPublishingPeriodInBlocks: parseEnvArray(process.env.emergencyPublishingPeriodInBlocks),
         supportersEarnPeriodInBlocks: process.env.supportersEarnPeriodInBlocks,
         supportersMinStayBlocks: process.env.supportersMinStayBlocks,
         supportersAfterStopBlocks: process.env.supportersAfterStopBlocks

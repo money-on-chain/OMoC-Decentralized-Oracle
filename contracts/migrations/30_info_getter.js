@@ -25,7 +25,7 @@ async function deploy(deployer, networkName, accounts) {
 
     console.log("Create InfoGetter Proxy");
     await scripts.add({contractsData: [{name: "InfoGetter", alias: "InfoGetter"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 4000000}, force: true});
+    await scripts.push({network, txParams: {...txParams, gas: 3000000}, force: true});
     const infoGetter = await scripts.create({
         methodName: 'initialize',
         methodArgs: [governorAddr],
