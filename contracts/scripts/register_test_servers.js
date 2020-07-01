@@ -63,10 +63,10 @@ async function main() {
             console.log("tokenApproved:", token_approved.toString(), "needed", o.quantity.toString());
             if (token_approved.lt(o.quantity)) {
                 console.log(testMOC.address, "Calling approve ", oracleManager.address, o.quantity.toString())
-                testMOC.approve(oracleManager.address, o.quantity, {from: owner});
+                await testMOC.approve(oracleManager.address, o.quantity, {from: owner});
             }
             console.log(oracleManager.address, "Calling registerOracle ", o.addr, o.name, o.quantity.toString())
-            await oracleManager.registerOracle(o.addr, o.name, o.quantity, {from: owner});
+            await oracleManager.registerOracle(o.addr, o.name, o.quantity, {from: owner, gas: 4000000});
         }
         for (const coinPair of o.oracleCoinPairFilter) {
             const isSubscribed = await oracleManager.isSubscribed(o.addr, web3.utils.fromAscii(coinPair));
