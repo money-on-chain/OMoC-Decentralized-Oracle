@@ -169,7 +169,6 @@ export class CoinPairPriceInfo extends ContractInfo {
 export class RegistryInfo extends ContractInfo {
     constructor(name, parent, opts) {
         super(name, parent, opts);
-        const bn = ethers.utils.BigNumber;
         this.keys = [].concat(
             ["ORACLE_MANAGER_ADDR", "SUPPORTERS_VESTED_ADDR"]
                 .map(name => ({name, func: "getAddress", procesor: (x) => x})),
@@ -179,7 +178,7 @@ export class RegistryInfo extends ContractInfo {
                 .map(name => ({
                     name,
                     func: "getDecimal",
-                    procesor: (x) => ((new bn(x.base)).mul(new bn(10).pow(new bn(x.exp)))).toString()
+                    procesor: (x) => parseFloat(x.base) * (10 ** parseFloat(x.exp))
                 })),
             ["ORACLE_PRICE_FETCH_RATE", "ORACLE_BLOCKCHAIN_INFO_INTERVAL",
                 "ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL", "ORACLE_MAIN_LOOP_TASK_INTERVAL",
