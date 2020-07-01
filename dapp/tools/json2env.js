@@ -1,4 +1,3 @@
-const testFolder = './src/contracts/';
 const fs = require('fs');
 const path = require('path');
 const NEEDED_CONTRACTS = {
@@ -28,65 +27,68 @@ function get_name(filename) {
     return x.split(".")[0];
 }
 
-function dump(contract, network, address) {
-    //console.log(`REACT_APP_${contract}_${network}=${address}`);
-    console.log(`REACT_APP_${contract}=${address}`);
-}
-
-async function ProcFile(network_id, fullname, alias) {
-    let data = fs.readFileSync(fullname);
-    let obj = JSON.parse(data);
-    //console.log( obj["networks"])
-    // console.log("-----> ", network_id);
-    // console.log("------------>", obj["networks"][network_id]["address"]);
-    if (!(network_id in obj["networks"])) {
-        console.error("Invalid network id, use for example: ", Object.keys(obj["networks"]));
-        process.exit(2);
-    }
-    dump(alias, network_id, obj["networks"][network_id]["address"]);
-}
 
 async function main() {
-    if (process.argv.length != 3 || isNaN(process.argv[2])) {
-        console.error("Usage script network_id\n for example 31, 12341234");
-        process.exit(1);
-    }
-    const network_id = parseInt(process.argv[2]);
     const needed_files = Object.keys(NEEDED_CONTRACTS);
     const cmp_func = (filename, x) => get_name(filename).toLowerCase() === x.toLowerCase();
 
+    const destinationFolder = J(__dirname, '..', 'src', 'contracts');
+    const sourceFolder = J(__dirname, '../../contracts/build/contracts');
+
     let files = [];
-    fs.readdirSync(testFolder).forEach(filename => {
+    console.log("Reading abis from", sourceFolder);
+    console.log("\tSaving abis to ", destinationFolder);
+    fs.readdirSync(sourceFolder).forEach(filename => {
         if (filename.toLowerCase().endsWith(".json") && needed_files.some(x => cmp_func(filename, x))) {
             files.push(filename);
         }
-        if (false && !filename.toLowerCase().endsWith("_abi.json")) {
-            const full_name = J(testFolder, filename);
+        if (!filename.toLowerCase().endsWith("_abi.json")) {
+            const full_name = J(sourceFolder, filename);
             let data = JSON.parse(fs.readFileSync(full_name));
-            const abi_filename = J(testFolder, get_name(filename) + "_abi.json");
-            console.log("Reading", full_name, "Saving abi", abi_filename);
-            fs.writeFileSync(abi_filename, JSON.stringify(data["abi"], null, 4));
+            const abi_filename = J(destinationFolder, get_name(filename) + "_abi.json");
+            fs.writeFileSync(abi_filename, JSON.stringify({abi: data["abi"]}, null, 4));
         }
     });
-    console.log("----------- ENV FILE ------------")
-    console.log("REACT_APP_AllowMint=true");
-    console.log("REACT_APP_RefreshTime=1000");
-    console.log("REACT_APP_NetworkID=" + network_id);
-    console.log("")
+
+    let network_id;
+    if (process.argv.length > 2 && !isNaN(process.argv[2])) {
+        network_id = parseInt(process.argv[2]);
+    }
+    const vars = [];
     for (let filename of files) {
         try {
-            const full_name = J(testFolder, filename);
-            const st = await StatFile(full_name);
-            let is_file = st.isFile();
-            if (is_file) {
-                const alias_key = needed_files.filter(x => cmp_func(filename, x));
-                await ProcFile(network_id, full_name, NEEDED_CONTRACTS[alias_key]);
+            const full_name = J(sourceFolder, filename);
+            const alias_key = needed_files.filter(x => cmp_func(filename, x));
+            let data = fs.readFileSync(full_name);
+            let obj = JSON.parse(data);
+            const possible_networks = Object.keys(obj["networks"])
+            if (!network_id) {
+                network_id = possible_networks[0];
             }
+            if (possible_networks.length != 1 || possible_networks[0] != network_id) {
+                console.error("Invalid network id, use for example: ", possible_networks);
+                process.exit(2);
+            }
+            const address = obj["networks"][network_id]["address"];
+            const alias = NEEDED_CONTRACTS[alias_key];
+            vars.push(`REACT_APP_${alias}=${address}`);
+
         } catch (err) {
             console.error(err);
             console.error("while processing: " + filename);
         }
     }
+
+    vars.unshift("")
+    vars.unshift("REACT_APP_NetworkID=" + network_id);
+    vars.unshift("REACT_APP_RefreshTime=1000");
+
+    console.log("----------- ENV FILE ------------")
+    console.log(vars);
+    const env_file = J(__dirname, '..', ".env.development");
+    console.log("Saving abi", env_file);
+    fs.writeFileSync(env_file, vars.join("\n"));
+
 }
 
 

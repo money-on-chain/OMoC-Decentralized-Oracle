@@ -231,6 +231,9 @@ export function getTimeout() {
     const ethereum = window['ethereum'];
     const network = ethereum.networkVersion;
     const netinfo = Networks[network];
+    if (!netinfo) {
+        return 1000;
+    }
     return netinfo.update;
 }
 

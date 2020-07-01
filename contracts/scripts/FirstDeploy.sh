@@ -40,4 +40,9 @@ truffle migrate --network "$NETWORK" --compile-all 2>&1 | tee -a "$DIR/deploy.lo
 mv "$DIR/deploy.log" "$DIR/../build/"
 cp -r $DIR/../.openzeppelin/* "$DIR/../build/"
 
-cp -r "$DIR/../build/contracts" "$DIR/../../dapp/src"
+if [ -d "$DIR/../../dapp" ]; then
+    echo "Processing contract files for dapp"
+    cd "$DIR/../../dapp"
+    #cp -r "$DIR/../build/contracts" "$DIR/../../dapp/src"
+    npm run json2env
+fi

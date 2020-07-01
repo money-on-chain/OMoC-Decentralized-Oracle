@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import {ethers} from 'ethers';
-import * as TOKEN_DATA from './contracts/TestMOC.json';
-import * as ORACLE_MANAGER_DATA from './contracts/OracleManager.json';
-import * as REGISTRY_DATA from './contracts/EternalStorageGobernanza.json';
-import * as COIN_PAIR_PRICE_DATA from './contracts/CoinPairPrice.json';
-import * as SUPPORTERS_VESTED_DATA from './contracts/SupportersVested.json';
-import * as SUPPORTERS_WHITELISTED_DATA from './contracts/SupportersWhitelisted.json';
+import * as TOKEN_DATA from './contracts/TestMOC_abi.json';
+import * as ORACLE_MANAGER_DATA from './contracts/OracleManager_abi.json';
+import * as REGISTRY_DATA from './contracts/EternalStorageGobernanza_abi.json';
+import * as COIN_PAIR_PRICE_DATA from './contracts/CoinPairPrice_abi.json';
+import * as SUPPORTERS_VESTED_DATA from './contracts/SupportersVested_abi.json';
+import * as SUPPORTERS_WHITELISTED_DATA from './contracts/SupportersWhitelisted_abi.json';
 import {OracleStake, SupportersVestedStake} from './stake.js';
 import {
     addreq,
@@ -43,39 +43,19 @@ const TOKEN_ABI = TOKEN_DATA["abi"];
 
 const NETWORK = process.env.REACT_APP_NetworkID;
 
-function getFromEnvOrData(name, envName, networks) {
+function getFromEnvOrData(name, envName) {
     const envVal = process.env[envName]
-    if (process.env.REACT_APP_SKIP_BUILD_DIR !== "true" && (!process.env.NODE_ENV || process.env.NODE_ENV === 'development')) {
-        // dev code
-        const netid = Object.keys(networks)[0];
-        console.log("USING DEVELOPMENT NETWORK", netid, "ADDRESS", networks[netid].address, "FOR", name, "INSTEAD OF", envName, envVal);
-        const ret = networks[netid].address;
-        console.log(envName, "=", ret)
-        return ret;
-    } else {
-        console.log("USING PRODUCTION ADDRESS", envName, "->", envVal, "FOR", name);
-        return envVal;
-    }
+    console.log("USING ADDRESS", envName, "->", envVal, "FOR", name);
+    return envVal;
 }
 
-const ORACLE_MANAGER_ADDR = getFromEnvOrData("ORACLE MANAGER", "REACT_APP_OracleManager", ORACLE_MANAGER_DATA["networks"]);
-const REGISTRY_ADDR = getFromEnvOrData("REGISTRY", "REACT_APP_Registry", REGISTRY_DATA["networks"]);
-const SUPPORTERS_VESTED_ADDR = getFromEnvOrData("SUPPORTERS VESTED", "REACT_APP_SupportersVested", SUPPORTERS_VESTED_DATA["networks"]);
-const SUPPORTERS_WHITELISTED_ADDR = getFromEnvOrData("SUPPORTERS WHITELISTED", "REACT_APP_SupportersWhitelisted", SUPPORTERS_WHITELISTED_DATA["networks"]);
+const ORACLE_MANAGER_ADDR = getFromEnvOrData("ORACLE MANAGER", "REACT_APP_OracleManager");
+const REGISTRY_ADDR = getFromEnvOrData("REGISTRY", "REACT_APP_Registry");
+const SUPPORTERS_VESTED_ADDR = getFromEnvOrData("SUPPORTERS VESTED", "REACT_APP_SupportersVested");
+const SUPPORTERS_WHITELISTED_ADDR = getFromEnvOrData("SUPPORTERS WHITELISTED", "REACT_APP_SupportersWhitelisted");
 
 const ICONS_ALWAYS = true;
 
-
-function get_networks() {
-    let nets = [];
-    let obj = ORACLE_MANAGER_DATA["networks"];
-    for (let prop in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-            nets.push(prop);
-        }
-    }
-    return nets;
-}
 
 const OracleColumns = ["#", "owner", "address", "net address", "stake", "pairs", "rounds", "gas", "stop block", ""];
 
@@ -118,7 +98,9 @@ class Console extends React.Component {
                 self.do_connect(accounts, newnet);
             });
         });
-
+        if (ethereum.networkVersion !== NETWORK) {
+            return;
+        }
         this.oracle_mgr = new ethers.Contract(ORACLE_MANAGER_ADDR, ORACLE_MANAGER_ABI, this.signer);
         this.registry = new ethers.Contract(REGISTRY_ADDR, REGISTRY_ABI, this.signer);
 
@@ -598,18 +580,6 @@ class Console extends React.Component {
         </>;
     }
 
-    network_connect() {
-        return this.card(
-            get_networks().map(netid => (
-                <button key={netid} onClick={(e) => {
-                    const ethereum = window['ethereum'];
-                    ethereum.enable().then((accounts) => {
-                        this.do_connect(accounts, netid);
-                    }).catch((err) => console.error(err));
-                }}>Connect to metamask - net {netid}</button>
-            )), "Network");
-    }
-
     network_disconnect() {
         return this.card(
             <>
@@ -1087,122 +1057,129 @@ class Console extends React.Component {
         }
         if (!this.state.connected) {
             return this.page(<>
-                {this.network_connect()}
+                {this.card(
+                    <button key={NETWORK} onClick={(e) => {
+                        const ethereum = window['ethereum'];
+                        ethereum.enable().then((accounts) => {
+                            this.do_connect(accounts, NETWORK);
+                        }).catch((err) => console.error(err));
+                    }}>Connect to metamask - net {NETWORK}</button>
+                    , "Network"
+                )}
             </>);
-        } else {
-            const supp_state = this.c_supporters_vested_stake.get_state()
-            let t_manager = {
-                name: "Oracles", fn: (state, x) => x.data, data: <>
-                    <div className="card-deck">
-                        {this.global_info()}
-                    </div>
-
-                    <div className="card-deck">
-                        {this.XCard(6, <>
-                            {this.mgr_stake ? this.mgr_stake.dump() : <></>}
-                        </>, "Registration")}
-
-                        {this.get_cp_name_address_switch(true)}
-                    </div>
-
-                    <div className="card-deck">
-                        {this.XCard(6,
-                            <>
-                                {Table(OracleColumns.concat([<>&nbsp;</>, <>&nbsp;</>,]),
-                                    this.state.mgr_oracle_reg_info.map(this.oracle_to_table2), {
-                                        rowattrs: this.ot_row_attrs,
-                                        nonresponsive: false,
-                                        classes: "table-striped",
-                                        alignf: (idx) => in_(idx, [2, 6]) ? align_left :
-                                            (in_(idx, [3]) ? align_right : align_center),
-                                        odata: this.state.mgr_oracle_reg_info,
-                                        rowclick: (e, idx) => {
-                                            e.preventDefault();
-                                            this._on_row_click(idx);
-                                        }
-                                    })}
-                                <p>To withdraw your funds you must unregister from all coin pair and wait
-                                    {' '}{bigNumberifyAndFormatInt(this.state.mgr_oracle_reg_info
-                                        .map(x => x.num_idle_rounds)
-                                        .reduce((acc, val) => acc.gt(val) ? acc : val,
-                                            ethers.utils.bigNumberify(0)))} {' '}
-                                    rounds.</p>
-                                <p>
-                                    After that you must call stop and wait another
-                                    {' '}{bigNumberifyAndFormatInt(supp_state.minStayBlocks)}{' '}
-                                    blocks then you must withdraw before the next
-                                    {' '}{bigNumberifyAndFormatInt(supp_state.afterStopBlocks)}{' '}
-                                    blocks or you will need to call stop again.
-                                </p>
-                                <span className="badge badge-info">{edit_icon()}</span> edit oracle
-                                <span className="badge badge-warning">{stop_icon()}</span> stop oracle
-                                <span className="badge badge-danger">{trash_icon()}</span> remove oracle
-                            </>,
-                            "Registered oracles")}
-                    </div>
-                </>
-            };
-
-            let t_supporters = {
-                name: "Supporters", fn: (state, x) => x.data, data: <>
+        }
+        const supp_state = this.c_supporters_vested_stake.get_state()
+        let t_manager = {
+            name: "Oracles", fn: (state, x) => x.data, data: <>
+                <div className="card-deck">
                     {this.global_info()}
-                    {this.XCard(6, <>
-                        {this.c_supporters_vested_stake ? this.c_supporters_vested_stake.dump() : <></>}
-                    </>, "Supporters")}
-                </>
-            };
-            let t_info = {
-                name: "Info", fn: (state, x) => x.data, data: <>
-                    {this.global_info()}
-                    {this.get_cp_name_address_switch()}
+                </div>
 
+                <div className="card-deck">
                     {this.XCard(6, <>
-                        {this.registry_info ? this.registry_info.dump_text() : <></>}
-                    </>, "Registry")}
-                    {this.XCard(6, <>
-                        {this.c_supporters_vested_info ? this.c_supporters_vested_info.dump_text() : <></>}
-                        <br/>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <div className="btn-group">
-                                <button type="button" className="btn btn-sm btn-outline-secondary"
-                                        onClick={(e) => this.c_supporters_vested_info.distribute(e)}>Distribute
-                                </button>
-                            </div>
+                        {this.mgr_stake ? this.mgr_stake.dump() : <></>}
+                    </>, "Registration")}
+
+                    {this.get_cp_name_address_switch(true)}
+                </div>
+
+                <div className="card-deck">
+                    {this.XCard(6,
+                        <>
+                            {Table(OracleColumns.concat([<>&nbsp;</>, <>&nbsp;</>,]),
+                                this.state.mgr_oracle_reg_info.map(this.oracle_to_table2), {
+                                    rowattrs: this.ot_row_attrs,
+                                    nonresponsive: false,
+                                    classes: "table-striped",
+                                    alignf: (idx) => in_(idx, [2, 6]) ? align_left :
+                                        (in_(idx, [3]) ? align_right : align_center),
+                                    odata: this.state.mgr_oracle_reg_info,
+                                    rowclick: (e, idx) => {
+                                        e.preventDefault();
+                                        this._on_row_click(idx);
+                                    }
+                                })}
+                            <p>To withdraw your funds you must unregister from all coin pair and wait
+                                {' '}{bigNumberifyAndFormatInt(this.state.mgr_oracle_reg_info
+                                    .map(x => x.num_idle_rounds)
+                                    .reduce((acc, val) => acc.gt(val) ? acc : val,
+                                        ethers.utils.bigNumberify(0)))} {' '}
+                                rounds.</p>
+                            <p>
+                                After that you must call stop and wait another
+                                {' '}{bigNumberifyAndFormatInt(supp_state.minStayBlocks)}{' '}
+                                blocks then you must withdraw before the next
+                                {' '}{bigNumberifyAndFormatInt(supp_state.afterStopBlocks)}{' '}
+                                blocks or you will need to call stop again.
+                            </p>
+                            <span className="badge badge-info">{edit_icon()}</span> edit oracle
+                            <span className="badge badge-warning">{stop_icon()}</span> stop oracle
+                            <span className="badge badge-danger">{trash_icon()}</span> remove oracle
+                        </>,
+                        "Registered oracles")}
+                </div>
+            </>
+        };
+
+        let t_supporters = {
+            name: "Supporters", fn: (state, x) => x.data, data: <>
+                {this.global_info()}
+                {this.XCard(6, <>
+                    {this.c_supporters_vested_stake ? this.c_supporters_vested_stake.dump() : <></>}
+                </>, "Supporters")}
+            </>
+        };
+        let t_info = {
+            name: "Info", fn: (state, x) => x.data, data: <>
+                {this.global_info()}
+                {this.get_cp_name_address_switch()}
+
+                {this.XCard(6, <>
+                    {this.registry_info ? this.registry_info.dump_text() : <></>}
+                </>, "Registry")}
+                {this.XCard(6, <>
+                    {this.c_supporters_vested_info ? this.c_supporters_vested_info.dump_text() : <></>}
+                    <br/>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div className="btn-group">
+                            <button type="button" className="btn btn-sm btn-outline-secondary"
+                                    onClick={(e) => this.c_supporters_vested_info.distribute(e)}>Distribute
+                            </button>
                         </div>
-                    </>, "Supporters Vested Info")}
-                    {this.XCard(6, <>
-                        {this.c_supporters_whitelisted ? this.c_supporters_whitelisted.dump_text() : <></>}
-                        <br/>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <div className="btn-group">
-                                <button type="button" className="btn btn-sm btn-outline-secondary"
-                                        onClick={(e) => this.c_supporters_whitelisted.distribute(e)}>Distribute
-                                </button>
-                            </div>
+                    </div>
+                </>, "Supporters Vested Info")}
+                {this.XCard(6, <>
+                    {this.c_supporters_whitelisted ? this.c_supporters_whitelisted.dump_text() : <></>}
+                    <br/>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div className="btn-group">
+                            <button type="button" className="btn btn-sm btn-outline-secondary"
+                                    onClick={(e) => this.c_supporters_whitelisted.distribute(e)}>Distribute
+                            </button>
                         </div>
-                    </>, "Supporters Whitelisted Info")}
+                    </div>
+                </>, "Supporters Whitelisted Info")}
 
-                </>
-            };
+            </>
+        };
 
-            let cp_tab = (cp) => {
-                return {
-                    name: cp.pair, fn: (state, x) => x.data, data: <>{this.global_info()}<span>
+        let cp_tab = (cp) => {
+            return {
+                name: cp.pair, fn: (state, x) => x.data, data: <>{this.global_info()}<span>
                     {this.card(<>
                         <form className="needs-validation" noValidate>
                             {this.cp_comps[cp.pair].dump_coinpair()}
                         </form>
                     </>, cp.pair + " price contract info")}
                 </span></>
-                }
             }
-
-            let tabs = [
-                t_manager,
-                t_supporters]
-            tabs = tabs.concat(this.get_coinpairs_ready().map(cp => cp_tab(cp)));
-            return this.tabs(tabs.concat(t_info));
         }
+
+        let tabs = [
+            t_manager,
+            t_supporters]
+        tabs = tabs.concat(this.get_coinpairs_ready().map(cp => cp_tab(cp)));
+        return this.tabs(tabs.concat(t_info));
     }
 }
 
