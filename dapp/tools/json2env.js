@@ -85,7 +85,7 @@ async function main() {
 
     console.log("----------- ENV FILE ------------")
     console.log(vars);
-    const env_file = J(__dirname, '..', ".env.development");
+    const env_file = J(__dirname, '..', ".env.development.local");
     console.log("Saving abi", env_file);
     fs.writeFileSync(env_file, vars.join("\n"));
 
