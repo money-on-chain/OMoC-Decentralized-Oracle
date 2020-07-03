@@ -397,6 +397,7 @@ export class CoinPairPriceAllInfo extends ContractInfo {
             {title: "Total points", fn: "totalPoints", get: false},
             {title: "Max oracles per round", fn: "maxOraclesPerRound", get: true},
             {title: "Number of idle rounds to withdraw", fn: "numIdleRounds", get: true},
+            {title: "Emergency publish blocks", fn: "emergencyPublishingPeriodInBlocks", get: true},
 
             {title: "Available rewards", fn: "getAvailableRewardFees", pf: (x) => formatEther(x)},
             {fn: "selectedOracles", get: false, display: this.selectedDisplay},
