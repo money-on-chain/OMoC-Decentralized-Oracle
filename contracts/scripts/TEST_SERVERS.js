@@ -24,19 +24,19 @@ const STAGING_ORACLES_TO_REGISTER = [
     },
     {
         addr: "0xff49426EE621FCF9928FfDBd163fBC13fA36f465",
-        name: "http://18.144.90.193:5000",
+        name: "http://184.169.253.215:5000",
         quantity: toBN(toWei("10", "ether")),
         oracleCoinPairFilter: ["BTCUSD"]
     },
     {
         addr: "0x3ef6eFadE0C6F1AC81779F5f66142462b64D2285",
-        name: "http://18.144.90.193:5001",
+        name: "http://184.169.253.215:5001",
         quantity: toBN(toWei("35", "ether")),
         oracleCoinPairFilter: ["RIFBTC"]
     },
     {
         addr: "0xd761CC1ceB991631d431F6dDE54F07828f2E61d2",
-        name: "http://18.144.90.193:5002",
+        name: "http://184.169.253.215:5002",
         quantity: toBN(toWei("5", "ether")),
         oracleCoinPairFilter: ["BTCUSD", "RIFBTC"]
     },
