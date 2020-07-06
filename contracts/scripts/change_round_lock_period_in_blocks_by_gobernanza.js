@@ -8,7 +8,8 @@ async function main() {
     const {coinPairPrice} = await change_helpers.changeUint256Arg(truffle_data, async (new_val, coinPairPrice) => {
         console.log("roundLockPeriodInBlocks pre:", (await coinPairPrice.roundLockPeriodInBlocks()).toString());
         console.log("Deploy changer smart contract", coinPairPrice.address, new_val.toString());
-        return await artifacts.require('CoinPairPriceRoundLockPeriodInBlocksChange').new(coinPairPrice.address, new_val);
+        return await artifacts.require('CoinPairPriceRoundLockPeriodInBlocksChange')
+            .new(coinPairPrice.address, new_val, {gas: 4000000});
     });
     console.log("roundLockPeriodInBlocks  pos:", (await coinPairPrice.roundLockPeriodInBlocks()).toString());
 }

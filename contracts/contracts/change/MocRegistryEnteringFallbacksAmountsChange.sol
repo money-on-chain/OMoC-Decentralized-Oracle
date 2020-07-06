@@ -4,18 +4,17 @@ import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
 
 /**
-    @title MocRegistrySchedulerDelayChange
+    @title MocRegistryEnteringFAllbacksAmountsChange
     @notice This contract is a ChangeContract intended to change some MOC registry values
  */
-contract MocRegistrySchedulerDelayChange is ChangeContract {
+contract MocRegistryEnteringFallbacksAmountsChange is ChangeContract {
 
     EternalStorageGobernanza public registry;
 
     /**
       @notice Constructor
     */
-    constructor(EternalStorageGobernanza _registry) public
- {
+    constructor(EternalStorageGobernanza _registry) public {
         registry = _registry;
     }
 
@@ -25,9 +24,7 @@ contract MocRegistrySchedulerDelayChange is ChangeContract {
       not its responsability in the current architecture
      */
     function execute() external override {
-        registry.setUint(get_keccak("SCHEDULER_POOL_DELAY"), 1 * 60);
-        registry.setUint(get_keccak("SCHEDULER_ROUND_DELAY"), 30 * 60);
-        // TODO: Make it usable just once.
+        registry.setBytes(get_keccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"00000102");
     }
 
     function get_keccak(string memory k) internal pure returns (bytes32) {

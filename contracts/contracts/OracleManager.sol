@@ -54,7 +54,7 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleAddr Address of the Oracle to register.
     /// @param internetName Public Internet name of this Oracle.
     /// @param stake The amount that the oracle owner (the caller) will put at stake. This will be transferred
-///                 immediately if conditions apply.
+    ///                 immediately if conditions apply.
     function registerOracle(address oracleAddr, string calldata internetName, uint stake) external {
         registerOracleWithHint(oracleAddr, internetName, stake, address(0));
     }
