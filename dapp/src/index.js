@@ -31,6 +31,7 @@ import {
 import {CoinPairPriceAllInfo, SupportersVestedInfo, SupportersWhitelist, RegistryInfo} from "./contractinfo.js";
 import {close_icon, edit_icon, save_icon, spinner_icon, trash_icon, stop_icon} from "./icons";
 import {getBalance, in_, is_empty_obj, null_href, Tabs} from "./helpers";
+import {bigNumberify} from "ethers/utils";
 
 
 const ORACLE_MANAGER_ABI = ORACLE_MANAGER_DATA["abi"];
@@ -1100,11 +1101,14 @@ class Console extends React.Component {
                                     }
                                 })}
                             <p>To withdraw your funds you must unregister from all coin pair and wait
-                                {' '}{bigNumberifyAndFormatInt(this.state.mgr_oracle_reg_info
-                                    .map(x => x.num_idle_rounds)
-                                    .reduce((acc, val) => acc.gt(val) ? acc : val,
-                                        ethers.utils.bigNumberify(0)))} {' '}
-                                rounds.</p>
+                                {' '}{bigNumberifyAndFormatInt(
+                                    this.state.mgr_oracle_reg_info
+                                        .filter(x => x && x.num_idle_rounds)
+                                        .map(x => bigNumberify(x.num_idle_rounds))
+                                        .reduce(
+                                            (acc, val) => acc.gt(val) ? acc : val,
+                                            ethers.utils.bigNumberify(0)))}
+                                {' '} rounds.</p>
                             <p>
                                 After that you must call stop and wait another
                                 {' '}{bigNumberifyAndFormatInt(supp_state.minStayBlocks)}{' '}

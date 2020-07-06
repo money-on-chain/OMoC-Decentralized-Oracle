@@ -393,6 +393,7 @@ export class CoinPairPriceAllInfo extends ContractInfo {
 
             {title: "Round start block", fn: "startBlock", get: false},
             {title: "Round end block", fn: "lockPeriod", get: false},
+            {title: "Next round length", fn: "roundLockPeriodInBlocks", get: true},
 
             {title: "Total points", fn: "totalPoints", get: false},
             {title: "Max oracles per round", fn: "maxOraclesPerRound", get: true},
