@@ -1,12 +1,19 @@
+// Use dotenv file
+const path = require('path');
+require('dotenv').config({path: path.resolve(__dirname, '.env')});
 const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
+const helpers = require('./migrations/helpers');
 
 // VERY IMPORTANT, if this number is too big: near gasLimit (the default) transaction are QUEUED for
 // a long time, on the other hand if it is too small some big transactions can fail!!!
 // Tune it to your needs.
 const GAS_LIMIT = (2 * 1000 * 1000);
 
-const optimizer_enabled = process.argv.some(x => x.trim() == "--network")
-if (optimizer_enabled) console.log("USING OPTIMIZER!!!");
+if (helpers.is_production()) console.log("USING OPTIMIZER!!!");
+
+
+// Check that we have all the needed env vars!!!
+helpers.config();
 
 // const HDWalletProvider = require('truffle-hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
@@ -53,7 +60,7 @@ module.exports = {
         rinkeby: {
             from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
             provider: () => {
-                return new HDWalletProvider(["94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7cdd2"], "https://rinkeby.infura.io/v3/969e1fd3ca714562b67169f695159e1a");
+                return new HDWalletProvider([process.env.PRIVATE_KEY], "https://rinkeby.infura.io/v3/969e1fd3ca714562b67169f695159e1a");
             },
             gas: GAS_LIMIT,
             network_id: "*",       // Any network (default: none)
@@ -70,7 +77,7 @@ module.exports = {
             from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
             networkCheckTimeout: 1000000,
             provider: () => {
-                return new HDWalletProvider(["94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7cdd2"], "https://public-node.testnet.rsk.co");
+                return new HDWalletProvider([process.env.PRIVATE_KEY], "https://public-node.testnet.rsk.co");
             },
             gasPrice: 59240000,
             gas: GAS_LIMIT,
@@ -81,7 +88,7 @@ module.exports = {
             from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
             networkCheckTimeout: 1000000,
             provider: () => {
-                return new HDWalletProvider(["94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7cdd2"], "http://rsknodes:4446");
+                return new HDWalletProvider([process.env.PRIVATE_KEY], "http://rsknodes:4446");
             },
             gasPrice: 59240000,
             gas: GAS_LIMIT,
@@ -121,7 +128,7 @@ module.exports = {
             settings: {          // See the solidity docs for advice about optimization and evmVersion
                 optimizer: {
                     // default network doesn't use optimizer, the rest use it.
-                    enabled: optimizer_enabled,
+                    enabled: helpers.is_production(),
                     runs: 200
                 },
                 //  evmVersion: "byzantium"

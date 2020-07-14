@@ -1,7 +1,13 @@
+PRIVATE_KEY=94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7cdd2
+
 CurrencyPair="BTCUSD;RIFBTC"
 roundLockPeriodInBlocks="86400;86400"
-roundLockPeriodInBlocks="86400;86400"
 validPricePeriodInBlocks="180;180"
+emergencyPublishingPeriodInBlocks="160;160"
+minOracleOwnerStake="10000000000;10000000000"
 maxOraclesPerRound="10;10"
 bootstrapPrice="1000000000000000;1000000000000000"
 numIdleRounds="2;2"
+supportersEarnPeriodInBlocks=360
+supportersAfterStopBlocks=90
+supportersMinStayBlocks=30

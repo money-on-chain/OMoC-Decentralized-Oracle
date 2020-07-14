@@ -9,7 +9,7 @@ const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Gover
 const InfoGetter = artifacts.require('InfoGetter.sol');
 const OracleManagerPairChange = artifacts.require("OracleManagerPairChange");
 const CoinPairPriceFree = artifacts.require("CoinPairPriceFree");
-
+const helpers = require('./helpers');
 stdout.silent(false);
 
 async function deployWithProxies(deployer, networkName, accounts, params) {
@@ -65,7 +65,11 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
     console.log("Create OraclesManager");
     await scripts.add({contractsData: [{name: "OracleManager", alias: "OracleManager"}]});
     // Give more gas!!!
-    await scripts.push({network, txParams: {...txParams, gas: 4300000}, force: true});
+    await scripts.push({
+        network,
+        txParams: helpers.is_production() ? {...txParams, gas: 4300000} : txParams,
+        force: true
+    });
     const oracleManager = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "OracleManager",
@@ -76,7 +80,11 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
     console.log("Create Supporters Vested");
     await scripts.add({contractsData: [{name: "SupportersVested", alias: "SupportersVested"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 1800000}, force: true});
+    await scripts.push({
+        network,
+        txParams: helpers.is_production() ? {...txParams, gas: 1800000} : txParams,
+        force: true
+    });
     const supportersVested = await scripts.create({
         admin: proxyAdminAddr,
         contractAlias: "SupportersVested",
@@ -152,33 +160,6 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
     }
 }
 
-async function config(deployer, networkName, accounts) {
-    if (!process.env.CurrencyPair) {
-        console.error("The script must be configured with .env file, see dotenv_example");
-        throw new Error()
-    }
-
-    function parseEnvArray(str) {
-        return str.split(";").map(x => x.trim()).filter(x => x.length != 0);
-    }
-
-    //import variables
-    const params = {
-        CurrencyPair: parseEnvArray(process.env.CurrencyPair),
-        minOracleOwnerStake: parseEnvArray(process.env.minOracleOwnerStake),
-        maxOraclesPerRound: parseEnvArray(process.env.maxOraclesPerRound),
-        bootstrapPrice: parseEnvArray(process.env.bootstrapPrice),
-        numIdleRounds: parseEnvArray(process.env.numIdleRounds),
-        roundLockPeriodInBlocks: parseEnvArray(process.env.roundLockPeriodInBlocks),
-        validPricePeriodInBlocks: parseEnvArray(process.env.validPricePeriodInBlocks),
-        emergencyPublishingPeriodInBlocks: parseEnvArray(process.env.emergencyPublishingPeriodInBlocks),
-        supportersEarnPeriodInBlocks: process.env.supportersEarnPeriodInBlocks,
-        supportersMinStayBlocks: process.env.supportersMinStayBlocks,
-        supportersAfterStopBlocks: process.env.supportersAfterStopBlocks
-    }
-    console.log("Contracts configuration", params);
-    return params;
-}
 
 async function truffle_main(deployer, networkName, accounts) {
     // don't run migrations for tests, all tests create their own environment.
@@ -187,8 +168,7 @@ async function truffle_main(deployer, networkName, accounts) {
         console.log("SKIPING MIGRATIONS FOR TEST");
         return;
     }
-    const configParams = await config(deployer, networkName, accounts);
-    await deployWithProxies(deployer, networkName, accounts, configParams);
+    await deployWithProxies(deployer, networkName, accounts, helpers.config());
     console.log("MIGRATIONS DONE!!!");
 }
 
