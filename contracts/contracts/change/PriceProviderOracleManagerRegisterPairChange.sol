@@ -36,8 +36,7 @@ contract PriceProviderOracleManagerRegisterPairChange is ChangeContract {
      */
     function execute() external override {
         uint coinPairCount = oracleManager.getCoinPairCount();
-        for (uint256 i = 0; i < coinPairCount; i++)
-     {
+        for (uint256 i = 0; i < coinPairCount; i++) {
             bytes32 coinPair = oracleManager.getCoinPairAtIndex(i);
             address contractAddr = oracleManager.getContractAddress(coinPair);
             priceProviderRegister.registerCoinPair(coinPair, IPriceProviderRegisterEntry(contractAddr));
