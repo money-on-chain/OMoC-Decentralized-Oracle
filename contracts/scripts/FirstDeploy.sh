@@ -41,14 +41,14 @@ fi
 
 echo "RUN THE TRUFFLE DEPLOYMENT"
 if [ "$1" != "testmode" ]; then
-  truffle migrate --reset --network "$NETWORK" --compile-all 2>&1 | tee -a "$DIR/deploy.log"
+  npx truffle migrate --reset --network "$NETWORK" --compile-all 2>&1 | tee -a "$DIR/deploy.log"
 else
-  truffle migrate --reset --compile-all 2>&1 | tee -a "$DIR/deploy.log"
+  npx truffle migrate --reset --compile-all 2>&1 | tee -a "$DIR/deploy.log"
 fi
 
 echo "Store the openzepelin files in build dir"
 mv "$DIR/deploy.log" "$DIR/../build/"
-cp -r $DIR/../.openzeppelin/* "$DIR/../build/"
+cp -r "$DIR/../.openzeppelin/"* "$DIR/../build/"
 
 ## Configure the dapp
 if [ -d "$DIR/../../dapp" ]; then
