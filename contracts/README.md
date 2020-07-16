@@ -1,11 +1,36 @@
-# MoC Contracts
+# MoC Oracle Contracts
 
+This project holds the MOC Oracles smart contracts. 
+
+We use [truffle](https://www.trufflesuite.com/) to develop and deploy the smart contracts
+to the blockchain.
+
+The truffle migration scripts need some parameters 
+(see: [env vars](#smart-contract-deployment-environment-variables)) that must be 
+configured using environment variables. Optionally a dotenv `.env` file can be used to 
+set those parameters. 
+
+Truffle uses a configuration file called truffle-config.js and we use the HDWalletProvider to
+configure the private key used to send transactions. 
+Add an entry to the networks section describing your blockhain node endpoint and specific parameters. 
+
+For example:
+
+```
+ my_blockchain_conf: {
+            provider: () => {
+                return new HDWalletProvider([process.env.PRIVATE_KEY], "https://public-node.testnet.rsk.co");
+            },
+            gasPrice: 59240000,
+            gas: GAS_LIMIT,
+        },
+```  
+ 
+ 
 ## Requirements:
 
 ```
-npm install -g ganache-cli
-node version 10.17.0
-npm install
+node version 10
 ```
 
 ## How to build the contracts to be used on other projects (DAPP & Server):
@@ -13,34 +38,41 @@ npm install
 ```bash
  $ cd contracts/
  $ npm install
- $ npm install -g truffle
- $ truffle compile --all
+ $ npx truffle compile --all
 ```
 
 ## How to deploy the SmartContract:
 
-We use truffle to migration scripts to deploy the smart contracts to the blockchain.
-In a mainnet we suggest to set the needed environment variables in a .env file and 
-run the `truffle migration` directly. In the case of a testnet it is easyer to use
-the `./scripts/FirstDeploy.sh` bash script that set the configuration 
-environment variables, does a cleanup and saves all the necessary files at the end of
-the deployment, so they can be distributed.  
+```bash
+ $ cd contracts/
+ $ npm install
+ $ npx truffle migrate --network my_blockchain_conf --reset
+```
+After the deployment the contacts abis are saved in the `build` directory
+and addresses are stored in the `.openzeppelin` dir. Backup both directories and
+save the information in a safe place, if you loose the addresses you cannot access
+anymore the deployed contracts.
 
-The first step is to run `npm install` to install dependencies.
+## First Deploy helper script 
 
-### A. Ganache:
+For a testnet it is easyer to use the `./scripts/FirstDeploy.sh` bash script that 
+set the configuration environment variables, does a cleanup and saves all the necessary files 
+at the end of the deployment so they can be distributed.  
+
+
+### Using Ganache:
 
 1) npm install -g ganache-cli
 2) Run './run_ganache.sh'
 3) In another tab run './scripts/FirstDeploy.sh'
 
-### B. RSK-Testnet:
+### Using RSK-Testnet:
 
 1) Edit truffle-config.js at rsk_testnet configuration
 2) Run '.scripts/FirstDeploy.sh rsk_testnet'
 
 
-## SmartContract deployment environment variables:
+## Smart Contract Deployment Environment Variables:
 
 The FirstDeploy.sh script exports some environment variables from the scripts/variables.sh file, truffle 
 deploy script uses those variables to configure the smart-contracts parameters.
@@ -88,7 +120,7 @@ that shares the same location.
       The period of blocks that you have after a stop and staying minStayBlock to do withdraw.
   
 
-## Tests
+## Truffle Tests
 
 ```
 npm run test
