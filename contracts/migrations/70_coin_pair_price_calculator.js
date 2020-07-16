@@ -1,4 +1,5 @@
 'use strict';
+const helpers = require("./helpers");
 const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
 
 stdout.silent(false);
@@ -98,12 +99,7 @@ async function deploy(deployer, networkName, accounts) {
 }
 
 async function truffle_main(deployer, networkName, accounts) {
-    // don't run migrations for tests, all tests create their own environment.
-    if (process.argv.some(x => x.indexOf('test') >= 0)
-        || process.argv.some(x => x.indexOf('coverage') >= 0)) {
-        console.log("SKIPING MIGRATIONS FOR TEST");
-        return;
-    }
+    if (helpers.is_test()) return;
     const {network, txParams} = await ConfigManager.initNetworkConfiguration({
         network: networkName,
         from: accounts[0]

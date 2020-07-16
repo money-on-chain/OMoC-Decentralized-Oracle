@@ -39,3 +39,14 @@ function is_production() {
 }
 
 module.exports.is_production = is_production;
+
+function is_test() {
+    const ret = process.argv.some(x => x === 'test')
+        || process.argv.some(x => x === 'coverage');
+    if (ret) {
+        console.log("SKIPING MIGRATIONS FOR TEST");
+    }
+    return ret;
+}
+
+module.exports.is_test = is_test;

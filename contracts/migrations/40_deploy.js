@@ -1,5 +1,4 @@
 'use strict';
-
 // Use dotenv file
 const path = require('path');
 const rootDir = path.resolve(process.cwd(), '..');
@@ -162,12 +161,7 @@ async function deployWithProxies(deployer, networkName, accounts, params) {
 
 
 async function truffle_main(deployer, networkName, accounts) {
-    // don't run migrations for tests, all tests create their own environment.
-    if (process.argv.some(x => x.indexOf('test') >= 0)
-        || process.argv.some(x => x.indexOf('coverage') >= 0)) {
-        console.log("SKIPING MIGRATIONS FOR TEST");
-        return;
-    }
+    if (helpers.is_test()) return;
     await deployWithProxies(deployer, networkName, accounts, helpers.config());
     console.log("MIGRATIONS DONE!!!");
 }
