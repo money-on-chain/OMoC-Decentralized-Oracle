@@ -19,7 +19,7 @@ source "$DIR/variables$varfile_suffix.sh"
 function destroy() {
   echo "DELETE OLDER BUILD"
   rm -rf "$DIR/../build"
-  rm -f "$DIR/../.openzeppelin/*.json"
+  rm -f "$DIR/../.openzeppelin/"*.json
   rm -f "$DIR/../.openzeppelin/.session"
 }
 
