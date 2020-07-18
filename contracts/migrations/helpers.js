@@ -50,3 +50,10 @@ function is_test() {
 }
 
 module.exports.is_test = is_test;
+
+
+function run_slow_tests() {
+    return process.argv.some(x => x.toLowerCase().indexOf("stress") >= 0)
+}
+
+module.exports.run_slow_tests = run_slow_tests;

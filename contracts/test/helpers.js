@@ -11,15 +11,19 @@ const ADDRESS_ZERO = constants.ZERO_ADDRESS;
 exports.ADDRESS_ZERO = ADDRESS_ZERO;
 
 async function printOracles(oracleManager, coinPair) {
+    let cnt = 0;
     let it = await oracleManager.getRegisteredOracleHead();
     while (it != ADDRESS_ZERO) {
         const info = await oracleManager.getOracleRegistrationInfo(it);
         const roundInfo = await oracleManager.getOracleRoundInfo(it, coinPair);
         console.log("------------------------------>",
+            ++cnt,
+            coinPair,
             it,
             info.internetName,
             info.stake.toString(),
             roundInfo.points.toString(),
+            await oracleManager.isSubscribed(it, coinPair),
             roundInfo.selectedInRound.toString(),
             roundInfo.selectedInCurrentRound);
         it = await oracleManager.getRegisteredOracleNext(it);

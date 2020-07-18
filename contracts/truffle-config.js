@@ -11,6 +11,8 @@ const GAS_LIMIT = (2 * 1000 * 1000);
 
 if (helpers.is_production()) console.log("USING OPTIMIZER!!!");
 
+// Skip stress tests, except when they are running directly.
+let skip_slow = helpers.run_slow_tests() ? {} : {grep: "@slow", invert: true};
 
 // Check that we have all the needed env vars!!!
 helpers.config();
@@ -116,7 +118,8 @@ module.exports = {
         reporterOptions: {
             currency: 'USD',
             // gasPrice: 20,
-        }
+        },
+        ...skip_slow
         // timeout: 100000
     },
 

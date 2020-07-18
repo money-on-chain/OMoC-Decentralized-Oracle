@@ -15,7 +15,7 @@ const minStayBlocks = 10;
 const afterStopBlocks = 5;
 const maxOraclesPerRound = 10;
 
-contract("[ @skip-on-coverage ] OracleStress", async (accounts) => {
+contract("[ @slow ] [ @skip-on-coverage ] OracleStress", async (accounts) => {
 
     before(async () => {
         this.governor = await helpers.createGovernor(accounts[8]);
