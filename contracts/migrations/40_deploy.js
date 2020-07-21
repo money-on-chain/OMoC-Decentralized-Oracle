@@ -1,170 +1,143 @@
 'use strict';
-// Use dotenv file
-const path = require('path');
-const rootDir = path.resolve(process.cwd(), '..');
-require('dotenv').config({path: path.resolve(rootDir, '.env')});
-const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
-const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
+const helpers = require('./helpers');
+const {scripts} = require('@openzeppelin/cli');
 const InfoGetter = artifacts.require('InfoGetter.sol');
 const OracleManagerPairChange = artifacts.require("OracleManagerPairChange");
 const CoinPairPriceFree = artifacts.require("CoinPairPriceFree");
-const helpers = require('./helpers');
-stdout.silent(false);
 
-async function deployWithProxies(deployer, networkName, accounts, params) {
-    const {network, txParams} = await ConfigManager.initNetworkConfiguration({
-        network: networkName,
-        from: accounts[0]
-    });
 
+async function deploy(config) {
     // Deployed in 30_info_getter
     const info_getter = await InfoGetter.deployed();
     const info_getter_addr = info_getter.address;
     console.log("infoGetterAddr", info_getter_addr);
 
-    // Deployed in 20_moc_gobernanza
-    const governorOwner = accounts[0];
-    const governor = await Governor.deployed();
-    const governorAddr = governor.address;
-    console.log("governorAddr", governorAddr, 'owner', governorOwner);
-    // We will use the project's proxy admin as upgradeability admin of this instance
-    const networkFile = new files.NetworkFile(
-        new files.ProjectFile(),
-        network
-    );
-    const proxyAdminAddr = networkFile.proxyAdminAddress;
-    console.log("proxyAdminAddr ", proxyAdminAddr);
-
 
     console.log("Deploying TestMOC");
     await scripts.add({contractsData: [{name: "TestMOC", alias: "TestMOC"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 1800000}, force: true});
+    await scripts.push({network: config.network, txParams: {...config.txParams, gas: 1800000}, force: true});
     const testMOC = await scripts.create({
         methodName: 'initialize',
-        methodArgs: [governorAddr],
-        admin: proxyAdminAddr,
+        methodArgs: [config.governorAddr],
+        admin: config.proxyAdminAddr,
         contractAlias: "TestMOC",
-        network,
-        txParams
+        network: config.network,
+        txParams: config.txParams
     });
     console.log("TestMOC: ", testMOC.options.address);
 
 
     console.log("Create Supporters Proxy");
     await scripts.add({contractsData: [{name: "SupportersWhitelisted", alias: "Supporters"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 3500000}, force: true});
+    await scripts.push({network: config.network, txParams: {...config.txParams, gas: 3500000}, force: true});
     const supporters = await scripts.create({
-        admin: proxyAdminAddr,
+        admin: config.proxyAdminAddr,
         contractAlias: "Supporters",
-        network,
-        txParams
+        network: config.network,
+        txParams: config.txParams
     });
-    console.log("Supporters: ", supporters.options.address, 'proxyAdmin', proxyAdminAddr);
+    console.log("Supporters: ", supporters.options.address, 'proxyAdmin', config.proxyAdminAddr);
 
     console.log("Create OraclesManager");
     await scripts.add({contractsData: [{name: "OracleManager", alias: "OracleManager"}]});
     // Give more gas!!!
     await scripts.push({
-        network,
-        txParams: helpers.is_production() ? {...txParams, gas: 4300000} : txParams,
+        network: config.network,
+        txParams: helpers.is_production() ? {...config.txParams, gas: 4300000} : config.txParams,
         force: true
     });
     const oracleManager = await scripts.create({
-        admin: proxyAdminAddr,
+        admin: config.proxyAdminAddr,
         contractAlias: "OracleManager",
-        network,
-        txParams
+        network: config.network,
+        txParams: config.txParams
     });
-    console.log("OracleManager: ", oracleManager.options.address, 'proxyAdmin', proxyAdminAddr);
+    console.log("OracleManager: ", oracleManager.options.address, 'proxyAdmin', config.proxyAdminAddr);
 
     console.log("Create Supporters Vested");
     await scripts.add({contractsData: [{name: "SupportersVested", alias: "SupportersVested"}]});
     await scripts.push({
-        network,
-        txParams: helpers.is_production() ? {...txParams, gas: 1800000} : txParams,
+        network: config.network,
+        txParams: helpers.is_production() ? {...config.txParams, gas: 1800000} : config.txParams,
         force: true
     });
     const supportersVested = await scripts.create({
-        admin: proxyAdminAddr,
+        admin: config.proxyAdminAddr,
         contractAlias: "SupportersVested",
-        network,
-        txParams
+        network: config.network,
+        txParams: config.txParams
     });
-    console.log("SupportersVested: ", supportersVested.options.address, 'proxyAdmin', proxyAdminAddr);
+    console.log("SupportersVested: ", supportersVested.options.address, 'proxyAdmin', config.proxyAdminAddr);
 
 
-    console.log("Initialize supporters", 'governor', governorAddr);
+    console.log("Initialize supporters", 'governor', config.governorAddr);
     const scall = await artifacts.require("SupportersWhitelisted").at(supporters.options.address);
-    await scall.initialize(governorAddr, [oracleManager.options.address, supportersVested.options.address],
+    await scall.initialize(config.governorAddr, [oracleManager.options.address, supportersVested.options.address],
         testMOC.options.address,
-        params.supportersEarnPeriodInBlocks,
-        params.supportersMinStayBlocks, params.supportersAfterStopBlocks);
+        config.supportersEarnPeriodInBlocks,
+        config.supportersMinStayBlocks, config.supportersAfterStopBlocks);
 
-    console.log("Initialize OracleManager", 'governor', governorAddr,);
+    console.log("Initialize OracleManager", 'governor', config.governorAddr,);
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
-    await omcall.initialize(governorAddr, parseInt(params.minOracleOwnerStake), supporters.options.address);
+    await omcall.initialize(config.governorAddr, parseInt(config.minOracleOwnerStake), supporters.options.address);
 
-    console.log("Initialize Supporters Vested", 'governor', governorAddr);
+    console.log("Initialize Supporters Vested", 'governor', config.governorAddr);
     const svcall = await artifacts.require("SupportersVested").at(supportersVested.options.address);
-    await svcall.initialize(governorAddr, supporters.options.address);
+    await svcall.initialize(config.governorAddr, supporters.options.address);
 
-    for (let i = 0; i < params.CurrencyPair.length; i++) {
-        const coin = params.CurrencyPair[i];
+    for (let i = 0; i < config.CurrencyPair.length; i++) {
+        const coin = config.CurrencyPair[i];
         const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
 
         await scripts.add({contractsData: [{name: "CoinPairPriceFree", alias: "CoinPairPriceFree"}]});
-        await scripts.push({network, txParams});
+        await scripts.push({network: config.network, txParams: config.txParams});
         const coinPairPriceFree = await scripts.create({
-            admin: proxyAdminAddr,
+            admin: config.proxyAdminAddr,
             contractAlias: "CoinPairPriceFree",
-            network,
-            txParams
+            network: config.network,
+            txParams: config.txParams
         });
-        console.log("coinPairPriceFree address: ", coinPairPriceFree.options.address, 'for coin', coinPair, 'proxyAdmin', proxyAdminAddr);
+        console.log("coinPairPriceFree address: ", coinPairPriceFree.options.address,
+            'for coin', coinPair, 'proxyAdmin', config.proxyAdminAddr);
 
         const alias = 'CoinPairPrice_' + coin;
         await scripts.add({contractsData: [{name: "CoinPairPrice", alias: alias}]});
         // MORE GAS!!!
-        await scripts.push({network, txParams: {...txParams, gas: 4000000}, force: true});
+        await scripts.push({network: config.network, txParams: {...config.txParams, gas: 4000000}, force: true});
         const coinPairPrice = await scripts.create({
-                admin: proxyAdminAddr,
+                admin: config.proxyAdminAddr,
                 contractAlias: alias,
                 methodName: 'initialize',
                 methodArgs: [
-                    governorAddr,
+                    config.governorAddr,
                     [coinPairPriceFree.options.address, info_getter_addr],
                     coinPair,
                     testMOC.options.address,
-                    parseInt(params.maxOraclesPerRound[i]),
-                    parseInt(params.roundLockPeriodInBlocks[i]),
-                    parseInt(params.validPricePeriodInBlocks[i]),
-                    parseInt(params.emergencyPublishingPeriodInBlocks[i]),
-                    params.bootstrapPrice[i],
-                    parseInt(params.numIdleRounds[i]),
+                    parseInt(config.maxOraclesPerRound[i]),
+                    parseInt(config.roundLockPeriodInBlocks[i]),
+                    parseInt(config.validPricePeriodInBlocks[i]),
+                    parseInt(config.emergencyPublishingPeriodInBlocks[i]),
+                    config.bootstrapPrice[i],
+                    parseInt(config.numIdleRounds[i]),
                     oracleManager.options.address],
-                network,
-                txParams
+                network: config.network,
+                txParams: config.txParams
             }
         );
-        console.log("coinPairPrice address: " + coinPairPrice.options.address, 'governor', governorAddr, 'proxyAdmin', proxyAdminAddr);
+        console.log("coinPairPrice address: " + coinPairPrice.options.address, 'governor', config.governorAddr,
+            'proxyAdmin', config.proxyAdminAddr);
 
         console.log("Initialize coinpair price free for", coin);
         const cpfcall = await CoinPairPriceFree.at(coinPairPriceFree.options.address);
         await cpfcall.initialize(coinPairPrice.options.address);
 
-        console.log("Register coin", coin, 'via governor', governorAddr);
+        console.log("Register coin", coin, 'via governor', config.governorAddr);
         const change = await OracleManagerPairChange.new(oracleManager.options.address, coinPair, coinPairPrice.options.address);
-        console.log("Register coin via governor", governorAddr, 'coin', coin, "change contract addr", change.address, 'governor owner', governorOwner);
-        await governor.executeChange(change.address, {from: governorOwner});
+        console.log("Register coin via governor", config.governorAddr, 'coin', coin,
+            "change contract addr", change.address);
+        await config.executeChange(change.address);
     }
 }
 
-
-async function truffle_main(deployer, networkName, accounts) {
-    if (helpers.is_test()) return;
-    await deployWithProxies(deployer, networkName, accounts, helpers.config());
-    console.log("MIGRATIONS DONE!!!");
-}
-
 // FOR TRUFFLE
-module.exports = truffle_main
+module.exports = helpers.truffle_main(artifacts, deploy);

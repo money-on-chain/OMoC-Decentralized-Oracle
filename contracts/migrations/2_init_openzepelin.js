@@ -3,8 +3,9 @@ const helpers = require("./helpers");
 const fs = require('fs');
 const path = require('path');
 
-async function truffle_main(deployer, networkName, accounts) {
-    if (helpers.is_test()) return;
+async function deploy(config) {
+    console.log("Contracts configuration", helpers.config());
+
     const dir = path.resolve(__dirname, '..', '.openzeppelin')
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
@@ -16,9 +17,9 @@ async function truffle_main(deployer, networkName, accounts) {
         force: true
     });
     // network, from, timeout, blockTimeout, close, expires,
-    await scripts.session({timeout: 7500, network: networkName})
+    await scripts.session({timeout: 7500, network: config.networkName})
 }
 
 // FOR TRUFFLE
-module.exports = truffle_main
+module.exports = helpers.truffle_main(artifacts, deploy, true)
 

@@ -1,33 +1,11 @@
 'use strict';
 const helpers = require("./helpers");
-const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
+const {scripts} = require('@openzeppelin/cli');
 
-stdout.silent(false);
+async function deploy(config) {
 
-const coin = "RIFUSD";
-const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
-
-async function deploy(deployer, networkName, accounts) {
-    const {network, txParams} = await ConfigManager.initNetworkConfiguration({
-        network: networkName,
-        from: accounts[0]
-    });
-
-
-    // Deployed in 20_moc_gobernanza
-    const governorOwner = accounts[0];
-    const Governor = artifacts.require('Governor.sol');
-    const governor = await Governor.deployed();
-    const governorAddr = governor.address;
-    console.log("governorAddr", governorAddr, 'owner', governorOwner);
-    // We will use the project's proxy admin as upgradeability admin of this instance
-    const networkFile = new files.NetworkFile(
-        new files.ProjectFile(),
-        network
-    );
-    const proxyAdminAddr = networkFile.proxyAdminAddress;
-    console.log("proxyAdminAddr ", proxyAdminAddr);
-
+    const coin = "RIFUSD";
+    const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
     // Deployed in 60_price_provider_registry
     const PriceProviderRegister = artifacts.require('PriceProviderRegister.sol');
     const priceProviderRegister = await PriceProviderRegister.deployed();
@@ -37,14 +15,15 @@ async function deploy(deployer, networkName, accounts) {
 
     console.log("Deploy a CoinPairPriceFree");
     await scripts.add({contractsData: [{name: "CoinPairPriceFree", alias: "CoinPairPriceFree"}]});
-    await scripts.push({network, txParams});
+    await scripts.push({network: config.network, txParams: config.txParams});
     const coinPairPriceFree = await scripts.create({
-        admin: proxyAdminAddr,
+        admin: config.proxyAdminAddr,
         contractAlias: "CoinPairPriceFree",
-        network,
-        txParams
+        network: config.network,
+        txParams: config.txParams
     });
-    console.log("coinPairPriceFree address: ", coinPairPriceFree.options.address, 'for coin', coin, 'proxyAdmin', proxyAdminAddr);
+    console.log("coinPairPriceFree address: ", coinPairPriceFree.options.address, 'for coin', coin,
+        'proxyAdmin', config.proxyAdminAddr);
 
 
     console.log("Deploying CalculatedPriceProvider");
@@ -62,14 +41,16 @@ async function deploy(deployer, networkName, accounts) {
             alias: "CalculatedPriceProvider"
         }]
     });
-    await scripts.push({network, txParams: {...txParams, gas: 1800000}, force: true});
+    await scripts.push({network: config.network, txParams: {...config.txParams, gas: 1800000}, force: true});
     const calculatedPriceProvider = await scripts.create({
         methodName: 'initialize',
-        methodArgs: [governorAddr, [coinPairPriceFree.options.address], baseMultiplicator, multiplyBy, baseDivisor, divideBy],
-        admin: proxyAdminAddr,
+        methodArgs: [config.governorAddr, [coinPairPriceFree.options.address],
+            baseMultiplicator,
+            multiplyBy, baseDivisor, divideBy],
+        admin: config.proxyAdminAddr,
         contractAlias: "CalculatedPriceProvider",
-        network,
-        txParams
+        network: config.network,
+        txParams: config.txParams
     });
     console.log("calculatedPriceProvider: ", calculatedPriceProvider.options.address);
 
@@ -80,33 +61,23 @@ async function deploy(deployer, networkName, accounts) {
     await cpfcall.initialize(calculatedPriceProvider.options.address);
 
 
-    console.log("Deploy change contract to add the calculator to the whitelist", governorAddr);
+    console.log("Deploy change contract to add the calculator to the whitelist", config.governorAddr);
     const CoinPairPriceAddCalculatedPriceProviderChange = artifacts.require("CoinPairPriceAddCalculatedPriceProviderChange");
     const change1 = await CoinPairPriceAddCalculatedPriceProviderChange.new(calculatedPriceProvider.options.address,
         [...multiplyBy, ...divideBy]);
     console.log("Whitelist CalculatedCoinPairPrice in", [...multiplyBy, ...divideBy]);
-    console.log("Whitelist CalculatedCoinPairPrice via governor", governorAddr, 'coin', coin,
-        "change contract addr", change1.address, 'governor owner', governorOwner);
-    await governor.executeChange(change1.address, {from: governorOwner});
+    console.log("Whitelist CalculatedCoinPairPrice via governor", config.governorAddr, 'coin', coin,
+        "change contract addr", change1.address);
+    await config.executeChange(change1.address);
 
 
-    console.log("Register coin", coin, 'via governor', governorAddr);
+    console.log("Register coin", coin, 'via governor', config.governorAddr);
     const PriceProviderRegisterPairChange = artifacts.require("PriceProviderRegisterPairChange");
     const change2 = await PriceProviderRegisterPairChange.new(priceProviderRegisterAddr, coinPair, calculatedPriceProvider.address);
-    console.log("Register coin via governor", governorAddr, 'coin', coin, "change contract addr", change2.address, 'governor owner', governorOwner);
-    await governor.executeChange(change2.address, {from: governorOwner});
+    console.log("Register coin via governor", config.governorAddr, 'coin', coin, "change contract addr", change2.address);
+    await config.executeChange(change2.address);
 
-}
-
-async function truffle_main(deployer, networkName, accounts) {
-    if (helpers.is_test()) return;
-    const {network, txParams} = await ConfigManager.initNetworkConfiguration({
-        network: networkName,
-        from: accounts[0]
-    });
-    await deploy(deployer, networkName, accounts);
-    console.log("MIGRATIONS DONE!!!");
 }
 
 // FOR TRUFFLE
-module.exports = truffle_main
+module.exports = helpers.truffle_main(artifacts, deploy)

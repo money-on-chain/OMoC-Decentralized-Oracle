@@ -1,52 +1,22 @@
 'use strict';
 const helpers = require("./helpers");
-const {files, scripts, ConfigManager, stdout} = require('@openzeppelin/cli');
+const {files, scripts} = require('@openzeppelin/cli');
 const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
 
-stdout.silent(false);
-
-async function deploy(deployer, networkName, accounts) {
-    const {network, txParams} = await ConfigManager.initNetworkConfiguration({
-        network: networkName,
-        from: accounts[0]
-    });
-
-    // We will use the project's proxy admin as upgradeability admin of this instance
-    const networkFile = new files.NetworkFile(
-        new files.ProjectFile(),
-        network
-    );
-    // Deployed in 20_moc_gobernanza
-    const governorOwner = accounts[0];
-    const governor = await Governor.deployed();
-    const governorAddr = governor.address;
-    console.log("governorAddr", governorAddr, 'owner', governorOwner);
-    const proxyAdminAddr = networkFile.proxyAdminAddress;
-    console.log("proxyAdminAddr ", proxyAdminAddr);
-
+async function deploy(config) {
     console.log("Create InfoGetter Proxy");
     await scripts.add({contractsData: [{name: "InfoGetter", alias: "InfoGetter"}]});
-    await scripts.push({network, txParams: {...txParams, gas: 3000000}, force: true});
+    await scripts.push({network: config.network, txParams: {...config.txParams, gas: 3000000}, force: true});
     const infoGetter = await scripts.create({
         methodName: 'initialize',
-        methodArgs: [governorAddr],
-        admin: proxyAdminAddr,
+        methodArgs: [config.governorAddr],
+        admin: config.proxyAdminAddr,
         contractAlias: "InfoGetter",
-        network,
-        txParams
+        network: config.network,
+        txParams: config.txParams
     });
-    console.log("InfoGetter: ", infoGetter.options.address, 'proxyAdmin', proxyAdminAddr);
-}
-
-async function truffle_main(deployer, networkName, accounts) {
-    if (helpers.is_test()) return;
-    const {network, txParams} = await ConfigManager.initNetworkConfiguration({
-        network: networkName,
-        from: accounts[0]
-    });
-    await deploy(deployer, networkName, accounts);
-    console.log("MIGRATIONS DONE!!!");
+    console.log("InfoGetter: ", infoGetter.options.address, 'proxyAdmin', config.proxyAdminAddr);
 }
 
 // FOR TRUFFLE
-module.exports = truffle_main
+module.exports = helpers.truffle_main(artifacts, deploy)
