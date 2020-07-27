@@ -5,6 +5,9 @@ const path = require('path');
 
 async function deploy(config) {
     console.log("Contracts configuration", helpers.config());
+    if (config.externalGovernorAddr) console.log("Using external governor", config.externalGovernorAddr);
+    if (config.externalProxyAdminAddr) console.log("Using external proxyAdmin", config.externalProxyAdminAddr);
+
 
     const dir = path.resolve(__dirname, '..', '.openzeppelin')
     if (!fs.existsSync(dir)) {

@@ -20,15 +20,6 @@ function config() {
         return str.split(";").map(x => x.trim()).filter(x => x.length != 0);
     }
 
-    if (!process.env.deployGovernor) {
-        const gobernanzaVars = ["governorAddr", "proxyAdminAddr"];
-        if (gobernanzaVars.some(x => !process.env[x])) {
-            console.error("The script must be configured with .env file some parameter is missing, see dotenv_example");
-            console.error("deployGovernor", gobernanzaVars);
-            process.exit();
-        }
-    }
-
     //import variables
     const params = {
         CurrencyPair: parseEnvArray(process.env.CurrencyPair),
@@ -42,9 +33,8 @@ function config() {
         supportersEarnPeriodInBlocks: process.env.supportersEarnPeriodInBlocks,
         supportersMinStayBlocks: process.env.supportersMinStayBlocks,
         supportersAfterStopBlocks: process.env.supportersAfterStopBlocks,
-        deployGovernor: !!process.env.deployGovernor,
-        governorAddr: process.env.governorAddr,
-        proxyAdminAddr: process.env.proxyAdminAddr,
+        externalGovernorAddr: process.env.governorAddr,
+        externalProxyAdminAddr: process.env.proxyAdminAddr,
     }
     return params;
 }
@@ -85,7 +75,7 @@ function truffle_main(artifacts, deploy, skip_governor = false) {
         });
         cfg.network = network;
         cfg.txParams = txParams;
-        if (!skip_governor && cfg.deployGovernor) {
+        if (!skip_governor) {
             const Governor = artifacts.require('Governor.sol');
             cfg.governor = await Governor.deployed();
             cfg.governorAddr = cfg.governor.address;
