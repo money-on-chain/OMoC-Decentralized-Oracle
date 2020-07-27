@@ -160,37 +160,36 @@ form a deployment and to manage the gobernanza system.
 
 - helpers.js: common code used by all helper scripts
 
-### gobernanza
+### Truffle scripts
 
 - get_code.js: get the code of a smart-contract, used to check if some implementation has changed.
-    Example ```truffle exec --network development scripts/get_code.js some_contract_addr```
+    
+    ```truffle exec --network development scripts/get_code.js some_contract_addr```
  
 - change_execute.js: execute a change smart contract deployed in some address using a governor. It
     takes the governor address and change contract address as arguments.
-    Example ```truffle exec --network development scripts/change_execute.js gobernor_addr change_contract_addr```
+    
+    ```truffle exec --network development scripts/change_execute.js gobernor_addr change_contract_addr```
 
-- change_implementation_by_gobernanza.js: execute a change contract (UpgraderTemplate) to change the implementation
+- change_implementation.js: execute a change contract (UpgraderTemplate) to change the implementation
     of one of the upgradeable contracts. The upgradeable contracts share the same proxy_address but different implementations.
-    Example ```truffle exec --network development scripts/change_implementation_by_gobernanza.js upgrade_delegator_addr proxy_addr new_implementation_addr```
+    
+    ```truffle exec --network development scripts/change_implementation.js upgrade_delegator_addr proxy_addr new_implementation_addr```
 
-- change_max_oracles_per_round_by_gobernanza.js: using a change contract (CoinPairPriceMaxOraclesPerRoundChange) change the
-    maximum number of oracles per round of a CoinPairPrice contract.
-    Example ```truffle exec --network development scripts/change_max_oracles_per_round_by_gobernanza.js coin_pair_name new_val```
+- change_run.js: run a change contract using the deployed governor
+    
+    ```truffle exec --network development scripts/change_run.js change_contract_name change_contract_args... ```
 
-- change_round_lock_period_in_blocks_by_gobernanza.js: using a change contract (CoinPairPriceRoundLockPeriodInBlocksChange) change the
-    round lock period in blocks a CoinPairPrice contract.
-    Example ```truffle exec --network development scripts/change_round_lock_period_in_blocks_by_gobernanza.js coin_pair_name new_val```
+- change_run_in_coinpair.js: run a change contract for a specific coin pair using the deployed governor.
+    
+    ```truffle exec --network development scripts/change_run_in_coinpair.js coin_pair_name change_contract_name change_contract_args... ```
 
-- change_valid_price_period_in_blocks_by_gobernanza.js: using a change contract (CoinPairPriceValidPricePeriodInBlocksChange) change the
-    valid price period in blocks of a CoinPairPrice contract.
-    Example ```truffle exec --network development scripts/change_valid_price_period_in_blocks_by_gobernanza.js coin_pair_name new_val```
-
-- change_supporters_period_gobernanza.js: using a change contract (SupportersWhitelistedPeriodChange) change the
-    supporters round period in blocks of the SupportersWhitelisted contract (currently deployed, in the build directory).
-    Example ```truffle exec --network development scripts/change_supporters_period_gobernanza.js new_val```
+- change_delegate_governor.js: change the governor in all the governable smart-contarcts of the system using
+    the current deployed governor.
+    
+    WARNING: after this step you loose the control over the system!!!
+     
+    ```truffle exec --network development scripts/change_delegate_governor.js new_governor_address ```
 
 - deploy_coinpairprice_upgrade.js: Deploys a new implementation of CoinPairPrice smart contract. After that the
-    change_implementation_by_gobernanza.js must be executed to upgrade the smart contract proxy.
-
-- change_helpers.js: common code used by the rest of the helper scripts. 
-
+    change_implementation.js must be executed to upgrade the smart contract proxy.

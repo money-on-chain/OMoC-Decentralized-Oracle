@@ -1,33 +1,32 @@
 'use strict';
+/*
+    Change the upgrade delegator, proxy admin addr and gobernor from the ones declared in truffle.
+ */
+const helpers = require("./helpers");
 const {toBN, toWei} = require('web3-utils');
 global.artifacts = artifacts;
 global.web3 = web3;
 
-function getArg(idx) {
-    const ret = process.argv[process.argv.length + idx];
-    if (!ret || isNaN(ret)) {
-        console.error("Usage script upgrade_delegator_Addr proxy_addr new_implementation_addr");
-        process.exit()
-    }
-    return ret;
-}
-
 async function main() {
-    const upgradeDelegatorAddr = web3.utils.toChecksumAddress(getArg(-3));
+    const args = helpers.getScriptArgs(__filename);
+    if (args.length < 3) {
+        console.error("Usage script upgrade_delegator_Addr proxy_addr new_implementation_addr");
+        process.exit();
+    }
+    const upgradeDelegatorAddr = web3.utils.toChecksumAddress(args[0]);
     console.log("UpgradeDelegatorAddr: ", upgradeDelegatorAddr);
 
-    const proxyAddr = web3.utils.toChecksumAddress(getArg(-2));
+    const proxyAddr = web3.utils.toChecksumAddress(args[1]);
     console.log("Current proxy address: ", proxyAddr);
 
-    const newImplementationAddr = web3.utils.toChecksumAddress(getArg(-1));
+    const newImplementationAddr = web3.utils.toChecksumAddress(args[2]);
     console.log("NewImplementationAddr: ", newImplementationAddr);
 
     const upgradeDelegator = await artifacts.require('UpgradeDelegator').at(upgradeDelegatorAddr);
     const governorAddr = await upgradeDelegator.governor();
     console.log("got governor form upgradeDelegator: ", governorAddr);
+
     const governor = await artifacts.require('Governor').at(governorAddr);
-
-
     const accounts = await web3.eth.getAccounts();
     const governorOwner = accounts[0];
     console.log("OWNER:", governorOwner);

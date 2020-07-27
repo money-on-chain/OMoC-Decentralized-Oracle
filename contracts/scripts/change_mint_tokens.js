@@ -1,8 +1,7 @@
 'use strict';
-const change_helpers = require("./change_helpers");
+const helpers = require("./helpers");
 global.artifacts = artifacts;
 global.web3 = web3;
-const helpers = require('./helpers');
 
 async function main() {
     const args = helpers.getScriptArgs(__filename);

@@ -1,24 +1,23 @@
 'use strict';
+/*
+    Run a change contract that was already deployed with a governor address (instead of taking the address from truffle).
+ */
+const helpers = require("./helpers")
 const {toBN, toWei} = require('web3-utils');
 global.artifacts = artifacts;
 global.web3 = web3;
 
-function getArg(idx) {
-    const ret = process.argv[process.argv.length + idx];
-    if (!ret || isNaN(ret)) {
-        console.error("Usage script governor change_contract_addr");
-        process.exit()
-    }
-    return ret;
-}
 
 async function main() {
-    const governor_addr = getArg(-2);
-    const governorAddr = web3.utils.toChecksumAddress(governor_addr);
+    const args = helpers.getScriptArgs(__filename);
+    if (args.length === 0) {
+        console.error("Usage script governor_addr change_contract_addr");
+        process.exit();
+    }
+    const governorAddr = web3.utils.toChecksumAddress(args[0]);
     console.log("GovernorAddr: ", governorAddr);
 
-    const change_addr = getArg(-1);
-    const changeContractAddr = web3.utils.toChecksumAddress(change_addr);
+    const changeContractAddr = web3.utils.toChecksumAddress(args[1]);
     console.log("ChangeContractAddr: ", changeContractAddr);
 
     const governor = await artifacts.require('Governor').at(governorAddr);
@@ -31,9 +30,9 @@ async function main() {
         process.exit();
     }
 
-    console.log("Change: ", change_addr);
+    console.log("Change: ", changeContractAddr);
     console.log("Call governor");
-    const tx = await governor.executeChange(change_addr, {from: governorOwner});
+    const tx = await governor.executeChange(changeContractAddr, {from: governorOwner});
     console.log("Call governor result", tx.tx);
 }
 

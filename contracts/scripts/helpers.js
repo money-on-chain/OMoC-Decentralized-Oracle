@@ -1,5 +1,7 @@
+'use strict';
 const fs = require('fs');
 const path = require('path');
+const BigNumber = require("bignumber.js");
 
 
 async function printSingle(msg, contract, name) {
@@ -14,9 +16,9 @@ async function printSingle(msg, contract, name) {
 module.exports.printSingle = printSingle;
 
 async function printProps(msg, data) {
-    const props = data.abi.filter(x => (x["type"] == "function"
-        && x["stateMutability"] == "view"
-        && x["inputs"].length == 0
+    const props = data.abi.filter(x => (x["type"] === "function"
+        && x["stateMutability"] === "view"
+        && x["inputs"].length === 0
         && !x["payable"]
     ));
     if (msg.length > 0) console.log(msg);
@@ -31,7 +33,7 @@ module.exports.printProps = printProps;
 async function getAllOracles(oracle) {
     let addr = await oracle.getRegisteredOracleHead();
     const ret = [];
-    while (addr != "0x0000000000000000000000000000000000000000") {
+    while (addr !== "0x0000000000000000000000000000000000000000") {
         ret.push(addr);
         addr = await oracle.getRegisteredOracleNext(addr);
     }
@@ -75,7 +77,7 @@ function coinPairStr(hex) {
     let str = "";
     for (let n = 0; n < hex.length; n += 2) {
         const ch = hex.substr(n, 2);
-        if (ch == "0x" || ch == "00") {
+        if (ch === "0x" || ch === "00") {
             continue;
         }
         str += String.fromCharCode(parseInt(ch, 16));
@@ -97,3 +99,29 @@ function getScriptArgs(filename) {
 }
 
 module.exports.getScriptArgs = getScriptArgs;
+
+
+async function getGovernor(web3, artifacts) {
+    const accounts = await web3.eth.getAccounts();
+    const governor = await artifacts.require('Governor').deployed();
+    const governorAddr = governor.address;
+    const owner = await governor.owner();
+    console.log("Governor:", governorAddr);
+    if (accounts[0] !== owner) {
+        console.error("Governor owner doesn't match accounts[0]", accounts[0], owner);
+        process.exit();
+    }
+    return {
+        governor,
+        address: governor.address,
+        owner,
+        executeChange: async (change) => {
+            console.log("Execute change", change.address, "with governor", governor.address);
+            const tx = await governor.executeChange(change.address, {from: owner})
+            console.log("Call governor result", tx.tx);
+        }
+    };
+}
+
+module.exports.getGovernor = getGovernor;
+
