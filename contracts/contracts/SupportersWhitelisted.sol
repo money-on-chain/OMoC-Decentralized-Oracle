@@ -16,7 +16,7 @@ import {SupportersWhitelistedStorage} from "./SupportersWhitelistedStorage.sol";
 contract SupportersWhitelisted is SupportersWhitelistedStorage {
     using SafeMath for uint;
 
-    // Emitted by SupportersLib and SupportersVestedLib
+    // Emitted by SupportersLib
     event PayEarnings(uint256 earnings, uint256 start, uint256 end);
     event CancelEarnings(uint256 earnings, uint256 start, uint256 end);
     event AddStake(address indexed user, address indexed subaccount,
@@ -24,7 +24,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     event WithdrawStake(address indexed user, address indexed subaccount,
         address indexed destination, uint256 amount, uint256 mocs);
 
-    event Stop(address indexed msg_sender, address indexed user, uint256 blockNum);
     event Withdraw(address indexed msg_sender, address indexed subacount,
         address indexed receiver, uint256 mocs, uint256 blockNum);
 
@@ -43,10 +42,27 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     , uint256 _minStayBlocks, uint256 _afterStopBlocks)
     external initializer {
         Governed._initialize(_governor);
-        supportersVestedData._initialize(_mocToken, _period, _minStayBlocks, _afterStopBlocks);
+        supportersData._initialize(_mocToken, _period, _minStayBlocks, _afterStopBlocks);
         for (uint256 i = 0; i < _wlist.length; i++) {
             iterableWhitelistData._addToWhitelist(_wlist[i]);
         }
+    }
+
+    /// @notice Used by the voting machine to lock an amount of MOCs.
+    /// @param mocHolder the moc holder whose mocs will be locked.
+    /// @param amount amount of mocs to be locked.
+    /// @param endBlock block until which the mocs will be locked.
+    function lockMocs(address mocHolder, uint256 amount, uint256 endBlock) external {
+        supportersData._lockMocs(mocHolder, amount, endBlock);
+    }
+
+    /**
+      @notice Gets total amount of locked MOCs.
+
+      @return Total amount of locked MOCs.
+    */
+    function getTotalLockedMocs() external view returns (uint256) {
+        return supportersData.getTotalLockedMocs();
     }
 
     /**
@@ -73,7 +89,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @dev Earnings will be credited periodically through several blocks.
     */
     function distribute() external {
-        supportersVestedData.supportersData._distribute();
+        supportersData._distribute();
     }
 
     /**
@@ -82,7 +98,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return true if ready
     */
     function isReadyToDistribute() external view returns (bool)  {
-        return supportersVestedData.supportersData._isReadyToDistribute();
+        return supportersData._isReadyToDistribute();
     }
 
     /**
@@ -93,7 +109,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     */
     function stakeAt(uint256 _mocs, address _subaccount)
     external onlyWhitelisted(iterableWhitelistData) {
-        supportersVestedData._stakeAtFrom(_mocs, _subaccount, msg.sender);
+        supportersData._stakeAtFrom(_mocs, _subaccount, msg.sender);
     }
 
     /**
@@ -105,7 +121,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     */
     function stakeAtFrom(uint256 _mocs, address _subaccount, address _sender)
     external onlyWhitelisted(iterableWhitelistData) {
-        supportersVestedData._stakeAtFrom(_mocs, _subaccount, _sender);
+        supportersData._stakeAtFrom(_mocs, _subaccount, _sender);
     }
 
     /**
@@ -117,7 +133,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     */
     function withdrawFrom(uint256 _tokens, address _subaccount)
     external onlyWhitelisted(iterableWhitelistData) returns (uint256) {
-        return supportersVestedData._withdrawFromTo(_tokens, _subaccount, msg.sender);
+        return supportersData._withdrawFromTo(_tokens, _subaccount, msg.sender);
     }
 
     /**
@@ -130,7 +146,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     */
     function withdrawFromTo(uint256 _tokens, address _subaccount, address _receiver)
     external onlyWhitelisted(iterableWhitelistData) returns (uint256) {
-        return supportersVestedData._withdrawFromTo(_tokens, _subaccount, _receiver);
+        return supportersData._withdrawFromTo(_tokens, _subaccount, _receiver);
     }
 
     /**
@@ -139,7 +155,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
      @param _subaccount subaccount used to withdraw MOC
     */
     function canWithdraw(address _subaccount) external view returns (bool) {
-        return supportersVestedData._canWithdraw(_subaccount);
+        return supportersData._canWithdraw(_subaccount);
     }
 
     /**
@@ -150,7 +166,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return tokens for _user at _subaccount
     */
     function getBalanceAt(address _user, address _subaccount) external view returns (uint256) {
-        return supportersVestedData.supportersData._getBalanceAt(_user, _subaccount);
+        return supportersData._getBalanceAt(_user, _subaccount);
     }
 
     /**
@@ -161,7 +177,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return MOC for _user
     */
     function getMOCBalanceAt(address _user, address _subaccount) external view returns (uint256) {
-        return supportersVestedData.supportersData._getMOCBalanceAt(_user, _subaccount);
+        return supportersData._getMOCBalanceAt(_user, _subaccount);
     }
 
     /**
@@ -170,7 +186,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return total amount of tokens
     */
     function getTokens() external view returns (uint256) {
-        return supportersVestedData.supportersData._getTokens();
+        return supportersData._getTokens();
     }
 
     /**
@@ -179,7 +195,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return total amount of MOC
     */
     function getAvailableMOC() external view returns (uint256) {
-        return supportersVestedData.supportersData._getAvailableMOC();
+        return supportersData._getAvailableMOC();
     }
 
     /**
@@ -189,7 +205,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return Earnings to be paid
     */
     function getEarningsAt(uint256 _block) external view returns (uint256) {
-        return supportersVestedData.supportersData._getEarningsAt(_block);
+        return supportersData._getEarningsAt(_block);
     }
 
     /**
@@ -199,7 +215,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return Locked amount of earnings in MOC
     */
     function getLockedAt(uint256 _block) external view returns (uint256) {
-        return supportersVestedData.supportersData._getLockedAt(_block);
+        return supportersData._getLockedAt(_block);
     }
 
     /**
@@ -208,13 +224,13 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return Information about earnings
     */
     function getEarningsInfo() external view returns (uint256, uint256, uint256) {
-        return supportersVestedData.supportersData._getEarningsInfo();
+        return supportersData._getEarningsInfo();
     }
 
 
     /// @notice The moc token address
     function mocToken() external view returns (IERC20) {
-        return supportersVestedData.supportersData.mocToken;
+        return supportersData.mocToken;
     }
 
     /**
@@ -224,16 +240,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
      @return Number of blocks to distribute earnings
     */
     function period() external view returns (uint256) {
-        return supportersVestedData.supportersData.period;
-    }
-
-    /**
-     Stop staking some MOCs
-
-     @param _addr User address
-    */
-    function stop(address _addr) external onlyWhitelisted(iterableWhitelistData) {
-        supportersVestedData._stop(_addr);
+        return supportersData.period;
     }
 
     /**
@@ -247,18 +254,18 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     function vestingInfoOf(address _user, address _subaccount)
     external view returns (uint256 balance, uint256 stoppedInblock) {
         require(_subaccount != address(0), "Address must be != 0");
-        return (supportersVestedData.supportersData._getMOCBalanceAt(_user, _subaccount),
-        supportersVestedData.stopInBlockMap[_subaccount]);
+        return (supportersData._getMOCBalanceAt(_user, _subaccount),
+        supportersData.stopInBlockMap[_subaccount]);
     }
 
     /// @notice Get the minimum number of blocks that a user must stay staked after staking
     function getMinStayBlocks() external view returns (uint256) {
-        return supportersVestedData.minStayBlocks;
+        return supportersData.minStayBlocks;
     }
 
     /// @notice  Get the period of blocks a user have after a stop and minStayBlock to withdraw
     function getAfterStopBlocks() external view returns (uint256) {
-        return supportersVestedData.afterStopBlocks;
+        return supportersData.afterStopBlocks;
     }
 
     /// @notice Returns the count of whitelisted addresses.

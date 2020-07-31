@@ -102,7 +102,7 @@ contract OracleManager is OracleManagerStorage {
 
     /// @notice Subscribe a registered oracle to participate in rounds of a registered coin-pair
     /// @param oracleAddr Address of oracle
-    function subscribeCoinPair(address oracleAddr, bytes32 coinPair) external {
+    function subscribeToCoinPair(address oracleAddr, bytes32 coinPair) external {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
         require(_isOwner(data), "Must be called by oracle owner");
@@ -115,7 +115,7 @@ contract OracleManager is OracleManagerStorage {
 
     /// @notice Unsubscribe a registered oracle from participating in rounds of a registered coin-pair
     /// @param oracleAddr Address of oracle
-    function unsubscribeCoinPair(address oracleAddr, bytes32 coinPair) external {
+    function unsubscribeFromCoinPair(address oracleAddr, bytes32 coinPair) external {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
         require(_isOwner(data), "Must be called by oracle owner");
@@ -124,16 +124,6 @@ contract OracleManager is OracleManagerStorage {
         ctAddr.unsubscribe(oracleAddr);
 
         emit OracleUnsubscribed(msg.sender, oracleAddr, coinPair);
-    }
-
-    /// @notice stop the supporters part of oracle stake
-    /// @param oracleAddr Address of oracle
-    function stop(address oracleAddr) external {
-        OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
-        require(data.isRegistered(), "Oracle is not registered");
-        require(_isOwner(data), "Must be called by oracle owner");
-        _unsubscribeAll(oracleAddr);
-        supportersContract.stop(oracleAddr);
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair

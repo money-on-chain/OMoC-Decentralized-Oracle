@@ -4,7 +4,6 @@ import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {Initializable} from "./openzeppelin/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
-import {SupportersVestedLib} from "./libs/SupportersVestedLib.sol";
 import {SupportersLib} from "./libs/SupportersLib.sol";
 
 /*
@@ -18,13 +17,11 @@ contract SupportersWhitelistedStorage is Initializable, GovernedAbstract, IItera
     using SafeMath for uint;
     using SupportersLib for SupportersLib.SupportersData;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
-    using SupportersVestedLib for SupportersVestedLib.SupportersVestedData;
 
     // Whitelisted contracts that can add/remove stake in this one.
     IterableWhitelistLib.IterableWhitelistData internal iterableWhitelistData;
 
-    // This contract has vesting restrictions: must stop and then remove.
-    SupportersVestedLib.SupportersVestedData internal supportersVestedData;
+    SupportersLib.SupportersData internal supportersData;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.

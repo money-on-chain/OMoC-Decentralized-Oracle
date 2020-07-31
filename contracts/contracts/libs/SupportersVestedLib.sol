@@ -45,15 +45,6 @@ library SupportersVestedLib {
 
 
     /**
-     Stop staking some MOCs
-    */
-    function _stop(SupportersVestedData storage self, address addr) internal {
-        self.stopInBlockMap[addr] = block.number;
-        emit Stop(msg.sender, addr, block.number);
-    }
-
-
-    /**
       Withdraw MOC for tokens for a subaccount.
 
       @param _tokens amount of tokens to convert to MOC

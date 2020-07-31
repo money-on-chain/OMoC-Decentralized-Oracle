@@ -59,13 +59,6 @@ contract SupportersVested is SupportersVestedStorage {
         supporters.stakeAtFrom(_mocs, msg.sender, msg.sender);
     }
 
-    /**
-      Stop staking some MOCs
-    */
-    function stop() external {
-        supporters.stop(msg.sender);
-    }
-
     /// @notice Returns true if a supporter can withdraw his money
     //  @param _subaccount subaccount used to withdraw MOC
     function canWithdraw(address _subaccount) external view returns (bool) {

@@ -29,6 +29,9 @@ library SupportersLib {
 
         // MOC token address
         IERC20 mocToken;
+
+        // Locked mocs amount for each supporter
+        mapping(address => uint256) lockedMocs;
     }
 
     using SafeMath for uint256;
@@ -144,6 +147,26 @@ library SupportersLib {
 
         emit WithdrawStake(msg.sender, _subaccount, _receiver, _tokens, mocs);
         return mocs;
+    }
+
+    /**
+      Used by the voting machine to lock an amount of MOCs.
+
+      @param mocHolder the moc holder whose mocs will be locked.
+      @param amount amount of mocs to be locked.
+      @param endBlock block until which the mocs will be locked.
+    */
+    function lockMocs(address mocHolder, uint256 amount, uint256 endBlock) external {
+        self.lockedMocs[mocHolder] = amount;
+    }
+
+    /**
+      @notice Gets total amount of locked MOCs.
+
+      @return Total amount of locked MOCs.
+    */
+    function getTotalLockedMocs() external view returns (uint256) {
+        return;
     }
 
     /**
