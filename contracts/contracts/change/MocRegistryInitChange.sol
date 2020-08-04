@@ -11,7 +11,6 @@ contract MocRegistryInitChange is ChangeContract {
 
     EternalStorageGobernanza public registry;
     address public oracle_manager;
-    address public supporters_vested;
     address public supporters_whitelisted;
     address public info_getter;
 
@@ -21,13 +20,11 @@ contract MocRegistryInitChange is ChangeContract {
     */
     constructor(EternalStorageGobernanza _registry,
         address _oracle_manager,
-        address _supporters_vested,
         address _supporters_whitelisted,
         address _info_getter) public
  {
         registry = _registry;
         oracle_manager = _oracle_manager;
-        supporters_vested = _supporters_vested;
         supporters_whitelisted = _supporters_whitelisted;
         info_getter = _info_getter;
     }
@@ -41,7 +38,6 @@ contract MocRegistryInitChange is ChangeContract {
         require(address(registry) != address(0), "Use once");
 
         registry.setAddress(get_keccak("ORACLE_MANAGER_ADDR"), oracle_manager);
-        registry.setAddress(get_keccak("SUPPORTERS_VESTED_ADDR"), supporters_vested);
         registry.setAddress(get_keccak("SUPPORTERS_ADDR"), supporters_whitelisted);
         registry.setAddress(get_keccak("INFO_ADDR"), info_getter);
 

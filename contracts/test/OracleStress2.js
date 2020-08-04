@@ -54,7 +54,7 @@ contract("[ @slow ] [ @skip-on-coverage ] OracleStress2", async (accounts) => {
             this.oracleMgr.address);
 
         await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
-            period, minStayBlocks, afterStopBlocks);
+            period);
 
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
@@ -111,7 +111,7 @@ contract("[ @slow ] [ @skip-on-coverage ] OracleStress2", async (accounts) => {
             await this.token.approve(this.oracleMgr.address, o.stake, {from: o.owner_account});
             await this.oracleMgr.registerOracleWithHint(o.account, o.name, o.stake, prevEntry[i],
                 {from: o.owner_account});
-            await this.oracleMgr.subscribeCoinPair(o.account, COINPAIR, {from: o.owner_account});
+            await this.oracleMgr.subscribeToCoinPair(o.account, COINPAIR, {from: o.owner_account});
         }
     });
 
@@ -133,7 +133,7 @@ contract("[ @slow ] [ @skip-on-coverage ] OracleStress2", async (accounts) => {
         await this.token.approve(this.oracleMgr.address, oracle.stake, {from: oracle.owner_account});
         await this.oracleMgr.registerOracleWithHint(oracle.account, oracle.name, oracle.stake,
             prevEntry[inserted.length - 1], {from: oracle.owner_account});
-        await this.oracleMgr.subscribeCoinPair(oracle.account, COINPAIR2, {from: oracle.owner_account});
+        await this.oracleMgr.subscribeToCoinPair(oracle.account, COINPAIR2, {from: oracle.owner_account});
     });
 
 

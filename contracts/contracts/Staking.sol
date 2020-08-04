@@ -3,10 +3,10 @@ pragma solidity 0.6.0;
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {OracleManager} from "./OracleManager.sol";
+import {StakingStorage} from "./StakingStorage.sol";
 
-contract Staking {
+contract Staking is StakingStorage {
     using SafeMath for uint;
-    mapping(uint256 => uint256) blockedMocs;
 
     // -----------------------------------------------------------------------
     //
@@ -54,8 +54,8 @@ contract Staking {
 
     /// @notice Unsubscribe an oracle from a coin pair.
     /// Delegated to the Oracle Manager smart contract.
-    function unSubscribeFromCoinPair(address oracleAddr, bytes32 coinPair) external {
-        oracleManager.registerOracle(oracleAddr, coinPair);
+    function unsubscribeFromCoinPair(address oracleAddr, bytes32 coinPair) external {
+        oracleManager.unsubscribeFromCoinPair(oracleAddr, coinPair);
     }
 
     /// @notice Remove an oracle.
@@ -65,13 +65,13 @@ contract Staking {
 
     /// @notice Reports the total amount of MOCs in staking state.
     /// Delegate to the Supporters smart contract.
-    function getTotalLockedMocs() external {
+    function getTotalLockedMocs() external view returns (uint256) {
         return supportersContract.getTotalLockedMocs();
     }
 
     /// @notice Reports the balance of MOCs for a specific user.
     /// Delegate to the Supporters smart contract.
-    function getUserMocsBalance(address user) external {
-        return supportersContract.getUserMocsBalance(user);
+    function getUserMocsBalance(address user, address subaccount) external view returns (uint256) {
+        return supportersContract.getMOCBalanceAt(user, subaccount);
     }
 }

@@ -46,7 +46,7 @@ contract("CoinPairPrice", async (accounts) => {
 
 
         await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
-            period, minStayBlocks, afterStopBlocks);
+            period);
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice.address);
@@ -126,9 +126,9 @@ contract("CoinPairPrice", async (accounts) => {
 
     it("Should subscribe oracles A,B,C to this coin pair", async () => {
         const thisCoinPair = await this.coinPairPrice.coinPair();
-        await this.oracleMgr.subscribeCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
-        await this.oracleMgr.subscribeCoinPair(oracleData[1].account, thisCoinPair, {from: oracleData[1].owner});
-        await this.oracleMgr.subscribeCoinPair(oracleData[2].account, thisCoinPair, {from: oracleData[2].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[1].account, thisCoinPair, {from: oracleData[1].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[2].account, thisCoinPair, {from: oracleData[2].owner});
 
     });
 
@@ -426,7 +426,7 @@ contract("CoinPairPrice", async (accounts) => {
         const initialBalance1 = await this.token.balanceOf(oracleData[3].owner);
         await this.token.approve(this.oracleMgr.address, oracleData[3].stake, {from: oracleData[3].owner});
         await this.oracleMgr.registerOracle(oracleData[3].account, oracleData[3].name, oracleData[3].stake, {from: oracleData[3].owner});
-        await this.oracleMgr.subscribeCoinPair(oracleData[3].account, thisCoinPair, {from: oracleData[3].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[3].account, thisCoinPair, {from: oracleData[3].owner});
         assert.isTrue((await this.token.balanceOf(oracleData[3].owner)).eq(initialBalance1.sub(new BN(oracleData[3].stake))));
     })
 
@@ -632,7 +632,7 @@ contract("CoinPairPrice", async (accounts) => {
         const roundInfo2 = await this.coinPairPrice.getRoundInfo();
         assert.isTrue(roundInfo2.selectedOracles.includes(oracleData[0].account))
 
-        await this.oracleMgr.unsubscribeCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
+        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].account, thisCoinPair, {from: oracleData[0].owner});
 
         await helpers.mineUntilNextRound(this.coinPairPrice);
         await this.coinPairPrice.switchRound();
@@ -648,11 +648,6 @@ contract("CoinPairPrice", async (accounts) => {
         const info = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
         assert.equal(info.internetName, "oracle-a.io");
         const initialBalance = await this.token.balanceOf(oracleData[0].owner);
-
-        // stop oracle as supporter
-        await expectRevert(this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner}), "Must be stopped");
-        await this.oracleMgr.stop(oracleData[0].account, {from: oracleData[0].owner});
-        await helpers.mineBlocks(minStayBlocks);
 
         await this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner});
 

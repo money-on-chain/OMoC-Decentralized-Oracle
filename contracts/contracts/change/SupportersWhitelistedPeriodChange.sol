@@ -39,6 +39,6 @@ contract SupportersWhitelistedPeriodChange is SupportersWhitelistedStorage, Chan
         This methods runs in the Governed contract storage.
     */
     function impersonate(bytes calldata data) external {
-        supportersVestedData.supportersData.period = abi.decode(data, (uint256));
+        supportersData.period = abi.decode(data, (uint256));
     }
 }

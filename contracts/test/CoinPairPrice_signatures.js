@@ -102,7 +102,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Signature", async (accounts) => {
             await this.token.approve(this.oracleMgr.address, o.stake, {from: o.owner});
             await this.oracleMgr.registerOracle(o.account, o.name, o.stake, {from: o.owner});
             const thisCoinPair = await this.coinPairPrice.coinPair();
-            await this.oracleMgr.subscribeCoinPair(o.account, thisCoinPair, {from: o.owner});
+            await this.oracleMgr.subscribeToCoinPair(o.account, thisCoinPair, {from: o.owner});
         }
         const FEES = new BN((0.33 * 10 ** 18).toString());
         await this.token.transfer(this.coinPairPrice.address, FEES.toString(), {from: feeSourceAccount});

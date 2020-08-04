@@ -55,7 +55,7 @@ contract("OracleManager", async (accounts) => {
 
 
         await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
-            period, minStayBlocks, afterStopBlocks);
+            period);
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, web3.utils.asciiToHex("BTCUSD"), this.coinPairPrice_btcusd.address);
@@ -200,25 +200,25 @@ contract("OracleManager", async (accounts) => {
     });
 
     it("Should subscribe oracle A to coin-pair USDBTC", async () => {
-        await this.oracleMgr.subscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner});
         assert.isTrue(await this.coinPairPrice_btcusd.isSubscribed(oracleData[0].account));
     });
 
     it("Should fail to subscribe oracle if not called by owner", async () => {
-        await expectRevert(this.oracleMgr.subscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD")), "Must be called by oracle owner");
+        await expectRevert(this.oracleMgr.subscribeToCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD")), "Must be called by oracle owner");
     });
 
     it("Should fail to unsubscribe oracle if not called by owner", async () => {
-        await expectRevert(this.oracleMgr.unsubscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD")), "Must be called by oracle owner");
+        await expectRevert(this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD")), "Must be called by oracle owner");
     });
 
     it("Should fail to subscribe oracle if already subscribed", async () => {
-        await expectRevert(this.oracleMgr.subscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner}), "Oracle is already subscribed to this coin pair");
+        await expectRevert(this.oracleMgr.subscribeToCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner}), "Oracle is already subscribed to this coin pair");
     });
 
     it("Should subscribe oracle B to both coin-pairs", async () => {
-        await this.oracleMgr.subscribeCoinPair(oracleData[1].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[1].owner});
-        await this.oracleMgr.subscribeCoinPair(oracleData[1].account, web3.utils.asciiToHex("RIFBTC"), {from: oracleData[1].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[1].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[1].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[1].account, web3.utils.asciiToHex("RIFBTC"), {from: oracleData[1].owner});
         assert.isTrue(await this.coinPairPrice_btcusd.isSubscribed(oracleData[0].account));
         assert.isTrue(await this.coinPairPrice_RIFBTC.isSubscribed(oracleData[1].account));
         assert.isFalse(await this.coinPairPrice_RIFBTC.isSubscribed(oracleData[2].account));
@@ -244,12 +244,12 @@ contract("OracleManager", async (accounts) => {
     });
 
     it("Should unsubscribe oracle A from coin-pair USDBTC", async () => {
-        await this.oracleMgr.unsubscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner});
+        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner});
         assert.isFalse(await this.coinPairPrice_btcusd.isSubscribed(oracleData[0].account));
     });
 
     it("Should fail to unsubscribe oracle if not subscribed", async () => {
-        await expectRevert(this.oracleMgr.unsubscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner}), "Oracle is not subscribed to this coin pair");
+        await expectRevert(this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner}), "Oracle is not subscribed to this coin pair");
     });
 
     it("Should fail to remove an oracle if is not registered", async () => {
@@ -266,11 +266,6 @@ contract("OracleManager", async (accounts) => {
 
         assert.isTrue(await this.coinPairPrice_btcusd.canRemoveOracle(oracleData[0].account));
         assert.isTrue(await this.coinPairPrice_RIFBTC.canRemoveOracle(oracleData[0].account));
-
-        // stop oracle as supporter
-        await expectRevert(this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner}), "Must be stopped");
-        await this.oracleMgr.stop(oracleData[0].account, {from: oracleData[0].owner});
-        await helpers.mineBlocks(minStayBlocks);
 
         await this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner});
         assert.isTrue((await this.token.balanceOf(oracleData[0].owner)).eq(ownerBalance.add(new BN(originalStake))));
@@ -290,8 +285,8 @@ contract("OracleManager", async (accounts) => {
     it("Should fail to remove an oracle with one coinpair passing # of idle rounds and the other not ", async () => {
         // subscribe another oracle to keep rounds running first
 
-        await this.oracleMgr.subscribeCoinPair(oracleData[2].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[2].owner});
-        await this.oracleMgr.subscribeCoinPair(oracleData[2].account, web3.utils.asciiToHex("RIFBTC"), {from: oracleData[2].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[2].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[2].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[2].account, web3.utils.asciiToHex("RIFBTC"), {from: oracleData[2].owner});
         assert.isTrue(await this.coinPairPrice_btcusd.isSubscribed(oracleData[2].account));
         assert.isTrue(await this.coinPairPrice_RIFBTC.isSubscribed(oracleData[2].account));
 
@@ -305,7 +300,7 @@ contract("OracleManager", async (accounts) => {
 
         // Set to Idle and pass minimum required rounds ...
 
-        await this.oracleMgr.unsubscribeCoinPair(oracleData[1].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[1].owner});
+        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[1].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[1].owner});
 
         await helpers.mineUntilNextRound(this.coinPairPrice_btcusd);
         await this.coinPairPrice_btcusd.switchRound(); // One round
@@ -322,7 +317,7 @@ contract("OracleManager", async (accounts) => {
     it("Should remove an oracle when ALL coinpairs passed # of idle rounds", async () => {
         // Unsubscribe from the other pair  and pass minimum required rounds ...
 
-        await this.oracleMgr.unsubscribeCoinPair(oracleData[1].account, web3.utils.asciiToHex("RIFBTC"), {from: oracleData[1].owner});
+        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[1].account, web3.utils.asciiToHex("RIFBTC"), {from: oracleData[1].owner});
 
         await helpers.mineUntilNextRound(this.coinPairPrice_RIFBTC);
         await this.coinPairPrice_RIFBTC.switchRound(); // One round
@@ -336,11 +331,6 @@ contract("OracleManager", async (accounts) => {
 
         const ownerBalance = await this.token.balanceOf(oracleData[1].owner);
         const originalStake = (await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].account)).stake;
-
-        // stop oracle as supporter
-        await expectRevert(this.oracleMgr.removeOracle(oracleData[1].account, {from: oracleData[1].owner}), "Must be stopped");
-        await this.oracleMgr.stop(oracleData[1].account, {from: oracleData[1].owner});
-        await helpers.mineBlocks(minStayBlocks);
 
         await this.oracleMgr.removeOracle(oracleData[1].account, {from: oracleData[1].owner});
 

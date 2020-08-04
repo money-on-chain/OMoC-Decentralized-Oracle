@@ -40,7 +40,7 @@ contract("[ @slow ] [ @skip-on-coverage ] OracleStress", async (accounts) => {
             this.oracleMgr.address);
 
         await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
-            period, minStayBlocks, afterStopBlocks);
+            period);
 
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
@@ -61,7 +61,7 @@ contract("[ @slow ] [ @skip-on-coverage ] OracleStress", async (accounts) => {
         assert.equal(info.stake, stake);
         assert.equal((await token.balanceOf(ownerAddr)).toString(), initialBalance.sub(new BN(stake)).toString());
         const cant_prev = (await coinPairPrice.getRoundInfo()).selectedOracles.length
-        await oracleManager.subscribeCoinPair(oracleAddr, COINPAIR, {from: ownerAddr});
+        await oracleManager.subscribeToCoinPair(oracleAddr, COINPAIR, {from: ownerAddr});
         const subscribed = await oracleManager.isSubscribed(oracleAddr, COINPAIR);
         assert.isTrue(subscribed);
 
@@ -277,7 +277,7 @@ contract("[ @slow ] [ @skip-on-coverage ] OracleStress", async (accounts) => {
 
     it("Should remove all oracles", async () => {
         for (let i = 0; i < oracleList.length; i++) {
-            await this.oracleMgr.unsubscribeCoinPair(oracleList[i].account, COINPAIR, {from: oracleList[i].owner_account});
+            await this.oracleMgr.unsubscribeFromCoinPair(oracleList[i].account, COINPAIR, {from: oracleList[i].owner_account});
             const subscribed = await this.oracleMgr.isSubscribed(oracleList[i].account, COINPAIR);
             assert.isFalse(subscribed);
         }

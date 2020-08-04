@@ -48,7 +48,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Emergency Publish", async (account
             this.oracleMgr.address);
 
         await this.supporters.initialize(this.governor.addr, [this.oracleMgr.address], this.token.address,
-            period, minStayBlocks, afterStopBlocks);
+            period);
 
         await this.oracleMgr.initialize(this.governor.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
@@ -94,7 +94,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Emergency Publish", async (account
         await this.governor.mint(this.token.address, ORACLE_OWNER, '800000000000000000000');
         await this.token.approve(this.oracleMgr.address, minOracleOwnerStake, {from: ORACLE_OWNER});
         await this.oracleMgr.registerOracle(ORACLE_ADDR, "SOME_NAME", minOracleOwnerStake, {from: ORACLE_OWNER});
-        await this.oracleMgr.subscribeCoinPair(ORACLE_ADDR, coin_pair, {from: ORACLE_OWNER});
+        await this.oracleMgr.subscribeToCoinPair(ORACLE_ADDR, coin_pair, {from: ORACLE_OWNER});
         await this.coinPairPrice.switchRound();
 
         // Publish a price

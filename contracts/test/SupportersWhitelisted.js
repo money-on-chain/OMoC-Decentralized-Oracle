@@ -30,7 +30,7 @@ contract('SupportersWhitelisted', (accounts) => {
             await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(governor.address, [], token.address,
-                period, minStayBlocks, afterStopBlocks)
+                period)
         })
 
         it('check creation', async () => {
@@ -65,7 +65,7 @@ contract('SupportersWhitelisted', (accounts) => {
             await token.initialize(governor.address);
             supporters = await Supporters.new()
             await supporters.initialize(governor.address, [user1], token.address,
-                period, minStayBlocks, afterStopBlocks)
+                period)
 
             await governor.mint(token.address, user1, INITIAL_BALANCE)
             await governor.mint(token.address, user2, BALANCE_USER2)
@@ -113,12 +113,6 @@ contract('SupportersWhitelisted', (accounts) => {
 
             await supporters.stakeAt(BALANCE_USER1, user3, {from: user1})
 
-            // stop oracle as supporter
-            await expectRevert(supporters.withdrawFrom(BALANCE_USER1, user1, {from: user1}), "Must be stopped");
-            let receipt = await supporters.stop(user1, {from: user1});
-            expectEvent(receipt, 'Stop')
-            await helpers.mineBlocks(minStayBlocks);
-
             await supporters.withdrawFrom(BALANCE_USER1, user1, {from: user1})
 
             tokens = await supporters.getBalanceAt(user1, user1)
@@ -126,12 +120,6 @@ contract('SupportersWhitelisted', (accounts) => {
 
             tokens = await supporters.getBalanceAt(user1, user3)
             expect(tokens, "User subaccount token balance").to.be.bignumber.equal(BALANCE_USER1)
-
-            // stop oracle as supporter
-            await expectRevert(supporters.withdrawFrom(BALANCE_USER1, user3, {from: user1}), "Must be stopped");
-            receipt = await supporters.stop(user3, {from: user1});
-            expectEvent(receipt, 'Stop')
-            await helpers.mineBlocks(minStayBlocks);
 
             await supporters.withdrawFrom(BALANCE_USER1, user3, {from: user1})
 
@@ -150,7 +138,7 @@ contract('SupportersWhitelisted', (accounts) => {
             await this.token.initialize(this.governor.address);
             this.supporters = await Supporters.new();
             await this.supporters.initialize(this.governor.address, [], this.token.address,
-                period, minStayBlocks, afterStopBlocks)
+                period)
         });
 
 
@@ -224,7 +212,7 @@ contract('SupportersWhitelisted', (accounts) => {
             await this.token.initialize(this.governor.address);
             this.supporters = await Supporters.new();
             await this.supporters.initialize(this.governor.address, [], this.token.address,
-                period, minStayBlocks, afterStopBlocks)
+                period)
         });
 
         it('should fail in if not a governor call', async () => {

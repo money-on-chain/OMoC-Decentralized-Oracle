@@ -13,9 +13,6 @@ async function deploy(config) {
     const oracleManagerAddr = await getAddr('OracleManager.sol');
     console.log("oracleManagerAddr", oracleManagerAddr);
 
-    const supportersVestedAddr = await getAddr('SupportersVested.sol');
-    console.log("supportersVestedAddr", supportersVestedAddr);
-
     const supportersWhitelistedAddr = await getAddr('SupportersWhitelisted.sol');
     console.log("supportersWhitelistedAddr", supportersWhitelistedAddr);
 
@@ -44,7 +41,6 @@ async function deploy(config) {
     const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
     const change = await MocRegistryInitChange.new(eternalStorage.options.address,
         oracleManagerAddr,
-        supportersVestedAddr,
         supportersWhitelistedAddr,
         infoGetterAddr,
     );

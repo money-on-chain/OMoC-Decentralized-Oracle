@@ -44,7 +44,7 @@ contract("OracleManager by gobernanza", async (accounts) => {
             this.oracleMgr.address);
 
         await this.supporters.initialize(this.governor_data.addr, [this.oracleMgr.address], this.token.address,
-            period, minStayBlocks, afterStopBlocks);
+            period);
         await this.oracleMgr.initialize(this.governor_data.addr, minOracleOwnerStake, this.supporters.address);
         // Create sample coin pairs
         await this.governor_data.registerCoinPair(this.oracleMgr, this.coinPair, this.coinPairPrice.address);
@@ -62,13 +62,13 @@ contract("OracleManager by gobernanza", async (accounts) => {
         assert.equal(info0.stake, oracleData[0].stake);
         assert.isTrue((await this.token.balanceOf(oracleData[0].owner)).eq(initialBalance1.sub(new BN(oracleData[0].stake))));
 
-        await this.oracleMgr.subscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner});
+        await this.oracleMgr.subscribeToCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD"), {from: oracleData[0].owner});
         assert.isTrue(await this.coinPairPrice.isSubscribed(oracleData[0].account));
         assert.isTrue(await this.oracleMgr.isOracleRegistered(oracleData[0].account));
     });
 
     it("Should fail to unsubscribe oracle if not called by owner", async () => {
-        await expectRevert(this.oracleMgr.unsubscribeCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD")),
+        await expectRevert(this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].account, web3.utils.asciiToHex("BTCUSD")),
             "Must be called by oracle owner");
     });
 
@@ -86,11 +86,6 @@ contract("OracleManager by gobernanza", async (accounts) => {
     });
 
     it("Remove by gobernanza", async () => {
-        // stop oracle as supporter
-        await expectRevert(this.oracleMgr.removeOracle(oracleData[0].account, {from: oracleData[0].owner}), "Must be stopped");
-        await this.oracleMgr.stop(oracleData[0].account, {from: oracleData[0].owner});
-        await helpers.mineBlocks(minStayBlocks);
-
         assert.isTrue(await this.oracleMgr.isOracleRegistered(oracleData[0].account));
         const OracleManagerRemoveChange = artifacts.require("OracleManagerRemoveChange");
         const change = await OracleManagerRemoveChange.new(this.oracleMgr.address, oracleData[0].account);

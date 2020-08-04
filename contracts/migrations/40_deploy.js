@@ -54,6 +54,7 @@ async function deploy(config) {
     });
     console.log("OracleManager: ", oracleManager.options.address, 'proxyAdmin', config.proxyAdminAddr);
 
+    /*
     console.log("Create Supporters Vested");
     await scripts.add({contractsData: [{name: "SupportersVested", alias: "SupportersVested"}]});
     await scripts.push({
@@ -68,22 +69,25 @@ async function deploy(config) {
         txParams: config.txParams
     });
     console.log("SupportersVested: ", supportersVested.options.address, 'proxyAdmin', config.proxyAdminAddr);
+    */
 
+    // Add Staking contract creation and initialization
 
     console.log("Initialize supporters", 'governor', config.governorAddr);
     const scall = await artifacts.require("SupportersWhitelisted").at(supporters.options.address);
-    await scall.initialize(config.governorAddr, [oracleManager.options.address, supportersVested.options.address],
+    await scall.initialize(config.governorAddr, [oracleManager.options.address],
         testMOC.options.address,
-        config.supportersEarnPeriodInBlocks,
-        config.supportersMinStayBlocks, config.supportersAfterStopBlocks);
+        config.supportersEarnPeriodInBlocks);
 
     console.log("Initialize OracleManager", 'governor', config.governorAddr,);
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
     await omcall.initialize(config.governorAddr, parseInt(config.minOracleOwnerStake), supporters.options.address);
 
+    /*
     console.log("Initialize Supporters Vested", 'governor', config.governorAddr);
     const svcall = await artifacts.require("SupportersVested").at(supportersVested.options.address);
     await svcall.initialize(config.governorAddr, supporters.options.address);
+    */
 
     for (let i = 0; i < config.CurrencyPair.length; i++) {
         const coin = config.CurrencyPair[i];

@@ -258,7 +258,7 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleAddr the oracle address to lookup.
     function canRemoveOracle(address oracleAddr) external view returns (bool) {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
-        return data.isRegistered() && _canRemoveOracle(oracleAddr) && supportersContract.canWithdraw(oracleAddr);
+        return data.isRegistered() && _canRemoveOracle(oracleAddr);
     }
 
 
@@ -266,13 +266,6 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleAddr The address of the oracle.
     function getStake(address oracleAddr) public view returns (uint256 balance) {
         return supportersContract.getMOCBalanceAt(address(this), oracleAddr);
-    }
-
-    /// @notice Vesting information for account.
-    /// @param oracleAddr The address of the oracle.
-    function vestingInfoOf(address oracleAddr)
-    external view returns (uint256 balance, uint256 stoppedInblock) {
-        return supportersContract.vestingInfoOf(address(this), oracleAddr);
     }
 
     /// @notice Returns the count of registered coin pairs.

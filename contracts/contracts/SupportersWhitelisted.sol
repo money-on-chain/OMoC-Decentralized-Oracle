@@ -27,6 +27,13 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     event Withdraw(address indexed msg_sender, address indexed subacount,
         address indexed receiver, uint256 mocs, uint256 blockNum);
 
+    struct LockingInfo {
+        uint256 endBlock;
+        uint256 amount;
+    }
+
+    mapping(address => LockingInfo) lockedMocs;
+    uint256 totalLockedMocs;
 
     /**
      @notice Contract creation
@@ -35,14 +42,11 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
      @param _wlist Initial whitelist addresses
      @param _mocToken The address of the contract which governs this one
      @param _period The address of the contract which governs this one
-     @param _minStayBlocks The address of the contract which governs this one
-     @param _afterStopBlocks The address of the contract which governs this one
     */
-    function initialize(IGovernor _governor, address[] calldata _wlist, IERC20 _mocToken, uint256 _period
-    , uint256 _minStayBlocks, uint256 _afterStopBlocks)
+    function initialize(IGovernor _governor, address[] calldata _wlist, IERC20 _mocToken, uint256 _period)
     external initializer {
         Governed._initialize(_governor);
-        supportersData._initialize(_mocToken, _period, _minStayBlocks, _afterStopBlocks);
+        supportersData._initialize(_mocToken, _period);
         for (uint256 i = 0; i < _wlist.length; i++) {
             iterableWhitelistData._addToWhitelist(_wlist[i]);
         }
@@ -53,7 +57,10 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     /// @param amount amount of mocs to be locked.
     /// @param endBlock block until which the mocs will be locked.
     function lockMocs(address mocHolder, uint256 amount, uint256 endBlock) external {
-        supportersData._lockMocs(mocHolder, amount, endBlock);
+        LockingInfo storage lockedMocsInfo = lockedMocs[mocHolder];
+        lockedMocsInfo.endBlock = endBlock;
+        lockedMocsInfo.amount = amount;
+        totalLockedMocs = totalLockedMocs.add(amount);
     }
 
     /**
@@ -62,7 +69,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return Total amount of locked MOCs.
     */
     function getTotalLockedMocs() external view returns (uint256) {
-        return supportersData.getTotalLockedMocs();
+        return totalLockedMocs;
     }
 
     /**
@@ -150,15 +157,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     /**
-     @notice Returns true if a supporter can withdraw his money
-
-     @param _subaccount subaccount used to withdraw MOC
-    */
-    function canWithdraw(address _subaccount) external view returns (bool) {
-        return supportersData._canWithdraw(_subaccount);
-    }
-
-    /**
       @notice Amount of tokens for _user in a _subaccount.
 
       @param _user User address
@@ -241,31 +239,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     */
     function period() external view returns (uint256) {
         return supportersData.period;
-    }
-
-    /**
-      Vesting information for an account.
-
-      @param _user User address
-      @param _subaccount subaccount to get MOC balance
-      @return balance stoppedInblock balance
-      @return stoppedInblock the block in which the mocs where stopped
-    */
-    function vestingInfoOf(address _user, address _subaccount)
-    external view returns (uint256 balance, uint256 stoppedInblock) {
-        require(_subaccount != address(0), "Address must be != 0");
-        return (supportersData._getMOCBalanceAt(_user, _subaccount),
-        supportersData.stopInBlockMap[_subaccount]);
-    }
-
-    /// @notice Get the minimum number of blocks that a user must stay staked after staking
-    function getMinStayBlocks() external view returns (uint256) {
-        return supportersData.minStayBlocks;
-    }
-
-    /// @notice  Get the period of blocks a user have after a stop and minStayBlock to withdraw
-    function getAfterStopBlocks() external view returns (uint256) {
-        return supportersData.afterStopBlocks;
     }
 
     /// @notice Returns the count of whitelisted addresses.

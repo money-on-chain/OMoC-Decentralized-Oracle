@@ -87,7 +87,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
         it("Should subscribe oracleCant oracles and none goes to current round", async () => {
             assert.equal(0, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length)
             for (const {oracle_addr, owner_addr} of oracle_list) {
-                await this.oracleMgr.subscribeCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
+                await this.oracleMgr.subscribeToCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
                 const subscribed = await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR);
                 assert.isTrue(subscribed);
                 assert.equal(0, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length)
@@ -117,7 +117,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
             for (const {oracle_addr, owner_addr} of oracle_list) {
                 const cant_prev = (await this.coinPairPrice.getRoundInfo()).selectedOracles.length;
 
-                await this.oracleMgr.subscribeCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
+                await this.oracleMgr.subscribeToCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
                 assert.isTrue(await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR));
 
                 const cant_post = (await this.coinPairPrice.getRoundInfo()).selectedOracles.length;
@@ -140,13 +140,13 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
         it("It is ok to unsubscribes and subscribes again in the same round", async () => {
             const {oracle_addr, owner_addr} = ORACLE_WITH_SMALL_STAKE;
 
-            await this.oracleMgr.unsubscribeCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
+            await this.oracleMgr.unsubscribeFromCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
             assert.isFalse(await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR));
             // Even after unsubscribe we are still in the round, is just a stop signal
             assert.isTrue((await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracle_addr) >= 0);
             assert.equal(maxOraclesPerRound, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length)
 
-            await this.oracleMgr.subscribeCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
+            await this.oracleMgr.subscribeToCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
             assert.isTrue(await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR));
             assert.isTrue((await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracle_addr) >= 0);
             assert.equal(maxOraclesPerRound, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length)
@@ -167,7 +167,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
             assert.isTrue(await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR));
             assert.isTrue((await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracle_addr) >= 0);
 
-            await this.oracleMgr.unsubscribeCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
+            await this.oracleMgr.unsubscribeFromCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
             assert.isFalse(await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR));
             assert.equal(maxOraclesPerRound, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length)
 
@@ -178,7 +178,7 @@ contract("[ @skip-on-coverage ] CoinPairPrice Subscribe", async (accounts) => {
             assert.isFalse((await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracle_addr) >= 0);
 
             // Even if we subscribe we don't get in the new round
-            await this.oracleMgr.subscribeCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
+            await this.oracleMgr.subscribeToCoinPair(oracle_addr, COINPAIR, {from: owner_addr});
             assert.isTrue(await this.oracleMgr.isSubscribed(oracle_addr, COINPAIR));
             assert.isFalse((await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracle_addr) >= 0);
             assert.equal(maxOraclesPerRound, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length)
