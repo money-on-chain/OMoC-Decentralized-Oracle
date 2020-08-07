@@ -250,6 +250,23 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         return roundInfo.numIdleRounds;
     }
 
+    function addOracleToRound(address oracleAddr) external {
+        if (!roundInfo.isFull() && !roundInfo.isInCurrentRound(oracleAddr)) {
+            roundInfo.addOracleToRound(oracleAddr);
+        }
+    }
+
+    function removeOracleFromRound(address oracleAddr) external {
+        roundInfo.removeOracleFromRound(oracleAddr);
+    }
+
+    function isRoundFull() external view returns (bool) {
+        return roundInfo.isFull();
+    }
+
+    function isOracleInCurrentRound(address oracleAddr) external view returns (bool) {
+        return roundInfo.isInCurrentRound(oracleAddr);
+    }
 
     // ----------------------------------------------------------------------------------------------------------------
     // Internal functions

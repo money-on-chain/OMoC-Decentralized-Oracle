@@ -26,8 +26,8 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
     // Supporters contract in which we store stake
     SupportersWhitelisted public            supportersContract;
 
-    // Minimum owner stake
-    uint256 public                          minOracleOwnerStake;
+    // Minimum coin pair subscription stake
+    uint256 public                          minCPSubscriptionStake;
 
     // MOC Token contract
     IERC20 public                           token;

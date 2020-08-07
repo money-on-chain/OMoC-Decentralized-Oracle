@@ -28,7 +28,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         address indexed receiver, uint256 mocs, uint256 blockNum);
 
     struct LockingInfo {
-        uint256 endBlock;
+        uint256 untilTimestamp;
         uint256 amount;
     }
 
@@ -54,13 +54,13 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
 
     /// @notice Used by the voting machine to lock an amount of MOCs.
     /// @param mocHolder the moc holder whose mocs will be locked.
-    /// @param amount amount of mocs to be locked.
-    /// @param endBlock block until which the mocs will be locked.
-    function lockMocs(address mocHolder, uint256 amount, uint256 endBlock) external {
+    /// @param untilTimestamp timestamp until which the mocs will be locked.
+    function lockMocs(address mocHolder, uint256 untilTimestamp) external {
         LockingInfo storage lockedMocsInfo = lockedMocs[mocHolder];
-        lockedMocsInfo.endBlock = endBlock;
-        lockedMocsInfo.amount = amount;
-        totalLockedMocs = totalLockedMocs.add(amount);
+        lockedMocsInfo.untilTimestamp = untilTimestamp;
+        uint256 mocBalance = supportersData._getMOCBalanceAt(msg.sender, mocHolder);
+        lockedMocsInfo.amount = mocBalance;
+        totalLockedMocs = totalLockedMocs.add(mocBalance);
     }
 
     /**
@@ -68,7 +68,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
 
       @return Total amount of locked MOCs.
     */
-    function getTotalLockedMocs() external view returns (uint256) {
+    function getTotalLockedBalance() external view returns (uint256) {
         return totalLockedMocs;
     }
 
@@ -262,5 +262,15 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     */
     function isWhitelisted(address _account) external view returns (bool) {
         return iterableWhitelistData._isWhitelisted(_account);
+    }
+
+    /**
+      Convert amount MOC to equivalent in token
+
+      @param _mocs Amount of MOC
+      @return Equivalent amount of tokens
+    */
+    function mocToToken(uint256 _mocs) external view returns (uint256) {
+        return supportersData._mocToToken(_mocs);
     }
 }

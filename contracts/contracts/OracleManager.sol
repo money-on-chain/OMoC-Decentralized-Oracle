@@ -26,19 +26,19 @@ contract OracleManager is OracleManagerStorage {
     // -------------------------------------------------------------------------------------------------------------
 
     /// @notice Construct this contract.
-    /// @param _minOracleOwnerStake The minimum amount of tokens required as stake by oracle owners.
+    /// @param _minCPSubscriptionStake The minimum amount of tokens required as stake for a coin pair subscription.
     /// @param _supportersContract the Supporters contract contract address.
-    function initialize(IGovernor _governor, uint256 _minOracleOwnerStake, SupportersWhitelisted _supportersContract)
+    function initialize(IGovernor _governor, uint256 _minCPSubscriptionStake, SupportersWhitelisted _supportersContract)
     external initializer {
         require(address(_supportersContract) != address(0), "Supporters contract address must be != 0");
         require(address(_supportersContract.mocToken()) != address(0), "Token contract address must be != 0");
-        require(_minOracleOwnerStake > 0, "The minimum oracle owner stake amount cannot be zero");
+        require(_minCPSubscriptionStake > 0, "The minimum oracle owner stake amount cannot be zero");
 
         Governed._initialize(_governor);
         supportersContract = _supportersContract;
         token = _supportersContract.mocToken();
 
-        minOracleOwnerStake = _minOracleOwnerStake;
+        minCPSubscriptionStake = _minCPSubscriptionStake;
         registeredOracles = RegisteredOraclesLib.initRegisteredOracles(getStake);
     }
 
@@ -70,7 +70,6 @@ contract OracleManager is OracleManagerStorage {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(!data.isRegistered(), "Oracle already registered");
         require(oracleAddr != address(0), "Address cannot be zero");
-        require(stake >= minOracleOwnerStake, "Stake not at least the minimum required amount");
 
         _addStake(msg.sender, oracleAddr, stake);
         registeredOracles.add(oracleAddr, internetName, prevEntry);
