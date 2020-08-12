@@ -1,12 +1,14 @@
 pragma solidity 0.6.0;
 
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {StakingStorage} from "./StakingStorage.sol";
 import {IStakingMachine,IStakingMachineOracles} from "./IStakingMachine.sol";
-import {IDelayMachine} from "./IDelayMachine.sol";
+import {MockDelayMachine} from "./testing_mocks/MockDelayMachine.sol";
 
 contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     using SafeMath for uint;
@@ -25,8 +27,9 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param _supporters the Supporters contract contract address.
     /// @param _oracleManager the Oracle Manager contract contract address.
     /// @param _delayMachine the Delay Machine contract contract address.
-    function initialize(SupportersWhitelisted _supporters, OracleManager _oracleManager,
-    IDelayMachine _delayMachine) external {
+    function initialize(IGovernor _governor, SupportersWhitelisted _supporters,
+    OracleManager _oracleManager, MockDelayMachine _delayMachine) external {
+        Governed._initialize(_governor);
         oracleManager = _oracleManager;
         supporters = _supporters;
         mocToken = _supporters.mocToken();
@@ -73,7 +76,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         uint256 expiration = now + thirtyDays;
         delayMachine.deposit(mocs, msg.sender, expiration);
         uint256 tokens = supporters.mocToToken(mocs);
-        supporters.withdrawFromTo(tokens, msg.sender, address(delayMachine));
+        supporters.withdrawFromTo(tokens, oracleAddr, address(delayMachine));
 
         (CoinPairPrice[] memory coinPairAddrs,) = oracleManager.getSubscribedCoinPairAddresses(oracleAddr);
         uint256 oracleMocBalance = supporters.getMOCBalanceAt(address(this), oracleAddr);
@@ -102,7 +105,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         return supporters.getMOCBalanceAt(address(this), user);
     }
 
-    /// @notice Reports the balance of MOCs for a specific user.
+    /// @notice Reports the balance of locked MOCs for a specific user.
     /// Delegates to the Supporters smart contract.
     /// @param user user address
     function getLockedBalance(address user) external override view returns (uint256) {
@@ -124,8 +127,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param oracleAddr address of the oracle (from which we publish prices)
     /// @param url url used by the oracle server
     function registerOracle(address oracleAddr, string calldata url) external override {
-        uint256 stake = 2;
-        oracleManager.registerOracle(oracleAddr, url, stake);
+        oracleManager.registerOracle(oracleAddr, url);
     }
 
     /// @notice Change the oracle "internet" name (URI)

@@ -13,7 +13,7 @@ import {OracleManagerStorage} from "./OracleManagerStorage.sol";
 contract OracleManager is OracleManagerStorage {
     using SafeMath for uint;
 
-    event OracleRegistered(address caller, address addr, string internetName, uint stake);
+    event OracleRegistered(address caller, address addr, string internetName);
     event OracleStakeAdded(address caller, address addr, uint stake);
     event OracleSubscribed(address caller, address addr, bytes32 coinpair);
     event OracleUnsubscribed(address caller, address addr, bytes32 coinpair);
@@ -32,7 +32,7 @@ contract OracleManager is OracleManagerStorage {
     external initializer {
         require(address(_supportersContract) != address(0), "Supporters contract address must be != 0");
         require(address(_supportersContract.mocToken()) != address(0), "Token contract address must be != 0");
-        require(_minCPSubscriptionStake > 0, "The minimum oracle owner stake amount cannot be zero");
+        require(_minCPSubscriptionStake > 0, "The minimum coin pair subscription stake amount cannot be zero");
 
         Governed._initialize(_governor);
         supportersContract = _supportersContract;
@@ -53,27 +53,22 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Registers the oracle and transfer the specified caller's MOC token stake.
     /// @param oracleAddr Address of the Oracle to register.
     /// @param internetName Public Internet name of this Oracle.
-    /// @param stake The amount that the oracle owner (the caller) will put at stake. This will be transferred
-    ///                 immediately if conditions apply.
-    function registerOracle(address oracleAddr, string calldata internetName, uint stake) external {
-        registerOracleWithHint(oracleAddr, internetName, stake, address(0));
+    function registerOracle(address oracleAddr, string calldata internetName) external {
+        registerOracleWithHint(oracleAddr, internetName, address(0));
     }
 
     /// @notice Registers the oracle and transfer the specified caller's MOC token stake. Using a hint to sort it
     /// @param oracleAddr Address of the Oracle to register.
     /// @param internetName Public Internet name of this Oracle.
-    /// @param stake The amount that the oracle owner (the caller) will put at stake. This will be transferred immediately
-    ///              if conditions apply.
     /// @param prevEntry Place in the single-linked-list in which this oracle must be inserted
-    function registerOracleWithHint(address oracleAddr, string memory internetName, uint stake, address prevEntry)
+    function registerOracleWithHint(address oracleAddr, string memory internetName, address prevEntry)
     public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(!data.isRegistered(), "Oracle already registered");
         require(oracleAddr != address(0), "Address cannot be zero");
 
-        _addStake(msg.sender, oracleAddr, stake);
         registeredOracles.add(oracleAddr, internetName, prevEntry);
-        emit OracleRegistered(msg.sender, oracleAddr, internetName, stake);
+        emit OracleRegistered(msg.sender, oracleAddr, internetName);
     }
 
     /// @notice Add stake from owner account

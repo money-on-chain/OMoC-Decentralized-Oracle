@@ -63,6 +63,14 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         totalLockedMocs = totalLockedMocs.add(mocBalance);
     }
 
+    /// @notice Reports the balance of locked MOCs for a specific user.
+    /// Delegates to the Supporters smart contract.
+    /// @param user user address
+    function getLockedBalance(address user) external view returns (uint256) {
+        LockingInfo storage lockedMocsInfo = lockedMocs[user];
+        return lockedMocsInfo.amount;
+    }
+
     /**
       @notice Gets total amount of locked MOCs.
 

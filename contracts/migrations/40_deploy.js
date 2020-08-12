@@ -54,24 +54,39 @@ async function deploy(config) {
     });
     console.log("OracleManager: ", oracleManager.options.address, 'proxyAdmin', config.proxyAdminAddr);
 
-    /*
-    console.log("Create Supporters Vested");
-    await scripts.add({contractsData: [{name: "SupportersVested", alias: "SupportersVested"}]});
+    console.log("Create Staking");
+    await scripts.add({contractsData: [{name: "Staking", alias: "StakingMachine"}]});
     await scripts.push({
         network: config.network,
         txParams: helpers.is_production() ? {...config.txParams, gas: 1800000} : config.txParams,
         force: true
     });
-    const supportersVested = await scripts.create({
+    const staking = await scripts.create({
         admin: config.proxyAdminAddr,
-        contractAlias: "SupportersVested",
+        contractAlias: "StakingMachine",
         network: config.network,
         txParams: config.txParams
     });
-    console.log("SupportersVested: ", supportersVested.options.address, 'proxyAdmin', config.proxyAdminAddr);
-    */
+    console.log("Staking: ", staking.options.address, 'proxyAdmin', config.proxyAdminAddr);
 
-    // Add Staking contract creation and initialization
+
+
+    console.log("Create MockDelayMachine");
+    await scripts.add({contractsData: [{name: "MockDelayMachine", alias: "MockDelayMachine"}]});
+    await scripts.push({
+        network: config.network,
+        txParams: helpers.is_production() ? {...config.txParams, gas: 1800000} : config.txParams,
+        force: true
+    });
+    const mockDelayMachine = await scripts.create({
+        admin: config.proxyAdminAddr,
+        contractAlias: "MockDelayMachine",
+        network: config.network,
+        txParams: config.txParams
+    });
+    console.log("MockDelayMachine: ", mockDelayMachine.options.address, 'proxyAdmin', config.proxyAdminAddr);
+
+
 
     console.log("Initialize supporters", 'governor', config.governorAddr);
     const scall = await artifacts.require("SupportersWhitelisted").at(supporters.options.address);
@@ -83,11 +98,14 @@ async function deploy(config) {
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
     await omcall.initialize(config.governorAddr, parseInt(config.minOracleOwnerStake), supporters.options.address);
 
-    /*
-    console.log("Initialize Supporters Vested", 'governor', config.governorAddr);
-    const svcall = await artifacts.require("SupportersVested").at(supportersVested.options.address);
-    await svcall.initialize(config.governorAddr, supporters.options.address);
-    */
+    console.log("Initialize Delay Machine", 'governor', config.governorAddr);
+    const dmcall = await artifacts.require("MockDelayMachine").at(mockDelayMachine.options.address);
+    await dmcall.initialize(config.governorAddr);
+
+    console.log("Initialize Staking Machine", 'governor', config.governorAddr);
+    const smcall = await artifacts.require("Staking").at(staking.options.address);
+    await smcall.initialize(config.governorAddr, supporters.options.address,
+        oracleManager.options.address, mockDelayMachine.options.address);
 
     for (let i = 0; i < config.CurrencyPair.length; i++) {
         const coin = config.CurrencyPair[i];

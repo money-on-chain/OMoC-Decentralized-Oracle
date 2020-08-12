@@ -132,12 +132,6 @@ contract("OracleManager", async (accounts) => {
         assert.isTrue((await this.token.balanceOf(oracleData[2].owner)).eq(initialBalance3.sub(new BN(oracleData[2].stake))));
     });
 
-    it("Should fail to register Oracles without stake", async () => {
-
-        await expectRevert(this.oracleMgr.registerOracle(accounts[7], "mock.io", '0', {from: accounts[7]}),
-            "Stake not at least the minimum required amount");
-    });
-
     it("Should fail to register Oracles with null address", async () => {
 
         await expectRevert(this.oracleMgr.registerOracle(constants.ZERO_ADDRESS, "mock.io", '0', {from: accounts[7]}),
