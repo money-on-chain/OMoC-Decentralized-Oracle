@@ -98,9 +98,9 @@ async function deploy(config) {
     const omcall = await artifacts.require("OracleManager").at(oracleManager.options.address);
     await omcall.initialize(config.governorAddr, parseInt(config.minOracleOwnerStake), supporters.options.address);
 
-    console.log("Initialize Delay Machine", 'governor', config.governorAddr);
+    console.log("Initialize Mock Delay Machine", 'governor', config.governorAddr);
     const dmcall = await artifacts.require("MockDelayMachine").at(mockDelayMachine.options.address);
-    await dmcall.initialize(config.governorAddr);
+    await dmcall.initialize(config.governorAddr, testMOC.options.address);
 
     console.log("Initialize Staking Machine", 'governor', config.governorAddr);
     const smcall = await artifacts.require("Staking").at(staking.options.address);

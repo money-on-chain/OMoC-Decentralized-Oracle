@@ -5,7 +5,7 @@ import {Initializable} from  "./openzeppelin/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {IDelayMachine} from "./IDelayMachine.sol";
+import {MockDelayMachine} from "./testing_mocks/MockDelayMachine.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 
 
@@ -15,7 +15,7 @@ contract StakingStorage is Initializable, GovernedAbstract {
     SupportersWhitelisted public supporters;
     OracleManager public oracleManager;
     IERC20 public mocToken;
-    IDelayMachine public delayMachine;
+    MockDelayMachine public delayMachine;
 
     uint256 thirtyDays = 60 * 60 * 24 * 30;
 

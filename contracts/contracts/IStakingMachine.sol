@@ -26,8 +26,7 @@ interface IStakingMachine {
 
     /// @notice Withdraw stake, send it to the delay machine.
     /// @param mocs token quantity
-    /// @param oracleAddr oracle from which funds will be withdrawn
-    function withdraw(uint256 mocs, address oracleAddr) external;
+    function withdraw(uint256 mocs) external;
 
     /// @notice Reports the balance of MOCs for a specific user.
     /// @param user user address

@@ -26,7 +26,7 @@ contract("OracleManager", async (accounts) => {
         this.oracleMgr = await OracleManager.new();
         this.supporters = await SupportersWhitelisted.new();
         this.mockDelayMachine = await MockDelayMachine.new();
-        await this.mockDelayMachine.initialize(this.governor.address);
+        await this.mockDelayMachine.initialize(this.governor.address, this.token.address);
         this.staking = await Staking.new();
 
         this.coinPairPrice_BTCUSD = await CoinPairPrice.new();
@@ -154,6 +154,11 @@ contract("OracleManager", async (accounts) => {
     });
 
     it("Should withdraw stake from oracle A", async () => {
-        await this.staking.withdraw(oracleData[0].stake, oracleData[0].account, {from: oracleData[0].owner});
+        const prevBalance0 = await this.token.balanceOf(oracleData[0].owner);
+        await this.token.approve(this.staking.address, oracleData[0].stake, {from: oracleData[0].owner});
+        await this.staking.deposit(oracleData[0].stake, oracleData[0].owner, {from: oracleData[0].owner});
+        assert.isTrue((await this.token.balanceOf(oracleData[0].owner)).eq(prevBalance0.sub(new BN(oracleData[0].stake))));
+        assert.isTrue((await this.staking.getBalance(oracleData[0].owner)).eq(new BN(oracleData[0].stake)));
+        await this.staking.withdraw(oracleData[0].stake, {from: oracleData[0].owner});
     });
 })
