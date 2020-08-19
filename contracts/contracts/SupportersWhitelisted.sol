@@ -59,8 +59,9 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         LockingInfo storage lockedMocsInfo = lockedMocs[mocHolder];
         lockedMocsInfo.untilTimestamp = untilTimestamp;
         uint256 mocBalance = supportersData._getMOCBalanceAt(msg.sender, mocHolder);
+        uint256 surplus = mocBalance - lockedMocsInfo.amount;
         lockedMocsInfo.amount = mocBalance;
-        totalLockedMocs = totalLockedMocs.add(mocBalance);
+        totalLockedMocs = totalLockedMocs.add(surplus);
     }
 
     /// @notice Reports the balance of locked MOCs for a specific user.
@@ -147,7 +148,8 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return Amount of MOC transfered
     */
     function withdrawFrom(uint256 _tokens, address _subaccount)
-    external onlyWhitelisted(iterableWhitelistData) returns (uint256) {
+    external onlyWhitelisted(iterableWhitelistData)
+    stakeAvailable(msg.sender, _subaccount, _tokens) returns (uint256) {
         return supportersData._withdrawFromTo(_tokens, _subaccount, msg.sender);
     }
 
@@ -160,7 +162,8 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return Amount of MOC transfered
     */
     function withdrawFromTo(uint256 _tokens, address _subaccount, address _receiver)
-    external onlyWhitelisted(iterableWhitelistData) returns (uint256) {
+    external onlyWhitelisted(iterableWhitelistData)
+    stakeAvailable(msg.sender, _subaccount, _tokens) returns (uint256) {
         return supportersData._withdrawFromTo(_tokens, _subaccount, _receiver);
     }
 
@@ -280,5 +283,18 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     */
     function mocToToken(uint256 _mocs) external view returns (uint256) {
         return supportersData._mocToToken(_mocs);
+    }
+
+    /**
+      @notice Modifier that checks locked stake for withdrawal availability
+      @dev You should use this modifier in any function that withdraws a user's stake.
+     */
+    modifier stakeAvailable(address user, address subaccount, uint256 tokens) {
+        uint256 mocs = supportersData._tokenToMoc(tokens);
+        LockingInfo storage lockedMocsInfo = lockedMocs[subaccount];
+        uint256 mocBalance = supportersData._getMOCBalanceAt(user, subaccount);
+        uint256 surplus = mocBalance - lockedMocsInfo.amount;
+        require(mocs <= surplus, "Stake not available for withdrawal.");
+        _;
     }
 }

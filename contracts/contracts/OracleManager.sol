@@ -94,6 +94,22 @@ contract OracleManager is OracleManagerStorage {
         emit OracleStakeAdded(msg.sender, oracleAddr, stake);
     }
 
+    /// @notice Get expiration number for withdrawal transfer to Delay Machine
+    /// @param mocs Amount to be withdrawn
+    /// @param user User that is making the withdrawal
+    function getWithdrawalExpiration(uint256 mocs, address user) external pure returns (uint256) {
+        mocs;
+        user;
+    }
+
+    /// @notice Update oracle status within round according to stake change
+    /// @param mocs Withdrawn amount
+    /// @param user Owner of oracle whose status within round will be updated
+    function updateOracleRoundByStake(uint256 mocs, address user) external pure {
+        mocs;
+        user;
+    }
+
     /// @notice Subscribe a registered oracle to participate in rounds of a registered coin-pair
     /// @param oracleAddr Address of oracle
     function subscribeToCoinPair(address oracleAddr, bytes32 coinPair) external {

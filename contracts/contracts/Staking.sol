@@ -71,12 +71,14 @@ contract Staking is StakingStorage {
     /// @notice Withdraw stake, send it to the delay machine.
     /// @param mocs token quantity
     function withdraw(uint256 mocs) external {
-        uint256 expiration = now + thirtyDays;
+        uint256 expiration = oracleManager.getWithdrawalExpiration(mocs, msg.sender);
         uint256 tokens = supporters.mocToToken(mocs);
         supporters.withdrawFromTo(tokens, msg.sender, address(this));
         // Approve stake transfer for Delay Machine contract
         require(mocToken.approve(address(delayMachine), mocs), "error in approve");
         delayMachine.deposit(mocs, msg.sender, expiration);
+
+        oracleManager.updateOracleRoundByStake(mocs, msg.sender);
     }
 
     /// @notice Reports the balance of MOCs for a specific user.
@@ -90,7 +92,7 @@ contract Staking is StakingStorage {
     /// Delegates to the Supporters smart contract.
     /// @param user user address
     function getLockedBalance(address user) external view returns (uint256) {
-        return supporters.getMOCBalanceAt(address(this), user);
+        return supporters.getLockedBalance(user);
     }
 
     /// @notice Reports the total amount of locked MOCs in staking state.

@@ -130,16 +130,16 @@ contract("OracleManager", async (accounts) => {
         await this.token.approve(this.staking.address, oracleData[0].stake, {from: oracleData[0].owner});
         await this.token.approve(this.staking.address, oracleData[1].stake, {from: oracleData[1].owner});
         await this.token.approve(this.staking.address, oracleData[2].stake, {from: oracleData[2].owner});
-        await this.staking.deposit(oracleData[0].stake, oracleData[0].account, {from: oracleData[0].owner});
-        await this.staking.deposit(oracleData[1].stake, oracleData[1].account, {from: oracleData[1].owner});
-        await this.staking.deposit(oracleData[2].stake, oracleData[2].account, {from: oracleData[2].owner});
+        await this.staking.deposit(oracleData[0].stake, oracleData[0].owner, {from: oracleData[0].owner});
+        await this.staking.deposit(oracleData[1].stake, oracleData[1].owner, {from: oracleData[1].owner});
+        await this.staking.deposit(oracleData[2].stake, oracleData[2].owner, {from: oracleData[2].owner});
 
         assert.isTrue((await this.token.balanceOf(oracleData[0].owner)).eq(prevBalance0.sub(new BN(oracleData[0].stake))));
         assert.isTrue((await this.token.balanceOf(oracleData[1].owner)).eq(prevBalance1.sub(new BN(oracleData[1].stake))));
         assert.isTrue((await this.token.balanceOf(oracleData[2].owner)).eq(prevBalance2.sub(new BN(oracleData[2].stake))));
-        assert.isTrue((await this.staking.getBalance(oracleData[0].account)).eq(new BN(oracleData[0].stake)));
-        assert.isTrue((await this.staking.getBalance(oracleData[1].account)).eq(new BN(oracleData[1].stake)));
-        assert.isTrue((await this.staking.getBalance(oracleData[2].account)).eq(new BN(oracleData[2].stake)));
+        assert.isTrue((await this.staking.getBalance(oracleData[0].owner)).eq(new BN(oracleData[0].stake)));
+        assert.isTrue((await this.staking.getBalance(oracleData[1].owner)).eq(new BN(oracleData[1].stake)));
+        assert.isTrue((await this.staking.getBalance(oracleData[2].owner)).eq(new BN(oracleData[2].stake)));
     });
 
     it("Should subscribe Oracles A, B, C to coin pair BTCUSD", async () => {
@@ -153,12 +153,22 @@ contract("OracleManager", async (accounts) => {
         assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[2].account));
     });
 
-    it("Should withdraw stake from oracle A", async () => {
-        const prevBalance0 = await this.token.balanceOf(oracleData[0].owner);
-        await this.token.approve(this.staking.address, oracleData[0].stake, {from: oracleData[0].owner});
-        await this.staking.deposit(oracleData[0].stake, oracleData[0].owner, {from: oracleData[0].owner});
-        assert.isTrue((await this.token.balanceOf(oracleData[0].owner)).eq(prevBalance0.sub(new BN(oracleData[0].stake))));
-        assert.isTrue((await this.staking.getBalance(oracleData[0].owner)).eq(new BN(oracleData[0].stake)));
+    it("Should lock stake of oracle B", async () => {
+        const timestamp = Date.now() + 3600;
+        await this.staking.lockMocs(oracleData[1].owner, timestamp, {from: oracleData[1].owner});
+    });
+
+    it("Should not be able to withdraw stake of oracle B", async () => {
+        await expectRevert(this.staking.withdraw(oracleData[1].stake, {from: oracleData[1].owner}),
+            "Stake not available for withdrawal.");
+    });
+
+    it("Should not be able to withdraw stake of oracle D", async () => {
+        await expectRevert(this.staking.withdraw(oracleData[3].stake, {from: oracleData[3].owner}),
+            "Stake not available for withdrawal.");
+    });
+
+    it("Should withdraw stake of oracle A", async () => {
         await this.staking.withdraw(oracleData[0].stake, {from: oracleData[0].owner});
     });
 })
