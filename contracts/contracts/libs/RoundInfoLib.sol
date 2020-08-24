@@ -81,8 +81,10 @@ library RoundInfoLib {
         _self.oracleRoundInfo[_oracleAddr].setSelectedInRound(_self.number);
     }
 
-    function removeOracleFromRound(RoundInfo storage _self, address _oracleAddr) internal {
+    function removeOracleFromRound(RoundInfo storage _self, address _oracleAddr) internal pure {
         // TODO: remove oracle from selected oracles
+        _self;
+        _oracleAddr;
     }
 
     function isReadyToSwitch(RoundInfo storage _self) internal view returns (bool) {

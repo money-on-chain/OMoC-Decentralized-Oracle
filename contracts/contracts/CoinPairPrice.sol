@@ -286,7 +286,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             address oracleAddr = roundInfo.selectedOracles[i];
             uint256 points = roundInfo.getPoints(oracleAddr);
             uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
-            (,, address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);
+            (, address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);
 
             require(token.transfer(owneraddr, distAmount), "Token transfer failed");
             distSum = distSum.add(distAmount);
@@ -299,13 +299,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     function _selectOraclesForRound() private {
 
         roundInfo.clearSelectedOracles();
-        for (address addr = oracleManager.getRegisteredOracleHead();
-            addr != address(0) && !roundInfo.isFull();
-            addr = oracleManager.getRegisteredOracleNext(addr)) {
-            if (subscribedOracles[addr]) {
-                roundInfo.addOracleToRound(addr);
-            }
-        }
     }
 
     // @notice publish a price, called only after verification.

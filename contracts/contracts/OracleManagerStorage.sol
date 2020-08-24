@@ -5,7 +5,7 @@ import {Initializable} from "./openzeppelin/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {RegisteredOraclesLib} from "./libs/RegisteredOraclesLib.sol";
+import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
 import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
@@ -15,13 +15,13 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
     using SafeMath for uint;
     using OracleInfoLib for OracleInfoLib.OracleRegisterInfo;
     using CoinPairRegisterLib for CoinPairRegisterLib.CoinPairRegisterData;
-    using RegisteredOraclesLib for RegisteredOraclesLib.RegisteredOracles;
+    using IterableOraclesLib for IterableOraclesLib.IterableOraclesData;
 
     // Coin pair register
     CoinPairRegisterLib.CoinPairRegisterData internal coinPairRegisterData;
 
     // Registered oracles
-    RegisteredOraclesLib.RegisteredOracles  internal registeredOracles;
+    IterableOraclesLib.IterableOraclesData  internal registeredOracles;
 
     // Supporters contract in which we store stake
     SupportersWhitelisted public            supportersContract;

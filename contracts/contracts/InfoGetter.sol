@@ -134,7 +134,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
     */
     function getManagerUIOracleInfo(OracleManager _oracleManager, address _prevEntry, uint _cant)
     external view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
-        address addr;
+        /*address addr;
         if (_prevEntry == address(0)) {
             addr = _oracleManager.getRegisteredOracleHead();
         }
@@ -144,7 +144,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
             (string memory name, uint stake, address owner) = _oracleManager.getOracleRegistrationInfo(addr);
             info[i] = ManagerUIOracleInfo(stake, _oracleManager.token().balanceOf(addr), addr.balance, addr, owner, name);
         }
-        nextEntry = addr;
+        nextEntry = addr;*/
     }
 
     /**

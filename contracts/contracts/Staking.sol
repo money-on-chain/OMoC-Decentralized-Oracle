@@ -121,9 +121,8 @@ contract Staking is StakingStorage {
     }
 
     /// @notice Return true if the oracle is registered.
-    /// @param oracleAddr addr The address of the Oracle check for.
-    function isOracleRegistered(address oracleAddr) external view returns (bool) {
-        return oracleManager.isOracleRegistered(oracleAddr);
+    function isOracleRegistered() external view returns (bool) {
+        return oracleManager.isOracleRegistered(msg.sender);
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
@@ -136,7 +135,9 @@ contract Staking is StakingStorage {
     /// Delegates to the Oracle Manager smart contract.
     /// @param oracleAddr address of the oracle
     function removeOracle(address oracleAddr) external {
-        oracleManager.removeOracle(oracleAddr);
+        oracleManager.removeOracle(msg.sender, oracleAddr);
+        uint256 tokens = supporters.getBalanceAt(address(this), msg.sender);
+        supporters.withdrawFromTo(tokens, msg.sender, msg.sender);
     }
 
     /// @notice Returns the count of registered coin pairs.
