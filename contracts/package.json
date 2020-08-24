@@ -1,33 +1,111 @@
 {
-  "name": "contracts",
+  "name": "moc-oraculos",
   "version": "1.0.0",
-  "description": "MoC Contracts =============",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
+  "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
+  "main": "index.js",
   "dependencies": {
+    "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#master",
     "@openzeppelin/cli": "2.7.1",
     "@openzeppelin/upgrades": "2.7.1",
-    "ganache-cli": "^6.9.1",
-    "truffle": "^5.1.20",
-    "truffle-hdwallet-provider-privkey": "^1.0.3",
-    "web3": "^1.2.4"
+    "ganache-cli": "^6.9.1"
   },
   "devDependencies": {
-    "@openzeppelin/test-helpers": "^0.5.4",
-    "dotenv": "^8.2.0",
+    "web3": "^1.2.4",
     "eth-gas-reporter": "^0.2.14",
-    "husky": "^4.2.3",
-    "solidity-coverage": "^0.7.1"
+    "@commitlint/cli": "^9.1.1",
+    "@commitlint/config-conventional": "^9.1.1",
+    "@openzeppelin/contracts": "^3.1.0",
+    "@openzeppelin/test-helpers": "^0.5.6",
+    "chai": "^4.2.0",
+    "commitizen": "^4.1.2",
+    "cz-conventional-changelog": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-truffle": "^0.3.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
+    "prettier-plugin-solidity": "^1.0.0-alpha.55",
+    "rimraf": "^3.0.2",
+    "solhint": "^3.1.0",
+    "solidity-coverage": "^0.7.9",
+    "standard-version": "^8.0.2",
+    "truffle": "^5.1.37",
+    "truffle-hdwallet-provider-privkey": "^0.3.0"
   },
   "scripts": {
     "rsk_testnet": "truffle migrate --network rsk_testnet",
     "rsk_regtest": "truffle migrate --network rsk_regtest",
     "test_rsk": "truffle test --network rsk_testnet",
     "test": "truffle test",
-    "coverage": "truffle run coverage"
+    "coverage": "truffle run coverage",
+    "prettier": "prettier --write *.{json,js} migrations/**/*.js test/**/*.js contracts/**/*.sol contracts/*.sol",
+    "lint:solidity": "solhint -f table  contracts/**/*.sol contracts/*.sol",
+    "lint:js": "eslint *.js migrations/**/*.js test/**/*.js",
+    "lint": "npm run lint:js && npm run lint:solidity",
+    "compile": "rimraf ./build/contracts && truffle compile",
+    "release": "standard-version",
+    "commit": "git-cz",
+    "deploy": "rimraf .openzeppelin ./build/contracts && truffle migrate",
+    "migrate": "truffle migrate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/money-on-chain/MoC-Gobernanza.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "",
+  "lint-staged": {
+    "migrations/**/*.js": "eslint --fix",
+    "test/**/*.js": "eslint --fix",
+    "contracts/**/*.sol": "solhint",
+    "contracts/*.sol": "solhint",
+    "*.{js,css,md,json,sol}": "prettier --write"
+  },
+  "prettier": {
+    "tabWidth": 4,
+    "printWidth": 100,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "semi": true,
+    "overrides": [
+      {
+        "files": "*.sol",
+        "options": {
+          "singleQuote": false
+        }
+      }
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "commonjs": true,
+      "es2020": true,
+      "node": true,
+      "mocha": true,
+      "truffle/globals": true
+    },
+    "plugins": [
+      "truffle"
+    ],
+    "extends": [
+      "standard",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 11
+    },
+    "rules": {}
+  },
+  "config": {
+    "commitizen": {
+      "path": "./contracts/node_modules/cz-conventional-changelog"
+    }
+  }
 }
