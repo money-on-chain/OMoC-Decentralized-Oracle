@@ -110,14 +110,14 @@ contract Staking is StakingStorage {
     /// @param oracleAddr address of the oracle (from which we publish prices)
     /// @param url url used by the oracle server
     function registerOracle(address oracleAddr, string calldata url) external {
-        oracleManager.registerOracle(oracleAddr, url);
+        oracleManager.registerOracle(msg.sender, oracleAddr, url);
     }
 
     /// @notice Change the oracle "internet" name (URI)
     /// @param oracleAddr Address of the oracle to change
     /// @param url The new url to set.
     function setOracleName(address oracleAddr, string calldata url) external {
-        oracleManager.setOracleName(oracleAddr, url);
+        oracleManager.setOracleName(msg.sender, oracleAddr, url);
     }
 
     /// @notice Return true if the oracle is registered.
@@ -128,7 +128,7 @@ contract Staking is StakingStorage {
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param oracleAddr the oracle address to lookup.
     function canRemoveOracle(address oracleAddr) external view returns (bool) {
-        return oracleManager.canRemoveOracle(oracleAddr);
+        return oracleManager.canRemoveOracle(msg.sender, oracleAddr);
     }
 
     /// @notice Remove an oracle.
@@ -171,7 +171,7 @@ contract Staking is StakingStorage {
     /// @param oracleAddr address of the oracle
     /// @param coinPair coin pair to subscribe, for example BTCUSD
     function subscribeToCoinPair(address oracleAddr, bytes32 coinPair) external {
-        oracleManager.subscribeToCoinPair(oracleAddr, coinPair);
+        oracleManager.subscribeToCoinPair(msg.sender, oracleAddr, coinPair);
     }
 
     /// @notice Unsubscribe an oracle from a coin pair.
@@ -179,14 +179,14 @@ contract Staking is StakingStorage {
     /// @param oracleAddr address of the oracle
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
     function unsubscribeFromCoinPair(address oracleAddr, bytes32 coinPair) external {
-        oracleManager.unsubscribeFromCoinPair(oracleAddr, coinPair);
+        oracleManager.unsubscribeFromCoinPair(msg.sender, oracleAddr, coinPair);
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair
     /// @param oracleAddr address of the oracle
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
     function isSubscribed(address oracleAddr, bytes32 coinPair) external view returns (bool) {
-        return oracleManager.isSubscribed(oracleAddr, coinPair);
+        return oracleManager.isSubscribed(msg.sender, oracleAddr, coinPair);
     }
 
     /// @notice Returns the list of subscribed coinpair contract address for an oracle
@@ -196,6 +196,6 @@ contract Staking is StakingStorage {
         external
         view
         returns (CoinPairPrice[] memory addresses, uint256 count) {
-        return oracleManager.getSubscribedCoinPairAddresses(oracleAddr);
+        return oracleManager.getSubscribedCoinPairAddresses(msg.sender, oracleAddr);
     }
 }

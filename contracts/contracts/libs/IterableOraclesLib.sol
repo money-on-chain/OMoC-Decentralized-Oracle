@@ -91,7 +91,7 @@ library IterableOraclesLib {
     }
 
     /// @notice Sets oracle's name.
-    function _setName(IterableOraclesData storage self, address ownerAddr, string memory url) internal view {
+    function _setName(IterableOraclesData storage self, address ownerAddr, string memory url) internal {
         self.registeredOracles[ownerAddr].url = url;
     }
 }

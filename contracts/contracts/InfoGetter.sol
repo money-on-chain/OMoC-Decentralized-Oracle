@@ -177,7 +177,9 @@ contract InfoGetter is Initializable, GovernedAbstract {
         uint256 len = _selectedOracles.length;
         info = new FullOracleRoundInfo[](len);
         for (uint i = 0; i < len; i++) {
-            (string memory name, uint stake, address owner) = _oracleManager.getOracleRegistrationInfo(_selectedOracles[i]);
+            (string memory name, address owner) = _oracleManager.getOracleRegistrationInfo(_selectedOracles[i]);
+            // TODO: get stake from Staking or Supporters
+            uint256 stake = 100;
             (uint points,,) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
             info[i] = FullOracleRoundInfo(
                 stake,
