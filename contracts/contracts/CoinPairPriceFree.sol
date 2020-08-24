@@ -1,7 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,

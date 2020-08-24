@@ -1,8 +1,9 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import "../../openzeppelin/ownership/Ownable.sol";
-import "../../openzeppelin/utils/ReentrancyGuard.sol";
-import "../../openzeppelin/Initializable.sol";
+import {OwnableUpgradeSafe} from "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import {ReentrancyGuardUpgradeSafe} from "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 
 import "./ChangeContract.sol";
 import "./IGovernor.sol";
@@ -12,13 +13,15 @@ import "./IGovernor.sol";
   @notice Basic governor that handles its governed contracts changes
   through trusting an external address
   */
-contract Governor is Initializable, ReentrancyGuard, Ownable, IGovernor {
+contract Governor is Initializable, ReentrancyGuardUpgradeSafe, OwnableUpgradeSafe, IGovernor {
 
     address private currentChangeContract;
 
-    function initialize(address sender) initializer public override {
-        Ownable.initialize(sender);
-        ReentrancyGuard.initialize();
+    function initialize(address sender) initializer public {
+        //    Ownable.initialize(sender);
+        __Ownable_init();
+        transferOwnership(sender);
+        __ReentrancyGuard_init();
     }
 
     /**

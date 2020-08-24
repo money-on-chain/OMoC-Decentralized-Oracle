@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 
 /// @title This contract provides an interface for feeding prices from oracles, and

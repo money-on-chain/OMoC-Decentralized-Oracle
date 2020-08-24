@@ -1,10 +1,10 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
-import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {RegisteredOraclesLib} from "./libs/RegisteredOraclesLib.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
 import {OracleInfoLib} from "./libs/OracleInfoLib.sol";

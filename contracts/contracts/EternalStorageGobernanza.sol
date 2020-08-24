@@ -1,9 +1,10 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 
 // Based on https://github.com/fravoll/solidity-patterns EternalStorage
 contract EternalStorageGobernanza is Initializable, GovernedAbstract {

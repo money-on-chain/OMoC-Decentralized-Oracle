@@ -1,7 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";

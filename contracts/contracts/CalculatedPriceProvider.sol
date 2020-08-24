@@ -1,6 +1,7 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";

@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 /// @title This contract registers which CoinPairPrice contract will serve
 ///        prices for a particular coin-pair. Clients can query coin-pair

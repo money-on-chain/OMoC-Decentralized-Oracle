@@ -1,11 +1,12 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 
 import {IOZAdminUpgradeabilityProxy} from "../IOZAdminUpgradeabilityProxy.sol";
 import {IOZProxyAdmin} from "../IOZProxyAdmin.sol";
 import {Governed} from "../Governance/Governed.sol";
 import {IGovernor} from "../Governance/IGovernor.sol";
-import {Initializable} from "../../openzeppelin/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 
 /**
   @title UpgradeDelegator
@@ -67,6 +68,6 @@ contract UpgradeDelegator is Initializable, Governed {
      * https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding.
      */
     function upgradeAndCall(IOZAdminUpgradeabilityProxy proxy, address implementation, bytes memory data) public payable onlyAuthorizedChanger {
-        proxyAdmin.upgradeAndCall.value(msg.value)(proxy, implementation, data);
+        proxyAdmin.upgradeAndCall{value : msg.value}(proxy, implementation, data);
     }
 }

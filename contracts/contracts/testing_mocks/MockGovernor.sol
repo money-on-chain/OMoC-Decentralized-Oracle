@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import "../moc-gobernanza/Governance/ChangeContract.sol";
 import "../moc-gobernanza/Governance/IGovernor.sol";

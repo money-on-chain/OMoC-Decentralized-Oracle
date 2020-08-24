@@ -1,8 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {IERC20} from "../openzeppelin/token/ERC20/IERC20.sol";
-import {SafeMath} from "../openzeppelin/math/SafeMath.sol";
-
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 /*
     Abstract contract meant to be reused.
 */

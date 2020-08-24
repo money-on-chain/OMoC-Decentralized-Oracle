@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 /**
   @dev An iterable mapping of addresses to boolean, used to check if an address is whitelisted.
