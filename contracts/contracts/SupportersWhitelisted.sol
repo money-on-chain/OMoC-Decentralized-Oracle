@@ -33,7 +33,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     mapping(address => LockingInfo) lockedMocs;
-    uint256 totalLockedMocs;
 
     /**
      @notice Contract creation
@@ -59,9 +58,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         LockingInfo storage lockedMocsInfo = lockedMocs[mocHolder];
         lockedMocsInfo.untilTimestamp = untilTimestamp;
         uint256 mocBalance = supportersData._getMOCBalanceAt(msg.sender, mocHolder);
-        uint256 surplus = mocBalance - lockedMocsInfo.amount;
         lockedMocsInfo.amount = mocBalance;
-        totalLockedMocs = totalLockedMocs.add(surplus);
     }
 
     /// @notice Reports the balance of locked MOCs for a specific user.
@@ -70,15 +67,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     function getLockedBalance(address user) external view returns (uint256) {
         LockingInfo storage lockedMocsInfo = lockedMocs[user];
         return lockedMocsInfo.amount;
-    }
-
-    /**
-      @notice Gets total amount of locked MOCs.
-
-      @return Total amount of locked MOCs.
-    */
-    function getTotalLockedBalance() external view returns (uint256) {
-        return totalLockedMocs;
     }
 
     /**

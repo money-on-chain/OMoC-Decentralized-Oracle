@@ -1,5 +1,6 @@
 pragma solidity 0.6.0;
 
+import {IStakingMachine} from "@moc/shared/contracts/IStakingMachine.sol";
 import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
@@ -9,7 +10,7 @@ import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {StakingStorage} from "./StakingStorage.sol";
 import {MockDelayMachine} from "./testing_mocks/MockDelayMachine.sol";
 
-contract Staking is StakingStorage {
+contract Staking is StakingStorage, IStakingMachine {
     using SafeMath for uint;
 
     // -----------------------------------------------------------------------
@@ -27,7 +28,7 @@ contract Staking is StakingStorage {
     /// @param _oracleManager the Oracle Manager contract contract address.
     /// @param _delayMachine the Delay Machine contract contract address.
     function initialize(IGovernor _governor, SupportersWhitelisted _supporters,
-    OracleManager _oracleManager, MockDelayMachine _delayMachine) external {
+        OracleManager _oracleManager, MockDelayMachine _delayMachine) external {
         Governed._initialize(_governor);
         oracleManager = _oracleManager;
         supporters = _supporters;
@@ -39,7 +40,7 @@ contract Staking is StakingStorage {
     /// Delegates to the Supporters smart contract.
     /// @param mocHolder the moc holder whose mocs will be locked.
     /// @param untilTimestamp timestamp until which the mocs will be locked.
-    function lockMocs(address mocHolder, uint256 untilTimestamp) external {
+    function lockMocs(address mocHolder, uint256 untilTimestamp) external override {
         supporters.lockMocs(mocHolder, untilTimestamp);
     }
 
@@ -47,7 +48,7 @@ contract Staking is StakingStorage {
     /// Delegates to the Supporters smart contract.
     /// @param mocs token quantity
     /// @param destination the destination account of this deposit.
-    function deposit(uint256 mocs, address destination) external {
+    function deposit(uint256 mocs, address destination) external override {
         // Transfer stake [should be approved by owner first]
         require(mocToken.transferFrom(msg.sender, address(this), mocs), "error in transferFrom");
         // Stake at Supporters contract
@@ -60,7 +61,7 @@ contract Staking is StakingStorage {
     /// @param mocs token quantity
     /// @param destination the destination account of this deposit.
     /// @param source the address that approved the transfer
-    function depositFrom(uint256 mocs, address destination, address source) external {
+    function depositFrom(uint256 mocs, address destination, address source) external override {
         // Transfer stake [should be approved by owner first]
         require(mocToken.transferFrom(source, address(this), mocs), "error in transferFrom");
         // Stake at Supporters contract
@@ -70,7 +71,7 @@ contract Staking is StakingStorage {
 
     /// @notice Withdraw stake, send it to the delay machine.
     /// @param mocs token quantity
-    function withdraw(uint256 mocs) external {
+    function withdraw(uint256 mocs) external override {
         uint256 expiration = oracleManager.getWithdrawalExpiration(mocs, msg.sender);
         uint256 tokens = supporters.mocToToken(mocs);
         supporters.withdrawFromTo(tokens, msg.sender, address(this));
@@ -84,22 +85,17 @@ contract Staking is StakingStorage {
     /// @notice Reports the balance of MOCs for a specific user.
     /// Delegates to the Supporters smart contract.
     /// @param user user address
-    function getBalance(address user) external view returns (uint256) {
+    function getBalance(address user) external override view returns (uint256) {
         return supporters.getMOCBalanceAt(address(this), user);
     }
 
     /// @notice Reports the balance of locked MOCs for a specific user.
     /// Delegates to the Supporters smart contract.
     /// @param user user address
-    function getLockedBalance(address user) external view returns (uint256) {
+    function getLockedBalance(address user) external override view returns (uint256) {
         return supporters.getLockedBalance(user);
     }
 
-    /// @notice Reports the total amount of locked MOCs in staking state.
-    /// Delegates to the Supporters smart contract.
-    function getTotalLockedBalance() external view returns (uint256) {
-        return supporters.getTotalLockedBalance();
-    }
 
     // -----------------------------------------------------------------------
     //   Oracles
@@ -192,9 +188,9 @@ contract Staking is StakingStorage {
     /// @return addresses Array of subscribed coin pairs addresses.
     /// @return count The count of valid entries in the addresses param.
     function getSubscribedCoinPairAddresses(address oracleAddr)
-        external
-        view
-        returns (CoinPairPrice[] memory addresses, uint256 count) {
+    external
+    view
+    returns (CoinPairPrice[] memory addresses, uint256 count) {
         return oracleManager.getSubscribedCoinPairAddresses(oracleAddr);
     }
 }
