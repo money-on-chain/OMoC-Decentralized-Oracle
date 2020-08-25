@@ -65,25 +65,15 @@ contract('OracleManager by gobernanza', async (accounts) => {
     });
 
     it('Registration and subscription', async () => {
-        const initialBalance1 = await this.token.balanceOf(oracleData[0].owner);
         await this.token.approve(this.oracleMgr.address, oracleData[0].stake, {
             from: oracleData[0].owner,
         });
-        await this.oracleMgr.registerOracle(
-            oracleData[0].account,
-            oracleData[0].name,
-            oracleData[0].stake,
-            {from: oracleData[0].owner},
-        );
+        await this.oracleMgr.registerOracle(oracleData[0].account, oracleData[0].name, {
+            from: oracleData[0].owner,
+        });
 
         const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
         assert.equal(info0.internetName, oracleData[0].name);
-        assert.equal(info0.stake, oracleData[0].stake);
-        assert.isTrue(
-            (await this.token.balanceOf(oracleData[0].owner)).eq(
-                initialBalance1.sub(new BN(oracleData[0].stake)),
-            ),
-        );
 
         await this.oracleMgr.subscribeToCoinPair(
             oracleData[0].account,
