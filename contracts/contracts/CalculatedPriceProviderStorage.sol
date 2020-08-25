@@ -10,7 +10,7 @@ import {CalculatedPriceProviderLib} from "./libs/CalculatedPriceProviderLib.sol"
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD
 contract CalculatedPriceProviderStorage is Initializable, GovernedAbstract, IIterableWhitelist {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
     using CalculatedPriceProviderLib for CalculatedPriceProviderLib.CalculatedPriceProviderData;
 
@@ -20,7 +20,8 @@ contract CalculatedPriceProviderStorage is Initializable, GovernedAbstract, IIte
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
+    constructor() internal {}
+
     // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.

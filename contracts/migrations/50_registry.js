@@ -11,43 +11,54 @@ async function getAddr(json_file) {
 async function deploy(config) {
     // Deployed in 3_deploy
     const oracleManagerAddr = await getAddr('OracleManager.sol');
-    console.log("oracleManagerAddr", oracleManagerAddr);
+    console.log('oracleManagerAddr', oracleManagerAddr);
 
     const supportersWhitelistedAddr = await getAddr('SupportersWhitelisted.sol');
-    console.log("supportersWhitelistedAddr", supportersWhitelistedAddr);
+    console.log('supportersWhitelistedAddr', supportersWhitelistedAddr);
 
     const infoGetterAddr = await getAddr('InfoGetter.sol');
-    console.log("infoGetterAddr", infoGetterAddr);
+    console.log('infoGetterAddr', infoGetterAddr);
 
-
-    console.log("Create EternalStorageGobernanza Proxy");
-    await scripts.add({contractsData: [{name: "EternalStorageGobernanza", alias: "EternalStorageGobernanza"}]});
+    console.log('Create EternalStorageGobernanza Proxy');
+    await scripts.add({
+        contractsData: [{name: 'EternalStorageGobernanza', alias: 'EternalStorageGobernanza'}],
+    });
     await scripts.push({
         network: config.network,
         txParams: helpers.is_production() ? {...config.txParams, gas: 3000000} : config.txParams,
-        force: true
+        force: true,
     });
     const eternalStorage = await scripts.create({
         methodName: 'initialize',
         methodArgs: [config.governorAddr],
         admin: config.proxyAdminAddr,
-        contractAlias: "EternalStorageGobernanza",
+        contractAlias: 'EternalStorageGobernanza',
         network: config.network,
-        txParams: config.txParams
+        txParams: config.txParams,
     });
-    console.log("EternalStorageGobernanza: ", eternalStorage.options.address, 'proxyAdmin', config.proxyAdminAddr);
+    console.log(
+        'EternalStorageGobernanza: ',
+        eternalStorage.options.address,
+        'proxyAdmin',
+        config.proxyAdminAddr,
+    );
 
-    console.log("Deploy change contract", config.governorAddr);
-    const MocRegistryInitChange = artifacts.require("MocRegistryInitChange");
-    const change = await MocRegistryInitChange.new(eternalStorage.options.address,
+    console.log('Deploy change contract', config.governorAddr);
+    const MocRegistryInitChange = artifacts.require('MocRegistryInitChange');
+    const change = await MocRegistryInitChange.new(
+        eternalStorage.options.address,
         oracleManagerAddr,
         supportersWhitelistedAddr,
         infoGetterAddr,
     );
-    console.log("Initialize registry/eternalStorage for MOC Oracles", change.address, 'via governor', config.governorAddr);
+    console.log(
+        'Initialize registry/eternalStorage for MOC Oracles',
+        change.address,
+        'via governor',
+        config.governorAddr,
+    );
     await config.executeChange(change.address);
 }
 
-
 // FOR TRUFFLE
-module.exports = helpers.truffle_main(artifacts, deploy)
+module.exports = helpers.truffle_main(artifacts, deploy);

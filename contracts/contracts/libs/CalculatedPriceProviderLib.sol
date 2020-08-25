@@ -8,12 +8,12 @@ import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD
 library CalculatedPriceProviderLib {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     struct CalculatedPriceProviderData {
         IPriceProvider[] multiplyBy;
         IPriceProvider[] divideBy;
-        uint multiplicator;
-        uint divisor;
+        uint256 multiplicator;
+        uint256 divisor;
     }
 
     /**
@@ -24,15 +24,18 @@ library CalculatedPriceProviderLib {
     @param _divisor base value used to scale the result by dividing it.
     @param _divideBy list of IPriceProvider to query the and then divide the result
     */
-    function _initialize(CalculatedPriceProviderData storage self, uint _multiplicator,
-        IPriceProvider[] memory _multiplyBy, uint _divisor, IPriceProvider[] memory _divideBy)
-    internal {
+    function _initialize(
+        CalculatedPriceProviderData storage self,
+        uint256 _multiplicator,
+        IPriceProvider[] memory _multiplyBy,
+        uint256 _divisor,
+        IPriceProvider[] memory _divideBy
+    ) internal {
         self.multiplicator = _multiplicator;
         self.multiplyBy = _multiplyBy;
         self.divisor = _divisor;
         self.divideBy = _divideBy;
     }
-
 
     /**
     Get the calculated price
@@ -40,12 +43,12 @@ library CalculatedPriceProviderLib {
     */
     function _peek(CalculatedPriceProviderData storage self) internal view returns (uint256, bool) {
         bool valid = true;
-        uint den;
+        uint256 den;
         (den, valid) = _multiplyAll(self.multiplicator, self.multiplyBy);
         if (!valid) {
             return (0, false);
         }
-        uint div;
+        uint256 div;
         (div, valid) = _multiplyAll(self.divisor, self.divideBy);
         if (!valid || div == 0) {
             return (0, false);
@@ -59,7 +62,11 @@ library CalculatedPriceProviderLib {
     @param val a base value used to scale things up.this
     @param providers a list of IPriceProvider that are queried for prices, all the prices are multiplied.
     */
-    function _multiplyAll(uint val, IPriceProvider[] memory providers) internal view returns (uint, bool) {
+    function _multiplyAll(uint256 val, IPriceProvider[] memory providers)
+        internal
+        view
+        returns (uint256, bool)
+    {
         bytes32 current32;
         bool valid;
         for (uint256 i = 0; i < providers.length; i++) {
@@ -67,7 +74,7 @@ library CalculatedPriceProviderLib {
             if (!valid) {
                 return (0, false);
             }
-            val = val.mul(uint(current32));
+            val = val.mul(uint256(current32));
         }
         return (val, true);
     }

@@ -11,7 +11,6 @@ import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
   parameter roundLockPeriodInBlocks
  */
 contract CoinPairPriceRoundLockPeriodInBlocksChange is CoinPairPriceStorage, ChangeContract {
-
     GovernedAbstract public coinPairPrice;
     bytes public encodedData;
 

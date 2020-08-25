@@ -4,12 +4,12 @@ pragma solidity 0.6.12;
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+
 /**
   @title CoinPairEmergencyPeriodInBlocksChange
   @notice This contract is a ChangeContract intended to be used to change the emergency publisher period in blocks.
  */
 contract CoinPairEmergencyPeriodInBlocksChange is CoinPairPriceStorage, ChangeContract {
-
     GovernedAbstract public coinPairPrice;
     bytes public encodedData;
 
@@ -18,7 +18,9 @@ contract CoinPairEmergencyPeriodInBlocksChange is CoinPairPriceStorage, ChangeCo
       @param _coinPairPrice Address of coin pair price to upgrade
       @param _emergencyPublishingPeriodInBlocks The emergencyPublishingPeriodInBlocks value
     */
-    constructor(GovernedAbstract _coinPairPrice, uint256 _emergencyPublishingPeriodInBlocks) public {
+    constructor(GovernedAbstract _coinPairPrice, uint256 _emergencyPublishingPeriodInBlocks)
+        public
+    {
         coinPairPrice = _coinPairPrice;
         encodedData = abi.encode(_emergencyPublishingPeriodInBlocks);
     }

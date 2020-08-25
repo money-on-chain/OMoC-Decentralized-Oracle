@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
@@ -21,14 +20,13 @@ pragma solidity 0.6.12;
 /// it is removed from the selected list and the point he accumulated during the round are lost (set to zero).
 
 interface ICoinPairPrice {
-
+    // getOracleOwnerAddress: Given an Oracle address return the Oracle Owner address.
+    // Used during publication, the servers sign with the oracle address, but the list of selected oracles
+    // is by oracle owner address.
+    // getOracleOwnerStake: Get the stake stored in the supporters smart-contract
     // prettier-ignore
     struct CoinPairPriceCallbacks {
-        // Given an Oracle address return the Oracle Owner address.
-        // Used during publication, the servers sign with the oracle address, but the list of selected oracles
-        // is by oracle owner address.
         function (address) external view returns (address) getOracleOwnerAddress;
-        // Get the stake stored in the supporters smart-contract
         function (address) external view returns (uint256) getOracleOwnerStake;
     }
 
@@ -50,7 +48,6 @@ interface ICoinPairPrice {
     /// @dev This is designed to be called from OracleManager.
     function isSubscribed(address oracleOwnerAddr) external view returns (bool);
 
-
     /// @notice Publish a price. (The message contain oracleAddresses that must be converted to owner addresses).
     /// @param _version Version number of message format (3)
     /// @param _coinpair The coin pair to report (must match this contract)
@@ -60,20 +57,20 @@ interface ICoinPairPrice {
     /// @param _sig_v The array of V-component of Oracle signatures.
     /// @param _sig_r The array of R-component of Oracle signatures.
     /// @param _sig_s The array of S-component of Oracle signatures.
-    function publishPrice(uint256 _version,
+    function publishPrice(
+        uint256 _version,
         bytes32 _coinpair,
         uint256 _price,
         address _votedOracle,
         uint256 _blockNumber,
-        uint8[]  calldata _sig_v,
+        uint8[] calldata _sig_v,
         bytes32[] calldata _sig_r,
-        bytes32[] calldata _sig_s) external;
-
+        bytes32[] calldata _sig_s
+    ) external;
 
     /// @notice Publish a price without signature validation (when there is an emergecy!!!).
     /// @param _price Price to report.
-    function emergencyPublish(uint256 _price) external  ;
-
+    function emergencyPublish(uint256 _price) external;
 
     /// @notice The oracle owner has withdrawn some stake.
     /// Must check if the oracle is part of current round and if he lost his place with the
@@ -87,20 +84,7 @@ interface ICoinPairPrice {
     /// This method search the subscribed list and choose the 10 with more stake.
     function switchRound() external;
 
-
-
-
-
-
-
-
-
-
-
     //////////////////////////////////////////////////////////////////////////////////// GETTERS
-
-
-
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param oracleAddr the oracle address to lookup.
@@ -110,33 +94,37 @@ interface ICoinPairPrice {
     ///
     function getAvailableRewardFees() external view returns (uint256);
 
-
-
     //////////////////////////////////////////////////////////////////////////////////// GETTERS TO GET CURRENT PRICE
     // MUST BE WHITELISTED
     /// @notice Return the current price, compatible with old MOC Oracle
     function peek() external view returns (bytes32, bool);
+
     /// @notice Return the current price
     function getPrice() external view returns (uint256);
+
     ///////////////////////////////////////////////////////////////////////////////// GETTERS TO GET CURRENT PRICE END
 
-
-
-
-
-
-
     /// @notice Return current round information
-    function getRoundInfo() external view returns (uint256 round,
-        uint256 startBlock,
-        uint256 lockPeriodEndBlock,
-        uint256 totalPoints,
-        address[] memory selectedOracles);
+    function getRoundInfo()
+        external
+        view
+        returns (
+            uint256 round,
+            uint256 startBlock,
+            uint256 lockPeriodEndBlock,
+            uint256 totalPoints,
+            address[] memory selectedOracles
+        );
 
     /// @notice Return round information for specific oracle
-    function getOracleRoundInfo(address addr) external view returns (uint points, uint256 selectedInRound,
-        bool selectedInCurrentRound);
-
+    function getOracleRoundInfo(address addr)
+        external
+        view
+        returns (
+            uint256 points,
+            uint256 selectedInRound,
+            bool selectedInCurrentRound
+        );
 
     // The maximum count of oracles selected to participate each round
     function maxOraclesPerRound() external view returns (uint256);

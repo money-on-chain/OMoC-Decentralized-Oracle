@@ -12,10 +12,10 @@ import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {OracleManagerStorage} from "./OracleManagerStorage.sol";
 
 contract OracleManager is OracleManagerStorage {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     event OracleRegistered(address caller, address addr, string internetName);
-    event OracleStakeAdded(address caller, address addr, uint stake);
+    event OracleStakeAdded(address caller, address addr, uint256 stake);
     event OracleSubscribed(address caller, address addr, bytes32 coinpair);
     event OracleUnsubscribed(address caller, address addr, bytes32 coinpair);
     event OracleRemoved(address caller, address addr);
@@ -29,11 +29,23 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Construct this contract.
     /// @param _minCPSubscriptionStake The minimum amount of tokens required as stake for a coin pair subscription.
     /// @param _supportersContract the Supporters contract contract address.
-    function initialize(IGovernor _governor, uint256 _minCPSubscriptionStake, SupportersWhitelisted _supportersContract)
-    external initializer {
-        require(address(_supportersContract) != address(0), "Supporters contract address must be != 0");
-        require(address(_supportersContract.mocToken()) != address(0), "Token contract address must be != 0");
-        require(_minCPSubscriptionStake > 0, "The minimum coin pair subscription stake amount cannot be zero");
+    function initialize(
+        IGovernor _governor,
+        uint256 _minCPSubscriptionStake,
+        SupportersWhitelisted _supportersContract
+    ) external initializer {
+        require(
+            address(_supportersContract) != address(0),
+            "Supporters contract address must be != 0"
+        );
+        require(
+            address(_supportersContract.mocToken()) != address(0),
+            "Token contract address must be != 0"
+        );
+        require(
+            _minCPSubscriptionStake > 0,
+            "The minimum coin pair subscription stake amount cannot be zero"
+        );
 
         Governed._initialize(_governor);
         supportersContract = _supportersContract;
@@ -62,8 +74,11 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleAddr Address of the Oracle to register.
     /// @param internetName Public Internet name of this Oracle.
     /// @param prevEntry Place in the single-linked-list in which this oracle must be inserted
-    function registerOracleWithHint(address oracleAddr, string memory internetName, address prevEntry)
-    public {
+    function registerOracleWithHint(
+        address oracleAddr,
+        string memory internetName,
+        address prevEntry
+    ) public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(!data.isRegistered(), "Oracle already registered");
         require(oracleAddr != address(0), "Address cannot be zero");
@@ -75,7 +90,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Add stake from owner account
     /// @param oracleAddr Address of oracle
     /// @param stake Stake to transfer from owner account
-    function addStake(address oracleAddr, uint stake) external {
+    function addStake(address oracleAddr, uint256 stake) external {
         addStakeWithHint(oracleAddr, stake, address(0), address(0));
     }
 
@@ -84,7 +99,12 @@ contract OracleManager is OracleManagerStorage {
     /// @param stake Stake to transfer from owner account
     /// @param removePrevEntry Place in the single-linked-list from which this oracle must be removed
     /// @param addPrevEntry Place in the single-linked-list in which this oracle must be inserted after stake change
-    function addStakeWithHint(address oracleAddr, uint stake, address removePrevEntry, address addPrevEntry) public {
+    function addStakeWithHint(
+        address oracleAddr,
+        uint256 stake,
+        address removePrevEntry,
+        address addPrevEntry
+    ) public {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
         require(_isOwner(data), "Must be called by oracle owner");
@@ -150,15 +170,16 @@ contract OracleManager is OracleManagerStorage {
     /// @return addresses Array of subscribed coin pairs addresses.
     /// @return count The count of valid entries in the addresses param.
     function getSubscribedCoinPairAddresses(address oracleAddr)
-    public view returns (CoinPairPrice[] memory addresses, uint count) {
-        uint coinPairCount = coinPairRegisterData._getCoinPairCount();
+        public
+        view
+        returns (CoinPairPrice[] memory addresses, uint256 count)
+    {
+        uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         CoinPairPrice[] memory subscribedCoinpairs = new CoinPairPrice[](coinPairCount);
         uint256 valid = 0;
-        for (uint256 i = 0; i < coinPairCount; i++)
-        {
+        for (uint256 i = 0; i < coinPairCount; i++) {
             bytes32 cp = coinPairRegisterData._getCoinPairAtIndex(i);
-            if (isSubscribed(oracleAddr, cp))
-            {
+            if (isSubscribed(oracleAddr, cp)) {
                 subscribedCoinpairs[i] = _getCoinPairAddress(cp);
                 valid = valid.add(1);
             }
@@ -186,19 +207,27 @@ contract OracleManager is OracleManagerStorage {
 
     /// @notice Search the Oracle list for the previous address of an entry.
     /// @param oracleAddr The address to search for.
-    function getPrevByAddrWithHint(address oracleAddr, address prevEntry) external view returns (address) {
+    function getPrevByAddrWithHint(address oracleAddr, address prevEntry)
+        external
+        view
+        returns (address)
+    {
         return registeredOracles.getPrevByAddr(prevEntry, oracleAddr);
     }
 
     /// @notice Search the Oracle list for the previous address of an entry.
     /// @param stake The stake to search for.
-    function getPrevByStake(uint stake) external view returns (address) {
+    function getPrevByStake(uint256 stake) external view returns (address) {
         return registeredOracles.getPrevByStake(address(0), stake);
     }
 
     /// @notice Search the Oracle list for the previous address of an entry.
     /// @param stake The stake to search for.
-    function getPrevByStakeWithHint(uint stake, address prevEntry) external view returns (address) {
+    function getPrevByStakeWithHint(uint256 stake, address prevEntry)
+        external
+        view
+        returns (address)
+    {
         return registeredOracles.getPrevByStake(prevEntry, stake);
     }
 
@@ -222,7 +251,14 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Returns registration information for a registered Oracle.
     /// @param oracleAddr addr The address of the Oracle to query for.
     function getOracleRegistrationInfo(address oracleAddr)
-    external view returns (string memory internetName, uint stake, address _owner) {
+        external
+        view
+        returns (
+            string memory internetName,
+            uint256 stake,
+            address _owner
+        )
+    {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle not registered");
 
@@ -235,7 +271,14 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleAddr address of the oracle to query for.
     /// @param coinpair The coin pair to lookup.
     function getOracleRoundInfo(address oracleAddr, bytes32 coinpair)
-    external view returns (uint points, uint selectedInRound, bool selectedInCurrentRound) {
+        external
+        view
+        returns (
+            uint256 points,
+            uint256 selectedInRound,
+            bool selectedInCurrentRound
+        )
+    {
         CoinPairPrice ctAddr = _getCoinPairAddress(coinpair);
         (points, selectedInRound, selectedInCurrentRound) = ctAddr.getOracleRoundInfo(oracleAddr);
     }
@@ -272,7 +315,6 @@ contract OracleManager is OracleManagerStorage {
         return data.isRegistered() && _canRemoveOracle(oracleAddr);
     }
 
-
     /// @notice Get the stake in MOCs that an oracle has.
     /// @param oracleAddr The address of the oracle.
     function getStake(address oracleAddr) public view returns (uint256 balance) {
@@ -281,7 +323,7 @@ contract OracleManager is OracleManagerStorage {
 
     /// @notice Returns the count of registered coin pairs.
     /// Keep in mind that Deleted coin-pairs will contain zeroed addresses.
-    function getCoinPairCount() external view returns (uint) {
+    function getCoinPairCount() external view returns (uint256) {
         return coinPairRegisterData._getCoinPairCount();
     }
 
@@ -308,9 +350,9 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param oracleAddr the oracle address to lookup.
     function _canRemoveOracle(address oracleAddr) private view returns (bool) {
-        uint coinPairCount = coinPairRegisterData._getCoinPairCount();
+        uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         bool canRemove = true;
-        for (uint i = 0; i < coinPairCount && canRemove; i++) {
+        for (uint256 i = 0; i < coinPairCount && canRemove; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
             canRemove = canRemove && cp.canRemoveOracle(oracleAddr);
         }
@@ -318,7 +360,11 @@ contract OracleManager is OracleManagerStorage {
     }
 
     /// @dev Add stake internal
-    function _addStake(address oracleOwner, address oracleAddr, uint256 stake) private {
+    function _addStake(
+        address oracleOwner,
+        address oracleAddr,
+        uint256 stake
+    ) private {
         // Transfer stake [should be approved by oracle owner first]
         require(token.transferFrom(oracleOwner, address(this), stake), "Error in transfer");
 
@@ -327,17 +373,17 @@ contract OracleManager is OracleManagerStorage {
         supportersContract.stakeAtFrom(stake, oracleAddr, address(this));
     }
 
-
     /// @dev Unsubscribe a registered oracle from participating in all registered coin-pairs
     /// @param oracleAddr Address of oracle
-    function _unsubscribeAll(address oracleAddr) private
-    {
+    function _unsubscribeAll(address oracleAddr) private {
         OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
         require(data.isRegistered(), "Oracle is not registered");
         require(_isOwner(data), "Must be called by oracle owner");
 
-        (CoinPairPrice[] memory coinpairs, uint count) = getSubscribedCoinPairAddresses(oracleAddr);
-        for (uint i = 0; i < count; i++) {
+        (CoinPairPrice[] memory coinpairs, uint256 count) = getSubscribedCoinPairAddresses(
+            oracleAddr
+        );
+        for (uint256 i = 0; i < count; i++) {
             coinpairs[i].unsubscribe(oracleAddr);
         }
     }
@@ -353,5 +399,4 @@ contract OracleManager is OracleManagerStorage {
     function _getCoinPairAddress(bytes32 coinpair) private view returns (CoinPairPrice) {
         return CoinPairPrice(coinPairRegisterData._getContractAddress(coinpair));
     }
-
 }

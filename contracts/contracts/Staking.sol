@@ -12,7 +12,7 @@ import {StakingStorage} from "./StakingStorage.sol";
 import {MockDelayMachine} from "./testing_mocks/MockDelayMachine.sol";
 
 contract Staking is StakingStorage, IStakingMachine {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     // -----------------------------------------------------------------------
     //
@@ -28,8 +28,12 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @param _supporters the Supporters contract contract address.
     /// @param _oracleManager the Oracle Manager contract contract address.
     /// @param _delayMachine the Delay Machine contract contract address.
-    function initialize(IGovernor _governor, SupportersWhitelisted _supporters,
-        OracleManager _oracleManager, MockDelayMachine _delayMachine) external {
+    function initialize(
+        IGovernor _governor,
+        SupportersWhitelisted _supporters,
+        OracleManager _oracleManager,
+        MockDelayMachine _delayMachine
+    ) external {
         Governed._initialize(_governor);
         oracleManager = _oracleManager;
         supporters = _supporters;
@@ -62,7 +66,11 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @param mocs token quantity
     /// @param destination the destination account of this deposit.
     /// @param source the address that approved the transfer
-    function depositFrom(uint256 mocs, address destination, address source) external override {
+    function depositFrom(
+        uint256 mocs,
+        address destination,
+        address source
+    ) external override {
         // Transfer stake [should be approved by owner first]
         require(mocToken.transferFrom(source, address(this), mocs), "error in transferFrom");
         // Stake at Supporters contract
@@ -96,7 +104,6 @@ contract Staking is StakingStorage, IStakingMachine {
     function getLockedBalance(address user) external override view returns (uint256) {
         return supporters.getLockedBalance(user);
     }
-
 
     // -----------------------------------------------------------------------
     //   Oracles
@@ -189,9 +196,10 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @return addresses Array of subscribed coin pairs addresses.
     /// @return count The count of valid entries in the addresses param.
     function getSubscribedCoinPairAddresses(address oracleAddr)
-    external
-    view
-    returns (CoinPairPrice[] memory addresses, uint256 count) {
+        external
+        view
+        returns (CoinPairPrice[] memory addresses, uint256 count)
+    {
         return oracleManager.getSubscribedCoinPairAddresses(oracleAddr);
     }
 }

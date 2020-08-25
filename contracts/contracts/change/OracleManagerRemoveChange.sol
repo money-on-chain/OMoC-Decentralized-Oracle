@@ -12,7 +12,6 @@ import {OracleManager} from "../OracleManager.sol";
   this one or taking it as a guide
  */
 contract OracleManagerRemoveChange is ChangeContract {
-
     OracleManager public oracleManager;
     address public oracleAddr;
 
@@ -33,5 +32,4 @@ contract OracleManagerRemoveChange is ChangeContract {
         oracleManager.removeOracle(oracleAddr);
         oracleManager = OracleManager(0);
     }
-
 }

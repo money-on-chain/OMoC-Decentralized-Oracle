@@ -10,11 +10,10 @@ import "../libs/IPriceProvider.sol";
           A mock ipriceprovider that return a fixed price and fail status.
   */
 contract MockIPriceProvider is IPriceProvider {
-
     bytes32 public price;
     bool public fail;
 
-    constructor (uint256 _price, bool _fail) public {
+    constructor(uint256 _price, bool _fail) public {
         price = bytes32(_price);
         fail = _fail;
     }

@@ -9,21 +9,20 @@ import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
   @notice This contract is a ChangeContract intended to initialize all the MOC registry values
  */
 contract MocRegistryInitChange is ChangeContract {
-
     EternalStorageGobernanza public registry;
     address public oracle_manager;
     address public supporters_whitelisted;
     address public info_getter;
 
-
     /**
       @notice Constructor
     */
-    constructor(EternalStorageGobernanza _registry,
+    constructor(
+        EternalStorageGobernanza _registry,
         address _oracle_manager,
         address _supporters_whitelisted,
-        address _info_getter) public
- {
+        address _info_getter
+    ) public {
         registry = _registry;
         oracle_manager = _oracle_manager;
         supporters_whitelisted = _supporters_whitelisted;
@@ -56,7 +55,7 @@ contract MocRegistryInitChange is ChangeContract {
         registry.setUint(get_keccak("ORACLE_QUEUE_LEN"), 30);
         registry.setUint(get_keccak("MESSAGE_VERSION"), 3);
         registry.setUint(get_keccak("ORACLE_STAKE_LIMIT_MULTIPLICATOR"), 2);
-        registry.setDecimal(get_keccak("ORACLE_PRICE_DELTA_PCT"), 5, - 2);
+        registry.setDecimal(get_keccak("ORACLE_PRICE_DELTA_PCT"), 5, -2);
         registry.setUint(get_keccak("ORACLE_PRICE_PUBLISH_BLOCKS"), 0);
         registry.setBytes(get_keccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"020406080a");
         registry.setUint(get_keccak("ORACLE_TRIGGER_VALID_PUBLICATION_BLOCKS"), 30);

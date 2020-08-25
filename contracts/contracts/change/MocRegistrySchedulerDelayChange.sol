@@ -9,14 +9,12 @@ import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
     @notice This contract is a ChangeContract intended to change some MOC registry values
  */
 contract MocRegistrySchedulerDelayChange is ChangeContract {
-
     EternalStorageGobernanza public registry;
 
     /**
       @notice Constructor
     */
-    constructor(EternalStorageGobernanza _registry) public
- {
+    constructor(EternalStorageGobernanza _registry) public {
         registry = _registry;
     }
 

@@ -12,7 +12,6 @@ import {OracleManager} from "../OracleManager.sol";
   this one or taking it as a guide
  */
 contract OracleManagerUnsubscribeChange is ChangeContract {
-
     OracleManager public oracleManager;
     address public oracleAddr;
     bytes32 public coinPair;
@@ -23,7 +22,11 @@ contract OracleManagerUnsubscribeChange is ChangeContract {
       @param _oracleAddr The coinpair contract implementation address
       @param _coinPair The coinpair to register
     */
-    constructor(OracleManager _oracleManager, address _oracleAddr, bytes32 _coinPair) public {
+    constructor(
+        OracleManager _oracleManager,
+        address _oracleAddr,
+        bytes32 _coinPair
+    ) public {
         oracleManager = _oracleManager;
         oracleAddr = _oracleAddr;
         coinPair = _coinPair;
@@ -36,5 +39,4 @@ contract OracleManagerUnsubscribeChange is ChangeContract {
         oracleManager.unsubscribeFromCoinPair(oracleAddr, coinPair);
         oracleManager = OracleManager(0);
     }
-
 }

@@ -10,7 +10,7 @@ import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.so
 /// @title A registry for the coin pair prices, this is more general than OracleManager that stores
 /// only the coin pairs that are published by oracles.
 contract PriceProviderRegisterStorage is Initializable, GovernedAbstract {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using CoinPairRegisterLib for CoinPairRegisterLib.CoinPairRegisterData;
 
     // Coin Pair register, has the same entries as OracleManage + calculated prices.
@@ -18,7 +18,8 @@ contract PriceProviderRegisterStorage is Initializable, GovernedAbstract {
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
+    constructor() internal {}
+
     // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.

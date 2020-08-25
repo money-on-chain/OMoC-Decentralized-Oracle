@@ -14,7 +14,7 @@ import {OracleManager} from "./OracleManager.sol";
     Abstract contract meant to be reused with all the configurable parameters of CoinPairPrice.
 */
 contract CoinPairPriceStorage is Initializable, GovernedAbstract, IIterableWhitelist {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using RoundInfoLib for RoundInfoLib.RoundInfo;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
 
@@ -54,7 +54,8 @@ contract CoinPairPriceStorage is Initializable, GovernedAbstract, IIterableWhite
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
+    constructor() internal {}
+
     // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.

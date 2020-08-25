@@ -25,8 +25,11 @@ contract PriceProviderRegisterPairChange is ChangeContract {
       @param _coinPair Coinpair to register
       @param _contractAddr Address to register
     */
-    constructor(PriceProviderRegister _priceProviderRegister, bytes32 _coinPair,
-        IPriceProviderRegisterEntry _contractAddr) public {
+    constructor(
+        PriceProviderRegister _priceProviderRegister,
+        bytes32 _coinPair,
+        IPriceProviderRegisterEntry _contractAddr
+    ) public {
         priceProviderRegister = _priceProviderRegister;
         coinPair = _coinPair;
         contractAddr = _contractAddr;
@@ -45,5 +48,4 @@ contract PriceProviderRegisterPairChange is ChangeContract {
         // priceProviderRegister.setCoinPair(coinPair,contractAddr);
         // TODO: Make it usable just once.
     }
-
 }

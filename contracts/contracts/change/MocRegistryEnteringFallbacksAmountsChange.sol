@@ -9,7 +9,6 @@ import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
     @notice This contract is a ChangeContract intended to change some MOC registry values
  */
 contract MocRegistryEnteringFallbacksAmountsChange is ChangeContract {
-
     EternalStorageGobernanza public registry;
 
     /**

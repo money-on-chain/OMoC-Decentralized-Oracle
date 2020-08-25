@@ -11,13 +11,11 @@ import "../moc-gobernanza/Governance/IGovernor.sol";
           A mock governor that let any address do anything.
   */
 contract MockGovernor is IGovernor {
-
     address public changer;
 
-    constructor (address _changer) public {
+    constructor(address _changer) public {
         changer = _changer;
     }
-
 
     /**
       @notice Function to be called to make the changes in changeContract
@@ -31,7 +29,7 @@ contract MockGovernor is IGovernor {
       changes within the system
       @param _changer Address of the contract that will be tested
      */
-    function isAuthorizedChanger(address _changer) external view override returns (bool)  {
+    function isAuthorizedChanger(address _changer) external override view returns (bool) {
         require(changer == _changer, "Invalid changer");
         return true;
     }

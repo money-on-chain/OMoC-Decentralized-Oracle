@@ -1,18 +1,18 @@
 // Use dotenv file
 const path = require('path');
 require('dotenv').config({path: path.resolve(__dirname, '.env')});
-const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
+const HDWalletProvider = require('truffle-hdwallet-provider-privkey');
 const helpers = require('./migrations/helpers');
 
 // VERY IMPORTANT, if this number is too big: near gasLimit (the default) transaction are QUEUED for
 // a long time, on the other hand if it is too small some big transactions can fail!!!
 // Tune it to your needs.
-const GAS_LIMIT = (2 * 1000 * 1000);
+const GAS_LIMIT = 2 * 1000 * 1000;
 
-if (helpers.is_production()) console.log("USING OPTIMIZER!!!");
+if (helpers.is_production()) console.log('USING OPTIMIZER!!!');
 
 // Skip stress tests, except when they are running directly.
-let skip_slow = helpers.run_slow_tests() ? {} : {grep: "@slow", invert: true};
+let skip_slow = helpers.run_slow_tests() ? {} : {grep: '@slow', invert: true};
 
 // Check that we have all the needed env vars!!!
 helpers.config();
@@ -40,65 +40,69 @@ module.exports = {
         // options below to some value.
         //
         development: {
-            host: "127.0.0.1",     // Localhost (default: none)
-            port: 8545,            // Standard Ethereum port (default: none)
-            network_id: "*",       // Any network (default: none)
-            skipDryRun: true
+            host: '127.0.0.1', // Localhost (default: none)
+            port: 8545, // Standard Ethereum port (default: none)
+            network_id: '*', // Any network (default: none)
+            skipDryRun: true,
         },
         ganache_deploy: {
-            host: "127.0.0.1",     // Localhost (default: none)
-            port: 8545,            // Standard Ethereum port (default: none)
+            host: '127.0.0.1', // Localhost (default: none)
+            port: 8545, // Standard Ethereum port (default: none)
             gas: GAS_LIMIT,
-            network_id: "*",       // Any network (default: none)
+            network_id: '*', // Any network (default: none)
             skipDryRun: true,
         },
         rsk_regtest: {
-            host: "127.0.0.1",
+            host: '127.0.0.1',
             port: 4444,
             gas: GAS_LIMIT,
-            network_id: "*",       // Any network (default: none)
-            skipDryRun: true
+            network_id: '*', // Any network (default: none)
+            skipDryRun: true,
         },
         rinkeby: {
-            from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
+            from: '0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7',
             provider: () => {
-                return new HDWalletProvider([process.env.PRIVATE_KEY], "https://rinkeby.infura.io/v3/969e1fd3ca714562b67169f695159e1a");
+                return new HDWalletProvider(
+                    [process.env.PRIVATE_KEY],
+                    'https://rinkeby.infura.io/v3/969e1fd3ca714562b67169f695159e1a',
+                );
             },
             gas: GAS_LIMIT,
-            network_id: "*",       // Any network (default: none)
-            skipDryRun: true
+            network_id: '*', // Any network (default: none)
+            skipDryRun: true,
         },
         e2e_test: {
-            host: "127.0.0.1",
+            host: '127.0.0.1',
             port: 5656,
             gas: GAS_LIMIT,
-            network_id: "*",       // Any network (default: none)
-            skipDryRun: true
+            network_id: '*', // Any network (default: none)
+            skipDryRun: true,
         },
         rsk_testnet: {
-            from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
+            from: '0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7',
             networkCheckTimeout: 1000000,
             provider: () => {
-                return new HDWalletProvider([process.env.PRIVATE_KEY], "https://public-node.testnet.rsk.co");
+                return new HDWalletProvider(
+                    [process.env.PRIVATE_KEY],
+                    'https://public-node.testnet.rsk.co',
+                );
             },
             gasPrice: 59240000,
             gas: GAS_LIMIT,
-            network_id: "*",       // Any network (default: none)
-            skipDryRun: false
+            network_id: '*', // Any network (default: none)
+            skipDryRun: false,
         },
         rsk_nodes: {
-            from: "0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7",
+            from: '0x54a671DEe6E72771A08ee14AE30823eb5cD90AA7',
             networkCheckTimeout: 1000000,
             provider: () => {
-                return new HDWalletProvider([process.env.PRIVATE_KEY], "http://rsknodes:4446");
+                return new HDWalletProvider([process.env.PRIVATE_KEY], 'http://rsknodes:4446');
             },
             gasPrice: 59240000,
             gas: GAS_LIMIT,
-            network_id: "*",       // Any network (default: none)
-            skipDryRun: true
-        }
-
-
+            network_id: '*', // Any network (default: none)
+            skipDryRun: true,
+        },
 
         // Useful for deploying to a public network.
         // NB: It's important to wrap the provider as a function.
@@ -119,24 +123,25 @@ module.exports = {
             currency: 'USD',
             // gasPrice: 20,
         },
-        ...skip_slow
+        ...skip_slow,
         // timeout: 100000
     },
 
     // Configure your compilers
     compilers: {
         solc: {
-            version: "0.6.12",    // Fetch exact version from solc-bin (default: truffle's version)
+            version: '0.6.12', // Fetch exact version from solc-bin (default: truffle's version)
             // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-            settings: {          // See the solidity docs for advice about optimization and evmVersion
+            settings: {
+                // See the solidity docs for advice about optimization and evmVersion
                 optimizer: {
                     // default network doesn't use optimizer, the rest use it.
                     enabled: helpers.is_production(),
-                    runs: 200
+                    runs: 200,
                 },
                 //  evmVersion: "byzantium"
-            }
-        }
+            },
+        },
     },
-    plugins: ["solidity-coverage"],
-}
+    plugins: ['solidity-coverage'],
+};

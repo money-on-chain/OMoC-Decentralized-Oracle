@@ -7,7 +7,7 @@ import {IGovernor} from "../moc-gobernanza/Governance/IGovernor.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 contract MockDelayMachine is Governed {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     uint256 id;
     IERC20 token;
 
@@ -21,7 +21,7 @@ contract MockDelayMachine is Governed {
     /// @return id the transaction id
     function deposit(
         uint256 mocs,
-        address /*destination*/,
+        address, /*destination*/
         uint256 /*expiration*/
     ) external returns (uint256) {
         require(token.transferFrom(msg.sender, address(this), mocs), "Transfer failed.");

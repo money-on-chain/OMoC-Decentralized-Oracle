@@ -11,7 +11,6 @@ import {SupportersWhitelistedStorage} from "../SupportersWhitelistedStorage.sol"
   parameter period
  */
 contract SupportersWhitelistedPeriodChange is SupportersWhitelistedStorage, ChangeContract {
-
     GovernedAbstract public supporters;
     bytes public encodedData;
 

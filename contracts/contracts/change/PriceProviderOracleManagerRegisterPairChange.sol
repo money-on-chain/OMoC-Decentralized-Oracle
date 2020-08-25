@@ -36,13 +36,15 @@ contract PriceProviderOracleManagerRegisterPairChange is ChangeContract {
       the _beforeUpgrade and _afterUpgrade to use this template
      */
     function execute() external override {
-        uint coinPairCount = oracleManager.getCoinPairCount();
+        uint256 coinPairCount = oracleManager.getCoinPairCount();
         for (uint256 i = 0; i < coinPairCount; i++) {
             bytes32 coinPair = oracleManager.getCoinPairAtIndex(i);
             address contractAddr = oracleManager.getContractAddress(coinPair);
-            priceProviderRegister.registerCoinPair(coinPair, IPriceProviderRegisterEntry(contractAddr));
+            priceProviderRegister.registerCoinPair(
+                coinPair,
+                IPriceProviderRegisterEntry(contractAddr)
+            );
         }
         // TODO: Make it usable just once.;
     }
-
 }

@@ -12,7 +12,6 @@ import {OracleManager} from "../OracleManager.sol";
   this one or taking it as a guide
  */
 contract OracleManagerPairChange is ChangeContract {
-
     OracleManager public oracleManager;
     bytes32 public coinPair;
     address public contractAddr;
@@ -23,7 +22,11 @@ contract OracleManagerPairChange is ChangeContract {
       @param _coinPair The coinpair to register
       @param _contractAddr The coinpair contract implementation address
     */
-    constructor(OracleManager _oracleManager, bytes32 _coinPair, address _contractAddr) public {
+    constructor(
+        OracleManager _oracleManager,
+        bytes32 _coinPair,
+        address _contractAddr
+    ) public {
         oracleManager = _oracleManager;
         coinPair = _coinPair;
         contractAddr = _contractAddr;
@@ -40,5 +43,4 @@ contract OracleManagerPairChange is ChangeContract {
         oracleManager.registerCoinPair(coinPair, contractAddr);
         // TODO: Make it usable just once.
     }
-
 }

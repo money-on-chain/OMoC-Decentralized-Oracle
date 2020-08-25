@@ -8,8 +8,7 @@ import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 
-contract TestMOC is Initializable, GovernedAbstract, ERC20UpgradeSafe
-{
+contract TestMOC is Initializable, GovernedAbstract, ERC20UpgradeSafe {
     /**
       @notice Initialize the contract with the basic settings
       @dev This initialize replaces the constructor but it is not called automatically.

@@ -7,7 +7,7 @@ import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/
   @notice Manage information specific to each oracle
  */
 library OracleInfoLib {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     /// Global registration information for each oracle, used by OracleManager
     struct OracleRegisterInfo {
@@ -16,10 +16,13 @@ library OracleInfoLib {
     }
 
     /**
-    * Initialize a register info structure
-    */
+     * Initialize a register info structure
+     */
     function initRegisterInfo(address owner, string memory internetName)
-    internal pure returns (OracleRegisterInfo memory) {
+        internal
+        pure
+        returns (OracleRegisterInfo memory)
+    {
         return OracleRegisterInfo(internetName, owner);
     }
 

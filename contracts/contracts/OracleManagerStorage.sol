@@ -12,7 +12,7 @@ import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 
 contract OracleManagerStorage is Initializable, GovernedAbstract {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using OracleInfoLib for OracleInfoLib.OracleRegisterInfo;
     using CoinPairRegisterLib for CoinPairRegisterLib.CoinPairRegisterData;
     using RegisteredOraclesLib for RegisteredOraclesLib.RegisteredOracles;
@@ -21,20 +21,21 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
     CoinPairRegisterLib.CoinPairRegisterData internal coinPairRegisterData;
 
     // Registered oracles
-    RegisteredOraclesLib.RegisteredOracles  internal registeredOracles;
+    RegisteredOraclesLib.RegisteredOracles internal registeredOracles;
 
     // Supporters contract in which we store stake
-    SupportersWhitelisted public            supportersContract;
+    SupportersWhitelisted public supportersContract;
 
     // Minimum coin pair subscription stake
-    uint256 public                          minCPSubscriptionStake;
+    uint256 public minCPSubscriptionStake;
 
     // MOC Token contract
-    IERC20 public                           token;
+    IERC20 public token;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
+    constructor() internal {}
+
     // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.
