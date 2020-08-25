@@ -1,10 +1,8 @@
 const {constants, BN, time} = require('@openzeppelin/test-helpers');
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
-exports.ADDRESS_ONE = ADDRESS_ONE;
 
 const ADDRESS_ZERO = constants.ZERO_ADDRESS;
-exports.ADDRESS_ZERO = ADDRESS_ZERO;
 
 async function printOracles(oracleManager, coinPair) {
     let cnt = 0;
@@ -27,8 +25,6 @@ async function printOracles(oracleManager, coinPair) {
         it = await oracleManager.getRegisteredOracleNext(it);
     }
 }
-
-exports.printOracles = printOracles;
 
 async function getDefaultEncodedMessage(version, coinpair, price, votedOracle, blockNumber) {
     const msg = {
@@ -56,8 +52,6 @@ async function getDefaultEncodedMessage(version, coinpair, price, votedOracle, b
     return {msg, encMsg};
 }
 
-exports.getDefaultEncodedMessage = getDefaultEncodedMessage;
-
 async function mineUntilNextRound(coinpairPrice) {
     console.log('Please wait for round blocks to be mined...');
     const roundInfo = await coinpairPrice.getRoundInfo();
@@ -65,8 +59,6 @@ async function mineUntilNextRound(coinpairPrice) {
         await time.advanceBlock();
     } while (roundInfo.lockPeriodEndBlock.gt(await time.latestBlock()));
 }
-
-exports.mineUntilNextRound = mineUntilNextRound;
 
 async function mineUntilBlock(target) {
     let latestBlock = await time.latestBlock();
@@ -76,21 +68,15 @@ async function mineUntilBlock(target) {
     }
 }
 
-exports.mineUntilBlock = mineUntilBlock;
-
 async function mineBlocks(num) {
     latestBlock = await time.latestBlock();
     endBlock = latestBlock.add(new BN(num));
     await mineUntilBlock(endBlock);
 }
 
-exports.mineBlocks = mineBlocks;
-
 function findEvent(logs, name) {
     return logs.find((log) => log.event === name);
 }
-
-exports.findEvent = findEvent;
 
 async function createGovernor(owner) {
     const Governor = artifacts.require('Governor');
@@ -120,8 +106,6 @@ async function createGovernor(owner) {
     };
 }
 
-exports.createGovernor = createGovernor;
-
 function coinPairStr(hex) {
     let str = '';
     for (let n = 0; n < hex.length; n += 2) {
@@ -134,11 +118,63 @@ function coinPairStr(hex) {
     return str;
 }
 
-module.exports.coinPairStr = coinPairStr;
-
 function bytes32toBN(pr) {
     pr = pr.replace(/^0x/, '');
     return new BN(pr, 16);
 }
 
-module.exports.bytes32toBN = bytes32toBN;
+async function initContracts({governorOwner, period, minSubscriptionStake}) {
+    const TestMOC = artifacts.require('TestMOC');
+    const OracleManager = artifacts.require('OracleManager');
+    const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+    const Staking = artifacts.require('Staking');
+    const CoinPairPrice = artifacts.require('CoinPairPrice');
+    const MockDelayMachine = artifacts.require('MockDelayMachine');
+
+    const governor = await createGovernor(governorOwner);
+    const token = await TestMOC.new();
+    await token.initialize(governor.address);
+    const oracleMgr = await OracleManager.new();
+    const supporters = await SupportersWhitelisted.new();
+    const delayMachine = await MockDelayMachine.new();
+    await delayMachine.initialize(governor.address, token.address);
+    const staking = await Staking.new();
+
+    await supporters.initialize(
+        governor.address,
+        [oracleMgr.address, staking.address],
+        token.address,
+        period,
+    );
+    await oracleMgr.initialize(governor.address, minSubscriptionStake, supporters.address);
+    await staking.initialize(
+        governor.address,
+        supporters.address,
+        oracleMgr.address,
+        delayMachine.address,
+    );
+
+    return {
+        governor,
+        token,
+        oracleMgr,
+        supporters,
+        delayMachine,
+        staking,
+    };
+}
+
+module.exports = {
+    ADDRESS_ONE,
+    ADDRESS_ZERO,
+    bytes32toBN,
+    coinPairStr,
+    createGovernor,
+    findEvent,
+    getDefaultEncodedMessage,
+    initContracts,
+    mineBlocks,
+    mineUntilBlock,
+    mineUntilNextRound,
+    printOracles,
+};
