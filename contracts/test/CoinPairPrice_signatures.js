@@ -99,10 +99,11 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
     async function register(oracleData, cant_oracles) {
         // [0] owner, [1] sender
         for (o of oracleData.slice(0, cant_oracles)) {
-            await this.token.approve(this.oracleMgr.address, o.stake, {from: o.owner});
-            await this.oracleMgr.registerOracle(o.account, o.name, o.stake, {from: o.owner});
+            await this.token.approve(this.staking.address, o.stake, {from: o.owner});
+            await this.staking.registerOracle(o.account, o.name, {from: o.owner});
+            await this.staking.deposit(o.stake, o.owner, {from: o.owner});
             const thisCoinPair = await this.coinPairPrice.coinPair();
-            await this.oracleMgr.subscribeToCoinPair(o.account, thisCoinPair, {from: o.owner});
+            await this.staking.subscribeToCoinPair(o.account, thisCoinPair, {from: o.owner});
         }
         const FEES = new BN((0.33 * 10 ** 18).toString());
         await this.token.transfer(this.coinPairPrice.address, FEES.toString(), {
@@ -156,14 +157,27 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
     for (const t of TESTS_TO_RUN) {
         describe('Test for ' + t.oracles + ' oracles', async () => {
             before(async () => {
-                this.governor = await helpers.createGovernor(accounts[0]);
-                this.token = await TestMOC.new();
-                await this.token.initialize(this.governor.address);
-                this.oracleMgr = await OracleManager.new();
-                this.supporters = await SupportersWhitelisted.new();
+                const {
+                    governor,
+                    oracleMgr,
+                    supporters,
+                    staking,
+                    token,
+                } = await helpers.initContracts({
+                    governorOwner: accounts[0],
+                    minSubscriptionStake: minOracleOwnerStake,
+                    period: new BN(10),
+                });
+
+                this.governor = governor;
+                this.token = token;
+                this.oracleMgr = oracleMgr;
+                this.staking = staking;
+                this.supporters = supporters;
+
                 this.coinPairPrice = await CoinPairPrice.new();
                 await this.coinPairPrice.initialize(
-                    this.governor.addr,
+                    this.governor.address,
                     [accounts[0]], // whitelist
                     web3.utils.asciiToHex('BTCUSD'),
                     this.token.address,
@@ -175,19 +189,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
                     2, // numIdleRounds
                     this.oracleMgr.address,
                 );
-                await this.supporters.initialize(
-                    this.governor.addr,
-                    [this.oracleMgr.address],
-                    this.token.address,
-                    new BN(10), // period
-                    new BN(5), // _minStayBlocks
-                    new BN(2), // _afterStopBlocks
-                );
-                await this.oracleMgr.initialize(
-                    this.governor.addr,
-                    minOracleOwnerStake,
-                    this.supporters.address,
-                );
+
                 // Create sample coin pairs
                 await this.governor.registerCoinPair(
                     this.oracleMgr,

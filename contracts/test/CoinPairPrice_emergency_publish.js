@@ -24,18 +24,22 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
     const numIdleRounds = 2;
 
     before(async () => {
-        this.governor = await helpers.createGovernor(accounts[8]);
+        const {governor, oracleMgr, staking, supporters, token} = await helpers.initContracts({
+            governorOwner: accounts[8],
+            period,
+            minSubscriptionStake: minOracleOwnerStake,
+        });
 
-        this.token = await TestMOC.new();
-        await this.token.initialize(this.governor.address);
-
-        this.oracleMgr = await OracleManager.new();
-        this.supporters = await SupportersWhitelisted.new();
+        this.governor = governor;
+        this.oracleMgr = oracleMgr;
+        this.staking = staking;
+        this.supporters = supporters;
+        this.token = token;
 
         this.coinPairPrice = await CoinPairPrice.new();
 
         await this.coinPairPrice.initialize(
-            this.governor.addr,
+            this.governor.address,
             [accounts[0]], // peek whitelist
             coin_pair,
             this.token.address,
@@ -48,18 +52,6 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
             this.oracleMgr.address,
         );
 
-        await this.supporters.initialize(
-            this.governor.addr,
-            [this.oracleMgr.address],
-            this.token.address,
-            period,
-        );
-
-        await this.oracleMgr.initialize(
-            this.governor.addr,
-            minOracleOwnerStake,
-            this.supporters.address,
-        );
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, coin_pair, this.coinPairPrice.address);
 
@@ -112,11 +104,10 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
         const ORACLE_OWNER = accounts[0];
         const ORACLE_ADDR = accounts[1];
         await this.governor.mint(this.token.address, ORACLE_OWNER, '800000000000000000000');
-        await this.token.approve(this.oracleMgr.address, minOracleOwnerStake, {from: ORACLE_OWNER});
-        await this.oracleMgr.registerOracle(ORACLE_ADDR, 'SOME_NAME', minOracleOwnerStake, {
-            from: ORACLE_OWNER,
-        });
-        await this.oracleMgr.subscribeToCoinPair(ORACLE_ADDR, coin_pair, {from: ORACLE_OWNER});
+        await this.token.approve(this.staking.address, minOracleOwnerStake, {from: ORACLE_OWNER});
+        await this.staking.deposit(minOracleOwnerStake, ORACLE_OWNER, {from: ORACLE_OWNER});
+        await this.staking.registerOracle(ORACLE_ADDR, 'SOME_NAME', {from: ORACLE_OWNER});
+        await this.staking.subscribeToCoinPair(ORACLE_ADDR, coin_pair, {from: ORACLE_OWNER});
         await this.coinPairPrice.switchRound();
 
         // Publish a price
