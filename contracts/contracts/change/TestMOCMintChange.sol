@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {TestMOC} from "../TestMOC.sol";
@@ -8,7 +9,6 @@ import {TestMOC} from "../TestMOC.sol";
   @notice This contract is a ChangeContract intended to initialize all the MOC registry values
  */
 contract TestMOCMintChange is ChangeContract {
-
     TestMOC public token;
     address public user;
     uint256 public amount;
@@ -16,7 +16,11 @@ contract TestMOCMintChange is ChangeContract {
     /**
       @notice Constructor
     */
-    constructor(TestMOC _token, address _user, uint256 _amount) public {
+    constructor(
+        TestMOC _token,
+        address _user,
+        uint256 _amount
+    ) public {
         token = _token;
         user = _user;
         amount = _amount;

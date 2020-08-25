@@ -1,9 +1,11 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+
 //import {IterableWhitelist} from "../libs/IterableWhitelist.sol";
 
 /**
@@ -12,7 +14,6 @@ import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
   in various CoinPaiPrice contracts at once.
  */
 contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceStorage, ChangeContract {
-
     GovernedAbstract[] public coinPairPrices;
     bytes public encodedData;
 
@@ -21,7 +22,9 @@ contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceStorage, 
       @param _calculatedPriceProvider Address of coin pair price calculator to add to whitelists
       @param _coinPairPrices List of coinPairPrice contracts that must whitelist the _coinPairPriceCalculator Address
     */
-    constructor(address _calculatedPriceProvider, GovernedAbstract[] memory _coinPairPrices) public {
+    constructor(address _calculatedPriceProvider, GovernedAbstract[] memory _coinPairPrices)
+        public
+    {
         encodedData = abi.encode(_calculatedPriceProvider);
         coinPairPrices = _coinPairPrices;
     }
@@ -32,7 +35,7 @@ contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceStorage, 
       because it is not its responsability in the current architecture
      */
     function execute() external override {
-        for (uint i = 0; i < coinPairPrices.length; i++) {
+        for (uint256 i = 0; i < coinPairPrices.length; i++) {
             coinPairPrices[i].delegateCallToChanger(encodedData);
         }
         // TODO: Make it usable just once.

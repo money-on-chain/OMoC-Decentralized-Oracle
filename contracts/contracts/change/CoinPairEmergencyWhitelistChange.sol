@@ -1,14 +1,15 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+
 /**
   @title CoinPairEmergencyWhitelistChange
   @notice This contract is a ChangeContract intended to be used to add an emergency publisher to the whitelist.
  */
 contract CoinPairEmergencyWhitelistChange is CoinPairPriceStorage, ChangeContract {
-
     GovernedAbstract public coinPairPrice;
     bytes public encodedData;
 

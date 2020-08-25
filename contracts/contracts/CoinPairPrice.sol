@@ -1,7 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
@@ -15,14 +16,29 @@ import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
 contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRegisterEntry {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
-    event OracleRewardTransfer(uint256 roundNumber, address oracleAddress, address toOwnerAddress, uint256 amount);
+    event OracleRewardTransfer(
+        uint256 roundNumber,
+        address oracleAddress,
+        address toOwnerAddress,
+        uint256 amount
+    );
     event PricePublished(address sender, uint256 price, address votedOracle, uint256 blockNumber);
-    event EmergencyPricePublished(address sender, uint256 price, address votedOracle, uint256 blockNumber);
-    event NewRound(address caller, uint256 number, uint256 totalPoints, uint256 startBlock, uint256 lockPeriodEndBlock,
-        address[] selectedOracles);
-
+    event EmergencyPricePublished(
+        address sender,
+        uint256 price,
+        address votedOracle,
+        uint256 blockNumber
+    );
+    event NewRound(
+        address caller,
+        uint256 number,
+        uint256 totalPoints,
+        uint256 startBlock,
+        uint256 lockPeriodEndBlock,
+        address[] selectedOracles
+    );
 
     /// @notice Construct a new contract
     /// @param _governor The governor address.
@@ -49,13 +65,21 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         uint256 _bootstrapPrice,
         uint8 _numIdleRounds,
         OracleManager _oracleManager
-    ) external initializer
-    {
+    ) external initializer {
         require(_wlist.length != 0, "Whitelist must have at least one element");
         require(_coinPair != bytes32(0), "Coin pair must be valid");
-        require(_tokenAddress != address(0), "The MOC token address must be provided in constructor");
-        require(_validPricePeriodInBlocks > 0, "The valid price period must be positive and non zero");
-        require(_emergencyPublishingPeriodInBlocks > 0, "The emergency publishing period must be positive and non zero");
+        require(
+            _tokenAddress != address(0),
+            "The MOC token address must be provided in constructor"
+        );
+        require(
+            _validPricePeriodInBlocks > 0,
+            "The valid price period must be positive and non zero"
+        );
+        require(
+            _emergencyPublishingPeriodInBlocks > 0,
+            "The emergency publishing period must be positive and non zero"
+        );
 
         Governed._initialize(_governor);
 
@@ -67,7 +91,11 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         token = IERC20(_tokenAddress);
         coinPair = _coinPair;
         oracleManager = _oracleManager;
-        roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriodInBlocks, _numIdleRounds);
+        roundInfo = RoundInfoLib.initRoundInfo(
+            _maxOraclesPerRound,
+            _roundLockPeriodInBlocks,
+            _numIdleRounds
+        );
         _publish(_bootstrapPrice);
     }
 
@@ -81,7 +109,10 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @dev This is designed to be called from OracleManager.
     function subscribe(address oracleAddr) external {
         require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
-        require(subscribedOracles[oracleAddr] == false, "Oracle is already subscribed to this coin pair");
+        require(
+            subscribedOracles[oracleAddr] == false,
+            "Oracle is already subscribed to this coin pair"
+        );
 
         subscribedOracles[oracleAddr] = true;
         if (!roundInfo.isFull() && !roundInfo.isInCurrentRound(oracleAddr)) {
@@ -94,7 +125,10 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @dev This is designed to be called from OracleManager.
     function unsubscribe(address oracleAddr) external {
         require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
-        require(subscribedOracles[oracleAddr] == true, "Oracle is not subscribed to this coin pair");
+        require(
+            subscribedOracles[oracleAddr] == true,
+            "Oracle is not subscribed to this coin pair"
+        );
 
         subscribedOracles[oracleAddr] = false;
     }
@@ -127,40 +161,55 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @param _sig_v The array of V-component of Oracle signatures.
     /// @param _sig_r The array of R-component of Oracle signatures.
     /// @param _sig_s The array of S-component of Oracle signatures.
-    function publishPrice(uint256 _version,
+    function publishPrice(
+        uint256 _version,
         bytes32 _coinpair,
         uint256 _price,
         address _votedOracle,
         uint256 _blockNumber,
-        uint8[]  calldata _sig_v,
+        uint8[] calldata _sig_v,
         bytes32[] calldata _sig_r,
-        bytes32[] calldata _sig_s) external {
-
+        bytes32[] calldata _sig_s
+    ) external {
         require(roundInfo.number > 0, "Round not open");
         require(subscribedOracles[msg.sender], "Sender oracle not subscribed");
         require(roundInfo.isInCurrentRound(msg.sender), "Voter oracle is not part of this round");
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
         require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
         require(_price > 0, "Price must be positive and non-zero");
-        require(_blockNumber == lastPublicationBlock, "Blocknumber does not match the last publication block");
+        require(
+            _blockNumber == lastPublicationBlock,
+            "Blocknumber does not match the last publication block"
+        );
         require(_coinpair == coinPair, "Coin pair - contract mismatch");
 
         // Verify signatures
-        require(_sig_s.length == _sig_r.length && _sig_r.length == _sig_v.length, "Inconsistent signature count");
-        require(_sig_s.length > roundInfo.selectedOracles.length / 2,
-            "Signature count must exceed 50% of active oracles");
+        require(
+            _sig_s.length == _sig_r.length && _sig_r.length == _sig_v.length,
+            "Inconsistent signature count"
+        );
+        require(
+            _sig_s.length > roundInfo.selectedOracles.length / 2,
+            "Signature count must exceed 50% of active oracles"
+        );
 
         //
         // NOTE: Message Size is 148 = sizeof(uint256) +
         // sizeof(uint256) + sizeof(uint256) + sizeof(address) +sizeof(uint256)
         //
 
-        bytes memory hData = abi.encodePacked("\x19Ethereum Signed Message:\n148",
-            _version, _coinpair, _price, _votedOracle, _blockNumber);
+        bytes memory hData = abi.encodePacked(
+            "\x19Ethereum Signed Message:\n148",
+            _version,
+            _coinpair,
+            _price,
+            _votedOracle,
+            _blockNumber
+        );
         bytes32 messageHash = keccak256(hData);
 
         address lastAddr = address(0);
-        for (uint i = 0; i < _sig_s.length; i++) {
+        for (uint256 i = 0; i < _sig_s.length; i++) {
             address rec = _recoverSigner(_sig_v[i], _sig_r[i], _sig_s[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
             require(subscribedOracles[rec], "Signing oracle not subscribed");
@@ -177,41 +226,72 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
 
     /// @notice Publish a price without signature validation (when there is an emergecy!!!).
     /// @param _price Price to report.
-    function emergencyPublish(uint256 _price) external whitelistedOrExternal(emergencyPublishWhitelistData) {
+    function emergencyPublish(uint256 _price)
+        external
+        whitelistedOrExternal(emergencyPublishWhitelistData)
+    {
         require(_price > 0, "Price must be positive and non-zero");
-        require(block.number > lastPublicationBlock + emergencyPublishingPeriodInBlocks,
-            "Emergency publish period didn't started");
+        require(
+            block.number > lastPublicationBlock + emergencyPublishingPeriodInBlocks,
+            "Emergency publish period didn't started"
+        );
 
         _publish(_price);
 
         emit EmergencyPricePublished(msg.sender, _price, msg.sender, lastPublicationBlock);
     }
 
-
     /// @notice Return the current price, compatible with old MOC Oracle
-    function peek() external override view whitelistedOrExternal(pricePeekWhitelistData) returns (bytes32, bool) {
+    function peek()
+        external
+        override
+        view
+        whitelistedOrExternal(pricePeekWhitelistData)
+        returns (bytes32, bool)
+    {
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
 
-        return (bytes32(currentPrice), (block.number - lastPublicationBlock) < validPricePeriodInBlocks);
+        return (
+            bytes32(currentPrice),
+            (block.number - lastPublicationBlock) < validPricePeriodInBlocks
+        );
     }
 
     /// @notice Return the current price
-    function getPrice() external view whitelistedOrExternal(pricePeekWhitelistData) returns (uint256) {
+    function getPrice()
+        external
+        view
+        whitelistedOrExternal(pricePeekWhitelistData)
+        returns (uint256)
+    {
         return currentPrice;
     }
 
     /// @notice Return current round information
-    function getRoundInfo() external view returns (uint256 round,
-        uint256 startBlock,
-        uint256 lockPeriodEndBlock,
-        uint256 totalPoints,
-        address[] memory selectedOracles) {
+    function getRoundInfo()
+        external
+        view
+        returns (
+            uint256 round,
+            uint256 startBlock,
+            uint256 lockPeriodEndBlock,
+            uint256 totalPoints,
+            address[] memory selectedOracles
+        )
+    {
         return roundInfo.getRoundInfo();
     }
 
     /// @notice Return round information for specific oracle
-    function getOracleRoundInfo(address addr) external view returns (uint points, uint256 selectedInRound,
-        bool selectedInCurrentRound) {
+    function getOracleRoundInfo(address addr)
+        external
+        view
+        returns (
+            uint256 points,
+            uint256 selectedInRound,
+            bool selectedInCurrentRound
+        )
+    {
         return roundInfo.getOracleRoundInfo(addr);
     }
 
@@ -231,8 +311,14 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         // Select top stake oracles to participate on this round
         _selectOraclesForRound();
 
-        emit NewRound(msg.sender, roundInfo.number, roundInfo.totalPoints, roundInfo.startBlock,
-            roundInfo.lockPeriodEndBlock, roundInfo.selectedOracles);
+        emit NewRound(
+            msg.sender,
+            roundInfo.number,
+            roundInfo.totalPoints,
+            roundInfo.startBlock,
+            roundInfo.lockPeriodEndBlock,
+            roundInfo.selectedOracles
+        );
     }
 
     // The maximum count of oracles selected to participate each round
@@ -274,19 +360,17 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
 
     /// @notice Distribute rewards to oracles, taking fees from this smart contract.
     function _distributeRewards() private {
-        if (roundInfo.totalPoints == 0)
-            return;
+        if (roundInfo.totalPoints == 0) return;
         uint256 availableRewardFees = token.balanceOf(address(this));
-        if (availableRewardFees == 0)
-            return;
+        if (availableRewardFees == 0) return;
 
         // Distribute according to points/TotalPoints ratio
         uint256 distSum = 0;
-        for (uint i = 0; i < roundInfo.selectedOracles.length; i++) {
+        for (uint256 i = 0; i < roundInfo.selectedOracles.length; i++) {
             address oracleAddr = roundInfo.selectedOracles[i];
             uint256 points = roundInfo.getPoints(oracleAddr);
             uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
-            (, address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);
+            (, , address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);
 
             require(token.transfer(owneraddr, distAmount), "Token transfer failed");
             distSum = distSum.add(distAmount);
@@ -297,8 +381,16 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice Select top-stakers for the current round. Only subscribed oracles to this contract are
     /// considered for selection.
     function _selectOraclesForRound() private {
-
         roundInfo.clearSelectedOracles();
+        for (
+            address addr = oracleManager.getRegisteredOracleHead();
+            addr != address(0) && !roundInfo.isFull();
+            addr = oracleManager.getRegisteredOracleNext(addr)
+        ) {
+            if (subscribedOracles[addr]) {
+                roundInfo.addOracleToRound(addr);
+            }
+        }
     }
 
     // @notice publish a price, called only after verification.
@@ -309,7 +401,12 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
 
     /// @notice Recover signer address from v,r,s signature components and hash
     ///
-    function _recoverSigner(uint8 v, bytes32 r, bytes32 s, bytes32 hash) private pure returns (address) {
+    function _recoverSigner(
+        uint8 v,
+        bytes32 r,
+        bytes32 s,
+        bytes32 hash
+    ) private pure returns (address) {
         uint8 v0 = v;
 
         // Version of signature should be 27 or 28, but 0 and 1 are also possible versions

@@ -1,6 +1,7 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
@@ -9,7 +10,7 @@ import {PriceProviderRegisterStorage} from "./PriceProviderRegisterStorage.sol";
 /// @title A registry for the coin pair prices, this is more general than OracleManager that stores
 /// only the coin pairs that are published by oracles.
 contract PriceProviderRegister is PriceProviderRegisterStorage {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     /**
       @notice Initialize the contract with the basic settings
@@ -24,14 +25,20 @@ contract PriceProviderRegister is PriceProviderRegisterStorage {
     /// @notice Register a new coin pair contract.
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.
-    function registerCoinPair(bytes32 coinPair, IPriceProviderRegisterEntry addr) external onlyAuthorizedChanger() {
+    function registerCoinPair(bytes32 coinPair, IPriceProviderRegisterEntry addr)
+        external
+        onlyAuthorizedChanger()
+    {
         coinPairRegisterData._registerCoinPair(coinPair, address(addr));
     }
 
     /// @notice Set the address for a coinpair (the old one is lost!!!!)
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.
-    function setCoinPair(bytes32 coinPair, IPriceProviderRegisterEntry addr) external onlyAuthorizedChanger() {
+    function setCoinPair(bytes32 coinPair, IPriceProviderRegisterEntry addr)
+        external
+        onlyAuthorizedChanger()
+    {
         coinPairRegisterData._setCoinPair(coinPair, address(addr));
     }
 
@@ -42,7 +49,6 @@ contract PriceProviderRegister is PriceProviderRegisterStorage {
         coinPairRegisterData._unRegisterCoinPair(coinPair, hint);
     }
 
-
     /// @notice Return the contract address for a specified registered coin pair.
     /// @param coinpair Coin-pair string to lookup (e.g: BTCUSD)
     /// @return address Address of contract or zero if does not exist or was deleted.
@@ -52,7 +58,7 @@ contract PriceProviderRegister is PriceProviderRegisterStorage {
 
     /// @notice Returns the count of registered coin pairs.
     /// Keep in mind that Deleted coin-pairs will contain zeroed addresses.
-    function getCoinPairCount() external view returns (uint) {
+    function getCoinPairCount() external view returns (uint256) {
         return coinPairRegisterData._getCoinPairCount();
     }
 
@@ -68,5 +74,4 @@ contract PriceProviderRegister is PriceProviderRegisterStorage {
     function getCoinPairIndex(bytes32 coinPair, uint256 hint) external view returns (uint256) {
         return coinPairRegisterData._getCoinPairIndex(coinPair, hint);
     }
-
 }

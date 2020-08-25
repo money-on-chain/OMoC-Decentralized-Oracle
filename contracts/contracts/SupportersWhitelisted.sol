@@ -1,7 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {SupportersWhitelistedStorage} from "./SupportersWhitelistedStorage.sol";
@@ -14,18 +15,33 @@ import {SupportersWhitelistedStorage} from "./SupportersWhitelistedStorage.sol";
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
 contract SupportersWhitelisted is SupportersWhitelistedStorage {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     // Emitted by SupportersLib
     event PayEarnings(uint256 earnings, uint256 start, uint256 end);
     event CancelEarnings(uint256 earnings, uint256 start, uint256 end);
-    event AddStake(address indexed user, address indexed subaccount,
-        address indexed sender, uint256 amount, uint256 mocs);
-    event WithdrawStake(address indexed user, address indexed subaccount,
-        address indexed destination, uint256 amount, uint256 mocs);
+    event AddStake(
+        address indexed user,
+        address indexed subaccount,
+        address indexed sender,
+        uint256 amount,
+        uint256 mocs
+    );
+    event WithdrawStake(
+        address indexed user,
+        address indexed subaccount,
+        address indexed destination,
+        uint256 amount,
+        uint256 mocs
+    );
 
-    event Withdraw(address indexed msg_sender, address indexed subacount,
-        address indexed receiver, uint256 mocs, uint256 blockNum);
+    event Withdraw(
+        address indexed msg_sender,
+        address indexed subacount,
+        address indexed receiver,
+        uint256 mocs,
+        uint256 blockNum
+    );
 
     struct LockingInfo {
         uint256 untilTimestamp;
@@ -33,7 +49,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     }
 
     mapping(address => LockingInfo) lockedMocs;
-    uint256 totalLockedMocs;
 
     /**
      @notice Contract creation
@@ -43,8 +58,12 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
      @param _mocToken The address of the contract which governs this one
      @param _period The address of the contract which governs this one
     */
-    function initialize(IGovernor _governor, address[] calldata _wlist, IERC20 _mocToken, uint256 _period)
-    external initializer {
+    function initialize(
+        IGovernor _governor,
+        address[] calldata _wlist,
+        IERC20 _mocToken,
+        uint256 _period
+    ) external initializer {
         Governed._initialize(_governor);
         supportersData._initialize(_mocToken, _period);
         for (uint256 i = 0; i < _wlist.length; i++) {
@@ -59,9 +78,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         LockingInfo storage lockedMocsInfo = lockedMocs[mocHolder];
         lockedMocsInfo.untilTimestamp = untilTimestamp;
         uint256 mocBalance = supportersData._getMOCBalanceAt(msg.sender, mocHolder);
-        uint256 surplus = mocBalance - lockedMocsInfo.amount;
         lockedMocsInfo.amount = mocBalance;
-        totalLockedMocs = totalLockedMocs.add(surplus);
     }
 
     /// @notice Reports the balance of locked MOCs for a specific user.
@@ -70,15 +87,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
     function getLockedBalance(address user) external view returns (uint256) {
         LockingInfo storage lockedMocsInfo = lockedMocs[user];
         return lockedMocsInfo.amount;
-    }
-
-    /**
-      @notice Gets total amount of locked MOCs.
-
-      @return Total amount of locked MOCs.
-    */
-    function getTotalLockedBalance() external view returns (uint256) {
-        return totalLockedMocs;
     }
 
     /**
@@ -99,7 +107,6 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
         iterableWhitelistData._removeFromWhitelist(_whitelisted, 0);
     }
 
-
     /**
       @notice Deposit earnings that will be credited to supporters.
       @dev Earnings will be credited periodically through several blocks.
@@ -113,7 +120,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
 
       @return true if ready
     */
-    function isReadyToDistribute() external view returns (bool)  {
+    function isReadyToDistribute() external view returns (bool) {
         return supportersData._isReadyToDistribute();
     }
 
@@ -124,7 +131,9 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
      @param _subaccount sub-account used to identify the stake
     */
     function stakeAt(uint256 _mocs, address _subaccount)
-    external onlyWhitelisted(iterableWhitelistData) {
+        external
+        onlyWhitelisted(iterableWhitelistData)
+    {
         supportersData._stakeAtFrom(_mocs, _subaccount, msg.sender);
     }
 
@@ -135,8 +144,11 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
      @param _subaccount sub-account used to identify the stake
      @param _sender sender account that must approve and from which the funds are taken
     */
-    function stakeAtFrom(uint256 _mocs, address _subaccount, address _sender)
-    external onlyWhitelisted(iterableWhitelistData) {
+    function stakeAtFrom(
+        uint256 _mocs,
+        address _subaccount,
+        address _sender
+    ) external onlyWhitelisted(iterableWhitelistData) {
         supportersData._stakeAtFrom(_mocs, _subaccount, _sender);
     }
 
@@ -148,8 +160,11 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @return Amount of MOC transfered
     */
     function withdrawFrom(uint256 _tokens, address _subaccount)
-    external onlyWhitelisted(iterableWhitelistData)
-    stakeAvailable(msg.sender, _subaccount, _tokens) returns (uint256) {
+        external
+        onlyWhitelisted(iterableWhitelistData)
+        stakeAvailable(msg.sender, _subaccount, _tokens)
+        returns (uint256)
+    {
         return supportersData._withdrawFromTo(_tokens, _subaccount, msg.sender);
     }
 
@@ -161,9 +176,16 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @param _receiver destination address that gets the MOC
       @return Amount of MOC transfered
     */
-    function withdrawFromTo(uint256 _tokens, address _subaccount, address _receiver)
-    external onlyWhitelisted(iterableWhitelistData)
-    stakeAvailable(msg.sender, _subaccount, _tokens) returns (uint256) {
+    function withdrawFromTo(
+        uint256 _tokens,
+        address _subaccount,
+        address _receiver
+    )
+        external
+        onlyWhitelisted(iterableWhitelistData)
+        stakeAvailable(msg.sender, _subaccount, _tokens)
+        returns (uint256)
+    {
         return supportersData._withdrawFromTo(_tokens, _subaccount, _receiver);
     }
 
@@ -232,10 +254,17 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
 
       @return Information about earnings
     */
-    function getEarningsInfo() external view returns (uint256, uint256, uint256) {
+    function getEarningsInfo()
+        external
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         return supportersData._getEarningsInfo();
     }
-
 
     /// @notice The moc token address
     function mocToken() external view returns (IERC20) {
@@ -289,7 +318,11 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
       @notice Modifier that checks locked stake for withdrawal availability
       @dev You should use this modifier in any function that withdraws a user's stake.
      */
-    modifier stakeAvailable(address user, address subaccount, uint256 tokens) {
+    modifier stakeAvailable(
+        address user,
+        address subaccount,
+        uint256 tokens
+    ) {
         uint256 mocs = supportersData._tokenToMoc(tokens);
         LockingInfo storage lockedMocsInfo = lockedMocs[subaccount];
         uint256 mocBalance = supportersData._getMOCBalanceAt(user, subaccount);

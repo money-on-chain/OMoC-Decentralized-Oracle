@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {Governed} from "../moc-gobernanza/Governance/Governed.sol";
 import {IGovernor} from "../moc-gobernanza/Governance/IGovernor.sol";
@@ -13,10 +14,11 @@ import {IGovernor} from "../moc-gobernanza/Governance/IGovernor.sol";
   storage.
   */
 contract GovernedAbstract is Governed {
-
     function delegateCallToChanger(bytes memory data) public onlyAuthorizedChanger() {
         address changerContrat = msg.sender;
-        (bool success,) = changerContrat.delegatecall(abi.encodeWithSignature("impersonate(bytes)", data));
+        (bool success, ) = changerContrat.delegatecall(
+            abi.encodeWithSignature("impersonate(bytes)", data)
+        );
         require(success, "Error in delegate call");
     }
 }

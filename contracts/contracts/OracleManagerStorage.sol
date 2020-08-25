@@ -1,10 +1,10 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
-import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
 import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
@@ -12,7 +12,7 @@ import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 
 contract OracleManagerStorage is Initializable, GovernedAbstract {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using OracleInfoLib for OracleInfoLib.OracleRegisterInfo;
     using CoinPairRegisterLib for CoinPairRegisterLib.CoinPairRegisterData;
     using IterableOraclesLib for IterableOraclesLib.IterableOraclesData;
@@ -24,17 +24,18 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
     IterableOraclesLib.IterableOraclesData  internal registeredOracles;
 
     // Supporters contract in which we store stake
-    SupportersWhitelisted public            supportersContract;
+    SupportersWhitelisted public supportersContract;
 
     // Minimum coin pair subscription stake
-    uint256 public                          minCPSubscriptionStake;
+    uint256 public minCPSubscriptionStake;
 
     // MOC Token contract
-    IERC20 public                           token;
+    IERC20 public token;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
+    constructor() internal {}
+
     // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.

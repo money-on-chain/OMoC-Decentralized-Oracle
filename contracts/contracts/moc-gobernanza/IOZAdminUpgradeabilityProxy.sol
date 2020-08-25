@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 /**
  * @dev Interface of the openzeppeling AdminUpgradeabilityProxy
@@ -44,12 +45,11 @@ interface IOZAdminUpgradeabilityProxy {
      * It should include the signature and the parameters of the function to be called, as described in
      * https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding.
      */
-    function upgradeToAndCall(address newImplementation, bytes calldata data) payable external;
+    function upgradeToAndCall(address newImplementation, bytes calldata data) external payable;
 
     /**
-      * @dev Emitted when the implementation is upgraded.
-      * @param implementation Address of the new implementation.
-      */
+     * @dev Emitted when the implementation is upgraded.
+     * @param implementation Address of the new implementation.
+     */
     event Upgraded(address indexed implementation);
-
 }

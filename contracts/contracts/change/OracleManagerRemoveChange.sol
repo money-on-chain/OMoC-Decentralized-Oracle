@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {OracleManager} from "../OracleManager.sol";
@@ -11,7 +12,6 @@ import {OracleManager} from "../OracleManager.sol";
   this one or taking it as a guide
  */
 contract OracleManagerRemoveChange is ChangeContract {
-
     OracleManager public oracleManager;
     address public oracleAddr;
 
@@ -32,5 +32,4 @@ contract OracleManagerRemoveChange is ChangeContract {
         oracleManager.removeOracle(msg.sender, oracleAddr);
         oracleManager = OracleManager(0);
     }
-
 }

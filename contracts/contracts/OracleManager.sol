@@ -1,7 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {RegisteredOraclesLib} from "./libs/RegisteredOraclesLib.sol";
@@ -12,10 +13,10 @@ import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {OracleManagerStorage} from "./OracleManagerStorage.sol";
 
 contract OracleManager is OracleManagerStorage {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     event OracleRegistered(address caller, address addr, string internetName);
-    event OracleStakeAdded(address caller, address addr, uint stake);
+    event OracleStakeAdded(address caller, address addr, uint256 stake);
     event OracleSubscribed(address caller, address addr, bytes32 coinpair);
     event OracleUnsubscribed(address caller, address addr, bytes32 coinpair);
     event OracleRemoved(address caller, address addr);
@@ -29,11 +30,23 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Construct this contract.
     /// @param _minCPSubscriptionStake The minimum amount of tokens required as stake for a coin pair subscription.
     /// @param _supportersContract the Supporters contract contract address.
-    function initialize(IGovernor _governor, uint256 _minCPSubscriptionStake, SupportersWhitelisted _supportersContract)
-    external initializer {
-        require(address(_supportersContract) != address(0), "Supporters contract address must be != 0");
-        require(address(_supportersContract.mocToken()) != address(0), "Token contract address must be != 0");
-        require(_minCPSubscriptionStake > 0, "The minimum coin pair subscription stake amount cannot be zero");
+    function initialize(
+        IGovernor _governor,
+        uint256 _minCPSubscriptionStake,
+        SupportersWhitelisted _supportersContract
+    ) external initializer {
+        require(
+            address(_supportersContract) != address(0),
+            "Supporters contract address must be != 0"
+        );
+        require(
+            address(_supportersContract.mocToken()) != address(0),
+            "Token contract address must be != 0"
+        );
+        require(
+            _minCPSubscriptionStake > 0,
+            "The minimum coin pair subscription stake amount cannot be zero"
+        );
 
         Governed._initialize(_governor);
         supportersContract = _supportersContract;
@@ -118,16 +131,17 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Returns the list of subscribed coinpair contract address for an oracle
     /// @return addresses Array of subscribed coin pairs addresses.
     /// @return count The count of valid entries in the addresses param.
-    function getSubscribedCoinPairAddresses(address ownerAddr, address oracleAddr)
-    public view returns (CoinPairPrice[] memory addresses, uint count) {
-        uint coinPairCount = coinPairRegisterData._getCoinPairCount();
+    function getSubscribedCoinPairAddresses(address oracleAddr)
+        public
+        view
+        returns (CoinPairPrice[] memory addresses, uint256 count)
+    {
+        uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         CoinPairPrice[] memory subscribedCoinpairs = new CoinPairPrice[](coinPairCount);
         uint256 valid = 0;
-        for (uint256 i = 0; i < coinPairCount; i++)
-        {
+        for (uint256 i = 0; i < coinPairCount; i++) {
             bytes32 cp = coinPairRegisterData._getCoinPairAtIndex(i);
-            if (isSubscribed(ownerAddr, oracleAddr, cp))
-            {
+            if (isSubscribed(ownerAddr, oracleAddr, cp)) {
                 subscribedCoinpairs[i] = _getCoinPairAddress(cp);
                 valid = valid.add(1);
             }
@@ -155,7 +169,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Returns registration information for a registered Oracle.
     /// @param oracleAddr addr The address of the Oracle to query for.
     function getOracleRegistrationInfo(address oracleAddr)
-    external view returns (string memory internetName, address _owner) {
+    external view returns (string memory internetName, uint256 stake, address _owner) {
         _owner = registeredOracles._getOwner(oracleAddr);
         require(registeredOracles._isOracleRegistered(_owner), "Oracle is not registered.");
         internetName = registeredOracles.registeredOracles[_owner].url;
@@ -165,7 +179,14 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleAddr address of the oracle to query for.
     /// @param coinpair The coin pair to lookup.
     function getOracleRoundInfo(address oracleAddr, bytes32 coinpair)
-    external view returns (uint points, uint selectedInRound, bool selectedInCurrentRound) {
+        external
+        view
+        returns (
+            uint256 points,
+            uint256 selectedInRound,
+            bool selectedInCurrentRound
+        )
+    {
         CoinPairPrice ctAddr = _getCoinPairAddress(coinpair);
         (points, selectedInRound, selectedInCurrentRound) = ctAddr.getOracleRoundInfo(oracleAddr);
     }
@@ -200,7 +221,7 @@ contract OracleManager is OracleManagerStorage {
 
     /// @notice Returns the count of registered coin pairs.
     /// Keep in mind that Deleted coin-pairs will contain zeroed addresses.
-    function getCoinPairCount() external view returns (uint) {
+    function getCoinPairCount() external view returns (uint256) {
         return coinPairRegisterData._getCoinPairCount();
     }
 
@@ -227,9 +248,9 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param oracleAddr the oracle address to lookup.
     function _canRemoveOracle(address oracleAddr) private view returns (bool) {
-        uint coinPairCount = coinPairRegisterData._getCoinPairCount();
+        uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         bool canRemove = true;
-        for (uint i = 0; i < coinPairCount && canRemove; i++) {
+        for (uint256 i = 0; i < coinPairCount && canRemove; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
             canRemove = canRemove && cp.canRemoveOracle(oracleAddr);
         }
@@ -244,7 +265,10 @@ contract OracleManager is OracleManagerStorage {
         require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
         require(_isOwner(ownerAddr, oracleAddr), "Must be called by oracle owner");
 
-        (CoinPairPrice[] memory coinpairs, uint count) = getSubscribedCoinPairAddresses(ownerAddr, oracleAddr);
+        (CoinPairPrice[] memory coinpairs, uint count) = getSubscribedCoinPairAddresses(
+            ownerAddr,
+            oracleAddr
+        );
         for (uint i = 0; i < count; i++) {
             coinpairs[i].unsubscribe(oracleAddr);
         }
@@ -263,5 +287,4 @@ contract OracleManager is OracleManagerStorage {
     function _getCoinPairAddress(bytes32 coinpair) private view returns (CoinPairPrice) {
         return CoinPairPrice(coinPairRegisterData._getContractAddress(coinpair));
     }
-
 }

@@ -1,14 +1,15 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {IGovernor} from "../moc-gobernanza/Governance/IGovernor.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+
 /**
   @title GobernorChange
   @notice This contract is a ChangeContract intended to change the gobernor of all the gobernable contracts
  */
 contract GovernorChange is ChangeContract {
-
     IGovernor public newGovernor;
     GovernedAbstract[] public governed;
 
@@ -35,5 +36,4 @@ contract GovernorChange is ChangeContract {
         // Usable just once.
         newGovernor = IGovernor(0);
     }
-
 }

@@ -1,7 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {IERC20} from "../openzeppelin/token/ERC20/IERC20.sol";
-import {SafeMath} from "../openzeppelin/math/SafeMath.sol";
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 /*
     Abstract contract meant to be reused.
@@ -11,13 +12,10 @@ library SupportersLib {
     struct SupportersData {
         // Balance in tokens for each supporter
         mapping(address => mapping(address => uint256)) tokenBalances;
-
         // Total of tokens created
         uint256 totalSupply;
-
         // Total of MOC deposited in the contract
         uint256 mocBalance;
-
         // Initial block where earnings started to be paid
         uint256 startEarnings;
         // Final block where earnings will be paid
@@ -26,7 +24,6 @@ library SupportersLib {
         uint256 earnings;
         // Number of blocks to distribute earnings
         uint256 period;
-
         // MOC token address
         IERC20 mocToken;
     }
@@ -37,12 +34,21 @@ library SupportersLib {
 
     event CancelEarnings(uint256 earnings, uint256 start, uint256 end);
 
-    event AddStake(address indexed user, address indexed subaccount,
-        address indexed sender, uint256 amount, uint256 mocs);
+    event AddStake(
+        address indexed user,
+        address indexed subaccount,
+        address indexed sender,
+        uint256 amount,
+        uint256 mocs
+    );
 
-    event WithdrawStake(address indexed user, address indexed subaccount,
-        address indexed destination, uint256 amount, uint256 mocs);
-
+    event WithdrawStake(
+        address indexed user,
+        address indexed subaccount,
+        address indexed destination,
+        uint256 amount,
+        uint256 mocs
+    );
 
     /**
     Contract creation
@@ -50,23 +56,27 @@ library SupportersLib {
     @param _mocToken MOC token address
     @param _period Number of blocks to distribute earnings, round length
     */
-    function _initialize(SupportersData storage self, IERC20 _mocToken, uint256 _period) internal {
+    function _initialize(
+        SupportersData storage self,
+        IERC20 _mocToken,
+        uint256 _period
+    ) internal {
         self.mocToken = _mocToken;
         self.period = _period;
     }
 
     /**
-      * @dev Sets the period,
-      * @param _period- the override minOracleOwnerStake
-      */
+     * @dev Sets the period,
+     * @param _period- the override minOracleOwnerStake
+     */
     function _setPeriod(SupportersData storage self, uint256 _period) internal {
         self.period = _period;
     }
 
     /**
-      * @dev Sets the moc token address,
-      * @param _mocToken- the override mocToken
-      */
+     * @dev Sets the moc token address,
+     * @param _mocToken- the override mocToken
+     */
     function _setMocToken(SupportersData storage self, IERC20 _mocToken) internal {
         self.mocToken = _mocToken;
     }
@@ -95,7 +105,7 @@ library SupportersLib {
 
       @return true if ready
     */
-    function _isReadyToDistribute(SupportersData storage self) internal view returns (bool)  {
+    function _isReadyToDistribute(SupportersData storage self) internal view returns (bool) {
         return (self.totalSupply > 0 && block.number > self.endEarnings);
     }
 
@@ -106,18 +116,24 @@ library SupportersLib {
       @param _subaccount sub-account used to identify the stake
       @param _sender sender account that must approve and from which the funds are taken
     */
-    function _stakeAtFrom(SupportersData storage self, uint256 _mocs, address _subaccount, address _sender)
-    internal {
+    function _stakeAtFrom(
+        SupportersData storage self,
+        uint256 _mocs,
+        address _subaccount,
+        address _sender
+    ) internal {
         uint256 tokens = _mocToToken(self, _mocs);
 
         self.mocBalance = self.mocBalance.add(_mocs);
-        require(self.mocToken.transferFrom(_sender, address(this), _mocs), "error in transfer from");
+        require(
+            self.mocToken.transferFrom(_sender, address(this), _mocs),
+            "error in transfer from"
+        );
 
         __mintToken(self, msg.sender, tokens, _subaccount);
 
         emit AddStake(msg.sender, _subaccount, _sender, tokens, _mocs);
     }
-
 
     /**
       Withdraw MOC for tokens for a subaccount.
@@ -127,10 +143,13 @@ library SupportersLib {
       @param _receiver destination address that gets the MOC
       @return Amount of MOC transfered
     */
-    function _withdrawFromTo(SupportersData storage self,
-        uint256 _tokens, address _subaccount, address _receiver)
-    internal returns (uint256) {
-        uint mocs = _tokenToMoc(self, _tokens);
+    function _withdrawFromTo(
+        SupportersData storage self,
+        uint256 _tokens,
+        address _subaccount,
+        address _receiver
+    ) internal returns (uint256) {
+        uint256 mocs = _tokenToMoc(self, _tokens);
 
         _burnToken(self, msg.sender, _tokens, _subaccount);
 
@@ -153,8 +172,11 @@ library SupportersLib {
       @param _subaccount subaccount to get balance
       @return tokens for _user at _subaccount
     */
-    function _getBalanceAt(SupportersData storage self, address _user, address _subaccount)
-    internal view returns (uint256) {
+    function _getBalanceAt(
+        SupportersData storage self,
+        address _user,
+        address _subaccount
+    ) internal view returns (uint256) {
         return self.tokenBalances[_user][_subaccount];
     }
 
@@ -165,8 +187,11 @@ library SupportersLib {
       @param _subaccount subaccount to get MOC balance
       @return MOC for _user
     */
-    function _getMOCBalanceAt(SupportersData storage self, address _user, address _subaccount)
-    internal view returns (uint256) {
+    function _getMOCBalanceAt(
+        SupportersData storage self,
+        address _user,
+        address _subaccount
+    ) internal view returns (uint256) {
         return _tokenToMoc(self, self.tokenBalances[_user][_subaccount]);
     }
 
@@ -194,7 +219,11 @@ library SupportersLib {
       @param _mocs Amount of MOC
       @return Equivalent amount of tokens
     */
-    function _mocToToken(SupportersData storage self, uint256 _mocs) internal view returns (uint256) {
+    function _mocToToken(SupportersData storage self, uint256 _mocs)
+        internal
+        view
+        returns (uint256)
+    {
         uint256 totalMocs = _getAvailableMOC(self);
         uint256 totalTokens = _getTokens(self);
         if (totalMocs == 0 && totalTokens == 0) {
@@ -209,7 +238,11 @@ library SupportersLib {
       @param _tokens Amount of tokens
       @return Equivalent amount of MOC
     */
-    function _tokenToMoc(SupportersData storage self, uint256 _tokens) internal view returns (uint256) {
+    function _tokenToMoc(SupportersData storage self, uint256 _tokens)
+        internal
+        view
+        returns (uint256)
+    {
         uint256 totalTokens = _getTokens(self);
         uint256 totalMocs = _getAvailableMOC(self);
         if (totalMocs == 0) {
@@ -224,11 +257,18 @@ library SupportersLib {
       @param _block Block used to calculate
       @return Earnings to be paid
     */
-    function _getEarningsAt(SupportersData storage self, uint256 _block) internal view returns (uint256) {
+    function _getEarningsAt(SupportersData storage self, uint256 _block)
+        internal
+        view
+        returns (uint256)
+    {
         if (self.earnings == 0) return 0;
         if (_block < self.startEarnings) return 0;
         if (_block > self.endEarnings) return self.earnings;
-        return self.earnings.mul(_block.sub(self.startEarnings)).div(self.endEarnings.sub(self.startEarnings));
+        return
+            self.earnings.mul(_block.sub(self.startEarnings)).div(
+                self.endEarnings.sub(self.startEarnings)
+            );
     }
 
     /**
@@ -237,7 +277,11 @@ library SupportersLib {
       @param _block Block used for calculations
       @return Locked amount of earnings in MOC
     */
-    function _getLockedAt(SupportersData storage self, uint256 _block) internal view returns (uint256) {
+    function _getLockedAt(SupportersData storage self, uint256 _block)
+        internal
+        view
+        returns (uint256)
+    {
         return self.earnings.sub(_getEarningsAt(self, _block));
     }
 
@@ -248,8 +292,15 @@ library SupportersLib {
       @param _amount Amount of tokens to create
       @param _subaccount Subaccount to store tokens
     */
-    function __mintToken(SupportersData storage self, address _user, uint256 _amount, address _subaccount) internal {
-        self.tokenBalances[_user][_subaccount] = self.tokenBalances[_user][_subaccount].add(_amount);
+    function __mintToken(
+        SupportersData storage self,
+        address _user,
+        uint256 _amount,
+        address _subaccount
+    ) internal {
+        self.tokenBalances[_user][_subaccount] = self.tokenBalances[_user][_subaccount].add(
+            _amount
+        );
         self.totalSupply = self.totalSupply.add(_amount);
     }
 
@@ -258,7 +309,15 @@ library SupportersLib {
 
       @return Information about earnings
     */
-    function _getEarningsInfo(SupportersData storage self) internal view returns (uint256, uint256, uint256) {
+    function _getEarningsInfo(SupportersData storage self)
+        internal
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         uint256 next = self.mocToken.balanceOf(address(this)).sub(self.mocBalance);
         uint256 distributed = _getEarningsAt(self, block.number);
         return (self.earnings, distributed, next);
@@ -271,8 +330,15 @@ library SupportersLib {
       @param _amount Amount of tokens to destroy
       @param _subaccount Subaccount with tokens
     */
-    function _burnToken(SupportersData storage self, address _user, uint256 _amount, address _subaccount) internal {
-        self.tokenBalances[_user][_subaccount] = self.tokenBalances[_user][_subaccount].sub(_amount);
+    function _burnToken(
+        SupportersData storage self,
+        address _user,
+        uint256 _amount,
+        address _subaccount
+    ) internal {
+        self.tokenBalances[_user][_subaccount] = self.tokenBalances[_user][_subaccount].sub(
+            _amount
+        );
         self.totalSupply = self.totalSupply.sub(_amount);
     }
 

@@ -1,8 +1,9 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {IERC20} from "../openzeppelin/token/ERC20/IERC20.sol";
-import {SafeMath} from "../openzeppelin/math/SafeMath.sol";
-import {Initializable} from "../openzeppelin/Initializable.sol";
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {SupportersLib} from "../libs/SupportersLib.sol";
 
 /*
@@ -15,10 +16,20 @@ contract Supporters is Initializable {
     // Emitted by SupportersLib
     event PayEarnings(uint256 earnings, uint256 start, uint256 end);
     event CancelEarnings(uint256 earnings, uint256 start, uint256 end);
-    event AddStake(address indexed user, address indexed subaccount,
-        address indexed sender, uint256 amount, uint256 mocs);
-    event WithdrawStake(address indexed user, address indexed subaccount,
-        address indexed destination, uint256 amount, uint256 mocs);
+    event AddStake(
+        address indexed user,
+        address indexed subaccount,
+        address indexed sender,
+        uint256 amount,
+        uint256 mocs
+    );
+    event WithdrawStake(
+        address indexed user,
+        address indexed subaccount,
+        address indexed destination,
+        uint256 amount,
+        uint256 mocs
+    );
 
     function initialize(IERC20 _mocToken, uint256 _period) external initializer {
         supportersData._initialize(_mocToken, _period);
@@ -157,7 +168,15 @@ contract Supporters is Initializable {
 
       @return Information about earnings
     */
-    function getEarningsInfo() external view returns (uint256, uint256, uint256) {
+    function getEarningsInfo()
+        external
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         return supportersData._getEarningsInfo();
     }
 
@@ -167,5 +186,4 @@ contract Supporters is Initializable {
     function mocToken() external view returns (IERC20) {
         return supportersData.mocToken;
     }
-
 }

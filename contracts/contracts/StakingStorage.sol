@@ -1,17 +1,14 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {Initializable} from  "./openzeppelin/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {MockDelayMachine} from "./testing_mocks/MockDelayMachine.sol";
-import {IERC20} from "./openzeppelin/token/ERC20/IERC20.sol";
-
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 contract StakingStorage is Initializable, GovernedAbstract {
-    using SafeMath for uint;
-
     SupportersWhitelisted public supporters;
     OracleManager public oracleManager;
     IERC20 public mocToken;
@@ -21,7 +18,8 @@ contract StakingStorage is Initializable, GovernedAbstract {
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
+    constructor() internal {}
+
     // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.

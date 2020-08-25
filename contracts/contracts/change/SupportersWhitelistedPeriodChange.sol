@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
@@ -10,7 +11,6 @@ import {SupportersWhitelistedStorage} from "../SupportersWhitelistedStorage.sol"
   parameter period
  */
 contract SupportersWhitelistedPeriodChange is SupportersWhitelistedStorage, ChangeContract {
-
     GovernedAbstract public supporters;
     bytes public encodedData;
 

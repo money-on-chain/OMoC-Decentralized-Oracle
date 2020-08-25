@@ -1,4 +1,5 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {OracleManager} from "../OracleManager.sol";
@@ -24,8 +25,11 @@ contract PriceProviderRegisterPairChange is ChangeContract {
       @param _coinPair Coinpair to register
       @param _contractAddr Address to register
     */
-    constructor(PriceProviderRegister _priceProviderRegister, bytes32 _coinPair,
-        IPriceProviderRegisterEntry _contractAddr) public {
+    constructor(
+        PriceProviderRegister _priceProviderRegister,
+        bytes32 _coinPair,
+        IPriceProviderRegisterEntry _contractAddr
+    ) public {
         priceProviderRegister = _priceProviderRegister;
         coinPair = _coinPair;
         contractAddr = _contractAddr;
@@ -44,5 +48,4 @@ contract PriceProviderRegisterPairChange is ChangeContract {
         // priceProviderRegister.setCoinPair(coinPair,contractAddr);
         // TODO: Make it usable just once.
     }
-
 }

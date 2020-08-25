@@ -1,15 +1,16 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+
 /**
   @title CoinPairPriceValidPricePeriodInBlocksChange
   @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
   parameter validPricePeriodInBlocks
  */
 contract CoinPairPriceValidPricePeriodInBlocksChange is CoinPairPriceStorage, ChangeContract {
-
     GovernedAbstract public coinPairPrice;
     bytes public encodedData;
 

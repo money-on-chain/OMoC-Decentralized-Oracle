@@ -1,7 +1,8 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "./openzeppelin/math/SafeMath.sol";
-import {Initializable} from "./openzeppelin/Initializable.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 import {SupportersLib} from "./libs/SupportersLib.sol";
@@ -14,7 +15,7 @@ import {SupportersLib} from "./libs/SupportersLib.sol";
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
 contract SupportersWhitelistedStorage is Initializable, GovernedAbstract, IIterableWhitelist {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using SupportersLib for SupportersLib.SupportersData;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
 
@@ -25,7 +26,8 @@ contract SupportersWhitelistedStorage is Initializable, GovernedAbstract, IItera
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
-    constructor () internal {}
+    constructor() internal {}
+
     // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.

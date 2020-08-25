@@ -1,12 +1,13 @@
-pragma solidity 0.6.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
 
-import {SafeMath} from "../openzeppelin/math/SafeMath.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 /**
   @notice Manage information specific to each oracle
  */
 library OracleInfoLib {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     /// Global registration information for each oracle, used by OracleManager
     struct OracleRegisterInfo {
@@ -15,10 +16,13 @@ library OracleInfoLib {
     }
 
     /**
-    * Initialize a register info structure
-    */
+     * Initialize a register info structure
+     */
     function initRegisterInfo(address owner, string memory internetName)
-    internal pure returns (OracleRegisterInfo memory) {
+        internal
+        pure
+        returns (OracleRegisterInfo memory)
+    {
         return OracleRegisterInfo(internetName, owner);
     }
 

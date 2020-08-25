@@ -1,5 +1,5 @@
 'use strict';
-const helpers = require("./helpers");
+const helpers = require('./helpers');
 const {files, scripts} = require('@openzeppelin/cli');
 const {ProxyAdmin} = require('@openzeppelin/upgrades');
 
@@ -13,7 +13,6 @@ async function deploy(config) {
         const UpgradeDelegator = artifacts.require('UpgradeDelegator');
         scripts.add({contractsData: [{name: 'UpgradeDelegator', alias: 'UpgradeDelegator'}]});
         await scripts.push({network: config.network, txParams: {...config.txParams, gas: 1400000}});
-
     } else {
         console.log('USING CONFIGURED ProxyAdmin', config.externalProxyAdminAddr);
         proxyAdmin = await ProxyAdmin.fetch(config.externalProxyAdminAddr, config.txParams);
@@ -30,9 +29,16 @@ async function deploy(config) {
         methodName: 'initialize',
         methodArgs: [owner],
         network: config.network,
-        txParams: config.txParams
+        txParams: config.txParams,
     });
-    console.log('Deploying governor', governor.options.address, 'owner', owner, 'proxyAdmin', proxyAdmin.address);
+    console.log(
+        'Deploying governor',
+        governor.options.address,
+        'owner',
+        owner,
+        'proxyAdmin',
+        proxyAdmin.address,
+    );
 
     if (!config.externalProxyAdminAddr) {
         const upgradeDelegator = await scripts.create({
@@ -41,10 +47,21 @@ async function deploy(config) {
             methodName: 'initialize',
             methodArgs: [governor.address, proxyAdmin.address],
             network: config.network,
-            txParams: config.txParams
+            txParams: config.txParams,
         });
-        console.log('Upgrade delegator', upgradeDelegator.options.address, 'calling initialize', governor.address, proxyAdmin.address);
-        console.log('Transfer ownership from', await proxyAdmin.getOwner(), 'to', upgradeDelegator.options.address);
+        console.log(
+            'Upgrade delegator',
+            upgradeDelegator.options.address,
+            'calling initialize',
+            governor.address,
+            proxyAdmin.address,
+        );
+        console.log(
+            'Transfer ownership from',
+            await proxyAdmin.getOwner(),
+            'to',
+            upgradeDelegator.options.address,
+        );
         await proxyAdmin.transferOwnership(upgradeDelegator.options.address);
     }
 
@@ -52,14 +69,11 @@ async function deploy(config) {
     console.log(`Deployed governor in ${governor.address}`);
     console.log(`Deployed proxy admin in ${proxyAdmin.address}`);
 
-    console.log("Saving the proxy admin address so we can reuse it in other deploy scripts");
-    const networkFile = new files.NetworkFile(
-        new files.ProjectFile(),
-        config.network
-    );
+    console.log('Saving the proxy admin address so we can reuse it in other deploy scripts');
+    const networkFile = new files.NetworkFile(new files.ProjectFile(), config.network);
     networkFile.proxyAdmin = {address: proxyAdmin.address};
     await networkFile.write();
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffle_main(artifacts, deploy, true)
+module.exports = helpers.truffle_main(artifacts, deploy, true);
