@@ -8,6 +8,7 @@ import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
+import {SelectedOraclesLib} from "./libs/SelectedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
@@ -16,6 +17,7 @@ import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
 contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRegisterEntry {
+    using SelectedOraclesLib for SelectedOraclesLib.SelectedOracles;
     using SafeMath for uint256;
 
     event OracleRewardTransfer(
@@ -189,7 +191,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             "Inconsistent signature count"
         );
         require(
-            _sig_s.length > roundInfo.selectedOracles.length / 2,
+            _sig_s.length > roundInfo.selectedOracles.length() / 2,
             "Signature count must exceed 50% of active oracles"
         );
 
@@ -317,7 +319,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             roundInfo.totalPoints,
             roundInfo.startBlock,
             roundInfo.lockPeriodEndBlock,
-            roundInfo.selectedOracles
+            roundInfo.selectedOracles.asArray()
         );
     }
 
@@ -334,16 +336,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     // The number of rounds an oracle must be idle (not participating) before a removal
     function numIdleRounds() external view returns (uint8) {
         return roundInfo.numIdleRounds;
-    }
-
-    function addOracleToRound(address oracleAddr) external {
-        if (!roundInfo.isFull() && !roundInfo.isInCurrentRound(oracleAddr)) {
-            roundInfo.addOracleToRound(oracleAddr);
-        }
-    }
-
-    function removeOracleFromRound(address oracleAddr) external {
-        roundInfo.removeOracleFromRound(oracleAddr);
     }
 
     function isRoundFull() external view returns (bool) {
@@ -366,8 +358,8 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
 
         // Distribute according to points/TotalPoints ratio
         uint256 distSum = 0;
-        for (uint256 i = 0; i < roundInfo.selectedOracles.length; i++) {
-            address oracleAddr = roundInfo.selectedOracles[i];
+        for (uint256 i = 0; i < roundInfo.selectedOracles.length(); i++) {
+            address oracleAddr = roundInfo.selectedOracles.at(i);
             uint256 points = roundInfo.getPoints(oracleAddr);
             uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
             (, , address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);

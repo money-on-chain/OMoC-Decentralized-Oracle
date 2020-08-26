@@ -124,11 +124,9 @@ contract('OracleManager', async (accounts) => {
 
         const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
         assert.equal(info0.internetName, oracleData[0].name);
-        assert.equal(info0.stake, oracleData[0].stake);
 
         const info1 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].account);
         assert.equal(info1.internetName, oracleData[1].name);
-        assert.equal(info1.stake, oracleData[1].stake);
 
         const info2 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[2].account);
         assert.equal(info2.internetName, oracleData[2].name);
@@ -141,7 +139,7 @@ contract('OracleManager', async (accounts) => {
 
     it('Should fail to register Oracles with null address', async () => {
         await expectRevert(
-            this.oracleMgr.registerOracle(constants.ZERO_ADDRESS, 'mock.io', '0', {
+            this.oracleMgr.registerOracle(constants.ZERO_ADDRESS, 'mock.io', {
                 from: accounts[7],
             }),
             'Address cannot be zero',
@@ -150,12 +148,9 @@ contract('OracleManager', async (accounts) => {
 
     it('Should fail to register an Oracle twice', async () => {
         await expectRevert(
-            this.oracleMgr.registerOracle(
-                oracleData[0].account,
-                oracleData[0].name,
-                oracleData[0].stake,
-                {from: oracleData[0].account},
-            ),
+            this.oracleMgr.registerOracle(oracleData[0].account, oracleData[0].name, {
+                from: oracleData[0].account,
+            }),
             'Oracle already registered',
         );
     });
@@ -184,7 +179,7 @@ contract('OracleManager', async (accounts) => {
         );
     });
 
-    it('Should fail to add stake if transfer is not approved', async () => {
+    it.skip('Should fail to add stake if transfer is not approved', async () => {
         await expectRevert(
             this.oracleMgr.addStake(oracleData[0].account, 1, {from: oracleData[0].owner}),
             'ERC20: transfer amount exceeds allowance',

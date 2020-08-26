@@ -3,6 +3,7 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {OracleRoundInfoLib} from "./OracleRoundInfoLib.sol";
+import {SelectedOraclesLib} from "./SelectedOraclesLib.sol";
 
 /**
   @notice Manage round specific information
@@ -10,6 +11,7 @@ import {OracleRoundInfoLib} from "./OracleRoundInfoLib.sol";
 library RoundInfoLib {
     using SafeMath for uint256;
     using OracleRoundInfoLib for OracleRoundInfoLib.OracleRoundInfo;
+    using SelectedOraclesLib for SelectedOraclesLib.SelectedOracles;
 
     /// Global registration information for each oracle, used by OracleManager
     struct RoundInfo {
@@ -28,7 +30,7 @@ library RoundInfoLib {
         // The number of rounds an oracle must be idle (not participating) before a removal
         uint8 numIdleRounds;
         // The selected oracles that participate in this round.
-        address[] selectedOracles;
+        SelectedOraclesLib.SelectedOracles selectedOracles;
         // Per-oracle round Info.
         mapping(address => OracleRoundInfoLib.OracleRoundInfo) oracleRoundInfo;
     }
@@ -56,12 +58,12 @@ library RoundInfoLib {
                 _maxOraclesPerRound,
                 _roundLockPeriodInBlocks,
                 _numIdleRounds,
-                new address[](0)
+                SelectedOraclesLib.init()
             );
     }
 
     function isFull(RoundInfo storage _self) internal view returns (bool) {
-        return _self.selectedOracles.length >= _self.maxOraclesPerRound;
+        return _self.selectedOracles.length() >= _self.maxOraclesPerRound;
     }
 
     function isInCurrentRound(RoundInfo storage _self, address _oracleAddr)
@@ -92,11 +94,11 @@ library RoundInfoLib {
     }
 
     function clearSelectedOracles(RoundInfo storage _self) internal {
-        delete _self.selectedOracles;
+        _self.selectedOracles.clear();
     }
 
     function addOracleToRound(RoundInfo storage _self, address _oracleAddr) internal {
-        _self.selectedOracles.push(_oracleAddr);
+        _self.selectedOracles.add(_oracleAddr);
         _self.oracleRoundInfo[_oracleAddr].setSelectedInRound(_self.number);
     }
 
@@ -111,8 +113,8 @@ library RoundInfoLib {
     }
 
     function switchRound(RoundInfo storage _self) internal {
-        for (uint256 i = 0; i < _self.selectedOracles.length; i++) {
-            _self.oracleRoundInfo[_self.selectedOracles[i]].clearPoints();
+        for (uint256 i = 0; i < _self.selectedOracles.length(); i++) {
+            _self.oracleRoundInfo[_self.selectedOracles.at(i)].clearPoints();
         }
         _self.number = _self.number + 1;
         _self.totalPoints = 0;
@@ -153,7 +155,7 @@ library RoundInfoLib {
             _self.startBlock,
             _self.lockPeriodEndBlock,
             _self.totalPoints,
-            _self.selectedOracles
+            _self.selectedOracles.asArray()
         );
     }
 
