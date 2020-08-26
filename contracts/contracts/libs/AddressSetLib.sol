@@ -2,7 +2,6 @@
 pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {OracleRoundInfoLib} from "./OracleRoundInfoLib.sol";
 
 /**
   @notice Based on heavily on EnumberableSet, but with the ability to clear all the contents.

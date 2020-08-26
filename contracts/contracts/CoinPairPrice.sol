@@ -54,7 +54,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @param _emergencyPublishingPeriodInBlocks The number of blocks that must pass after a publication after which
     //          an emergency publishing must be enabled
     /// @param _bootstrapPrice A price to be set as a bootstraping value for this block
-    /// @param _numIdleRounds The number of rounds an oracle must be idle (not participating) before a removal
     /// @param _oracleManager The contract of the oracle manager.
     function initialize(
         IGovernor _governor,
@@ -66,7 +65,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         uint256 _validPricePeriodInBlocks,
         uint256 _emergencyPublishingPeriodInBlocks,
         uint256 _bootstrapPrice,
-        uint8 _numIdleRounds,
         OracleManager _oracleManager
     ) external initializer {
         require(_wlist.length != 0, "Whitelist must have at least one element");
@@ -94,11 +92,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         token = IERC20(_tokenAddress);
         coinPair = _coinPair;
         oracleManager = _oracleManager;
-        roundInfo = RoundInfoLib.initRoundInfo(
-            _maxOraclesPerRound,
-            _roundLockPeriod,
-            _numIdleRounds
-        );
+        roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriod);
         subscribedOracles = SubscribedOraclesLib.init();
         _publish(_bootstrapPrice);
     }
@@ -300,11 +294,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     function getOracleRoundInfo(address addr)
         external
         view
-        returns (
-            uint256 points,
-            uint256 selectedInRound,
-            bool selectedInCurrentRound
-        )
+        returns (uint256 points, bool selectedInCurrentRound)
     {
         return roundInfo.getOracleRoundInfo(addr);
     }
@@ -348,7 +338,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         roundInfo.switchRound();
 
         // Select top stake oracles to participate on this round
-        roundInfo.clearSelectedOracles();
         address[] memory selected = subscribedOracles.sort(
             oracleManager.getStake,
             roundInfo.maxOraclesPerRound
@@ -376,11 +365,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     // The maximum count of oracles selected to participate each round
     function roundLockPeriodSecs() external view returns (uint256) {
         return roundInfo.roundLockPeriodSecs;
-    }
-
-    // The number of rounds an oracle must be idle (not participating) before a removal
-    function numIdleRounds() external view returns (uint8) {
-        return roundInfo.numIdleRounds;
     }
 
     function isRoundFull() external view returns (bool) {

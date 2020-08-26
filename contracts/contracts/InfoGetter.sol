@@ -50,7 +50,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
 
     struct CoinPairUIOracleRoundInfo {
         uint256 points;
-        uint256 selectedInRound;
+        bool selectedInRound;
         address addr;
     }
 
@@ -98,7 +98,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         CoinPairUIOracleRoundInfo[] memory info = new CoinPairUIOracleRoundInfo[](len);
         for (uint256 i = 0; i < len; i++) {
             address addr = selectedOracles[i];
-            (uint256 points, uint256 selectedInRound, ) = _coinPairPrice.getOracleRoundInfo(addr);
+            (uint256 points, bool selectedInRound) = _coinPairPrice.getOracleRoundInfo(addr);
             info[i] = CoinPairUIOracleRoundInfo(points, selectedInRound, addr);
         }
         uint256 lastPublicationBlock = _coinPairPrice.lastPublicationBlock();
@@ -234,7 +234,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         for (uint256 i = 0; i < len; i++) {
             (string memory name, uint256 stake, address owner) = _oracleManager
                 .getOracleRegistrationInfo(_selectedOracles[i]);
-            (uint256 points, , ) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
+            (uint256 points, ) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
             info[i] = FullOracleRoundInfo(stake, points, _selectedOracles[i], owner, name);
         }
         return info;
