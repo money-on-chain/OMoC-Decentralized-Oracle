@@ -8,7 +8,8 @@ import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
-import {SelectedOraclesLib} from "./libs/SelectedOraclesLib.sol";
+import {AddressSetLib} from "./libs/AddressSetLib.sol";
+import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
@@ -17,12 +18,12 @@ import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
 contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRegisterEntry {
-    using SelectedOraclesLib for SelectedOraclesLib.SelectedOracles;
+    using SubscribedOraclesLib for SubscribedOraclesLib.SubscribedOracles;
     using SafeMath for uint256;
 
     event OracleRewardTransfer(
         uint256 roundNumber,
-        address oracleAddress,
+        address oracleOwnerAddress,
         address toOwnerAddress,
         uint256 amount
     );
@@ -38,7 +39,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         uint256 number,
         uint256 totalPoints,
         uint256 startBlock,
-        uint256 lockPeriodEndBlock,
+        uint256 lockPeriodTimestamp,
         address[] selectedOracles
     );
 
@@ -48,7 +49,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
     /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
-    /// @param _roundLockPeriodInBlocks The minimum time span for each round before a new one can be started, in blocks.
+    /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
     /// @param _validPricePeriodInBlocks The time span for which the last published price is valid.
     /// @param _emergencyPublishingPeriodInBlocks The number of blocks that must pass after a publication after which
     //          an emergency publishing must be enabled
@@ -61,7 +62,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         bytes32 _coinPair,
         address _tokenAddress,
         uint256 _maxOraclesPerRound,
-        uint256 _roundLockPeriodInBlocks,
+        uint256 _roundLockPeriod,
         uint256 _validPricePeriodInBlocks,
         uint256 _emergencyPublishingPeriodInBlocks,
         uint256 _bootstrapPrice,
@@ -95,10 +96,19 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         oracleManager = _oracleManager;
         roundInfo = RoundInfoLib.initRoundInfo(
             _maxOraclesPerRound,
-            _roundLockPeriodInBlocks,
+            _roundLockPeriod,
             _numIdleRounds
         );
+        subscribedOracles = SubscribedOraclesLib.init();
         _publish(_bootstrapPrice);
+    }
+
+    function getStake(address addr) internal view returns (uint256) {
+        return oracleManager.getStake(addr);
+    }
+
+    function getOracleOwner(address oracleAddr) internal view returns (address) {
+        return oracleManager.getOracleOwner(oracleAddr);
     }
 
     /// @notice return the type of provider
@@ -107,45 +117,41 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     }
 
     /// @notice subscribe an oracle to this coin pair , allowing it to be selected in rounds.
-    /// @param oracleAddr the oracle address to subscribe to this coin pair.
+    /// @param oracleOwnerAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function subscribe(address oracleAddr) external {
+    function subscribe(address oracleOwnerAddr) external {
         require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
         require(
-            subscribedOracles[oracleAddr] == false,
+            !subscribedOracles.contains(oracleOwnerAddr),
             "Oracle is already subscribed to this coin pair"
         );
 
-        subscribedOracles[oracleAddr] = true;
-        if (!roundInfo.isFull() && !roundInfo.isInCurrentRound(oracleAddr)) {
-            roundInfo.addOracleToRound(oracleAddr);
+        bool added = subscribedOracles.add(oracleOwnerAddr);
+        require(added, "Not enough stake to add");
+        // If the round is not full, then add
+        if (!roundInfo.isFull() && !roundInfo.isSelected(oracleOwnerAddr)) {
+            roundInfo.addOracleToRound(oracleOwnerAddr);
         }
     }
 
     /// @notice Unsubscribe an oracle from this coin pair , disallowing it to be selected in rounds.
-    /// @param oracleAddr the oracle address to subscribe to this coin pair.
+    /// @param oracleOwnerAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function unsubscribe(address oracleAddr) external {
+    function unsubscribe(address oracleOwnerAddr) external {
         require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
         require(
-            subscribedOracles[oracleAddr] == true,
+            subscribedOracles.contains(oracleOwnerAddr),
             "Oracle is not subscribed to this coin pair"
         );
 
-        subscribedOracles[oracleAddr] = false;
+        subscribedOracles.remove(oracleOwnerAddr);
     }
 
     /// @notice Returns true if an oracle is subscribed to this contract' coin pair
-    /// @param oracleAddr the oracle address to lookup.
+    /// @param oracleOwnerAddr the oracle address to lookup.
     /// @dev This is designed to be called from OracleManager.
-    function isSubscribed(address oracleAddr) external view returns (bool) {
-        return subscribedOracles[oracleAddr];
-    }
-
-    /// @notice Returns true if an oracle satisfies conditions to be removed from system.
-    /// @param oracleAddr the oracle address to lookup.
-    function canRemoveOracle(address oracleAddr) external view returns (bool) {
-        return roundInfo.canRemoveOracle(oracleAddr);
+    function isSubscribed(address oracleOwnerAddr) external view returns (bool) {
+        return subscribedOracles.contains(oracleOwnerAddr);
     }
 
     /// @notice Return the available reward fees
@@ -174,8 +180,11 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         bytes32[] calldata _sig_s
     ) external {
         require(roundInfo.number > 0, "Round not open");
-        require(subscribedOracles[msg.sender], "Sender oracle not subscribed");
-        require(roundInfo.isInCurrentRound(msg.sender), "Voter oracle is not part of this round");
+        require(
+            subscribedOracles.contains(getOracleOwner(msg.sender)),
+            "Sender oracle not subscribed"
+        );
+        require(roundInfo.isSelected(msg.sender), "Voter oracle is not part of this round");
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
         require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
         require(_price > 0, "Price must be positive and non-zero");
@@ -191,7 +200,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             "Inconsistent signature count"
         );
         require(
-            _sig_s.length > roundInfo.selectedOracles.length() / 2,
+            _sig_s.length > roundInfo.length() / 2,
             "Signature count must exceed 50% of active oracles"
         );
 
@@ -214,8 +223,11 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         for (uint256 i = 0; i < _sig_s.length; i++) {
             address rec = _recoverSigner(_sig_v[i], _sig_r[i], _sig_s[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
-            require(subscribedOracles[rec], "Signing oracle not subscribed");
-            require(roundInfo.isInCurrentRound(rec), "Address of signer not part of this round");
+            require(
+                subscribedOracles.contains(getOracleOwner(rec)),
+                "Signing oracle not subscribed"
+            );
+            require(roundInfo.isSelected(rec), "Address of signer not part of this round");
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
             lastAddr = rec;
         }
@@ -276,7 +288,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         returns (
             uint256 round,
             uint256 startBlock,
-            uint256 lockPeriodEndBlock,
+            uint256 lockPeriodTimestamp,
             uint256 totalPoints,
             address[] memory selectedOracles
         )
@@ -297,6 +309,31 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         return roundInfo.getOracleRoundInfo(addr);
     }
 
+    /// @notice The oracle owner has withdrawn some stake.
+    /// Must check if the oracle is part of current round and if he lost his place with the
+    /// new stake value (the stake is global and is saved in the supporters contract).
+    /// @param oracleOwnerAddr the oracle owner that is trying to withdraw
+    function onWithdraw(address oracleOwnerAddr) external returns (uint256) {
+        require(subscribedOracles.contains(oracleOwnerAddr), "Not subscribed to this coin");
+
+        if (!roundInfo.isSelected(oracleOwnerAddr)) {
+            // not participating in current round, its ok to withdraw.
+            return 0;
+        }
+
+        (address addr, uint256 stake) = subscribedOracles.getMaxUnselectedStake(
+            oracleManager.getStake,
+            roundInfo.selectedOracles
+        );
+        if (stake > oracleManager.getStake(oracleOwnerAddr)) {
+            // The oracleOwnerAddr has lost his place in current round
+            roundInfo.removeOracleFromRound(oracleOwnerAddr);
+            roundInfo.addOracleToRound(addr);
+        }
+        return roundInfo.lockPeriodTimestamp;
+    }
+
+    //
     /// @notice Switch contract context to a new round. With the objective of
     /// being a decentralized solution, this can be called by *anyone* if current
     /// round lock period is expired.
@@ -311,15 +348,23 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         roundInfo.switchRound();
 
         // Select top stake oracles to participate on this round
-        _selectOraclesForRound();
+        roundInfo.clearSelectedOracles();
+        address[] memory selected = subscribedOracles.sort(
+            oracleManager.getStake,
+            roundInfo.maxOraclesPerRound
+        );
+        // TODO: both conditions are the same.
+        for (uint256 i = 0; i < roundInfo.maxOraclesPerRound && !roundInfo.isFull(); i++) {
+            roundInfo.addOracleToRound(selected[i]);
+        }
 
         emit NewRound(
             msg.sender,
             roundInfo.number,
             roundInfo.totalPoints,
             roundInfo.startBlock,
-            roundInfo.lockPeriodEndBlock,
-            roundInfo.selectedOracles.asArray()
+            roundInfo.lockPeriodTimestamp,
+            roundInfo.asArray()
         );
     }
 
@@ -329,8 +374,8 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     }
 
     // The maximum count of oracles selected to participate each round
-    function roundLockPeriodInBlocks() external view returns (uint256) {
-        return roundInfo.roundLockPeriodInBlocks;
+    function roundLockPeriodSecs() external view returns (uint256) {
+        return roundInfo.roundLockPeriodSecs;
     }
 
     // The number of rounds an oracle must be idle (not participating) before a removal
@@ -342,8 +387,8 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         return roundInfo.isFull();
     }
 
-    function isOracleInCurrentRound(address oracleAddr) external view returns (bool) {
-        return roundInfo.isInCurrentRound(oracleAddr);
+    function isOracleInCurrentRound(address oracleOwnerAddr) external view returns (bool) {
+        return roundInfo.isSelected(oracleOwnerAddr);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -358,30 +403,15 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
 
         // Distribute according to points/TotalPoints ratio
         uint256 distSum = 0;
-        for (uint256 i = 0; i < roundInfo.selectedOracles.length(); i++) {
-            address oracleAddr = roundInfo.selectedOracles.at(i);
-            uint256 points = roundInfo.getPoints(oracleAddr);
+        for (uint256 i = 0; i < roundInfo.length(); i++) {
+            address oracleOwnerAddr = roundInfo.at(i);
+            uint256 points = roundInfo.getPoints(oracleOwnerAddr);
             uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
-            (, , address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleAddr);
+            (, , address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleOwnerAddr);
 
             require(token.transfer(owneraddr, distAmount), "Token transfer failed");
             distSum = distSum.add(distAmount);
-            emit OracleRewardTransfer(roundInfo.number, oracleAddr, owneraddr, distAmount);
-        }
-    }
-
-    /// @notice Select top-stakers for the current round. Only subscribed oracles to this contract are
-    /// considered for selection.
-    function _selectOraclesForRound() private {
-        roundInfo.clearSelectedOracles();
-        for (
-            address addr = oracleManager.getRegisteredOracleHead();
-            addr != address(0) && !roundInfo.isFull();
-            addr = oracleManager.getRegisteredOracleNext(addr)
-        ) {
-            if (subscribedOracles[addr]) {
-                roundInfo.addOracleToRound(addr);
-            }
+            emit OracleRewardTransfer(roundInfo.number, oracleOwnerAddr, owneraddr, distAmount);
         }
     }
 

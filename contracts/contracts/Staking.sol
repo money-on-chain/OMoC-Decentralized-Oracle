@@ -130,12 +130,6 @@ contract Staking is StakingStorage, IStakingMachine {
         return oracleManager.isOracleRegistered(oracleAddr);
     }
 
-    /// @notice Returns true if an oracle satisfies conditions to be removed from system.
-    /// @param oracleAddr the oracle address to lookup.
-    function canRemoveOracle(address oracleAddr) external view returns (bool) {
-        return oracleManager.canRemoveOracle(oracleAddr);
-    }
-
     /// @notice Remove an oracle.
     /// Delegates to the Oracle Manager smart contract.
     /// @param oracleAddr address of the oracle

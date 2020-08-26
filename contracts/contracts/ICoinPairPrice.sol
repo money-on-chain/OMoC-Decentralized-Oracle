@@ -75,8 +75,8 @@ interface ICoinPairPrice {
     /// @notice The oracle owner has withdrawn some stake.
     /// Must check if the oracle is part of current round and if he lost his place with the
     /// new stake value (the stake is global and is saved in the supporters contract).
-    /// @param oracleAddr the oracle address to subscribe to this coin pair.
-    function onWithdraw(address oracleAddr) external returns (uint256);
+    /// @param oracleOwnerAddr the oracle owner that is trying to withdraw
+    function onWithdraw(address oracleOwnerAddr) external returns (uint256);
 
     /// @notice Switch contract context to a new round. With the objective of
     /// being a decentralized solution, this can be called by *anyone* if current
@@ -111,7 +111,7 @@ interface ICoinPairPrice {
         returns (
             uint256 round,
             uint256 startBlock,
-            uint256 lockPeriodEndBlock,
+            uint256 lockPeriodTimestamp,
             uint256 totalPoints,
             address[] memory selectedOracles
         );
@@ -129,8 +129,8 @@ interface ICoinPairPrice {
     // The maximum count of oracles selected to participate each round
     function maxOraclesPerRound() external view returns (uint256);
 
-    // The maximum count of oracles selected to participate each round
-    function roundLockPeriodInBlocks() external view returns (uint256);
+    // The round lock period in secs
+    function roundLockPeriodSecs() external view returns (uint256);
 
     // The number of rounds an oracle must be idle (not participating) before a removal
     function numIdleRounds() external view returns (uint8);

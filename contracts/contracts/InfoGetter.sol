@@ -24,7 +24,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
     struct OracleServerInfo {
         uint256 round;
         uint256 startBlock;
-        uint256 lockPeriodEndBlock;
+        uint256 lockPeriodTimestamp;
         uint256 totalPoints;
         FullOracleRoundInfo[] info;
         uint256 price;
@@ -57,7 +57,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
     struct CoinPairPriceUIInfo {
         uint256 round;
         uint256 startBlock;
-        uint256 lockPeriodEndBlock;
+        uint256 lockPeriodTimestamp;
         uint256 totalPoints;
         CoinPairUIOracleRoundInfo[] info;
         uint256 currentBlock;
@@ -90,7 +90,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         (
             uint256 round,
             uint256 startBlock,
-            uint256 lockPeriodEndBlock,
+            uint256 lockPeriodTimestamp,
             uint256 totalPoints,
             address[] memory selectedOracles
         ) = _coinPairPrice.getRoundInfo();
@@ -106,7 +106,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
             CoinPairPriceUIInfo(
                 round,
                 startBlock,
-                lockPeriodEndBlock,
+                lockPeriodTimestamp,
                 totalPoints,
                 info,
                 block.number,
@@ -198,7 +198,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         (
             uint256 round,
             uint256 startBlock,
-            uint256 lockPeriodEndBlock,
+            uint256 lockPeriodTimestamp,
             uint256 totalPoints,
             address[] memory selectedOracles
         ) = _coinPairPrice.getRoundInfo();
@@ -207,7 +207,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
             OracleServerInfo(
                 round,
                 startBlock,
-                lockPeriodEndBlock,
+                lockPeriodTimestamp,
                 totalPoints,
                 _createFullRoundInfo(_oracleManager, _coinPairPrice, selectedOracles),
                 uint256(currentPrice),

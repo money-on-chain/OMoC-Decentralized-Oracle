@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {OracleRoundInfoLib} from "./OracleRoundInfoLib.sol";
-import {SelectedOraclesLib} from "./SelectedOraclesLib.sol";
+import {AddressSetLib} from "./AddressSetLib.sol";
 
 /**
   @notice Manage round specific information
@@ -11,7 +11,7 @@ import {SelectedOraclesLib} from "./SelectedOraclesLib.sol";
 library RoundInfoLib {
     using SafeMath for uint256;
     using OracleRoundInfoLib for OracleRoundInfoLib.OracleRoundInfo;
-    using SelectedOraclesLib for SelectedOraclesLib.SelectedOracles;
+    using AddressSetLib for AddressSetLib.AddressSet;
 
     /// Global registration information for each oracle, used by OracleManager
     struct RoundInfo {
@@ -21,16 +21,16 @@ library RoundInfoLib {
         uint256 totalPoints;
         // The starting block of period where this round is valid.
         uint256 startBlock;
-        // The  block (inclusive) where this round lock terminates (can be switched out).
-        uint256 lockPeriodEndBlock;
+        // The  timestamp where this round lock terminates (can be switched out).
+        uint256 lockPeriodTimestamp;
         // The maximum count of oracles selected to participate each round
         uint256 maxOraclesPerRound;
-        // The duration in blocks before a SwitchRound can occur.
-        uint256 roundLockPeriodInBlocks;
+        // The duration in secs before a SwitchRound can occur.
+        uint256 roundLockPeriodSecs;
         // The number of rounds an oracle must be idle (not participating) before a removal
         uint8 numIdleRounds;
         // The selected oracles that participate in this round.
-        SelectedOraclesLib.SelectedOracles selectedOracles;
+        AddressSetLib.AddressSet selectedOracles;
         // Per-oracle round Info.
         mapping(address => OracleRoundInfoLib.OracleRoundInfo) oracleRoundInfo;
     }
@@ -40,14 +40,11 @@ library RoundInfoLib {
      */
     function initRoundInfo(
         uint256 _maxOraclesPerRound,
-        uint256 _roundLockPeriodInBlocks,
+        uint256 _roundLockPeriod,
         uint8 _numIdleRounds
     ) internal pure returns (RoundInfo memory) {
         require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
-        require(
-            _roundLockPeriodInBlocks > 0,
-            "The round lock period must be positive and non zero"
-        );
+        require(_roundLockPeriod > 0, "The round lock period must be positive and non zero");
         require(_numIdleRounds >= 1, "The number of rounds an oracle must be idle must be >= 1");
         return
             RoundInfo(
@@ -56,9 +53,9 @@ library RoundInfoLib {
                 0,
                 0,
                 _maxOraclesPerRound,
-                _roundLockPeriodInBlocks,
+                _roundLockPeriod,
                 _numIdleRounds,
-                SelectedOraclesLib.init()
+                AddressSetLib.init()
             );
     }
 
@@ -66,14 +63,28 @@ library RoundInfoLib {
         return _self.selectedOracles.length() >= _self.maxOraclesPerRound;
     }
 
-    function isInCurrentRound(RoundInfo storage _self, address _oracleAddr)
-        internal
-        view
-        returns (bool)
-    {
-        return _self.oracleRoundInfo[_oracleAddr].isInRound(_self.number);
+    function isSelected(RoundInfo storage _self, address _oracleAddr) internal view returns (bool) {
+        return _self.selectedOracles.contains(_oracleAddr);
+        // return _self.oracleRoundInfo[_oracleAddr].isInRound(_self.number);
     }
 
+    function length(RoundInfo storage _self) internal view returns (uint256) {
+        return _self.selectedOracles.length();
+    }
+
+    function at(RoundInfo storage _self, uint256 idx) internal view returns (address) {
+        return _self.selectedOracles.at(idx);
+    }
+
+    function contains(RoundInfo storage _self, address addr) internal view returns (bool) {
+        return _self.selectedOracles.contains(addr);
+    }
+
+    function asArray(RoundInfo storage _self) internal view returns (address[] memory) {
+        return _self.selectedOracles.asArray();
+    }
+
+    // TODO: Remove this method and all related info:  _self.numIdleRounds, _self.selectedInRound, etc.
     function canRemoveOracle(RoundInfo storage _self, address _oracleAddr)
         internal
         view
@@ -103,11 +114,12 @@ library RoundInfoLib {
     }
 
     function removeOracleFromRound(RoundInfo storage _self, address _oracleAddr) internal {
-        // TODO: remove oracle from selected oracles
+        _self.selectedOracles.remove(_oracleAddr);
+        _self.oracleRoundInfo[_oracleAddr].points = 0;
     }
 
     function isReadyToSwitch(RoundInfo storage _self) internal view returns (bool) {
-        return block.number > _self.lockPeriodEndBlock;
+        return block.timestamp > _self.lockPeriodTimestamp;
     }
 
     function switchRound(RoundInfo storage _self) internal {
@@ -117,7 +129,7 @@ library RoundInfoLib {
         _self.number = _self.number + 1;
         _self.totalPoints = 0;
         _self.startBlock = block.number + 1;
-        _self.lockPeriodEndBlock = block.number + 1 + _self.roundLockPeriodInBlocks;
+        _self.lockPeriodTimestamp = block.timestamp + 1 + _self.roundLockPeriodSecs;
     }
 
     function getOracleRoundInfo(RoundInfo storage _self, address _oracleAddr)
@@ -143,7 +155,7 @@ library RoundInfoLib {
         returns (
             uint256 round,
             uint256 startBlock,
-            uint256 lockPeriodEndBlock,
+            uint256 lockPeriodTimestamp,
             uint256 totalPoints,
             address[] memory selectedOracles
         )
@@ -151,7 +163,7 @@ library RoundInfoLib {
         return (
             _self.number,
             _self.startBlock,
-            _self.lockPeriodEndBlock,
+            _self.lockPeriodTimestamp,
             _self.totalPoints,
             _self.selectedOracles.asArray()
         );

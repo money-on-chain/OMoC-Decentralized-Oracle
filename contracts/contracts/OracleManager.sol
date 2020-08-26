@@ -299,8 +299,6 @@ contract OracleManager is OracleManagerStorage {
         require(data.isRegistered(), "Oracle not registered");
         require(_isOwner(data), "This can be called by oracle owner only");
 
-        require(_canRemoveOracle(oracleAddr), "Oracle cannot be removed at this time");
-
         _unsubscribeAll(oracleAddr);
         uint256 tokens = supportersContract.getBalanceAt(address(this), oracleAddr);
         supportersContract.withdrawFromTo(tokens, oracleAddr, data.getOwner());
@@ -308,17 +306,17 @@ contract OracleManager is OracleManagerStorage {
         emit OracleRemoved(msg.sender, oracleAddr);
     }
 
-    /// @notice Returns true if an oracle satisfies conditions to be removed from system.
-    /// @param oracleAddr the oracle address to lookup.
-    function canRemoveOracle(address oracleAddr) external view returns (bool) {
-        OracleInfoLib.OracleRegisterInfo storage data = registeredOracles.getByAddr(oracleAddr);
-        return data.isRegistered() && _canRemoveOracle(oracleAddr);
-    }
-
     /// @notice Get the stake in MOCs that an oracle has.
     /// @param oracleAddr The address of the oracle.
     function getStake(address oracleAddr) public view returns (uint256 balance) {
         return supportersContract.getMOCBalanceAt(address(this), oracleAddr);
+    }
+
+    function getOracleOwner(address oracleAddr) public view returns (address) {
+        oracleAddr;
+        // TODO: Implement!!!
+        require(false, "IMPLEMENT");
+        return oracleAddr;
     }
 
     /// @notice Returns the count of registered coin pairs.
@@ -345,18 +343,6 @@ contract OracleManager is OracleManagerStorage {
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
     function getCoinPairIndex(bytes32 coinPair, uint256 hint) external view returns (uint256) {
         return coinPairRegisterData._getCoinPairIndex(coinPair, hint);
-    }
-
-    /// @notice Returns true if an oracle satisfies conditions to be removed from system.
-    /// @param oracleAddr the oracle address to lookup.
-    function _canRemoveOracle(address oracleAddr) private view returns (bool) {
-        uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
-        bool canRemove = true;
-        for (uint256 i = 0; i < coinPairCount && canRemove; i++) {
-            CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            canRemove = canRemove && cp.canRemoveOracle(oracleAddr);
-        }
-        return canRemove;
     }
 
     /// @dev Add stake internal
