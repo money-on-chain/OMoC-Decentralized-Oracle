@@ -16,7 +16,6 @@ contract('OracleManager', async (accounts) => {
     const validPricePeriodInBlocks = 3;
     const emergencyPublishingPeriodInBlocks = 2;
     const bootstrapPrice = '100000000';
-    const numIdleRounds = 2;
 
     before(async () => {
         this.governor = await helpers.createGovernor(accounts[8]);
@@ -40,7 +39,6 @@ contract('OracleManager', async (accounts) => {
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
-            numIdleRounds,
             this.oracleMgr.address,
         );
 
@@ -54,7 +52,6 @@ contract('OracleManager', async (accounts) => {
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
-            numIdleRounds,
             this.oracleMgr.address,
         );
 

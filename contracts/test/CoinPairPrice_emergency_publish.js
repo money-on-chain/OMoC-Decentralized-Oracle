@@ -21,7 +21,6 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
     const validPricePeriodInBlocks = 30;
     const emergencyPublishingPeriodInBlocks = 20;
     const bootstrapPrice = new BN('100000000');
-    const numIdleRounds = 2;
 
     before(async () => {
         const {governor, oracleMgr, staking, supporters, token} = await helpers.initContracts({
@@ -48,7 +47,6 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
-            numIdleRounds,
             this.oracleMgr.address,
         );
 

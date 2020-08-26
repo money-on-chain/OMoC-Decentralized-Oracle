@@ -342,11 +342,9 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             oracleManager.getStake,
             roundInfo.maxOraclesPerRound
         );
-        // TODO: both conditions are the same.
-        for (uint256 i = 0; i < roundInfo.maxOraclesPerRound && !roundInfo.isFull(); i++) {
+        for (uint256 i = 0; i < selected.length && !roundInfo.isFull(); i++) {
             roundInfo.addOracleToRound(selected[i]);
         }
-
         emit NewRound(
             msg.sender,
             roundInfo.number,

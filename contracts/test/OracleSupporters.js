@@ -36,7 +36,6 @@ contract.skip('Oracle-Supporters integration', (accounts) => {
             1, // validPricePeriodInBlocks,
             1, // emergencyPublishingPeriodInBlocks
             0, // bootstrapPrice,
-            1, // numIdleRounds,
             this.oracleMgr.address,
         );
 

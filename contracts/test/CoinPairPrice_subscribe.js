@@ -53,7 +53,6 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
-            2, // numIdleRounds,
             testobj.oracleMgr.address,
         );
 

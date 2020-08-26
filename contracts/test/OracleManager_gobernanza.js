@@ -39,7 +39,6 @@ contract('OracleManager by gobernanza', async (accounts) => {
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             '100000000', // bootstrapPrice
-            2, // numIdleRounds
             this.oracleMgr.address,
         );
 

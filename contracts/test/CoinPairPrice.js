@@ -45,7 +45,6 @@ contract('CoinPairPrice', async (accounts) => {
             this.validPricePeriodInBlocks,
             this.emergencyPublishingPeriodInBlocks,
             this.bootstrapPrice,
-            2, // numIdleRounds
             this.oracleMgr.address,
         );
 

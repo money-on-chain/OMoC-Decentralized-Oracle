@@ -52,11 +52,10 @@ library SubscribedOraclesLib {
     // prettier-ignore
     function sort(
         SubscribedOracles storage set,
-        function(address)  external view returns (uint256) getStake,
+        function(address) external view returns (uint256) getStake,
         uint256 cant
     ) internal returns (address[] memory ret) {
         set;
-        getStake;
         cant;
         return ret;
     }

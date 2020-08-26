@@ -174,7 +174,6 @@ async function deploy(config) {
                 parseInt(config.validPricePeriodInBlocks[i]),
                 parseInt(config.emergencyPublishingPeriodInBlocks[i]),
                 config.bootstrapPrice[i],
-                parseInt(config.numIdleRounds[i]),
                 oracleManager.options.address,
             ],
             network: config.network,

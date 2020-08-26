@@ -35,7 +35,6 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
-            2, // numIdleRounds,
             this.oracleMgr.address,
         );
 
@@ -50,7 +49,6 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
-            2, // numIdleRounds,
             this.oracleMgr.address,
         );
 

@@ -55,9 +55,7 @@ async function getDefaultEncodedMessage(version, coinpair, price, votedOracle, b
 async function mineUntilNextRound(coinpairPrice) {
     console.log('Please wait for round blocks to be mined...');
     const roundInfo = await coinpairPrice.getRoundInfo();
-    do {
-        await time.advanceBlock();
-    } while (roundInfo.lockPeriodEndBlock.gt(await time.latestBlock()));
+    await time.increaseTo(roundInfo.lockPeriodTimestamp);
 }
 
 async function mineUntilBlock(target) {
@@ -69,8 +67,8 @@ async function mineUntilBlock(target) {
 }
 
 async function mineBlocks(num) {
-    latestBlock = await time.latestBlock();
-    endBlock = latestBlock.add(new BN(num));
+    const latestBlock = await time.latestBlock();
+    const endBlock = latestBlock.add(new BN(num));
     await mineUntilBlock(endBlock);
 }
 
