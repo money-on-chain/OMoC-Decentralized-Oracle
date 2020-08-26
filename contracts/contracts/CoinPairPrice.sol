@@ -382,7 +382,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// considered for selection.
     function _selectOraclesForRound() private {
         roundInfo.clearSelectedOracles();
-        for (
+        /*for (
             address addr = oracleManager.getRegisteredOracleHead();
             addr != address(0) && !roundInfo.isFull();
             addr = oracleManager.getRegisteredOracleNext(addr)
@@ -390,7 +390,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             if (subscribedOracles[addr]) {
                 roundInfo.addOracleToRound(addr);
             }
-        }
+        }*/
     }
 
     // @notice publish a price, called only after verification.

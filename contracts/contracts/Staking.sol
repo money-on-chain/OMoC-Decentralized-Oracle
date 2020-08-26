@@ -81,14 +81,12 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @notice Withdraw stake, send it to the delay machine.
     /// @param mocs token quantity
     function withdraw(uint256 mocs) external override {
-        uint256 expiration = oracleManager.getWithdrawalExpiration(mocs, msg.sender);
         uint256 tokens = supporters.mocToToken(mocs);
         supporters.withdrawFromTo(tokens, msg.sender, address(this));
         // Approve stake transfer for Delay Machine contract
         require(mocToken.approve(address(delayMachine), mocs), "error in approve");
+        uint256 expiration = oracleManager.onWithdraw(msg.sender);
         delayMachine.deposit(mocs, msg.sender, expiration);
-
-        oracleManager.updateOracleRoundByStake(mocs, msg.sender);
     }
 
     /// @notice Reports the balance of MOCs for a specific user.
@@ -125,14 +123,15 @@ contract Staking is StakingStorage, IStakingMachine {
     }
 
     /// @notice Return true if the oracle is registered.
-    function isOracleRegistered() external view returns (bool) {
-        return oracleManager.isOracleRegistered(msg.sender);
+    /// @param oracleAddr addr The address of the Oracle check for.
+    function isOracleRegistered(address oracleAddr) external view returns (bool) {
+        return oracleManager.isOracleRegistered(oracleAddr);
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param oracleAddr the oracle address to lookup.
     function canRemoveOracle(address oracleAddr) external view returns (bool) {
-        return oracleManager.canRemoveOracle(msg.sender, oracleAddr);
+        return oracleManager.canRemoveOracle(oracleAddr);
     }
 
     /// @notice Remove an oracle.
@@ -190,7 +189,7 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @param oracleAddr address of the oracle
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
     function isSubscribed(address oracleAddr, bytes32 coinPair) external view returns (bool) {
-        return oracleManager.isSubscribed(msg.sender, oracleAddr, coinPair);
+        return oracleManager.isSubscribed(oracleAddr, coinPair);
     }
 
     /// @notice Returns the list of subscribed coinpair contract address for an oracle
@@ -201,6 +200,6 @@ contract Staking is StakingStorage, IStakingMachine {
         view
         returns (CoinPairPrice[] memory addresses, uint256 count)
     {
-        return oracleManager.getSubscribedCoinPairAddresses(msg.sender, oracleAddr);
+        return oracleManager.getSubscribedCoinPairAddresses(oracleAddr);
     }
 }

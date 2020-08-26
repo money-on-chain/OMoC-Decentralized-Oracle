@@ -67,9 +67,9 @@ library IterableOraclesLib {
         return self.ownerList.length;
     }
 
-    /// @notice Returns the address at index.
+    /// @notice Returns the owner address at index.
     /// @param idx index to query.
-    function _getOracleAtIndex(IterableOraclesData storage self, uint256 idx) internal view returns (address)
+    function _getOwnerAtIndex(IterableOraclesData storage self, uint256 idx) internal view returns (address)
     {
         require(idx < self.ownerList.length, "Illegal index");
         return self.ownerList[idx];

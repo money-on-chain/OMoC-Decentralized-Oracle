@@ -3,12 +3,11 @@ pragma solidity 0.6.12;
 
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
-import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
 import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
-import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
+import {Staking} from "./Staking.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 
 contract OracleManagerStorage is Initializable, GovernedAbstract {
@@ -23,14 +22,11 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
     // Registered oracles
     IterableOraclesLib.IterableOraclesData  internal registeredOracles;
 
-    // Supporters contract in which we store stake
-    SupportersWhitelisted public supportersContract;
+    // Staking contract that manages stake
+    Staking public stakingContract;
 
     // Minimum coin pair subscription stake
     uint256 public minCPSubscriptionStake;
-
-    // MOC Token contract
-    IERC20 public token;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.

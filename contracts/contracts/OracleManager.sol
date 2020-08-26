@@ -8,7 +8,7 @@ import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {RegisteredOraclesLib} from "./libs/RegisteredOraclesLib.sol";
 import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
 import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
-import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
+import {Staking} from "./Staking.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {OracleManagerStorage} from "./OracleManagerStorage.sol";
 
@@ -33,7 +33,7 @@ contract OracleManager is OracleManagerStorage {
     function initialize(
         IGovernor _governor,
         uint256 _minCPSubscriptionStake,
-        SupportersWhitelisted _supportersContract
+        Staking _stakingContract
     ) external initializer {
         require(
             address(_supportersContract) != address(0),
@@ -49,8 +49,7 @@ contract OracleManager is OracleManagerStorage {
         );
 
         Governed._initialize(_governor);
-        supportersContract = _supportersContract;
-        token = _supportersContract.mocToken();
+        stakingContract = _stakingContract;
 
         minCPSubscriptionStake = _minCPSubscriptionStake;
         registeredOracles = IterableOraclesLib.initRegisteredOracles();
@@ -76,53 +75,50 @@ contract OracleManager is OracleManagerStorage {
         emit OracleRegistered(ownerAddr, oracleAddr, internetName);
     }
 
-    /// @notice Get expiration number for withdrawal transfer to Delay Machine
-    /// @param mocs Amount to be withdrawn
-    /// @param user User that is making the withdrawal
-    function getWithdrawalExpiration(uint256 mocs, address user) external pure returns (uint256) {
-        mocs;
-        user;
-    }
-
-    /// @notice Update oracle status within round according to stake change
-    /// @param mocs Withdrawn amount
-    /// @param user Owner of oracle whose status within round will be updated
-    function updateOracleRoundByStake(uint256 mocs, address user) external pure {
-        mocs;
-        user;
+    /// @notice The oracle owner did a partial withdrawal of funds
+    /// 1. The oracle address is searched by the owner address.
+    /// 2. Each coin pair to which the oracle is subscribed is consulted to:
+    ///   - Check if the new amount is enough to stay in the current round.
+    ///       If not the oracle is replaced and lost his points.
+    ///   - Get the timestamp for the round end.
+    /// The return value is the maximum timestamp from all the coin pairs.
+    /// @param oracleOwnerAddr Address of oracle owner
+    /// @return the timestamp until which the funds must be locked.
+    function onWithdraw(address oracleOwnerAddr) external returns (uint256) {
+        oracleOwnerAddr;
     }
 
     /// @notice Subscribe a registered oracle to participate in rounds of a registered coin-pair
-    /// @param ownerAddr Address of oracle's owner
+    /// @param caller Address of message sender
     /// @param oracleAddr Address of oracle
     /// @param coinPair Name of coin pair
-    function subscribeToCoinPair(address ownerAddr, address oracleAddr, bytes32 coinPair) external {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
-        require(_isOwner(ownerAddr, oracleAddr), "Must be called by oracle owner");
+    function subscribeToCoinPair(address caller, address oracleAddr, bytes32 coinPair) external {
+        require(registeredOracles._isOracleRegistered(oracleAddr), "Oracle is not registered.");
+        require(_isOwner(caller, oracleAddr), "Must be called by oracle owner");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
         ctAddr.subscribe(oracleAddr);
 
-        emit OracleSubscribed(msg.sender, oracleAddr, coinPair);
+        emit OracleSubscribed(caller, oracleAddr, coinPair);
     }
 
     /// @notice Unsubscribe a registered oracle from participating in rounds of a registered coin-pair
-    /// @param ownerAddr Address of oracle's owner
+    /// @param caller Address of message sender
     /// @param oracleAddr Address of oracle
     /// @param coinPair Name of coin pair
-    function unsubscribeFromCoinPair(address ownerAddr, address oracleAddr, bytes32 coinPair) external {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
-        require(_isOwner(ownerAddr, oracleAddr), "Must be called by oracle owner");
+    function unsubscribeFromCoinPair(address caller, address oracleAddr, bytes32 coinPair) external {
+        require(registeredOracles._isOracleRegistered(oracleAddr), "Oracle is not registered.");
+        require(_isOwner(caller, oracleAddr), "Must be called by oracle owner");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
         ctAddr.unsubscribe(oracleAddr);
 
-        emit OracleUnsubscribed(msg.sender, oracleAddr, coinPair);
+        emit OracleUnsubscribed(caller, oracleAddr, coinPair);
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair
-    function isSubscribed(address ownerAddr, address oracleAddr, bytes32 coinPair) public view returns (bool) {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
+    function isSubscribed(address oracleAddr, bytes32 coinPair) public view returns (bool) {
+        require(registeredOracles._isOracleRegistered(oracleAddr), "Oracle is not registered.");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
         return ctAddr.isSubscribed(oracleAddr);
@@ -141,7 +137,7 @@ contract OracleManager is OracleManagerStorage {
         uint256 valid = 0;
         for (uint256 i = 0; i < coinPairCount; i++) {
             bytes32 cp = coinPairRegisterData._getCoinPairAtIndex(i);
-            if (isSubscribed(ownerAddr, oracleAddr, cp)) {
+            if (isSubscribed(oracleAddr, cp)) {
                 subscribedCoinpairs[i] = _getCoinPairAddress(cp);
                 valid = valid.add(1);
             }
@@ -151,28 +147,30 @@ contract OracleManager is OracleManagerStorage {
     }
 
     /// @notice Change the oracle "internet" name (URI)
-    /// @param ownerAddr Address of oracle's owner
+    /// @param caller Address of message sender
     /// @param oracleAddr Address of the oracle to change
     /// @param name The new name to set.
-    function setOracleName(address ownerAddr, address oracleAddr, string calldata name) external {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
-        require(_isOwner(ownerAddr, oracleAddr), "Must be called by oracle owner");
-        registeredOracles._setName(ownerAddr, name);
+    function setOracleName(address caller, address oracleAddr, string calldata name) external {
+        require(registeredOracles._isOracleRegistered(oracleAddr), "Oracle is not registered.");
+        require(_isOwner(caller, oracleAddr), "Must be called by oracle owner");
+        registeredOracles._setName(caller, name);
     }
 
     /// @notice Return true if the oracle is registered in the contract
-    /// @param ownerAddr The address of the owner of the Oracle to check for.
-    function isOracleRegistered(address ownerAddr) external view returns (bool) {
-        return registeredOracles._isOracleRegistered(ownerAddr);
+    /// @param oracleAddr addr The address of the Oracle check for.
+    function isOracleRegistered(address oracleAddr) external view returns (bool) {
+        return registeredOracles._isOracleRegistered(oracleAddr);
     }
 
     /// @notice Returns registration information for a registered Oracle.
     /// @param oracleAddr addr The address of the Oracle to query for.
     function getOracleRegistrationInfo(address oracleAddr)
     external view returns (string memory internetName, uint256 stake, address _owner) {
+        require(registeredOracles._isOracleRegistered(oracleAddr), "Oracle is not registered.");
+        
         _owner = registeredOracles._getOwner(oracleAddr);
-        require(registeredOracles._isOracleRegistered(_owner), "Oracle is not registered.");
-        internetName = registeredOracles.registeredOracles[_owner].url;
+        internetName = registeredOracles._getInternetName(oracleAddr);
+        stake = getStake(oracleAddr);
     }
 
     /// @notice Returns round information for a registered oracle in a specific coin-pair.
@@ -193,30 +191,30 @@ contract OracleManager is OracleManagerStorage {
 
     /// @notice Removes an oracle from the system if conditions in
     ///         contract he is participating apply, returning it's stake.
-    /// @param ownerAddr Address of oracle's owner.
+    /// @param caller Address of message sender
     /// @param oracleAddr The address of the oracle to remove from system.
-    function removeOracle(address ownerAddr, address oracleAddr) public {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
-        require(_isOwner(ownerAddr, oracleAddr), "Must be called by oracle owner");
+    function removeOracle(address caller, address oracleAddr) public {
+        require(registeredOracles._isOracleRegistered(oracleAddr), "Oracle is not registered.");
+        require(_isOwner(caller, oracleAddr), "Must be called by oracle owner");
 
         require(_canRemoveOracle(oracleAddr), "Oracle cannot be removed at this time");
 
-        _unsubscribeAll(ownerAddr, oracleAddr);
-        registeredOracles._removeOracle(ownerAddr, 0);
-        emit OracleRemoved(ownerAddr, oracleAddr);
+        _unsubscribeAll(caller, oracleAddr);
+        registeredOracles._removeOracle(caller, 0);
+        emit OracleRemoved(caller, oracleAddr);
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
-    /// @param ownerAddr Address of oracle's owner.
     /// @param oracleAddr the oracle address to lookup.
-    function canRemoveOracle(address ownerAddr, address oracleAddr) external view returns (bool) {
-        return registeredOracles._isOracleRegistered(ownerAddr) && _canRemoveOracle(oracleAddr);
+    function canRemoveOracle(address oracleAddr) external view returns (bool) {
+        return registeredOracles._isOracleRegistered(oracleAddr) && _canRemoveOracle(oracleAddr);
     }
 
     /// @notice Get the stake in MOCs that an oracle has.
     /// @param oracleAddr The address of the oracle.
     function getStake(address oracleAddr) public view returns (uint256 balance) {
-        return supportersContract.getMOCBalanceAt(address(this), oracleAddr);
+        address ownerAddr = registeredOracles.getOwnerFromOracle(oracleAddr);
+        return stakingContract.getBalance(ownerAddr);
     }
 
     /// @notice Returns the count of registered coin pairs.
@@ -258,15 +256,14 @@ contract OracleManager is OracleManagerStorage {
     }
 
     /// @dev Unsubscribe a registered oracle from participating in all registered coin-pairs
-    /// @param ownerAddr Address of oracle's owner
+    /// @param caller Address of message sender
     /// @param oracleAddr Address of oracle
-    function _unsubscribeAll(address ownerAddr, address oracleAddr) private
+    function _unsubscribeAll(address caller, address oracleAddr) private
     {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
-        require(_isOwner(ownerAddr, oracleAddr), "Must be called by oracle owner");
+        require(registeredOracles._isOracleRegistered(oracleAddr), "Oracle is not registered.");
+        require(_isOwner(caller, oracleAddr), "Must be called by oracle owner");
 
         (CoinPairPrice[] memory coinpairs, uint count) = getSubscribedCoinPairAddresses(
-            ownerAddr,
             oracleAddr
         );
         for (uint i = 0; i < count; i++) {
@@ -275,10 +272,10 @@ contract OracleManager is OracleManagerStorage {
     }
 
     // A change contract can act as the owner of an Oracle
-    /// @param sender Message sender's address
+    /// @param caller Message sender's address
     /// @param oracleAddr Address of oracle
-    function _isOwner(address sender, address oracleAddr) private view returns (bool) {
-        return registeredOracles._isOwner(sender, oracleAddr) || governor.isAuthorizedChanger(sender);
+    function _isOwner(address caller, address oracleAddr) private view returns (bool) {
+        return registeredOracles._isOwner(caller, oracleAddr) || governor.isAuthorizedChanger(caller);
     }
 
     /// @notice Return the contract address for a specified registered coin pair.
