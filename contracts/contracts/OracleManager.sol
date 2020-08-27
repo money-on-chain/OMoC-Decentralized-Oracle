@@ -84,15 +84,14 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleOwnerAddr Address of oracle owner
     /// @return the timestamp until which the funds must be locked.
     function onWithdraw(address oracleOwnerAddr) external returns (uint256) {
-        address oracleAddr = getOracleAddress(oracleOwnerAddr);
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         uint256 timestamp = 0;
         uint256 maxTimestamp = 0;
         for (uint256 i = 0; i < coinPairCount; i++) {
             bytes32 cp = coinPairRegisterData._getCoinPairAtIndex(i);
-            if (isSubscribed(oracleAddr, cp)) {
+            if (isSubscribed(oracleOwnerAddr, cp)) {
                 CoinPairPrice cpContract = _getCoinPairAddress(cp);
-                timestamp = cpContract.onWithdraw(oracleAddr);
+                timestamp = cpContract.onWithdraw(oracleOwnerAddr);
                 if (timestamp > maxTimestamp) {
                     maxTimestamp = timestamp;
                 }
@@ -200,7 +199,7 @@ contract OracleManager is OracleManagerStorage {
         require(registeredOracles._isOracleRegistered(_owner), "Oracle is not registered.");
 
         internetName = registeredOracles._getInternetName(_owner);
-        stake = getStake(oracleAddr);
+        stake = getStake(_owner);
     }
 
     /// @notice Returns round information for a registered oracle in a specific coin-pair.
@@ -236,9 +235,8 @@ contract OracleManager is OracleManagerStorage {
     }
 
     /// @notice Get the stake in MOCs that an oracle has.
-    /// @param oracleAddr The address of the oracle.
-    function getStake(address oracleAddr) public view returns (uint256 balance) {
-        address ownerAddr = registeredOracles._getOwner(oracleAddr);
+    /// @param ownerAddr The address of the oracle's owner.
+    function getStake(address ownerAddr) public view returns (uint256 balance) {
         return stakingContract.getBalance(ownerAddr);
     }
 
