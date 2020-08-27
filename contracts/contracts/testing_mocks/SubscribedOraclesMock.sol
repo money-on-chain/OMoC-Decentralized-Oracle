@@ -35,6 +35,10 @@ contract SubscribedOraclesMock {
         }
     }
 
+    function getMin() public view returns (uint256 minStake, address minVal) {
+        return subscribedOracles.getMin(this.getStake);
+    }
+
     function remove(address oracle) public {
         subscribedOracles.remove(oracle);
         setStake(oracle, 0);

@@ -1,7 +1,7 @@
 /* global artifacts, beforeEach, contract, it */
 const {BN} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
-const {toChecksumAddress, randomHex, toBN} = require('web3-utils');
+const {toChecksumAddress, randomHex, toBN, padLeft, numberToHex} = require('web3-utils');
 
 const SubscribedOraclesMock = artifacts.require('SubscribedOraclesMock');
 
@@ -65,5 +65,18 @@ contract('SubscribedOracles', (accounts) => {
         expect(await subscribedOracles.length()).to.be.bignumber.equal(
             length.sub(new BN(selected.length)),
         );
+    });
+    it('minimum', async () => {
+        const subscribed = await SubscribedOraclesMock.new(5);
+        let res = Promise.resolve();
+        for (let i = 1; i <= 5; i += 1) {
+            const oracle = toChecksumAddress(padLeft(numberToHex(i), 40));
+            res = res.then(() => subscribed.addOrReplace(oracle, i));
+        }
+        await res;
+        const {0: minStake, 1: minAddress} = await subscribed.getMin();
+        console.log({minStake, minAddress});
+        expect(minStake).to.be.bignumber.equal(toBN(1));
+        expect(minAddress).equal(toChecksumAddress(padLeft(numberToHex(1), 40)));
     });
 });
