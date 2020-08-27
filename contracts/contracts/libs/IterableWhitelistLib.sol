@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
+import {AddressSetLib} from "./AddressSetLib.sol";
+
 /**
   @dev An iterable mapping of addresses to boolean, used to check if an address is whitelisted.
  */
@@ -35,9 +37,10 @@ interface IIterableWhitelist {
 }
 
 library IterableWhitelistLib {
+    using AddressSetLib for AddressSetLib.AddressSet;
+
     struct IterableWhitelistData {
-        address[] keyList;
-        mapping(address => bool) whitelist;
+        AddressSetLib.AddressSet _inner;
     }
 
     /**
@@ -50,51 +53,30 @@ library IterableWhitelistLib {
         returns (bool)
     {
         require(account != address(0), "Account must not be 0x0");
-        return self.whitelist[account];
+        return self._inner.contains(account);
     }
 
     /**
      * @dev Add account to whitelist
      */
     function _addToWhitelist(IterableWhitelistData storage self, address account) internal {
-        if (!_isWhitelisted(self, account)) {
-            self.keyList.push(account);
-        }
         require(account != address(0), "Account must not be 0x0");
-        require(
-            !_isWhitelisted(self, account),
-            "Account not allowed to add accounts into white list"
-        );
-        self.whitelist[account] = true;
+        bool added = self._inner.add(account);
+        require(added, "Account already whitelisted");
     }
 
     /**
      * @dev Remove account to whitelist
      */
-    function _removeFromWhitelist(
-        IterableWhitelistData storage self,
-        address account,
-        uint256 hint
-    ) internal {
+    function _removeFromWhitelist(IterableWhitelistData storage self, address account) internal {
         require(account != address(0), "Account must not be 0x0");
-        require(hint < self.keyList.length, "Illegal index");
-        require(
-            _isWhitelisted(self, account),
-            "Account is not allowed to remove address from the white list"
-        );
-        self.whitelist[account] = false;
-        for (uint256 i = hint; i < self.keyList.length; i++) {
-            if (self.keyList[i] == account) {
-                self.keyList[i] = self.keyList[self.keyList.length - 1];
-                self.keyList.pop();
-                break;
-            }
-        }
+        bool removed = self._inner.remove(account);
+        require(removed, "Missing account");
     }
 
     /// @notice Returns the count of whitelisted addresses.
     function _getWhiteListLen(IterableWhitelistData storage self) internal view returns (uint256) {
-        return self.keyList.length;
+        return self._inner.length();
     }
 
     /// @notice Returns the address at index.
@@ -104,7 +86,6 @@ library IterableWhitelistLib {
         view
         returns (address)
     {
-        require(idx < self.keyList.length, "Illegal index");
-        return self.keyList[idx];
+        return self._inner.at(idx);
     }
 }

@@ -99,7 +99,7 @@ library SubscribedOraclesLib {
     // prettier-ignore
     function getMaxUnselectedStake(
         SubscribedOracles storage set,
-        function(address)  external view returns (uint256) getStake,
+        function(address) external view returns (uint256) getStake,
         AddressSetLib.AddressSet storage selectedOracles
     ) internal view returns (address addr, uint256 stake) {
         for (uint256 i = 0; i < length(set); i++) {

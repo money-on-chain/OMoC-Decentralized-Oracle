@@ -52,13 +52,9 @@ contract CalculatedPriceProvider is
     /**
      * @dev Remove from the list of contracts that can stake in this contract
      * @param _whitelisted - the override coinPair
-     * @param _hint Optional hint to start traversing the array, zero is to search all the array.
      */
-    function removeFromWhitelist(address _whitelisted, uint256 _hint)
-        external
-        onlyAuthorizedChanger()
-    {
-        iterableWhitelistData._removeFromWhitelist(_whitelisted, _hint);
+    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+        iterableWhitelistData._removeFromWhitelist(_whitelisted);
     }
 
     /// @notice Returns the count of whitelisted addresses.
