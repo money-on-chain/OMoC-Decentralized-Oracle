@@ -6,7 +6,6 @@ import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
-import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
