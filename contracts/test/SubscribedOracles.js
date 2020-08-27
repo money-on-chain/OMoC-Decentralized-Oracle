@@ -3,10 +3,12 @@ const {BN} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const {toChecksumAddress, randomHex, toBN} = require('web3-utils');
 
-const TestSubscribedOracles = artifacts.require('TestSubscribedOracles');
+const SubscribedOraclesMock = artifacts.require('SubscribedOraclesMock');
 
 contract('SubscribedOracles', (accounts) => {
-    const NUM_ORACLES = 10;
+    const NUM_ORACLES = 50;
+    const MAX_SUBSCRIBED_ORACLES = 30;
+    const MAX_SELECTED_ORACLES = 10;
     const oracles = {};
     before(() => {
         for (let i = 0; i < NUM_ORACLES; i += 1) {
@@ -15,21 +17,24 @@ contract('SubscribedOracles', (accounts) => {
     });
     let subscribedOracles;
     it('creation', async () => {
-        subscribedOracles = await TestSubscribedOracles.new();
+        subscribedOracles = await SubscribedOraclesMock.new(MAX_SUBSCRIBED_ORACLES);
         expect(subscribedOracles, 'Subscribed Oracles Test should be created').to.not.be.undefined;
+        const length = await subscribedOracles.length();
+        expect(length).to.be.bignumber.equal(new BN(0));
     });
     it('add', async () => {
         let res = Promise.resolve();
         for (const [oracle, stake] of Object.entries(oracles)) {
-            res = res.then(() => subscribedOracles.add(oracle, stake));
+            res = res.then(() => subscribedOracles.addOrReplace(oracle, stake));
         }
         await res;
-        expect(await subscribedOracles.length()).to.be.bignumber.equal(new BN(NUM_ORACLES));
+        expect(await subscribedOracles.length()).to.be.bignumber.equal(
+            new BN(MAX_SUBSCRIBED_ORACLES),
+        );
     });
     it('sort - all', async () => {
         const length = await subscribedOracles.length();
         const selected = await subscribedOracles.sort(length);
-        console.log(selected);
         let stake = oracles[selected[0]];
         let i = 1;
         while (i < selected.length) {
@@ -39,9 +44,8 @@ contract('SubscribedOracles', (accounts) => {
             i += 1;
         }
     });
-    it('sort - half', async () => {
-        const length = await subscribedOracles.length();
-        const selected = await subscribedOracles.sort(length.div(toBN(2)));
+    it('sort - selected', async () => {
+        const selected = await subscribedOracles.sort(new BN(MAX_SELECTED_ORACLES));
         let stake = oracles[selected[0]];
         let i = 1;
         while (i < selected.length) {
@@ -52,9 +56,14 @@ contract('SubscribedOracles', (accounts) => {
         }
     });
     it('remove', async () => {
-        const entries = Object.entries(oracles);
-        await subscribedOracles.remove(entries[0][0]);
-        await subscribedOracles.remove(entries[entries.length - 1][0]);
-        expect(await subscribedOracles.length()).to.be.bignumber.equal(new BN(NUM_ORACLES - 2));
+        const length = await subscribedOracles.length();
+        const selected = await subscribedOracles.sort(new BN(MAX_SELECTED_ORACLES));
+        for (oracle of selected) {
+            await subscribedOracles.remove(oracle);
+        }
+        length.sub(new BN(selected.length));
+        expect(await subscribedOracles.length()).to.be.bignumber.equal(
+            length.sub(new BN(selected.length)),
+        );
     });
 });
