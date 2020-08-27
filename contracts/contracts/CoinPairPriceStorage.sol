@@ -66,8 +66,7 @@ contract CoinPairPriceStorage is Initializable, GovernedAbstract, IIterableWhite
 
     /**
       @notice Modifier that protects the function
-      @dev You should use this modifier in any function that should be called through
-      the governance system
+      @dev You should use this modifier in any function that should be called only by oracle manager
      */
     modifier onlyOracleManager() {
         require(msg.sender == address(oracleManager), "Must be called from Oracle manager");

@@ -34,4 +34,13 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;
+
+    /**
+     @notice Modifier that protects the function
+     @dev You should use this modifier in any function that should be called only by oracle manager
+    */
+    modifier onlyStaking() {
+        require(msg.sender == address(stakingContract), "Must be called from Staking Contract");
+        _;
+    }
 }

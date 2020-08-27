@@ -51,7 +51,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Register a new coin pair contract.
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.
-    function registerCoinPair(bytes32 coinPair, address addr) external onlyAuthorizedChanger() {
+    function registerCoinPair(bytes32 coinPair, address addr) external onlyAuthorizedChanger {
         coinPairRegisterData._registerCoinPair(coinPair, addr);
     }
 
@@ -63,7 +63,7 @@ contract OracleManager is OracleManagerStorage {
         address ownerAddr,
         address oracleAddr,
         string calldata internetName
-    ) external {
+    ) external onlyStaking {
         registeredOracles._registerOracle(ownerAddr, oracleAddr, internetName);
         emit OracleRegistered(ownerAddr, oracleAddr, internetName);
     }
@@ -77,7 +77,7 @@ contract OracleManager is OracleManagerStorage {
     /// The return value is the maximum timestamp from all the coin pairs.
     /// @param oracleOwnerAddr Address of oracle owner
     /// @return the timestamp until which the funds must be locked.
-    function onWithdraw(address oracleOwnerAddr) external returns (uint256) {
+    function onWithdraw(address oracleOwnerAddr) external onlyStaking returns (uint256) {
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         uint256 timestamp = 0;
         uint256 maxTimestamp = 0;
@@ -103,7 +103,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Subscribe a registered oracle to participate in rounds of a registered coin-pair
     /// @param ownerAddr Address of message sender
     /// @param coinPair Name of coin pair
-    function subscribeToCoinPair(address ownerAddr, bytes32 coinPair) external {
+    function subscribeToCoinPair(address ownerAddr, bytes32 coinPair) external onlyStaking {
         require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
         require(_isOwner(ownerAddr), "Must be called by oracle owner");
 
@@ -116,7 +116,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Unsubscribe a registered oracle from participating in rounds of a registered coin-pair
     /// @param ownerAddr Address of message sender
     /// @param coinPair Name of coin pair
-    function unsubscribeFromCoinPair(address ownerAddr, bytes32 coinPair) external {
+    function unsubscribeFromCoinPair(address ownerAddr, bytes32 coinPair) external onlyStaking {
         require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
         require(_isOwner(ownerAddr), "Must be called by oracle owner");
 
@@ -127,7 +127,7 @@ contract OracleManager is OracleManagerStorage {
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair
-    function isSubscribed(address ownerAddr, bytes32 coinPair) public view returns (bool) {
+    function isSubscribed(address ownerAddr, bytes32 coinPair) external view returns (bool) {
         require(_isOwner(ownerAddr), "Oracle is not registered.");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
@@ -137,7 +137,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Change the oracle "internet" name (URI)
     /// @param ownerAddr Address of message sender
     /// @param name The new name to set.
-    function setOracleName(address ownerAddr, string calldata name) external {
+    function setOracleName(address ownerAddr, string calldata name) external onlyStaking {
         require(_isOwner(ownerAddr), "Must be called by oracle owner");
         registeredOracles._setName(ownerAddr, name);
     }
@@ -145,7 +145,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Change the oracle "internet" name (URI)
     /// @param ownerAddr Address of message sender
     /// @param oracleAddr The new oracle address.s
-    function setOracleAddress(address ownerAddr, address oracleAddr) external {
+    function setOracleAddress(address ownerAddr, address oracleAddr) external onlyStaking {
         require(_isOwner(ownerAddr), "Must be called by oracle owner");
         registeredOracles._setOracleAddress(ownerAddr, oracleAddr);
     }
@@ -171,7 +171,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Removes an oracle from the system if conditions in
     ///         contract he is participating apply, returning it's stake.
     /// @param ownerAddr Address of message sender
-    function removeOracle(address ownerAddr) public {
+    function removeOracle(address ownerAddr) external onlyStaking {
         require(_isOwner(ownerAddr), "Must be called by oracle owner");
 
         _unsubscribeAll(ownerAddr);
