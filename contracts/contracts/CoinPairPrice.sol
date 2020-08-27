@@ -408,11 +408,10 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             address oracleOwnerAddr = roundInfo.at(i);
             uint256 points = roundInfo.getPoints(oracleOwnerAddr);
             uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
-            (, , address owneraddr) = oracleManager.getOracleRegistrationInfo(oracleOwnerAddr);
-
-            require(token.transfer(owneraddr, distAmount), "Token transfer failed");
+            address ownerAddr = oracleManager.getOracleOwner(oracleOwnerAddr);
+            require(token.transfer(ownerAddr, distAmount), "Token transfer failed");
             distSum = distSum.add(distAmount);
-            emit OracleRewardTransfer(roundInfo.number, oracleOwnerAddr, owneraddr, distAmount);
+            emit OracleRewardTransfer(roundInfo.number, oracleOwnerAddr, ownerAddr, distAmount);
         }
     }
 

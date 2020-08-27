@@ -240,11 +240,9 @@ contract OracleManager is OracleManagerStorage {
         return stakingContract.getBalance(ownerAddr);
     }
 
-    function getOracleOwner(address oracleAddr) public view returns (address) {
-        oracleAddr;
-        // TODO: Implement!!!
-        require(false, "IMPLEMENT");
-        return oracleAddr;
+    /// @notice Used by CoinPair
+    function getOracleOwner(address oracleAddr) external view returns (address) {
+        return registeredOracles._getOwner(oracleAddr);
     }
 
     /// @notice Returns the count of registered coin pairs.
