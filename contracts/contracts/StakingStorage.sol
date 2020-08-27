@@ -3,13 +3,13 @@ pragma solidity 0.6.12;
 
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
-import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
+import {Supporters} from "./Supporters.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {MockDelayMachine} from "./testing_mocks/MockDelayMachine.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 contract StakingStorage is Initializable, GovernedAbstract {
-    SupportersWhitelisted public supporters;
+    Supporters public supporters;
     OracleManager public oracleManager;
     IERC20 public mocToken;
     MockDelayMachine public delayMachine;

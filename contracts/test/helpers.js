@@ -124,7 +124,7 @@ function bytes32toBN(pr) {
 async function initContracts({governorOwner, period, minSubscriptionStake}) {
     const TestMOC = artifacts.require('TestMOC');
     const OracleManager = artifacts.require('OracleManager');
-    const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+    const Supporters = artifacts.require('Supporters');
     const Staking = artifacts.require('Staking');
     // const CoinPairPrice = artifacts.require('CoinPairPrice');
     const MockDelayMachine = artifacts.require('MockDelayMachine');
@@ -133,7 +133,7 @@ async function initContracts({governorOwner, period, minSubscriptionStake}) {
     const token = await TestMOC.new();
     await token.initialize(governor.address);
     const oracleMgr = await OracleManager.new();
-    const supporters = await SupportersWhitelisted.new();
+    const supporters = await Supporters.new();
     const delayMachine = await MockDelayMachine.new();
     await delayMachine.initialize(governor.address, token.address);
     const staking = await Staking.new();

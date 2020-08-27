@@ -2,7 +2,7 @@ const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
 const TestMOC = artifacts.require('TestMOC');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
@@ -87,18 +87,10 @@ contract('CoinPairPrice', async (accounts) => {
         },
     ];
 
-    oracleDataPair = oracleData
-        .map((x, idx) => [idx, x])
-        .sort((a, b) => new BN(a[1].account).cmp(new BN(b[1].account)));
-
     it('Should register Oracles A, B, C', async () => {
         const initialBalance1 = await this.token.balanceOf(oracleData[0].owner);
         const initialBalance2 = await this.token.balanceOf(oracleData[1].owner);
         const initialBalance3 = await this.token.balanceOf(oracleData[2].owner);
-
-        // console.log(initialBalance1.toString(), oracleData[0].stake.toString());
-        // console.log(initialBalance2.toString(), oracleData[1].stake.toString());
-        // console.log(initialBalance3.toString(), oracleData[2].stake.toString());
 
         await this.token.approve(this.staking.address, oracleData[0].stake, {
             from: oracleData[0].owner,
@@ -129,17 +121,17 @@ contract('CoinPairPrice', async (accounts) => {
             from: oracleData[2].owner,
         });
 
-        const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
+        const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner);
         assert.equal(info0.internetName, oracleData[0].name);
-        //FIXME: assert.equal(info0.stake, oracleData[0].stake);
+        assert.equal(info0.stake, oracleData[0].stake);
 
-        const info1 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].account);
+        const info1 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].owner);
         assert.equal(info1.internetName, oracleData[1].name);
-        //FIXME: assert.equal(info1.stake, oracleData[1].stake);
+        assert.equal(info1.stake, oracleData[1].stake);
 
-        const info2 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[2].account);
+        const info2 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[2].owner);
         assert.equal(info2.internetName, oracleData[2].name);
-        //FIXME: assert.equal(info2.stake, oracleData[2].stake);
+        assert.equal(info2.stake, oracleData[2].stake);
 
         assert.isTrue(
             (await this.token.balanceOf(oracleData[0].owner)).eq(
@@ -160,13 +152,13 @@ contract('CoinPairPrice', async (accounts) => {
 
     it('Should subscribe oracles A,B,C to this coin pair', async () => {
         const thisCoinPair = await this.coinPairPrice.coinPair();
-        await this.staking.subscribeToCoinPair(oracleData[0].account, thisCoinPair, {
+        await this.staking.subscribeToCoinPair(thisCoinPair, {
             from: oracleData[0].owner,
         });
-        await this.staking.subscribeToCoinPair(oracleData[1].account, thisCoinPair, {
+        await this.staking.subscribeToCoinPair(thisCoinPair, {
             from: oracleData[1].owner,
         });
-        await this.staking.subscribeToCoinPair(oracleData[2].account, thisCoinPair, {
+        await this.staking.subscribeToCoinPair(thisCoinPair, {
             from: oracleData[2].owner,
         });
     });

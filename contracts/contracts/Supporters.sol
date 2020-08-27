@@ -5,7 +5,7 @@ import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
-import {SupportersWhitelistedStorage} from "./SupportersWhitelistedStorage.sol";
+import {SupportersStorage} from "./SupportersStorage.sol";
 
 /*
     Right now we have two things implemented in the same smart-contract:
@@ -14,7 +14,7 @@ import {SupportersWhitelistedStorage} from "./SupportersWhitelistedStorage.sol";
     This can be split in the future in two smart-contracts if we want to add a specific set
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
-contract SupportersWhitelisted is SupportersWhitelistedStorage {
+contract Supporters is SupportersStorage {
     using SafeMath for uint256;
 
     // Emitted by SupportersLib

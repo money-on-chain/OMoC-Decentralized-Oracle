@@ -4,7 +4,7 @@ const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 const crypto = require('crypto');
 const TestMOC = artifacts.require('TestMOC');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const COINPAIR2 = web3.utils.asciiToHex('BTCRIF');
@@ -20,7 +20,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
         this.token = await TestMOC.new();
         await this.token.initialize(this.governor.address);
         this.oracleMgr = await OracleManager.new();
-        this.supporters = await SupportersWhitelisted.new();
+        this.supporters = await Supporters.new();
 
         this.coinPairPrice = await CoinPairPrice.new();
         await this.coinPairPrice.initialize(

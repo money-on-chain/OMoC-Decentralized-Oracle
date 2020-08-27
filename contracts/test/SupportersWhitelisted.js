@@ -1,12 +1,12 @@
 // Most of the functionallity is tested via Supporters.js !!!
 const {BN, expectRevert, constants, expectEvent} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
-const Supporters = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 const TestMOC = artifacts.require('TestMOC');
 const MockGovernor = artifacts.require('MockGovernor');
 const helpers = require('./helpers');
 
-contract('SupportersWhitelisted', (accounts) => {
+contract('Supporters', (accounts) => {
     let supporters;
     let token;
     const period = 10;
@@ -220,7 +220,7 @@ contract('SupportersWhitelisted', (accounts) => {
         it('should set period', async () => {
             expect(await this.supporters.period()).to.be.bignumber.equal(new BN(10));
             const change = await artifacts
-                .require('SupportersWhitelistedPeriodChange')
+                .require('SupportersPeriodChange')
                 .new(this.supporters.address, 123);
             await this.governor.executeChange(change.address, {from: GOVERNOR_OWNER});
             // await this.supporters.setPeriod(123, {from: GOVERNOR});

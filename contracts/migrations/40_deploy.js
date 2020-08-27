@@ -29,7 +29,7 @@ async function deploy(config) {
     console.log('TestMOC: ', testMOC.options.address);
 
     console.log('Create Supporters Proxy');
-    await scripts.add({contractsData: [{name: 'SupportersWhitelisted', alias: 'Supporters'}]});
+    await scripts.add({contractsData: [{name: 'Supporters', alias: 'Supporters'}]});
     await scripts.push({
         network: config.network,
         txParams: {...config.txParams, gas: 3500000},
@@ -100,7 +100,7 @@ async function deploy(config) {
     );
 
     console.log('Initialize supporters', 'governor', config.governorAddr);
-    const scall = await artifacts.require('SupportersWhitelisted').at(supporters.options.address);
+    const scall = await artifacts.require('Supporters').at(supporters.options.address);
     await scall.initialize(
         config.governorAddr,
         [oracleManager.options.address],

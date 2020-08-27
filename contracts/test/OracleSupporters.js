@@ -3,7 +3,7 @@ const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
 const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 const TestMOC = artifacts.require('TestMOC');
 
 // THIS PROBABLY MAKE NO SENSE ANY MORE
@@ -21,7 +21,7 @@ contract.skip('Oracle-Supporters integration', (accounts) => {
         this.token = await TestMOC.new();
         await this.token.initialize(this.governor.address);
         this.oracleMgr = await OracleManager.new();
-        this.supporters = await SupportersWhitelisted.new();
+        this.supporters = await Supporters.new();
 
         this.coinPairPrice = await CoinPairPrice.new();
         await this.coinPairPrice.initialize(
