@@ -40,8 +40,8 @@ library SubscribedOraclesLib {
         if (length(set) == 0) {
             return (0, address(0));
         }
-        minStake = getStake(at(set, 0));
         minVal = at(set, 0);
+        minStake = getStake(minVal);
         for (uint256 i = 1; i < length(set); i++) {
             address v = at(set, i);
             uint256 s = getStake(v);
@@ -65,7 +65,6 @@ library SubscribedOraclesLib {
         function(address) external view returns (uint256) getStake,
         uint256 count
     ) internal view returns (address[] memory selected) {
-        require(count <= 32, "Too many entries");
         if (count > length(set)) {
             count = length(set);
         }

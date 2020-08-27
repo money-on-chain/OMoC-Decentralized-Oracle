@@ -32,11 +32,21 @@ contract('SubscribedOracles', (accounts) => {
             new BN(MAX_SUBSCRIBED_ORACLES),
         );
     });
-    it('sort - all', async () => {
-        const length = await subscribedOracles.length();
-        const selected = await subscribedOracles.sort(length);
+    it('sort', async () => {
+        let selected = await subscribedOracles.sort(MAX_SUBSCRIBED_ORACLES);
+        expect(selected.length).to.equal(MAX_SUBSCRIBED_ORACLES);
         let stake = oracles[selected[0]];
         let i = 1;
+        while (i < selected.length) {
+            let next = oracles[selected[i]];
+            expect(stake, 'Stake should be in decreasing order').to.be.bignumber.gte(next);
+            next = stake;
+            i += 1;
+        }
+        selected = await subscribedOracles.sort(new BN(MAX_SELECTED_ORACLES));
+        expect(selected.length).to.equal(MAX_SELECTED_ORACLES);
+        stake = oracles[selected[0]];
+        i = 1;
         while (i < selected.length) {
             let next = oracles[selected[i]];
             expect(stake, 'Stake should be in decreasing order').to.be.bignumber.gte(next);
@@ -44,16 +54,14 @@ contract('SubscribedOracles', (accounts) => {
             i += 1;
         }
     });
-    it('sort - selected', async () => {
-        const selected = await subscribedOracles.sort(new BN(MAX_SELECTED_ORACLES));
-        let stake = oracles[selected[0]];
-        let i = 1;
-        while (i < selected.length) {
-            let next = oracles[selected[i]];
-            expect(stake, 'Stake should be in decreasing order').to.be.bignumber.gte(next);
-            next = stake;
-            i += 1;
+    it('sort - gas', async () => {
+        const subscribed = await SubscribedOraclesMock.new(MAX_SUBSCRIBED_ORACLES);
+        let res = Promise.resolve();
+        for (const [oracle, stake] of Object.entries(oracles)) {
+            res = res.then(() => subscribed.addOrReplace(oracle, stake));
         }
+        await res;
+        await subscribed.sortForGas(MAX_SELECTED_ORACLES);
     });
     it('remove', async () => {
         const length = await subscribedOracles.length();
@@ -75,7 +83,6 @@ contract('SubscribedOracles', (accounts) => {
         }
         await res;
         const {0: minStake, 1: minAddress} = await subscribed.getMin();
-        console.log({minStake, minAddress});
         expect(minStake).to.be.bignumber.equal(toBN(1));
         expect(minAddress).equal(toChecksumAddress(padLeft(numberToHex(1), 40)));
     });

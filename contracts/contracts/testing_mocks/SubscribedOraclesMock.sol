@@ -52,6 +52,11 @@ contract SubscribedOraclesMock {
         return subscribedOracles.sort(this.getStake, count);
     }
 
+    function sortForGas(uint256 count) public returns (address[] memory) {
+        maxSubscribedOraclesPerRound = maxSubscribedOraclesPerRound;
+        return subscribedOracles.sort(this.getStake, count);
+    }
+
     function length() public view returns (uint256) {
         return subscribedOracles.length();
     }
