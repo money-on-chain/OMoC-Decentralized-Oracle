@@ -7,7 +7,7 @@ const ADDRESS_ZERO = constants.ZERO_ADDRESS;
 async function printOracles(oracleManager, coinPair) {
     let cnt = 0;
     let it = await oracleManager.getRegisteredOracleHead();
-    while (it != ADDRESS_ZERO) {
+    while (it !== ADDRESS_ZERO) {
         const info = await oracleManager.getOracleRegistrationInfo(it);
         const roundInfo = await oracleManager.getOracleRoundInfo(it, coinPair);
         console.log(
@@ -55,9 +55,7 @@ async function getDefaultEncodedMessage(version, coinpair, price, votedOracle, b
 async function mineUntilNextRound(coinpairPrice) {
     console.log('Please wait for round blocks to be mined...');
     const roundInfo = await coinpairPrice.getRoundInfo();
-    do {
-        await time.advanceBlock();
-    } while (roundInfo.lockPeriodEndBlock.gt(await time.latestBlock()));
+    await time.increaseTo(roundInfo.lockPeriodTimestamp);
 }
 
 async function mineUntilBlock(target) {
@@ -69,8 +67,8 @@ async function mineUntilBlock(target) {
 }
 
 async function mineBlocks(num) {
-    latestBlock = await time.latestBlock();
-    endBlock = latestBlock.add(new BN(num));
+    const latestBlock = await time.latestBlock();
+    const endBlock = latestBlock.add(new BN(num));
     await mineUntilBlock(endBlock);
 }
 
@@ -110,7 +108,7 @@ function coinPairStr(hex) {
     let str = '';
     for (let n = 0; n < hex.length; n += 2) {
         const ch = hex.substr(n, 2);
-        if (ch == '0x' || ch == '00') {
+        if (ch === '0x' || ch === '00') {
             continue;
         }
         str += String.fromCharCode(parseInt(ch, 16));
@@ -128,7 +126,7 @@ async function initContracts({governorOwner, period, minSubscriptionStake}) {
     const OracleManager = artifacts.require('OracleManager');
     const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
     const Staking = artifacts.require('Staking');
-    const CoinPairPrice = artifacts.require('CoinPairPrice');
+    // const CoinPairPrice = artifacts.require('CoinPairPrice');
     const MockDelayMachine = artifacts.require('MockDelayMachine');
 
     const governor = await createGovernor(governorOwner);

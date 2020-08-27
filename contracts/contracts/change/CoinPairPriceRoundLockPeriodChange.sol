@@ -6,22 +6,22 @@ import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
 
 /**
-  @title CoinPairPriceRoundLockPeriodInBlocksChange
+  @title CoinPairPriceRoundLockPeriodChange
   @notice This contract is a ChangeContract intended to be used to change the coinpairprice contract
-  parameter roundLockPeriodInBlocks
+  parameter roundLockPeriodSecs
  */
-contract CoinPairPriceRoundLockPeriodInBlocksChange is CoinPairPriceStorage, ChangeContract {
+contract CoinPairPriceRoundLockPeriodChange is CoinPairPriceStorage, ChangeContract {
     GovernedAbstract public coinPairPrice;
     bytes public encodedData;
 
     /**
       @notice Constructor
       @param _coinPairPrice Address of coin pair price to upgrade
-      @param _roundLockPeriodInBlocks The maximum count of oracles selected to participate each round
+      @param _roundLockPeriod The round period in secs
     */
-    constructor(GovernedAbstract _coinPairPrice, uint256 _roundLockPeriodInBlocks) public {
+    constructor(GovernedAbstract _coinPairPrice, uint256 _roundLockPeriod) public {
         coinPairPrice = _coinPairPrice;
-        encodedData = abi.encode(_roundLockPeriodInBlocks);
+        encodedData = abi.encode(_roundLockPeriod);
     }
 
     /**
@@ -39,6 +39,6 @@ contract CoinPairPriceRoundLockPeriodInBlocksChange is CoinPairPriceStorage, Cha
         This methods runs in the Governed contract storage.
     */
     function impersonate(bytes calldata data) external {
-        roundInfo.roundLockPeriodInBlocks = abi.decode(data, (uint256));
+        roundInfo.roundLockPeriodSecs = abi.decode(data, (uint256));
     }
 }

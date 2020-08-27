@@ -12,8 +12,8 @@ const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const minOracleOwnerStake = 10000000000;
 const period = 20;
 const minStayBlocks = 10;
-const afterStopBlocks = 5;
 const maxOraclesPerRound = 10;
+const maxSubscribedOraclesPerRound = 30;
 
 contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
     before(async () => {
@@ -31,11 +31,11 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             COINPAIR,
             this.token.address,
             maxOraclesPerRound,
+            maxSubscribedOraclesPerRound,
             5, // roundLockPeriodInBlocks,
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
-            2, // numIdleRounds,
             this.oracleMgr.address,
         );
 
@@ -369,14 +369,14 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             assert.isFalse(subscribed);
         }
 
-        const numIdleRounds = (await this.coinPairPrice.numIdleRounds()).toNumber();
-        for (let i = 0; i < numIdleRounds; i++) {
-            await helpers.mineUntilNextRound(this.coinPairPrice);
-            await this.coinPairPrice.switchRound();
-        }
+        // const numIdleRounds = (await this.coinPairPrice.numIdleRounds()).toNumber();
+        // for (let i = 0; i < numIdleRounds; i++) {
+        //     await helpers.mineUntilNextRound(this.coinPairPrice);
+        await this.coinPairPrice.switchRound();
+        // }
 
         const ol = oracleList.concat();
-        while (ol.length != 0) {
+        while (ol.length !== 0) {
             const idx = Math.floor(Math.random() * ol.length);
             const prevEntries = getPrevEntries(ol);
 

@@ -2,7 +2,6 @@ const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
-const ethers = require('ethers');
 const crypto = require('crypto');
 const TestMOC = artifacts.require('TestMOC');
 const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
@@ -11,9 +10,8 @@ const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const COINPAIR2 = web3.utils.asciiToHex('BTCRIF');
 const minOracleOwnerStake = 10000;
 const period = 20;
-const minStayBlocks = 10;
-const afterStopBlocks = 5;
 const maxOraclesPerRound = 10;
+const maxSubscribedOraclesPerRound = 30;
 
 contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
     before(async () => {
@@ -31,11 +29,11 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             COINPAIR,
             this.token.address,
             maxOraclesPerRound,
+            maxSubscribedOraclesPerRound,
             5, // roundLockPeriodInBlocks,
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
-            2, // numIdleRounds,
             this.oracleMgr.address,
         );
 
@@ -50,7 +48,6 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
-            2, // numIdleRounds,
             this.oracleMgr.address,
         );
 

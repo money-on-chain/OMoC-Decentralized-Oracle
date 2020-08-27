@@ -4,13 +4,10 @@ const helpers = require('./helpers');
 const TestMOC = artifacts.require('TestMOC');
 const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
 const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
-const ethers = require('ethers');
 
 contract('OracleManager by gobernanza', async (accounts) => {
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
     const period = 20;
-    const minStayBlocks = 10;
-    const afterStopBlocks = 5;
     const GOBERNOR = accounts[8];
     const oracleData = [
         {
@@ -35,11 +32,11 @@ contract('OracleManager by gobernanza', async (accounts) => {
             this.coinPair,
             this.token.address,
             10, // maxOraclesPerRound
+            30, // maxSubscribedOraclesPerRound
             5, // roundLockPeriodInBlocks
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             '100000000', // bootstrapPrice
-            2, // numIdleRounds
             this.oracleMgr.address,
         );
 

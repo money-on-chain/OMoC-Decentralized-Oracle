@@ -11,7 +11,6 @@ function config() {
         'minOracleOwnerStake',
         'maxOraclesPerRound',
         'bootstrapPrice',
-        'numIdleRounds',
         'roundLockPeriodInBlocks',
         'validPricePeriodInBlocks',
         'emergencyPublishingPeriodInBlocks',
@@ -41,7 +40,6 @@ function config() {
         minOracleOwnerStake: parseEnvArray(process.env.minOracleOwnerStake),
         maxOraclesPerRound: parseEnvArray(process.env.maxOraclesPerRound),
         bootstrapPrice: parseEnvArray(process.env.bootstrapPrice),
-        numIdleRounds: parseEnvArray(process.env.numIdleRounds),
         roundLockPeriodInBlocks: parseEnvArray(process.env.roundLockPeriodInBlocks),
         validPricePeriodInBlocks: parseEnvArray(process.env.validPricePeriodInBlocks),
         emergencyPublishingPeriodInBlocks: parseEnvArray(

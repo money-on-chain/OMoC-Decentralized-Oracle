@@ -10,8 +10,6 @@ const TestMOC = artifacts.require('TestMOC');
 contract.skip('Oracle-Supporters integration', (accounts) => {
     const minOracleOwnerStake = 1;
     const period = 20;
-    const minStayBlocks = 10;
-    const afterStopBlocks = 5;
     const oracle1 = accounts[2];
     const oracle2 = accounts[3];
     const INITIAL_BALANCE = web3.utils.toWei(new BN(10), 'ether');
@@ -32,11 +30,11 @@ contract.skip('Oracle-Supporters integration', (accounts) => {
             web3.utils.asciiToHex('BTCUSD'),
             this.token.address,
             1, // maxOraclesPerRound,
+            2, // maxSubscribedOraclesPerRound,
             1, // roundLockPeriodInBlocks,
             1, // validPricePeriodInBlocks,
             1, // emergencyPublishingPeriodInBlocks
             0, // bootstrapPrice,
-            1, // numIdleRounds,
             this.oracleMgr.address,
         );
 

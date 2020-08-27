@@ -1,4 +1,4 @@
-OracleManager = artifacts.require('OracleManager');
+const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
 const TestMOC = artifacts.require('TestMOC');
@@ -182,11 +182,11 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
                     web3.utils.asciiToHex('BTCUSD'),
                     this.token.address,
                     10, // maxOraclesPerRound
+                    30, // maxSubscribedOraclesPerRound
                     5, // roundLockPeriodInBlocks
                     3, // validPricePeriodInBlocks
                     2, // emergencyPublishingPeriodInBlocks
                     '100000000', // bootstrapPrice
-                    2, // numIdleRounds
                     this.oracleMgr.address,
                 );
 

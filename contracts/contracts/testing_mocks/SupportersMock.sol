@@ -9,7 +9,7 @@ import {SupportersLib} from "../libs/SupportersLib.sol";
 /*
     Original supporter contract that has no restrictions.
 */
-contract Supporters is Initializable {
+contract SupportersMock is Initializable {
     SupportersLib.SupportersData internal supportersData;
     using SupportersLib for SupportersLib.SupportersData;
 

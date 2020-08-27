@@ -209,14 +209,10 @@ contract OracleManager is OracleManagerStorage {
     function getOracleRoundInfo(address oracleAddr, bytes32 coinpair)
         external
         view
-        returns (
-            uint256 points,
-            uint256 selectedInRound,
-            bool selectedInCurrentRound
-        )
+        returns (uint256 points, bool selectedInCurrentRound)
     {
         CoinPairPrice ctAddr = _getCoinPairAddress(coinpair);
-        (points, selectedInRound, selectedInCurrentRound) = ctAddr.getOracleRoundInfo(oracleAddr);
+        (points, selectedInCurrentRound) = ctAddr.getOracleRoundInfo(oracleAddr);
     }
 
     /// @notice Removes an oracle from the system if conditions in
@@ -244,6 +240,13 @@ contract OracleManager is OracleManagerStorage {
     function getStake(address oracleAddr) public view returns (uint256 balance) {
         address ownerAddr = registeredOracles._getOwner(oracleAddr);
         return stakingContract.getBalance(ownerAddr);
+    }
+
+    function getOracleOwner(address oracleAddr) public view returns (address) {
+        oracleAddr;
+        // TODO: Implement!!!
+        require(false, "IMPLEMENT");
+        return oracleAddr;
     }
 
     /// @notice Returns the count of registered coin pairs.

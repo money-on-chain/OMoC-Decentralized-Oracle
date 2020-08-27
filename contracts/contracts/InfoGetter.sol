@@ -24,7 +24,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
     struct OracleServerInfo {
         uint256 round;
         uint256 startBlock;
-        uint256 lockPeriodEndBlock;
+        uint256 lockPeriodTimestamp;
         uint256 totalPoints;
         FullOracleRoundInfo[] info;
         uint256 price;
@@ -50,14 +50,14 @@ contract InfoGetter is Initializable, GovernedAbstract {
 
     struct CoinPairUIOracleRoundInfo {
         uint256 points;
-        uint256 selectedInRound;
+        bool selectedInRound;
         address addr;
     }
 
     struct CoinPairPriceUIInfo {
         uint256 round;
         uint256 startBlock;
-        uint256 lockPeriodEndBlock;
+        uint256 lockPeriodTimestamp;
         uint256 totalPoints;
         CoinPairUIOracleRoundInfo[] info;
         uint256 currentBlock;
@@ -90,7 +90,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         (
             uint256 round,
             uint256 startBlock,
-            uint256 lockPeriodEndBlock,
+            uint256 lockPeriodTimestamp,
             uint256 totalPoints,
             address[] memory selectedOracles
         ) = _coinPairPrice.getRoundInfo();
@@ -98,7 +98,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         CoinPairUIOracleRoundInfo[] memory info = new CoinPairUIOracleRoundInfo[](len);
         for (uint256 i = 0; i < len; i++) {
             address addr = selectedOracles[i];
-            (uint256 points, uint256 selectedInRound, ) = _coinPairPrice.getOracleRoundInfo(addr);
+            (uint256 points, bool selectedInRound) = _coinPairPrice.getOracleRoundInfo(addr);
             info[i] = CoinPairUIOracleRoundInfo(points, selectedInRound, addr);
         }
         uint256 lastPublicationBlock = _coinPairPrice.lastPublicationBlock();
@@ -106,7 +106,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
             CoinPairPriceUIInfo(
                 round,
                 startBlock,
-                lockPeriodEndBlock,
+                lockPeriodTimestamp,
                 totalPoints,
                 info,
                 block.number,
@@ -198,7 +198,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         (
             uint256 round,
             uint256 startBlock,
-            uint256 lockPeriodEndBlock,
+            uint256 lockPeriodTimestamp,
             uint256 totalPoints,
             address[] memory selectedOracles
         ) = _coinPairPrice.getRoundInfo();
@@ -207,7 +207,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
             OracleServerInfo(
                 round,
                 startBlock,
-                lockPeriodEndBlock,
+                lockPeriodTimestamp,
                 totalPoints,
                 _createFullRoundInfo(_oracleManager, _coinPairPrice, selectedOracles),
                 uint256(currentPrice),
@@ -234,7 +234,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
         for (uint256 i = 0; i < len; i++) {
             (string memory name, uint256 stake, address owner) = _oracleManager
                 .getOracleRegistrationInfo(_selectedOracles[i]);
-            (uint256 points, , ) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
+            (uint256 points, ) = _coinPairPrice.getOracleRoundInfo(_selectedOracles[i]);
             info[i] = FullOracleRoundInfo(stake, points, _selectedOracles[i], owner, name);
         }
         return info;

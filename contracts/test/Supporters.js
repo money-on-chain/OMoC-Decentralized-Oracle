@@ -2,7 +2,7 @@ const {BN, expectEvent, expectRevert} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const helpers = require('./helpers');
 
-const Supporters = artifacts.require('Supporters');
+const SupportersMock = artifacts.require('SupportersMock');
 const TestMOC = artifacts.require('TestMOC');
 
 contract('Supporters', (accounts) => {
@@ -24,7 +24,7 @@ contract('Supporters', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await Supporters.new();
+            supporters = await SupportersMock.new();
             await supporters.initialize(token.address, new BN(10));
         });
 
@@ -53,7 +53,7 @@ contract('Supporters', (accounts) => {
             token = await TestMOC.new();
             await token.initialize(governor.address);
 
-            supporters = await Supporters.new();
+            supporters = await SupportersMock.new();
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, BALANCE_USER1);
@@ -125,7 +125,7 @@ contract('Supporters', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await Supporters.new();
+            supporters = await SupportersMock.new();
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, BALANCE_USER1);
@@ -272,7 +272,7 @@ contract('Supporters', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await Supporters.new();
+            supporters = await SupportersMock.new();
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, BALANCE_USER1);
@@ -402,7 +402,7 @@ contract('Supporters', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await Supporters.new();
+            supporters = await SupportersMock.new();
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, INITIAL_BALANCE);

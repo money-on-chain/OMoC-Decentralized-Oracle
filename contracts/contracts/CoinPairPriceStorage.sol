@@ -8,6 +8,7 @@ import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
+import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 
 /*
@@ -21,11 +22,14 @@ contract CoinPairPriceStorage is Initializable, GovernedAbstract, IIterableWhite
     // The publish message has a version field
     uint256 constant PUBLISH_MESSAGE_VERSION = 3;
 
+    // Maximum number of subscribed oracles.
+    uint256 maxSubscribedOraclesPerRound;
+
     // Round information.
     RoundInfoLib.RoundInfo internal roundInfo;
 
     // The subscribed oracles to this coin-pair.
-    mapping(address => bool) internal subscribedOracles;
+    SubscribedOraclesLib.SubscribedOracles internal subscribedOracles;
 
     // Whitelist used to store the addresses of contracts that can peek prices.
     IterableWhitelistLib.IterableWhitelistData internal pricePeekWhitelistData;
