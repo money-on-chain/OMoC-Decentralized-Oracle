@@ -32,14 +32,27 @@ library SubscribedOraclesLib {
     }
 
     /**
-     * @dev Add and replace if the stake of the added address si more than the minimum.
+     * @dev Get the minimum value.
      *
-     * Returns true if the value was added to the set, that is if it was not
-     * already present.
      */
-    function add(SubscribedOracles storage set, address value) internal returns (bool) {
-        // TODO: Implement replacement!!!
-        return set._inner.add(value);
+    function getMin(
+        SubscribedOracles storage set,
+        function(address) returns (uint256) external view getStake
+    ) internal returns (uint256 minStake, address minVal) {
+        if (length(set) == 0) {
+            return (0, address(0));
+        }
+        minStake = getStake(at(set, 0));
+        minVal = address(0);
+        for (uint256 i = 1; i < length(set); i++) {
+            address v = at(set, i);
+            uint256 s = getStake(v);
+            if (s < minStake) {
+                minStake = s;
+                minVal = v;
+            }
+        }
+        return (minStake, minVal);
     }
 
     /**
@@ -88,7 +101,7 @@ library SubscribedOraclesLib {
         function(address)  external view returns (uint256) getStake,
         AddressSetLib.AddressSet storage selectedOracles
     ) internal view returns (address addr, uint256 stake) {
-        for (uint256 i = 0; i < selectedOracles.length(); i++) {
+        for (uint256 i = 0; i < length(set); i++) {
             address c = at(set, i);
             if (selectedOracles.contains(c)) {
                 continue;
@@ -100,6 +113,16 @@ library SubscribedOraclesLib {
             }
         }
         return (addr, stake);
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(SubscribedOracles storage set, address value) internal returns (bool) {
+        return set._inner.add(value);
     }
 
     /**

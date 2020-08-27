@@ -9,8 +9,6 @@ const ethers = require('ethers');
 contract('CoinPairPrice', async (accounts) => {
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
     const period = 20;
-    const minStayBlocks = 10;
-    const afterStopBlocks = 5;
     const feeSourceAccount = accounts[0];
 
     /* Account is the simulated oracle server address. The stake 
@@ -41,6 +39,7 @@ contract('CoinPairPrice', async (accounts) => {
             web3.utils.asciiToHex('BTCUSD'),
             this.token.address,
             3, // maxOraclesPerRound
+            30, // maxSubscribedOraclesPerRound
             5, // roundLockPeriodInBlocks
             this.validPricePeriodInBlocks,
             this.emergencyPublishingPeriodInBlocks,

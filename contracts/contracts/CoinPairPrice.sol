@@ -49,6 +49,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
     /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
+    /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
     /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
     /// @param _validPricePeriodInBlocks The time span for which the last published price is valid.
     /// @param _emergencyPublishingPeriodInBlocks The number of blocks that must pass after a publication after which
@@ -61,6 +62,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         bytes32 _coinPair,
         address _tokenAddress,
         uint256 _maxOraclesPerRound,
+        uint256 _maxSubscribedOraclesPerRound,
         uint256 _roundLockPeriod,
         uint256 _validPricePeriodInBlocks,
         uint256 _emergencyPublishingPeriodInBlocks,
@@ -93,6 +95,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         coinPair = _coinPair;
         oracleManager = _oracleManager;
         roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriod);
+        maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
         subscribedOracles = SubscribedOraclesLib.init();
         _publish(_bootstrapPrice);
     }
@@ -120,8 +123,9 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             "Oracle is already subscribed to this coin pair"
         );
 
-        bool added = subscribedOracles.add(oracleOwnerAddr);
+        bool added = _addOrReplaceSubscribedOracle(oracleOwnerAddr);
         require(added, "Not enough stake to add");
+
         // If the round is not full, then add
         if (!roundInfo.isFull() && !roundInfo.isSelected(oracleOwnerAddr)) {
             roundInfo.addOracleToRound(oracleOwnerAddr);
@@ -376,6 +380,21 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     // ----------------------------------------------------------------------------------------------------------------
     // Internal functions
     // ----------------------------------------------------------------------------------------------------------------
+
+    /// @notice add or replace and oracle from the subscribed list of oracles.
+    function _addOrReplaceSubscribedOracle(address oracleOwnerAddr) internal returns (bool) {
+        if (subscribedOracles.length() < maxSubscribedOraclesPerRound) {
+            return subscribedOracles.add(oracleOwnerAddr);
+        }
+        (uint256 minStake, address minVal) = subscribedOracles.getMin(oracleManager.getStake);
+        uint256 vStake = oracleManager.getStake(oracleOwnerAddr);
+        if (vStake > minStake) {
+            if (subscribedOracles.remove(minVal)) {
+                return subscribedOracles.add(oracleOwnerAddr);
+            }
+        }
+        return false;
+    }
 
     /// @notice Distribute rewards to oracles, taking fees from this smart contract.
     function _distributeRewards() private {

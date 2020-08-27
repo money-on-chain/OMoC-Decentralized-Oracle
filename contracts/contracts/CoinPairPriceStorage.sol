@@ -22,6 +22,9 @@ contract CoinPairPriceStorage is Initializable, GovernedAbstract, IIterableWhite
     // The publish message has a version field
     uint256 constant PUBLISH_MESSAGE_VERSION = 3;
 
+    // Maximum number of subscribed oracles.
+    uint256 maxSubscribedOraclesPerRound;
+
     // Round information.
     RoundInfoLib.RoundInfo internal roundInfo;
 

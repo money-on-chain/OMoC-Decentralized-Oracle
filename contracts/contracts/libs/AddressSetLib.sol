@@ -9,7 +9,6 @@ import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/
 library AddressSetLib {
     using SafeMath for uint256;
 
-    /// Global registration information for each oracle, used by OracleManager
     struct AddressSet {
         // Storage of set values
         address[] _values;

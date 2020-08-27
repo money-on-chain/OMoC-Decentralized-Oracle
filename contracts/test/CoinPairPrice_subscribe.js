@@ -10,8 +10,8 @@ const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
 const ORACLE_QUANTITY = 21;
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const minOracleOwnerStake = 10000000000;
-const minStayBlocks = 10;
 const maxOraclesPerRound = 10;
+const maxSubscribedOraclesPerRound = 30;
 
 contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
     async function register(token, staking, oracleManager, ownerAddr, stake, name, oracleAddr) {
@@ -49,6 +49,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             COINPAIR,
             testobj.token.address,
             maxOraclesPerRound,
+            maxSubscribedOraclesPerRound,
             5, // roundLockPeriodInBlocks,
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
