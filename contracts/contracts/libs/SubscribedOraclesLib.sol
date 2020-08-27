@@ -6,7 +6,6 @@ import {AddressSetLib} from "./AddressSetLib.sol";
 
 // prettier-ignore
 import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
-import "../OracleManager.sol";
 
 /**
   @notice Based on EnumberableSet, but with the ability to clear all the contents.
@@ -53,11 +52,34 @@ library SubscribedOraclesLib {
     function sort(
         SubscribedOracles storage set,
         function(address) external view returns (uint256) getStake,
-        uint256 cant
-    ) internal returns (address[] memory ret) {
-        set;
-        cant;
-        return ret;
+        uint256 count
+    ) internal view returns (address[] memory selected) {
+        require(count <= 32, "Too many entries");
+        if (count > length(set)) {
+            count = length(set);
+        }
+        selected = new address[](count);
+        if (count == 0) {
+            return selected;
+        }
+        selected[0] = at(set, 0);
+        for (uint256 i = 1; i < length(set); i++) {
+            address v = at(set, i);
+            uint256 vStake = getStake(v);
+            uint256 j = i;
+            if (j >= count) {
+                j = count - 1;
+                if (vStake <= getStake(selected[j])) {
+                    continue;
+                }
+            }
+            while (j > 0 && vStake > getStake(selected[j - 1])) {
+                selected[j] = selected[j - 1];
+                j--;
+            }
+            selected[j] = v;
+        }
+        return selected;
     }
 
     // prettier-ignore
