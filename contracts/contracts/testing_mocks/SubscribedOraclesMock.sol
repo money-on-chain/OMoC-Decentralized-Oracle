@@ -35,6 +35,10 @@ contract SubscribedOraclesMock {
         }
     }
 
+    function getMin() public view returns (uint256 minStake, address minVal) {
+        return subscribedOracles.getMin(this.getStake);
+    }
+
     function remove(address oracle) public {
         subscribedOracles.remove(oracle);
         setStake(oracle, 0);
@@ -45,6 +49,11 @@ contract SubscribedOraclesMock {
     }
 
     function sort(uint256 count) public view returns (address[] memory) {
+        return subscribedOracles.sort(this.getStake, count);
+    }
+
+    function sortForGas(uint256 count) public returns (address[] memory) {
+        maxSubscribedOraclesPerRound = maxSubscribedOraclesPerRound;
         return subscribedOracles.sort(this.getStake, count);
     }
 
