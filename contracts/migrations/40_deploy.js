@@ -157,7 +157,7 @@ async function deploy(config) {
         // MORE GAS!!!
         await scripts.push({
             network: config.network,
-            txParams: {...config.txParams, gas: 4000000},
+            txParams: {...config.txParams, gas: 6000000},
             force: true,
         });
         const coinPairPrice = await scripts.create({
@@ -170,6 +170,7 @@ async function deploy(config) {
                 coinPair,
                 testMOC.options.address,
                 parseInt(config.maxOraclesPerRound[i]),
+                parseInt(config.maxSubscribedOraclesPerRound[i]),
                 parseInt(config.roundLockPeriodInBlocks[i]),
                 parseInt(config.validPricePeriodInBlocks[i]),
                 parseInt(config.emergencyPublishingPeriodInBlocks[i]),

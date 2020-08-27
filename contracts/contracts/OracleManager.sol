@@ -67,8 +67,8 @@ contract OracleManager is OracleManagerStorage {
         string calldata internetName
     ) external {
         require(!registeredOracles._isOracleRegistered(ownerAddr), "Oracle already registered");
-        require(ownerAddr != address(0), "Owner address cannot be zero");
-        require(oracleAddr != address(0), "Oracle address cannot be zero");
+        require(ownerAddr != address(0), "Owner address cannot be 0x0");
+        require(oracleAddr != address(0), "Oracle address cannot be 0x0");
 
         registeredOracles._registerOracle(ownerAddr, oracleAddr, internetName);
         emit OracleRegistered(ownerAddr, oracleAddr, internetName);
@@ -185,21 +185,24 @@ contract OracleManager is OracleManagerStorage {
     }
 
     /// @notice Returns registration information for a registered Oracle.
-    /// @param oracleAddr addr The address of the Oracle to query for.
-    function getOracleRegistrationInfo(address oracleAddr)
+    /// @param oracleOwnerAddr addr The address of the owner of the Oracle to query for.
+    function getOracleRegistrationInfo(address oracleOwnerAddr)
         external
         view
         returns (
             string memory internetName,
             uint256 stake,
-            address _owner
+            address _oracle
         )
     {
-        _owner = registeredOracles._getOwner(oracleAddr);
-        require(registeredOracles._isOracleRegistered(_owner), "Oracle is not registered.");
+        require(
+            registeredOracles._isOracleRegistered(oracleOwnerAddr),
+            "Oracle is not registered."
+        );
 
-        internetName = registeredOracles._getInternetName(_owner);
-        stake = getStake(_owner);
+        _oracle = registeredOracles._getOracleAddress(oracleOwnerAddr);
+        internetName = registeredOracles._getInternetName(oracleOwnerAddr);
+        stake = getStake(oracleOwnerAddr);
     }
 
     /// @notice Returns round information for a registered oracle in a specific coin-pair.

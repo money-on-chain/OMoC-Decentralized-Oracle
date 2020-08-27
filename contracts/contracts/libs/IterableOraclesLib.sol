@@ -30,7 +30,6 @@ library IterableOraclesLib {
         view
         returns (bool)
     {
-        require(owner != address(0), "Owner address cannot be 0x0");
         return self.registeredOracles[owner].addr != address(0);
     }
 
