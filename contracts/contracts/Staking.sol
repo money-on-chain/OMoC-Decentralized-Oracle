@@ -185,15 +185,4 @@ contract Staking is StakingStorage, IStakingMachine {
     function isSubscribed(address ownerAddr, bytes32 coinPair) external view returns (bool) {
         return oracleManager.isSubscribed(ownerAddr, coinPair);
     }
-
-    /// @notice Returns the list of subscribed coinpair contract address for an oracle
-    /// @return addresses Array of subscribed coin pairs addresses.
-    /// @return count The count of valid entries in the addresses param.
-    function getSubscribedCoinPairAddresses(address ownerAddr)
-        external
-        view
-        returns (CoinPairPrice[] memory addresses, uint256 count)
-    {
-        return oracleManager.getSubscribedCoinPairAddresses(ownerAddr);
-    }
 }

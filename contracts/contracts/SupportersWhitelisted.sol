@@ -104,7 +104,7 @@ contract SupportersWhitelisted is SupportersWhitelistedStorage {
      @param _whitelisted - the override coinPair
     */
     function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
-        iterableWhitelistData._removeFromWhitelist(_whitelisted, 0);
+        iterableWhitelistData._removeFromWhitelist(_whitelisted);
     }
 
     /**

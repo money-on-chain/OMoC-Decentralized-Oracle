@@ -1,6 +1,7 @@
 pragma solidity 0.6.12;
 
 /**
+  @notice Based on heavily on EnumberableSet, but with different contents.
   @dev An iterable mapping of addresses to Oracle struct, used to check oracles' data.
  */
 
@@ -11,27 +12,32 @@ library IterableOraclesLib {
     }
 
     struct IterableOraclesData {
-        address[] ownerList;
-        mapping(address => Oracle) registeredOracles;
+        Oracle[] _values;
+        // The key is the oracle Owner
+        mapping(address => uint256) _indexes;
+        // The key is the oracle Address, the value the owner
         mapping(address => address) registeredOwners;
-    }
-
-    function initRegisteredOracles() internal pure returns (IterableOraclesData memory) {
-        address[] memory ownerList;
-        return IterableOraclesData(ownerList);
     }
 
     /**
      * @dev Check if an oracle is registered
      * @return Bool
      */
-    function _isOracleRegistered(IterableOraclesData storage self, address owner)
+    function _isOracleRegistered(IterableOraclesData storage self, address oracleAddr)
         internal
         view
         returns (bool)
     {
-        require(owner != address(0), "Owner address cannot be 0x0");
-        return self.registeredOracles[owner].addr != address(0);
+        return self.registeredOwners[oracleAddr] != address(0);
+    }
+
+    /// @notice Returns true if it's the oracle's owner.
+    function _isOwner(IterableOraclesData storage self, address owner)
+        internal
+        view
+        returns (bool)
+    {
+        return self._indexes[owner] != 0;
     }
 
     /**
@@ -43,67 +49,78 @@ library IterableOraclesLib {
         address oracle,
         string memory url
     ) internal {
-        if (!_isOracleRegistered(self, owner)) {
-            self.ownerList.push(owner);
-        }
         require(owner != address(0), "Owner address cannot be 0x0");
-        require(
-            !_isOracleRegistered(self, owner),
-            "Oracle not allowed to be registered if it is already"
-        );
-        self.registeredOracles[owner].addr = oracle;
-        self.registeredOracles[owner].url = url;
+        require(oracle != address(0), "Oracle address cannot be 0x0");
+        require(!_isOwner(self, owner), "Oracle owner is already registered");
+        require(!_isOracleRegistered(self, oracle), "Oracle address is already registered");
+        // Add oracle address
         self.registeredOwners[oracle] = owner;
+        // EnumberableSet.add
+        self._values.push(Oracle({addr: oracle, url: url}));
+        // The value is stored at length-1, but we add 1 to all indexes and use 0 as a sentinel value
+        self._indexes[owner] = self._values.length;
     }
 
     /**
      * @dev Remove oracle
      */
-    function _removeOracle(
+    function _removeOracle(IterableOraclesData storage self, address owner) internal {
+        require(owner != address(0), "Owner address cannot be 0x0");
+        uint256 valueIndex = self._indexes[owner];
+        require(valueIndex != 0, "Owner not registered");
+        // Delete oracle address entry
+        delete self.registeredOwners[self._values[valueIndex].addr];
+
+        // EnumberableSet.remove (almost)
+        uint256 toDeleteIndex = valueIndex - 1;
+        uint256 lastIndex = self._values.length - 1;
+        Oracle memory lastValue = self._values[lastIndex];
+        address lastOwner = self.registeredOwners[lastValue.addr];
+        require(lastOwner != address(0), "Unexpected error");
+        self._values[toDeleteIndex] = lastValue;
+        self._indexes[lastOwner] = toDeleteIndex + 1;
+        self._values.pop();
+        delete self._indexes[owner];
+    }
+
+    /// @notice Sets oracle's name.
+    function _setName(
         IterableOraclesData storage self,
         address owner,
-        uint256 hint
+        string memory url
     ) internal {
         require(owner != address(0), "Owner address cannot be 0x0");
-        require(hint < self.ownerList.length, "Illegal index");
-        require(
-            _isOracleRegistered(self, owner),
-            "Oracle not allowed to be removed if it's not registered"
-        );
-        for (uint256 i = hint; i < self.ownerList.length; i++) {
-            if (self.ownerList[i] == owner) {
-                self.ownerList[i] = self.ownerList[self.ownerList.length - 1];
-                self.ownerList.pop();
-                break;
-            }
-        }
-        delete self.registeredOwners[self.registeredOracles[owner].addr];
-        delete self.registeredOracles[owner];
+        uint256 valueIndex = self._indexes[owner];
+        require(valueIndex != 0, "Owner not registered");
+        self._values[valueIndex - 1].url = url;
+    }
+
+    /// @notice Sets oracle's name.
+    function _setOracleAddress(
+        IterableOraclesData storage self,
+        address owner,
+        address oracleAddr
+    ) internal {
+        require(owner != address(0), "Owner address cannot be 0x0");
+        uint256 valueIndex = self._indexes[owner];
+        require(valueIndex != 0, "Owner not registered");
+        self._values[valueIndex - 1].addr = oracleAddr;
     }
 
     /// @notice Returns the amount of owners registered.
     function _getOwnerListLen(IterableOraclesData storage self) internal view returns (uint256) {
-        return self.ownerList.length;
+        return self._values.length;
     }
 
-    /// @notice Returns the owner address at index.
+    /// @notice Returns the oracle name and address at index.
     /// @param idx index to query.
-    function _getOwnerAtIndex(IterableOraclesData storage self, uint256 idx)
+    function _getOracleAtIndex(IterableOraclesData storage self, uint256 idx)
         internal
         view
-        returns (address)
+        returns (Oracle memory)
     {
-        require(idx < self.ownerList.length, "Illegal index");
-        return self.ownerList[idx];
-    }
-
-    /// @notice Returns true if it's the oracle's owner.
-    function _isOwner(IterableOraclesData storage self, address ownerAddr)
-        internal
-        view
-        returns (bool)
-    {
-        return self.registeredOracles[ownerAddr].addr != address(0);
+        require(idx < self._values.length, "Illegal index");
+        return self._values[idx];
     }
 
     /// @notice Returns address of oracle's owner.
@@ -112,39 +129,43 @@ library IterableOraclesLib {
         view
         returns (address)
     {
-        require(oracleAddr != address(0), "Oracle address cannot be 0x0");
-        require(self.registeredOwners[oracleAddr] != address(0), "Owner address not found");
         return self.registeredOwners[oracleAddr];
     }
 
     /// @notice Returns oracle address.
-    function _getOracleAddress(IterableOraclesData storage self, address oracleOwnerAddr)
+    function _getOracleInfo(IterableOraclesData storage self, address owner)
+        internal
+        view
+        returns (address, string memory)
+    {
+        if (self._indexes[owner] == 0) {
+            return (address(0), "");
+        }
+        Oracle memory ret = self._values[self._indexes[owner] - 1];
+        return (ret.addr, ret.url);
+    }
+
+    /// @notice Returns oracle address.
+    function _getOracleAddress(IterableOraclesData storage self, address owner)
         internal
         view
         returns (address)
     {
-        require(oracleOwnerAddr != address(0), "Owner address cannot be 0x0");
-        require(_isOracleRegistered(self, oracleOwnerAddr), "Oracle is not registered");
-        return self.registeredOracles[oracleOwnerAddr].addr;
+        if (self._indexes[owner] == 0) {
+            return address(0);
+        }
+        return self._values[self._indexes[owner] - 1].addr;
     }
 
     /// @notice Returns oracle's internet name.
-    function _getInternetName(IterableOraclesData storage self, address oracleOwnerAddr)
+    function _getInternetName(IterableOraclesData storage self, address owner)
         internal
         view
-        returns (string memory)
+        returns (bool found, string memory)
     {
-        require(oracleOwnerAddr != address(0), "Owner address cannot be 0x0");
-        require(_isOracleRegistered(self, oracleOwnerAddr), "Oracle is not registered");
-        return self.registeredOracles[oracleOwnerAddr].url;
-    }
-
-    /// @notice Sets oracle's name.
-    function _setName(
-        IterableOraclesData storage self,
-        address ownerAddr,
-        string memory url
-    ) internal {
-        self.registeredOracles[ownerAddr].url = url;
+        if (self._indexes[owner] == 0) {
+            return (false, "");
+        }
+        return (true, self._values[self._indexes[owner] - 1].url);
     }
 }
