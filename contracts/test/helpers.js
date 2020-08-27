@@ -144,7 +144,7 @@ async function initContracts({governorOwner, period, minSubscriptionStake}) {
         token.address,
         period,
     );
-    await oracleMgr.initialize(governor.address, minSubscriptionStake, supporters.address);
+    await oracleMgr.initialize(governor.address, minSubscriptionStake, staking.address);
     await staking.initialize(
         governor.address,
         supporters.address,
