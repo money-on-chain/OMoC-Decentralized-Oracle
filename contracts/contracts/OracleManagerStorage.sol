@@ -6,13 +6,11 @@ import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
-import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
 import {Staking} from "./Staking.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 
 contract OracleManagerStorage is Initializable, GovernedAbstract {
     using SafeMath for uint256;
-    using OracleInfoLib for OracleInfoLib.OracleRegisterInfo;
     using CoinPairRegisterLib for CoinPairRegisterLib.CoinPairRegisterData;
     using IterableOraclesLib for IterableOraclesLib.IterableOraclesData;
 

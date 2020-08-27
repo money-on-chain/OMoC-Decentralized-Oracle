@@ -6,7 +6,6 @@ import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/E
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
 import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
-import {OracleInfoLib} from "./libs/OracleInfoLib.sol";
 import {Staking} from "./Staking.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {OracleManagerStorage} from "./OracleManagerStorage.sol";
