@@ -35,10 +35,11 @@ library SubscribedOraclesLib {
      * @dev Get the minimum value.
      *
      */
+    // prettier-ignore
     function getMin(
         SubscribedOracles storage set,
-        function(address) returns (uint256) external view getStake
-    ) internal returns (uint256 minStake, address minVal) {
+        function(address) external view returns (uint256) getStake
+    ) internal view returns (uint256 minStake, address minVal) {
         if (length(set) == 0) {
             return (0, address(0));
         }
