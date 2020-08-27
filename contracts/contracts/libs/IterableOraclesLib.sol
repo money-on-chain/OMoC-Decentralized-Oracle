@@ -16,7 +16,7 @@ library IterableOraclesLib {
         mapping(address => address) registeredOwners;
     }
 
-    function initRegisteredOracles() internal returns (IterableOraclesData memory) {
+    function initRegisteredOracles() internal pure returns (IterableOraclesData memory) {
         address[] memory ownerList;
         return IterableOraclesData(ownerList);
     }

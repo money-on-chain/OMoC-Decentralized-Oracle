@@ -282,7 +282,7 @@ contract OracleManager is OracleManagerStorage {
         bool canRemove = true;
         for (uint256 i = 0; i < coinPairCount && canRemove; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            canRemove = canRemove && cp.canRemoveOracle(oracleAddr);
+            canRemove = canRemove && !cp.isSubscribed(oracleAddr);
         }
         return canRemove;
     }
