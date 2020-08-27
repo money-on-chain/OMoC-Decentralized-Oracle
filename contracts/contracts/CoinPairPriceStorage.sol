@@ -64,4 +64,14 @@ contract CoinPairPriceStorage is Initializable, GovernedAbstract, IIterableWhite
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;
+
+    /**
+      @notice Modifier that protects the function
+      @dev You should use this modifier in any function that should be called through
+      the governance system
+     */
+    modifier onlyOracleManager() {
+        require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
+        _;
+    }
 }

@@ -100,14 +100,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         _publish(_bootstrapPrice);
     }
 
-    function getStake(address addr) internal view returns (uint256) {
-        return oracleManager.getStake(addr);
-    }
-
-    function getOracleOwner(address oracleAddr) internal view returns (address) {
-        return oracleManager.getOracleOwner(oracleAddr);
-    }
-
     /// @notice return the type of provider
     function getPriceProviderType() external override pure returns (IPriceProviderType) {
         return IPriceProviderType.Published;
@@ -116,8 +108,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice subscribe an oracle to this coin pair , allowing it to be selected in rounds.
     /// @param oracleOwnerAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function subscribe(address oracleOwnerAddr) external {
-        require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
+    function subscribe(address oracleOwnerAddr) external onlyOracleManager {
         require(
             !subscribedOracles.contains(oracleOwnerAddr),
             "Oracle is already subscribed to this coin pair"
@@ -135,8 +126,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice Unsubscribe an oracle from this coin pair , disallowing it to be selected in rounds.
     /// @param oracleOwnerAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function unsubscribe(address oracleOwnerAddr) external {
-        require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
+    function unsubscribe(address oracleOwnerAddr) external onlyOracleManager {
         require(
             subscribedOracles.contains(oracleOwnerAddr),
             "Oracle is not subscribed to this coin pair"
@@ -145,17 +135,62 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         subscribedOracles.remove(oracleOwnerAddr);
     }
 
-    /// @notice Returns true if an oracle is subscribed to this contract' coin pair
-    /// @param oracleOwnerAddr the oracle address to lookup.
-    /// @dev This is designed to be called from OracleManager.
-    function isSubscribed(address oracleOwnerAddr) external view returns (bool) {
-        return subscribedOracles.contains(oracleOwnerAddr);
+    /// @notice The oracle owner has withdrawn some stake.
+    /// Must check if the oracle is part of current round and if he lost his place with the
+    /// new stake value (the stake is global and is saved in the supporters contract).
+    /// @param oracleOwnerAddr the oracle owner that is trying to withdraw
+    function onWithdraw(address oracleOwnerAddr) external onlyOracleManager returns (uint256) {
+        require(subscribedOracles.contains(oracleOwnerAddr), "Not subscribed to this coin");
+
+        if (!roundInfo.isSelected(oracleOwnerAddr)) {
+            // not participating in current round, its ok to withdraw.
+            return 0;
+        }
+
+        // If the current balance is lower than the unselected address that has the maximum stake
+        // Then the oracle is replaces
+        (address addr, uint256 stake) = subscribedOracles.getMaxUnselectedStake(
+            oracleManager.getStake,
+            roundInfo.selectedOracles
+        );
+        if (stake > oracleManager.getStake(oracleOwnerAddr)) {
+            // The oracleOwnerAddr has lost his place in current round
+            roundInfo.removeOracleFromRound(oracleOwnerAddr);
+            roundInfo.addOracleToRound(addr);
+        }
+        return roundInfo.lockPeriodTimestamp;
     }
 
-    /// @notice Return the available reward fees
-    ///
-    function getAvailableRewardFees() external view returns (uint256) {
-        return token.balanceOf(address(this));
+    //
+    /// @notice Switch contract context to a new round. With the objective of
+    /// being a decentralized solution, this can be called by *anyone* if current
+    /// round lock period is expired.
+    function switchRound() external {
+        if (roundInfo.number > 0) {
+            // Not before the first round
+            require(roundInfo.isReadyToSwitch(), "The current round lock period is active");
+            _distributeRewards();
+        }
+
+        // Setup new round parameters
+        roundInfo.switchRound();
+
+        // Select top stake oracles to participate on this round
+        address[] memory selected = subscribedOracles.sort(
+            oracleManager.getStake,
+            roundInfo.maxOraclesPerRound
+        );
+        for (uint256 i = 0; i < selected.length && !roundInfo.isFull(); i++) {
+            roundInfo.addOracleToRound(selected[i]);
+        }
+        emit NewRound(
+            msg.sender,
+            roundInfo.number,
+            roundInfo.totalPoints,
+            roundInfo.startBlock,
+            roundInfo.lockPeriodTimestamp,
+            roundInfo.asArray()
+        );
     }
 
     /// @notice Publish a price.
@@ -179,7 +214,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     ) external {
         require(roundInfo.number > 0, "Round not open");
         require(
-            subscribedOracles.contains(getOracleOwner(msg.sender)),
+            subscribedOracles.contains(oracleManager.getOracleOwner(msg.sender)),
             "Sender oracle not subscribed"
         );
         require(roundInfo.isSelected(msg.sender), "Voter oracle is not part of this round");
@@ -222,7 +257,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             address rec = _recoverSigner(_sig_v[i], _sig_r[i], _sig_s[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
             require(
-                subscribedOracles.contains(getOracleOwner(rec)),
+                subscribedOracles.contains(oracleManager.getOracleOwner(rec)),
                 "Signing oracle not subscribed"
             );
             require(roundInfo.isSelected(rec), "Address of signer not part of this round");
@@ -279,6 +314,37 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         return currentPrice;
     }
 
+    // The maximum count of oracles selected to participate each round
+    function maxOraclesPerRound() external view returns (uint256) {
+        return roundInfo.maxOraclesPerRound;
+    }
+
+    // The maximum count of oracles selected to participate each round
+    function roundLockPeriodSecs() external view returns (uint256) {
+        return roundInfo.roundLockPeriodSecs;
+    }
+
+    function isRoundFull() external view returns (bool) {
+        return roundInfo.isFull();
+    }
+
+    function isOracleInCurrentRound(address oracleOwnerAddr) external view returns (bool) {
+        return roundInfo.isSelected(oracleOwnerAddr);
+    }
+
+    /// @notice Returns true if an oracle is subscribed to this contract' coin pair
+    /// @param oracleOwnerAddr the oracle address to lookup.
+    /// @dev This is designed to be called from OracleManager.
+    function isSubscribed(address oracleOwnerAddr) external view returns (bool) {
+        return subscribedOracles.contains(oracleOwnerAddr);
+    }
+
+    /// @notice Return the available reward fees
+    ///
+    function getAvailableRewardFees() external view returns (uint256) {
+        return token.balanceOf(address(this));
+    }
+
     /// @notice Return current round information
     function getRoundInfo()
         external
@@ -301,80 +367,6 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         returns (uint256 points, bool selectedInCurrentRound)
     {
         return roundInfo.getOracleRoundInfo(addr);
-    }
-
-    /// @notice The oracle owner has withdrawn some stake.
-    /// Must check if the oracle is part of current round and if he lost his place with the
-    /// new stake value (the stake is global and is saved in the supporters contract).
-    /// @param oracleOwnerAddr the oracle owner that is trying to withdraw
-    function onWithdraw(address oracleOwnerAddr) external returns (uint256) {
-        require(subscribedOracles.contains(oracleOwnerAddr), "Not subscribed to this coin");
-
-        if (!roundInfo.isSelected(oracleOwnerAddr)) {
-            // not participating in current round, its ok to withdraw.
-            return 0;
-        }
-
-        (address addr, uint256 stake) = subscribedOracles.getMaxUnselectedStake(
-            oracleManager.getStake,
-            roundInfo.selectedOracles
-        );
-        if (stake > oracleManager.getStake(oracleOwnerAddr)) {
-            // The oracleOwnerAddr has lost his place in current round
-            roundInfo.removeOracleFromRound(oracleOwnerAddr);
-            roundInfo.addOracleToRound(addr);
-        }
-        return roundInfo.lockPeriodTimestamp;
-    }
-
-    //
-    /// @notice Switch contract context to a new round. With the objective of
-    /// being a decentralized solution, this can be called by *anyone* if current
-    /// round lock period is expired.
-    function switchRound() external {
-        if (roundInfo.number > 0) {
-            // Not before the first round
-            require(roundInfo.isReadyToSwitch(), "The current round lock period is active");
-            _distributeRewards();
-        }
-
-        // Setup new round parameters
-        roundInfo.switchRound();
-
-        // Select top stake oracles to participate on this round
-        address[] memory selected = subscribedOracles.sort(
-            oracleManager.getStake,
-            roundInfo.maxOraclesPerRound
-        );
-        for (uint256 i = 0; i < selected.length && !roundInfo.isFull(); i++) {
-            roundInfo.addOracleToRound(selected[i]);
-        }
-        emit NewRound(
-            msg.sender,
-            roundInfo.number,
-            roundInfo.totalPoints,
-            roundInfo.startBlock,
-            roundInfo.lockPeriodTimestamp,
-            roundInfo.asArray()
-        );
-    }
-
-    // The maximum count of oracles selected to participate each round
-    function maxOraclesPerRound() external view returns (uint256) {
-        return roundInfo.maxOraclesPerRound;
-    }
-
-    // The maximum count of oracles selected to participate each round
-    function roundLockPeriodSecs() external view returns (uint256) {
-        return roundInfo.roundLockPeriodSecs;
-    }
-
-    function isRoundFull() external view returns (bool) {
-        return roundInfo.isFull();
-    }
-
-    function isOracleInCurrentRound(address oracleOwnerAddr) external view returns (bool) {
-        return roundInfo.isSelected(oracleOwnerAddr);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
