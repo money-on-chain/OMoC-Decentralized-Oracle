@@ -118,9 +118,24 @@ contract('OracleManager', async (accounts) => {
         const initialBalance2 = await this.token.balanceOf(oracleData[1].owner);
         const initialBalance3 = await this.token.balanceOf(oracleData[2].owner);
 
-        await this.oracleMgr.registerOracle(oracleData[0].owner, oracleData[0].account, oracleData[0].name, {from: oracleData[0].owner});
-        await this.oracleMgr.registerOracle(oracleData[1].owner, oracleData[1].account, oracleData[1].name, {from: oracleData[1].owner});
-        await this.oracleMgr.registerOracle(oracleData[2].owner, oracleData[2].account, oracleData[2].name, {from: oracleData[2].owner});
+        await this.oracleMgr.registerOracle(
+            oracleData[0].owner,
+            oracleData[0].account,
+            oracleData[0].name,
+            {from: oracleData[0].owner},
+        );
+        await this.oracleMgr.registerOracle(
+            oracleData[1].owner,
+            oracleData[1].account,
+            oracleData[1].name,
+            {from: oracleData[1].owner},
+        );
+        await this.oracleMgr.registerOracle(
+            oracleData[2].owner,
+            oracleData[2].account,
+            oracleData[2].name,
+            {from: oracleData[2].owner},
+        );
 
         const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
         assert.equal(info0.internetName, oracleData[0].name);
@@ -132,9 +147,21 @@ contract('OracleManager', async (accounts) => {
         assert.equal(info2.internetName, oracleData[2].name);
         assert.equal(info2.stake, oracleData[2].stake);
 
-        assert.isTrue((await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {from: oracleData[0].owner})));
-        assert.isTrue((await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {from: oracleData[0].owner})));
-        assert.isTrue((await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {from: oracleData[0].owner})));
+        assert.isTrue(
+            await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {
+                from: oracleData[0].owner,
+            }),
+        );
+        assert.isTrue(
+            await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {
+                from: oracleData[0].owner,
+            }),
+        );
+        assert.isTrue(
+            await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {
+                from: oracleData[0].owner,
+            }),
+        );
     });
 
     it('Should fail to register Oracles with null address', async () => {

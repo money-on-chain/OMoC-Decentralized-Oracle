@@ -20,7 +20,7 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
     CoinPairRegisterLib.CoinPairRegisterData internal coinPairRegisterData;
 
     // Registered oracles
-    IterableOraclesLib.IterableOraclesData  internal registeredOracles;
+    IterableOraclesLib.IterableOraclesData internal registeredOracles;
 
     // Staking contract that manages stake
     Staking public stakingContract;

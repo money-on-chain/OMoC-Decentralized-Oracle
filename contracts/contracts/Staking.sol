@@ -116,31 +116,27 @@ contract Staking is StakingStorage, IStakingMachine {
     }
 
     /// @notice Change the oracle "internet" name (URI)
-    /// @param oracleAddr Address of the oracle to change
     /// @param url The new url to set.
-    function setOracleName(address oracleAddr, string calldata url) external {
-        oracleManager.setOracleName(msg.sender, oracleAddr, url);
+    function setOracleName(string calldata url) external {
+        oracleManager.setOracleName(msg.sender, url);
     }
 
     /// @notice Return true if the oracle is registered.
-    /// @param oracleAddr addr The address of the Oracle check for.
-    function isOracleRegistered(address oracleAddr) external view returns (bool) {
-        return oracleManager.isOracleRegistered(oracleAddr);
+    /// @param ownerAddr addr The address of the owner of the Oracle to check for.
+    function isOracleRegistered(address ownerAddr) external view returns (bool) {
+        return oracleManager.isOracleRegistered(ownerAddr);
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
-    /// @param oracleAddr the oracle address to lookup.
-    function canRemoveOracle(address oracleAddr) external view returns (bool) {
-        return oracleManager.canRemoveOracle(oracleAddr);
+    /// @param ownerAddr the address of the owner of the oracle to lookup.
+    function canRemoveOracle(address ownerAddr) external view returns (bool) {
+        return oracleManager.canRemoveOracle(ownerAddr);
     }
 
     /// @notice Remove an oracle.
     /// Delegates to the Oracle Manager smart contract.
-    /// @param oracleAddr address of the oracle
-    function removeOracle(address oracleAddr) external {
-        oracleManager.removeOracle(msg.sender, oracleAddr);
-        uint256 tokens = supporters.getBalanceAt(address(this), msg.sender);
-        supporters.withdrawFromTo(tokens, msg.sender, msg.sender);
+    function removeOracle() external {
+        oracleManager.removeOracle(msg.sender);
     }
 
     /// @notice Returns the count of registered coin pairs.
@@ -171,35 +167,33 @@ contract Staking is StakingStorage, IStakingMachine {
 
     /// @notice Subscribe an oracle to a coin pair.
     /// Delegates to the Oracle Manager smart contract.
-    /// @param oracleAddr address of the oracle
     /// @param coinPair coin pair to subscribe, for example BTCUSD
-    function subscribeToCoinPair(address oracleAddr, bytes32 coinPair) external {
-        oracleManager.subscribeToCoinPair(msg.sender, oracleAddr, coinPair);
+    function subscribeToCoinPair(bytes32 coinPair) external {
+        oracleManager.subscribeToCoinPair(msg.sender, coinPair);
     }
 
     /// @notice Unsubscribe an oracle from a coin pair.
     /// Delegates to the Oracle Manager smart contract.
-    /// @param oracleAddr address of the oracle
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
-    function unsubscribeFromCoinPair(address oracleAddr, bytes32 coinPair) external {
-        oracleManager.unsubscribeFromCoinPair(msg.sender, oracleAddr, coinPair);
+    function unsubscribeFromCoinPair(bytes32 coinPair) external {
+        oracleManager.unsubscribeFromCoinPair(msg.sender, coinPair);
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair
-    /// @param oracleAddr address of the oracle
+    /// @param ownerAddr address of the oracle
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
-    function isSubscribed(address oracleAddr, bytes32 coinPair) external view returns (bool) {
-        return oracleManager.isSubscribed(oracleAddr, coinPair);
+    function isSubscribed(address ownerAddr, bytes32 coinPair) external view returns (bool) {
+        return oracleManager.isSubscribed(ownerAddr, coinPair);
     }
 
     /// @notice Returns the list of subscribed coinpair contract address for an oracle
     /// @return addresses Array of subscribed coin pairs addresses.
     /// @return count The count of valid entries in the addresses param.
-    function getSubscribedCoinPairAddresses(address oracleAddr)
+    function getSubscribedCoinPairAddresses(address ownerAddr)
         external
         view
         returns (CoinPairPrice[] memory addresses, uint256 count)
     {
-        return oracleManager.getSubscribedCoinPairAddresses(oracleAddr);
+        return oracleManager.getSubscribedCoinPairAddresses(ownerAddr);
     }
 }

@@ -15,7 +15,7 @@ async function deploy(config) {
     await scripts.add({contractsData: [{name: 'TestMOC', alias: 'TestMOC'}]});
     await scripts.push({
         network: config.network,
-        txParams: {...config.txParams, gas: 1800000},
+        txParams: {...config.txParams, gas: 3500000},
         force: true,
     });
     const testMOC = await scripts.create({

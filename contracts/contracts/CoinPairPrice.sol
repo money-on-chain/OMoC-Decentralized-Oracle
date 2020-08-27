@@ -148,6 +148,14 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         return roundInfo.canRemoveOracle(oracleAddr);
     }
 
+    /// @notice The oracle owner has withdrawn some stake.
+    /// Must check if the oracle is part of current round and if he lost his place with the
+    /// new stake value (the stake is global and is saved in the supporters contract).
+    /// @param oracleAddr the oracle address to subscribe to this coin pair.
+    function onWithdraw(address oracleAddr) external returns (uint256) {
+        oracleAddr;
+    }
+
     /// @notice Return the available reward fees
     ///
     function getAvailableRewardFees() external view returns (uint256) {

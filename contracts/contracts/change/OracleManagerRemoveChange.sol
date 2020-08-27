@@ -29,7 +29,7 @@ contract OracleManagerRemoveChange is ChangeContract {
       @notice Execute the changes.
       */
     function execute() external override {
-        oracleManager.removeOracle(msg.sender, oracleAddr);
+        oracleManager.removeOracle(msg.sender);
         oracleManager = OracleManager(0);
     }
 }
