@@ -104,7 +104,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
         await this.token.approve(this.staking.address, minOracleOwnerStake, {from: ORACLE_OWNER});
         await this.staking.deposit(minOracleOwnerStake, ORACLE_OWNER, {from: ORACLE_OWNER});
         await this.staking.registerOracle(ORACLE_ADDR, 'SOME_NAME', {from: ORACLE_OWNER});
-        await this.staking.subscribeToCoinPair(ORACLE_ADDR, coinPair, {from: ORACLE_OWNER});
+        await this.staking.subscribeToCoinPair(coinPair, {from: ORACLE_OWNER});
         await this.coinPairPrice.switchRound();
 
         // Publish a price

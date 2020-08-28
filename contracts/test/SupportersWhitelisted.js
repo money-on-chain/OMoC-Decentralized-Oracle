@@ -179,7 +179,7 @@ contract('Supporters', (accounts) => {
             await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER});
             await expectRevert(
                 this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER}),
-                'Account not allowed to add accounts into white list',
+                'Account already whitelisted',
             );
         });
 
@@ -195,7 +195,10 @@ contract('Supporters', (accounts) => {
             expect(await this.supporters.getWhiteListAtIndex(1)).to.be.equal(accounts[5]);
             expect(await this.supporters.getWhiteListAtIndex(2)).to.be.equal(accounts[6]);
             expect(await this.supporters.getWhiteListAtIndex(3)).to.be.equal(accounts[7]);
-            await expectRevert(this.supporters.getWhiteListAtIndex(4), 'Illegal index');
+            await expectRevert(
+                this.supporters.getWhiteListAtIndex(4),
+                'EnumerableSet: index out of bounds',
+            );
         });
     });
 

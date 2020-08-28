@@ -32,6 +32,7 @@ contract('OracleManager', async (accounts) => {
             web3.utils.asciiToHex('BTCUSD'),
             this.token.address,
             10, // maxOraclesPerRound
+            30, // maxSubscribedOraclesPerRound
             5, // roundLockPeriodInSecs
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
@@ -45,6 +46,7 @@ contract('OracleManager', async (accounts) => {
             web3.utils.asciiToHex('RIFBTC'),
             this.token.address,
             10, // maxOraclesPerRound
+            30, // maxSubscribedOraclesPerRound
             5, // roundLockPeriodInSecs
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
