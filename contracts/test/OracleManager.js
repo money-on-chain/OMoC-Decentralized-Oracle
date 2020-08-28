@@ -17,7 +17,7 @@ contract('OracleManager', async (accounts) => {
     // Values to initialize CoinPairPrice instances
     const maxOraclesPerRound = 10;
     const maxSubscribedOraclesPerRound = 30;
-    const roundLockPeriodInBlocks = 5;
+    const roundLockPeriodInSecs = 5;
     const validPricePeriodInBlocks = 3;
     const emergencyPublishingPeriodInBlocks = 2;
     const bootstrapPrice = '100000000';
@@ -45,7 +45,7 @@ contract('OracleManager', async (accounts) => {
             this.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
@@ -59,7 +59,7 @@ contract('OracleManager', async (accounts) => {
             this.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
@@ -132,24 +132,15 @@ contract('OracleManager', async (accounts) => {
         .sort((a, b) => new BN(a[1].account).cmp(new BN(b[1].account)));
 
     it('Should register Oracles A, B, C', async () => {
-        await this.oracleMgr.registerOracle(
-            oracleData[0].owner,
-            oracleData[0].account,
-            oracleData[0].name,
-            {from: oracleData[0].owner},
-        );
-        await this.oracleMgr.registerOracle(
-            oracleData[1].owner,
-            oracleData[1].account,
-            oracleData[1].name,
-            {from: oracleData[1].owner},
-        );
-        await this.oracleMgr.registerOracle(
-            oracleData[2].owner,
-            oracleData[2].account,
-            oracleData[2].name,
-            {from: oracleData[2].owner},
-        );
+        await this.staking.registerOracle(oracleData[0].account, oracleData[0].name, {
+            from: oracleData[0].owner,
+        });
+        await this.staking.registerOracle(oracleData[1].account, oracleData[1].name, {
+            from: oracleData[1].owner,
+        });
+        await this.staking.registerOracle(oracleData[2].account, oracleData[2].name, {
+            from: oracleData[2].owner,
+        });
 
         const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner);
         assert.equal(info0.internetName, oracleData[0].name);
@@ -161,41 +152,24 @@ contract('OracleManager', async (accounts) => {
         assert.equal(info2.internetName, oracleData[2].name);
 
         assert.isTrue(
-            await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {
+            await this.oracleMgr.isOracleRegistered(oracleData[0].account, {
                 from: oracleData[0].owner,
             }),
         );
         assert.isTrue(
-            await this.oracleMgr.isOracleRegistered(oracleData[1].owner, {
+            await this.oracleMgr.isOracleRegistered(oracleData[1].account, {
                 from: oracleData[1].owner,
             }),
         );
         assert.isTrue(
-            await this.oracleMgr.isOracleRegistered(oracleData[2].owner, {
+            await this.oracleMgr.isOracleRegistered(oracleData[2].account, {
                 from: oracleData[2].owner,
             }),
         );
     });
 
-    it('Should fail to register Oracle with null address as owner address', async () => {
-        await expectRevert(
-            this.oracleMgr.registerOracle(constants.ZERO_ADDRESS, accounts[7], 'mock.io', {
-                from: accounts[7],
-            }),
-            'Owner address cannot be 0x0',
-        );
-    });
-
-    it('Should fail to register Oracle with null address as oracle address', async () => {
-        await expectRevert(
-            this.oracleMgr.registerOracle(accounts[7], constants.ZERO_ADDRESS, 'mock.io', {
-                from: accounts[7],
-            }),
-            'Oracle address cannot be 0x0',
-        );
-    });
-
-    it('Should fail to register an Oracle twice', async () => {
+    it("Should fail to register Oracle from Oracle Manager calling from an address other \
+    than the Staking contract's", async () => {
         await expectRevert(
             this.oracleMgr.registerOracle(
                 oracleData[0].owner,
@@ -205,35 +179,28 @@ contract('OracleManager', async (accounts) => {
                     from: oracleData[0].owner,
                 },
             ),
-            'Oracle already registered',
+            'Must be called from Staking Contract',
         );
     });
 
-    /*
-    it('Should reject to change name of unregistered oracle', async () => {
-        const randomAddr = ethers.utils.hexlify(ethers.utils.randomBytes(20));
-        await expectRevert(this.oracleMgr.setOracleName(randomAddr, 'X'), 'Oracle not registered');
-    });
-
-    it('Should reject to change name of oracle if called by non-owner', async () => {
+    it('Should fail to register Oracle with null address as oracle address', async () => {
         await expectRevert(
-            this.oracleMgr.setOracleName(oracleData[0].account, 'XYZ', {from: oracleData[3].owner}),
-            'This can be called by oracle owner only',
+            this.staking.registerOracle(constants.ZERO_ADDRESS, 'mock.io', {
+                from: accounts[7],
+            }),
+            'Oracle address cannot be 0x0',
         );
     });
 
-    it('Should change name of oracle A if requested by owner', async () => {
-        const newName = 'oracle-coinfabrik.ar';
-
-        await this.oracleMgr.setOracleName(oracleData[0].account, newName, {
-            from: oracleData[0].owner,
-        });
-        assert.equal(
-            (await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account)).internetName,
-            newName,
+    it('Should fail to register an Oracle twice', async () => {
+        await expectRevert(
+            this.staking.registerOracle(oracleData[0].account, oracleData[0].name, {
+                from: oracleData[0].owner,
+            }),
+            'Oracle owner is already registered',
         );
     });
-
+    /*
     it('Should subscribe oracle A to coin-pair USDBTC', async () => {
         await this.oracleMgr.subscribeToCoinPair(
             oracleData[0].account,
@@ -326,6 +293,30 @@ contract('OracleManager', async (accounts) => {
                 {from: oracleData[0].owner},
             ),
             'Oracle is not subscribed to this coin pair',
+        );
+    });
+
+    it('Should reject to change name of unregistered oracle', async () => {
+        const randomAddr = ethers.utils.hexlify(ethers.utils.randomBytes(20));
+        await expectRevert(this.oracleMgr.setOracleName(randomAddr, 'X'), 'Oracle not registered');
+    });
+
+    it('Should reject to change name of oracle if called by non-owner', async () => {
+        await expectRevert(
+            this.oracleMgr.setOracleName(oracleData[0].account, 'XYZ', {from: oracleData[3].owner}),
+            'This can be called by oracle owner only',
+        );
+    });
+
+    it('Should change name of oracle A if requested by owner', async () => {
+        const newName = 'oracle-coinfabrik.ar';
+
+        await this.oracleMgr.setOracleName(oracleData[0].account, newName, {
+            from: oracleData[0].owner,
+        });
+        assert.equal(
+            (await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account)).internetName,
+            newName,
         );
     });
 

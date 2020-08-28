@@ -13,7 +13,7 @@ contract('OracleManager', async (accounts) => {
     // Values to initialize CoinPairPrice instances
     const maxOraclesPerRound = 10;
     const maxSubscribedOraclesPerRound = 30;
-    const roundLockPeriodInBlocks = 5;
+    const roundLockPeriodInSecs = 5;
     const validPricePeriodInBlocks = 3;
     const emergencyPublishingPeriodInBlocks = 2;
     const bootstrapPrice = '100000000';
@@ -37,7 +37,7 @@ contract('OracleManager', async (accounts) => {
             this.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
@@ -51,7 +51,7 @@ contract('OracleManager', async (accounts) => {
             this.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
