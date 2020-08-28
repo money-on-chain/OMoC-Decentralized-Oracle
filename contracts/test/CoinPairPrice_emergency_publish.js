@@ -2,7 +2,7 @@ const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
 const TestMOC = artifacts.require('TestMOC');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 const CoinPairEmergencyWhitelistChange = artifacts.require('CoinPairEmergencyWhitelistChange');
 const {expect} = require('chai');
 const {expectRevert, BN} = require('@openzeppelin/test-helpers');
@@ -15,7 +15,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
     const period = 20;
     const maxOraclesPerRound = 2;
     const maxSubscribedOraclesPerRound = 30;
-    const roundLockPeriodInBlocks = 5;
+    const roundLockPeriodInSecs = 5;
     const validPricePeriodInBlocks = 30;
     const emergencyPublishingPeriodInBlocks = 20;
     const bootstrapPrice = new BN('100000000');
@@ -42,7 +42,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
             this.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
@@ -104,7 +104,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
         await this.token.approve(this.staking.address, minOracleOwnerStake, {from: ORACLE_OWNER});
         await this.staking.deposit(minOracleOwnerStake, ORACLE_OWNER, {from: ORACLE_OWNER});
         await this.staking.registerOracle(ORACLE_ADDR, 'SOME_NAME', {from: ORACLE_OWNER});
-        await this.staking.subscribeToCoinPair(ORACLE_ADDR, coinPair, {from: ORACLE_OWNER});
+        await this.staking.subscribeToCoinPair(coinPair, {from: ORACLE_OWNER});
         await this.coinPairPrice.switchRound();
 
         // Publish a price

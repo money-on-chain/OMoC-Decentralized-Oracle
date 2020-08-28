@@ -2,7 +2,7 @@ const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
 const TestMOC = artifacts.require('TestMOC');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 const {expectRevert, BN} = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
@@ -81,29 +81,29 @@ const TESTS_TO_RUN = [
 ];
 contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
-    const minStayBlocks = 10;
     const feeSourceAccount = accounts[0];
     let ORACLE_DATA;
     before(() => {
         ORACLE_DATA = accounts
             .slice(1, 10)
-            .map((a) => ({
+            .map((a, idx) => ({
                 name: 'oracle-' + a + '.io',
                 stake: (4 * 10 ** 18).toString(),
                 account: a,
-                owner: accounts[0],
+                owner: accounts[idx],
             }))
             .sort((x, y) => web3.utils.toBN(x.account).cmp(web3.utils.toBN(y.account)));
     });
 
-    async function register(oracleData, cant_oracles) {
+    async function register(oracleData, cantOracles) {
         // [0] owner, [1] sender
-        for (o of oracleData.slice(0, cant_oracles)) {
+        for (const o of oracleData.slice(0, cantOracles)) {
+            await this.governor.mint(this.token.address, o.owner, '800000000000000000000');
             await this.token.approve(this.staking.address, o.stake, {from: o.owner});
             await this.staking.registerOracle(o.account, o.name, {from: o.owner});
             await this.staking.deposit(o.stake, o.owner, {from: o.owner});
             const thisCoinPair = await this.coinPairPrice.coinPair();
-            await this.staking.subscribeToCoinPair(o.account, thisCoinPair, {from: o.owner});
+            await this.staking.subscribeToCoinPair(thisCoinPair, {from: o.owner});
         }
         const FEES = new BN((0.33 * 10 ** 18).toString());
         await this.token.transfer(this.coinPairPrice.address, FEES.toString(), {
@@ -112,10 +112,10 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
         // switch round
         await this.coinPairPrice.switchRound();
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        expect(roundInfo['selectedOracles']).to.have.lengthOf(cant_oracles);
+        expect(roundInfo['selectedOracles']).to.have.lengthOf(cantOracles);
     }
 
-    async function sign_with_owner(oracleData, cant_signatures) {
+    async function signWithOwner(oracleData, cantSignatures) {
         // sender signature is assumed
         const sender = oracleData[0].account;
         const thisCoinPair = await this.coinPairPrice.coinPair();
@@ -128,11 +128,11 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
             lastPubBlock,
         );
         // Add my own signature.
-        const own_signature = ethers.utils.splitSignature(await web3.eth.sign(encMsg, sender));
-        const v = [own_signature.v];
-        const r = [own_signature.r];
-        const s = [own_signature.s];
-        for (let i = 0; i < cant_signatures; i++) {
+        const ownSignature = ethers.utils.splitSignature(await web3.eth.sign(encMsg, sender));
+        const v = [ownSignature.v];
+        const r = [ownSignature.r];
+        const s = [ownSignature.s];
+        for (let i = 0; i < cantSignatures; i++) {
             const signature = ethers.utils.splitSignature(
                 await web3.eth.sign(encMsg, oracleData[i + 1].account),
             );
@@ -183,7 +183,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
                     this.token.address,
                     10, // maxOraclesPerRound
                     30, // maxSubscribedOraclesPerRound
-                    5, // roundLockPeriodInBlocks
+                    5, // roundLockPeriodInSecs
                     3, // validPricePeriodInBlocks
                     2, // emergencyPublishingPeriodInBlocks
                     '100000000', // bootstrapPrice
@@ -197,7 +197,6 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
                     this.coinPairPrice.address,
                 );
                 await this.governor.mint(this.token.address, accounts[0], '800000000000000000000');
-
                 await register.call(this, ORACLE_DATA, t.oracles);
             });
             for (const test of t.tests) {
@@ -209,7 +208,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
                             test.signatures +
                             ' signatures apart from owner',
                         async () => {
-                            await sign_with_owner.call(this, ORACLE_DATA, test.signatures);
+                            await signWithOwner.call(this, ORACLE_DATA, test.signatures);
                         },
                     );
                 } else {
@@ -221,7 +220,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
                             ' signatures apart from owner',
                         async () => {
                             expectRevert(
-                                sign_with_owner.call(this, ORACLE_DATA, test.signatures),
+                                signWithOwner.call(this, ORACLE_DATA, test.signatures),
                                 'Signature count must exceed 50% of active oracles',
                             );
                         },

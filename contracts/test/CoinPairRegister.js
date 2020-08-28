@@ -14,8 +14,8 @@ contract('CoinPairRegister', (accounts) => {
         const oracleManager = await OracleManager.new();
         const minOracleOwnerStake = '10000';
         const minStayBlocks = 10;
-        const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
-        const supporters = await SupportersWhitelisted.new();
+        const Supporters = artifacts.require('Supporters');
+        const supporters = await Supporters.new();
         const TestMOC = artifacts.require('TestMOC');
         const token = await TestMOC.new();
         await supporters.initialize(

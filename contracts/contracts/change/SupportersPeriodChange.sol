@@ -3,14 +3,14 @@ pragma solidity 0.6.12;
 
 import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
 import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
-import {SupportersWhitelistedStorage} from "../SupportersWhitelistedStorage.sol";
+import {SupportersStorage} from "../SupportersStorage.sol";
 
 /**
-  @title SupportersWhitelistedPeriodChange
-  @notice This contract is a ChangeContract intended to be used to change the SupportersWhitelisted contract
+  @title SupportersPeriodChange
+  @notice This contract is a ChangeContract intended to be used to change the Supporters contract
   parameter period
  */
-contract SupportersWhitelistedPeriodChange is SupportersWhitelistedStorage, ChangeContract {
+contract SupportersPeriodChange is SupportersStorage, ChangeContract {
     GovernedAbstract public supporters;
     bytes public encodedData;
 

@@ -5,7 +5,7 @@ const helpers = require('./helpers');
 const ethers = require('ethers');
 const crypto = require('crypto');
 const TestMOC = artifacts.require('TestMOC');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 
 const ORACLE_QUANTITY = 21;
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
@@ -50,7 +50,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             testobj.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            5, // roundLockPeriodInBlocks,
+            5, // roundLockPeriodInSecs,
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,

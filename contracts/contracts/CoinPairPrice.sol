@@ -212,12 +212,10 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         bytes32[] calldata _sig_r,
         bytes32[] calldata _sig_s
     ) external {
+        address ownerAddr = oracleManager.getOracleOwner(msg.sender);
         require(roundInfo.number > 0, "Round not open");
-        require(
-            subscribedOracles.contains(oracleManager.getOracleOwner(msg.sender)),
-            "Sender oracle not subscribed"
-        );
-        require(roundInfo.isSelected(msg.sender), "Voter oracle is not part of this round");
+        // require(subscribedOracles.contains(ownerAddr), "Sender oracle not subscribed");
+        require(roundInfo.isSelected(ownerAddr), "Voter oracle is not part of this round");
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
         require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
         require(_price > 0, "Price must be positive and non-zero");
@@ -256,19 +254,17 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         for (uint256 i = 0; i < _sig_s.length; i++) {
             address rec = _recoverSigner(_sig_v[i], _sig_r[i], _sig_s[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
-            require(
-                subscribedOracles.contains(oracleManager.getOracleOwner(rec)),
-                "Signing oracle not subscribed"
-            );
-            require(roundInfo.isSelected(rec), "Address of signer not part of this round");
+            address ownerRec = oracleManager.getOracleOwner(rec);
+            // require(subscribedOracles.contains(ownerRec), "Signing oracle not subscribed");
+            require(roundInfo.isSelected(ownerRec), "Address of signer not part of this round");
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
             lastAddr = rec;
         }
 
-        roundInfo.addPoints(msg.sender, 1);
+        roundInfo.addPoints(ownerAddr, 1);
         _publish(_price);
 
-        emit PricePublished(msg.sender, _price, _votedOracle, _blockNumber);
+        emit PricePublished(ownerAddr, _price, _votedOracle, _blockNumber);
     }
 
     /// @notice Publish a price without signature validation (when there is an emergecy!!!).
@@ -354,19 +350,25 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             uint256 startBlock,
             uint256 lockPeriodTimestamp,
             uint256 totalPoints,
+            address[] memory selectedOwners,
             address[] memory selectedOracles
         )
     {
-        return roundInfo.getRoundInfo();
+        (round, startBlock, lockPeriodTimestamp, totalPoints, selectedOwners) = roundInfo
+            .getRoundInfo();
+        selectedOracles = new address[](selectedOwners.length);
+        for (uint256 i = 0; i < selectedOwners.length; i++) {
+            selectedOracles[i] = oracleManager.getOracleAddress(selectedOwners[i]);
+        }
     }
 
     /// @notice Return round information for specific oracle
-    function getOracleRoundInfo(address addr)
+    function getOracleRoundInfo(address oracleOwner)
         external
         view
         returns (uint256 points, bool selectedInCurrentRound)
     {
-        return roundInfo.getOracleRoundInfo(addr);
+        return roundInfo.getOracleRoundInfo(oracleOwner);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -400,10 +402,14 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
             address oracleOwnerAddr = roundInfo.at(i);
             uint256 points = roundInfo.getPoints(oracleOwnerAddr);
             uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
-            address ownerAddr = oracleManager.getOracleOwner(oracleOwnerAddr);
-            require(token.transfer(ownerAddr, distAmount), "Token transfer failed");
+            require(token.transfer(oracleOwnerAddr, distAmount), "Token transfer failed");
             distSum = distSum.add(distAmount);
-            emit OracleRewardTransfer(roundInfo.number, oracleOwnerAddr, ownerAddr, distAmount);
+            emit OracleRewardTransfer(
+                roundInfo.number,
+                oracleOwnerAddr,
+                oracleOwnerAddr,
+                distAmount
+            );
         }
     }
 

@@ -2,7 +2,7 @@ const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
 const TestMOC = artifacts.require('TestMOC');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 const Staking = artifacts.require('Staking');
 const MockDelayMachine = artifacts.require('MockDelayMachine');
 const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
@@ -31,7 +31,7 @@ contract('OracleManager', async (accounts) => {
         this.token = await TestMOC.new();
         await this.token.initialize(this.governor.address);
         this.oracleMgr = await OracleManager.new();
-        this.supporters = await SupportersWhitelisted.new();
+        this.supporters = await Supporters.new();
         this.mockDelayMachine = await MockDelayMachine.new();
         await this.mockDelayMachine.initialize(this.governor.address, this.token.address);
         this.staking = await Staking.new();

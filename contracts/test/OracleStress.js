@@ -5,7 +5,7 @@ const helpers = require('./helpers');
 const ethers = require('ethers');
 const crypto = require('crypto');
 const TestMOC = artifacts.require('TestMOC');
-const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 
 const ORACLE_QUANTITY = 40;
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
@@ -22,7 +22,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
         this.token = await TestMOC.new();
         await this.token.initialize(this.governor.address);
         this.oracleMgr = await OracleManager.new();
-        this.supporters = await SupportersWhitelisted.new();
+        this.supporters = await Supporters.new();
 
         this.coinPairPrice = await CoinPairPrice.new();
         await this.coinPairPrice.initialize(
@@ -32,7 +32,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             this.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            5, // roundLockPeriodInBlocks,
+            5, // roundLockPeriodInSecs,
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,

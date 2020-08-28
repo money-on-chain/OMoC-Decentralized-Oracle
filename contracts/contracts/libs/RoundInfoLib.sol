@@ -48,8 +48,8 @@ library RoundInfoLib {
         return _self.selectedOracles.length() >= _self.maxOraclesPerRound;
     }
 
-    function isSelected(RoundInfo storage _self, address _oracleAddr) internal view returns (bool) {
-        return _self.selectedOracles.contains(_oracleAddr);
+    function isSelected(RoundInfo storage _self, address _ownerAddr) internal view returns (bool) {
+        return _self.selectedOracles.contains(_ownerAddr);
     }
 
     function length(RoundInfo storage _self) internal view returns (uint256) {
@@ -60,8 +60,8 @@ library RoundInfoLib {
         return _self.selectedOracles.at(idx);
     }
 
-    function contains(RoundInfo storage _self, address addr) internal view returns (bool) {
-        return _self.selectedOracles.contains(addr);
+    function contains(RoundInfo storage _self, address _ownerAddr) internal view returns (bool) {
+        return _self.selectedOracles.contains(_ownerAddr);
     }
 
     function asArray(RoundInfo storage _self) internal view returns (address[] memory) {
@@ -77,13 +77,13 @@ library RoundInfoLib {
         _self.totalPoints = _self.totalPoints + _points;
     }
 
-    function addOracleToRound(RoundInfo storage _self, address _oracleAddr) internal {
-        _self.selectedOracles.add(_oracleAddr);
+    function addOracleToRound(RoundInfo storage _self, address _ownerAddr) internal {
+        _self.selectedOracles.add(_ownerAddr);
     }
 
-    function removeOracleFromRound(RoundInfo storage _self, address _oracleAddr) internal {
-        _self.selectedOracles.remove(_oracleAddr);
-        delete _self.points[_oracleAddr];
+    function removeOracleFromRound(RoundInfo storage _self, address _ownerAddr) internal {
+        _self.selectedOracles.remove(_ownerAddr);
+        delete _self.points[_ownerAddr];
     }
 
     function isReadyToSwitch(RoundInfo storage _self) internal view returns (bool) {
@@ -101,12 +101,12 @@ library RoundInfoLib {
         _self.selectedOracles.clear();
     }
 
-    function getOracleRoundInfo(RoundInfo storage _self, address _oracleAddr)
+    function getOracleRoundInfo(RoundInfo storage _self, address _ownerAddr)
         internal
         view
         returns (uint256 points, bool selectedInCurrentRound)
     {
-        return (_self.points[_oracleAddr], _self.selectedOracles.contains(_oracleAddr));
+        return (_self.points[_ownerAddr], _self.selectedOracles.contains(_ownerAddr));
     }
 
     /// @notice Return current round information
@@ -118,7 +118,7 @@ library RoundInfoLib {
             uint256 startBlock,
             uint256 lockPeriodTimestamp,
             uint256 totalPoints,
-            address[] memory selectedOracles
+            address[] memory selectedOwners
         )
     {
         return (
@@ -126,7 +126,7 @@ library RoundInfoLib {
             _self.startBlock,
             _self.lockPeriodTimestamp,
             _self.totalPoints,
-            _self.selectedOracles.asArray()
+            asArray(_self)
         );
     }
 

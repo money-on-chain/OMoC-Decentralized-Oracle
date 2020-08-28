@@ -1,12 +1,12 @@
 // Most of the functionallity is tested via Supporters.js !!!
 const {BN, expectRevert, constants, expectEvent} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
-const Supporters = artifacts.require('SupportersWhitelisted');
+const Supporters = artifacts.require('Supporters');
 const TestMOC = artifacts.require('TestMOC');
 const MockGovernor = artifacts.require('MockGovernor');
 const helpers = require('./helpers');
 
-contract('SupportersWhitelisted', (accounts) => {
+contract('Supporters', (accounts) => {
     let supporters;
     let token;
     const period = 10;
@@ -179,7 +179,7 @@ contract('SupportersWhitelisted', (accounts) => {
             await this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER});
             await expectRevert(
                 this.supporters.addToWhitelist(accounts[4], {from: GOVERNOR_OWNER}),
-                'Account not allowed to add accounts into white list',
+                'Account already whitelisted',
             );
         });
 
@@ -195,7 +195,10 @@ contract('SupportersWhitelisted', (accounts) => {
             expect(await this.supporters.getWhiteListAtIndex(1)).to.be.equal(accounts[5]);
             expect(await this.supporters.getWhiteListAtIndex(2)).to.be.equal(accounts[6]);
             expect(await this.supporters.getWhiteListAtIndex(3)).to.be.equal(accounts[7]);
-            await expectRevert(this.supporters.getWhiteListAtIndex(4), 'Illegal index');
+            await expectRevert(
+                this.supporters.getWhiteListAtIndex(4),
+                'EnumerableSet: index out of bounds',
+            );
         });
     });
 
@@ -220,7 +223,7 @@ contract('SupportersWhitelisted', (accounts) => {
         it('should set period', async () => {
             expect(await this.supporters.period()).to.be.bignumber.equal(new BN(10));
             const change = await artifacts
-                .require('SupportersWhitelistedPeriodChange')
+                .require('SupportersPeriodChange')
                 .new(this.supporters.address, 123);
             await this.governor.executeChange(change.address, {from: GOVERNOR_OWNER});
             // await this.supporters.setPeriod(123, {from: GOVERNOR});

@@ -12,7 +12,7 @@ function config() {
         'maxOraclesPerRound',
         'maxSubscribedOraclesPerRound',
         'bootstrapPrice',
-        'roundLockPeriodInBlocks',
+        'roundLockPeriodInSecs',
         'validPricePeriodInBlocks',
         'emergencyPublishingPeriodInBlocks',
         'supportersEarnPeriodInBlocks',
@@ -42,7 +42,7 @@ function config() {
         maxOraclesPerRound: parseEnvArray(process.env.maxOraclesPerRound),
         maxSubscribedOraclesPerRound: parseEnvArray(process.env.maxSubscribedOraclesPerRound),
         bootstrapPrice: parseEnvArray(process.env.bootstrapPrice),
-        roundLockPeriodInBlocks: parseEnvArray(process.env.roundLockPeriodInBlocks),
+        roundLockPeriodInSecs: parseEnvArray(process.env.roundLockPeriodInSecs),
         validPricePeriodInBlocks: parseEnvArray(process.env.validPricePeriodInBlocks),
         emergencyPublishingPeriodInBlocks: parseEnvArray(
             process.env.emergencyPublishingPeriodInBlocks,

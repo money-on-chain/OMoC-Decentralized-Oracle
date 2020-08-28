@@ -14,7 +14,7 @@ import {SupportersLib} from "./libs/SupportersLib.sol";
     This can be split in the future in two smart-contracts if we want to add a specific set
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
-contract SupportersWhitelistedStorage is Initializable, GovernedAbstract, IIterableWhitelist {
+contract SupportersStorage is Initializable, GovernedAbstract, IIterableWhitelist {
     using SafeMath for uint256;
     using SupportersLib for SupportersLib.SupportersData;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;

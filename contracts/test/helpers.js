@@ -5,24 +5,23 @@ const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 const ADDRESS_ZERO = constants.ZERO_ADDRESS;
 
 async function printOracles(oracleManager, coinPair) {
-    let cnt = 0;
-    let it = await oracleManager.getRegisteredOracleHead();
-    while (it !== ADDRESS_ZERO) {
-        const info = await oracleManager.getOracleRegistrationInfo(it);
-        const roundInfo = await oracleManager.getOracleRoundInfo(it, coinPair);
+    const cant = await oracleManager.getRegisteredOraclesLen();
+    for (let i = 0; i < cant; i++) {
+        const oracle = await oracleManager.getRegisteredOracleAtIndex(i);
+        const info = await oracleManager.getOracleRegistrationInfo(oracle.ownerAddr);
+        const roundInfo = await oracleManager.getOracleRoundInfo(oracle.ownerAddr, coinPair);
         console.log(
             '------------------------------>',
-            ++cnt,
+            i,
             coinPair,
-            it,
-            info.internetName,
+            oracle.ownerAddr,
+            oracle.oracleAddr,
+            oracle.url,
             info.stake.toString(),
             roundInfo.points.toString(),
-            await oracleManager.isSubscribed(it, coinPair),
-            roundInfo.selectedInRound.toString(),
+            await oracleManager.isSubscribed(oracle.ownerAddr, coinPair),
             roundInfo.selectedInCurrentRound,
         );
-        it = await oracleManager.getRegisteredOracleNext(it);
     }
 }
 
@@ -55,7 +54,7 @@ async function getDefaultEncodedMessage(version, coinpair, price, votedOracle, b
 async function mineUntilNextRound(coinpairPrice) {
     console.log('Please wait for round blocks to be mined...');
     const roundInfo = await coinpairPrice.getRoundInfo();
-    await time.increaseTo(roundInfo.lockPeriodTimestamp);
+    await time.increaseTo(roundInfo.lockPeriodTimestamp.addn(1));
 }
 
 async function mineUntilBlock(target) {
@@ -124,7 +123,7 @@ function bytes32toBN(pr) {
 async function initContracts({governorOwner, period, minSubscriptionStake}) {
     const TestMOC = artifacts.require('TestMOC');
     const OracleManager = artifacts.require('OracleManager');
-    const SupportersWhitelisted = artifacts.require('SupportersWhitelisted');
+    const Supporters = artifacts.require('Supporters');
     const Staking = artifacts.require('Staking');
     // const CoinPairPrice = artifacts.require('CoinPairPrice');
     const MockDelayMachine = artifacts.require('MockDelayMachine');
@@ -133,7 +132,7 @@ async function initContracts({governorOwner, period, minSubscriptionStake}) {
     const token = await TestMOC.new();
     await token.initialize(governor.address);
     const oracleMgr = await OracleManager.new();
-    const supporters = await SupportersWhitelisted.new();
+    const supporters = await Supporters.new();
     const delayMachine = await MockDelayMachine.new();
     await delayMachine.initialize(governor.address, token.address);
     const staking = await Staking.new();
@@ -144,7 +143,7 @@ async function initContracts({governorOwner, period, minSubscriptionStake}) {
         token.address,
         period,
     );
-    await oracleMgr.initialize(governor.address, minSubscriptionStake, supporters.address);
+    await oracleMgr.initialize(governor.address, minSubscriptionStake, staking.address);
     await staking.initialize(
         governor.address,
         supporters.address,

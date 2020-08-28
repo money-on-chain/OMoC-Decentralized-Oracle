@@ -92,6 +92,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
             uint256 startBlock,
             uint256 lockPeriodTimestamp,
             uint256 totalPoints,
+            ,
             address[] memory selectedOracles
         ) = _coinPairPrice.getRoundInfo();
         uint256 len = selectedOracles.length;
@@ -200,6 +201,7 @@ contract InfoGetter is Initializable, GovernedAbstract {
             uint256 startBlock,
             uint256 lockPeriodTimestamp,
             uint256 totalPoints,
+            ,
             address[] memory selectedOracles
         ) = _coinPairPrice.getRoundInfo();
 

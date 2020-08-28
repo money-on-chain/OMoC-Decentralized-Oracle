@@ -5,7 +5,7 @@ import {IStakingMachine} from "@moc/shared/contracts/IStakingMachine.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
 import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
-import {SupportersWhitelisted} from "./SupportersWhitelisted.sol";
+import {Supporters} from "./Supporters.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {StakingStorage} from "./StakingStorage.sol";
@@ -30,7 +30,7 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @param _delayMachine the Delay Machine contract contract address.
     function initialize(
         IGovernor _governor,
-        SupportersWhitelisted _supporters,
+        Supporters _supporters,
         OracleManager _oracleManager,
         MockDelayMachine _delayMachine
     ) external {
