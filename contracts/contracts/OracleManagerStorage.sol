@@ -37,7 +37,7 @@ contract OracleManagerStorage is Initializable, GovernedAbstract {
 
     /**
      @notice Modifier that protects the function
-     @dev You should use this modifier in any function that should be called only by oracle manager
+     @dev You should use this modifier in any function that should be called only by Staking contract
     */
     modifier onlyStaking() {
         require(msg.sender == address(stakingContract), "Must be called from Staking Contract");

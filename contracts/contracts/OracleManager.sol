@@ -149,9 +149,9 @@ contract OracleManager is OracleManagerStorage {
     }
 
     /// @notice Return true if the oracle is registered in the contract
-    /// @param ownerAddr addr The address of the owner of the Oracle to check for.
+    /// @param ownerAddr The address of the owner of the Oracle to check for.
     function isOracleRegistered(address ownerAddr) external view returns (bool) {
-        return registeredOracles._isOracleRegistered(ownerAddr);
+        return _isOwnerRegistered(ownerAddr);
     }
 
     /// @notice Returns round information for a registered oracle in a specific coin-pair.
@@ -180,7 +180,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param ownerAddr the address of the owner of the oracle to lookup.
     function canRemoveOracle(address ownerAddr) external view returns (bool) {
-        return registeredOracles._isOracleRegistered(ownerAddr) && _canRemoveOracle(ownerAddr);
+        return _isOwnerRegistered(ownerAddr) && _canRemoveOracle(ownerAddr);
     }
 
     /// @notice Get the stake in MOCs that an oracle has.
@@ -258,12 +258,10 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param ownerAddr the address of the owner of the oracle to lookup.
     function _canRemoveOracle(address ownerAddr) private view returns (bool) {
-        address oracleAddr = getOracleAddress(ownerAddr);
-
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         for (uint256 i = 0; i < coinPairCount; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            if (cp.isSubscribed(oracleAddr)) {
+            if (cp.isSubscribed(ownerAddr)) {
                 return false;
             }
         }
@@ -284,8 +282,8 @@ contract OracleManager is OracleManagerStorage {
 
     // A change contract can act as the owner of an Oracle
     /// @param oracleOwner Message sender's address
-    function _isOwner(address oracleOwner) private view returns (bool) {
-        return registeredOracles._isOwner(oracleOwner);
+    function _isOwnerRegistered(address oracleOwner) private view returns (bool) {
+        return registeredOracles._isOwnerRegistered(oracleOwner);
     }
 
     /// @notice Return the contract address for a specified registered coin pair.

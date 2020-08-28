@@ -122,7 +122,7 @@ contract Staking is StakingStorage, IStakingMachine {
     }
 
     /// @notice Return true if the oracle is registered.
-    /// @param ownerAddr addr The address of the owner of the Oracle to check for.
+    /// @param ownerAddr The address of the owner of the Oracle to check for.
     function isOracleRegistered(address ownerAddr) external view returns (bool) {
         return oracleManager.isOracleRegistered(ownerAddr);
     }

@@ -32,8 +32,8 @@ library IterableOraclesLib {
         return self.registeredOwners[oracleAddr] != address(0);
     }
 
-    /// @notice Returns true if it's the oracle's owner.
-    function _isOwner(IterableOraclesData storage self, address owner)
+    /// @notice Check if an owner is registered
+    function _isOwnerRegistered(IterableOraclesData storage self, address owner)
         internal
         view
         returns (bool)
