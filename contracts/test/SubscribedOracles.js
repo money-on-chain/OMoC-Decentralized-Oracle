@@ -86,4 +86,17 @@ contract('SubscribedOracles', (accounts) => {
         expect(minStake).to.be.bignumber.equal(toBN(1));
         expect(minAddress).equal(toChecksumAddress(padLeft(numberToHex(1), 40)));
     });
+    it('on withdraw', async () => {
+        const subscribed = await SubscribedOraclesMock.new(MAX_SUBSCRIBED_ORACLES);
+        let res = Promise.resolve();
+        for (const [oracle, stake] of Object.entries(oracles)) {
+            res = res.then(() => subscribed.addOrReplace(oracle, stake));
+        }
+        await res;
+        await subscribed.selectOracles(MAX_SELECTED_ORACLES);
+        const selected = await subscribed.getSelectedOracles();
+        for (let i = 0; i < selected.length; i += 1) {
+            await subscribed.onWithdraw(selected[i], i % 2 != 0);
+        }
+    });
 });
