@@ -1,10 +1,8 @@
-const CoinPairPrice = artifacts.require('CoinPairPrice');
 const {BN} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 
 const ORACLE_QUANTITY = 21;
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
-const minOracleOwnerStake = 10000000000;
 const maxOraclesPerRound = 10;
 const maxSubscribedOraclesPerRound = 30;
 
@@ -24,40 +22,17 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
     }
 
     async function initContracts(testobj) {
-        const {governor, oracleMgr, staking, supporters, token} = await helpers.initContracts({
-            minSubscriptionStake: minOracleOwnerStake,
+        const contracts = await helpers.initContracts({
             governorOwner: accounts[8],
             period: new BN(10),
         });
-
-        testobj.governor = governor;
-        testobj.oracleMgr = oracleMgr;
-        testobj.staking = staking;
-        testobj.supporters = supporters;
-        testobj.token = token;
-
-        testobj.coinPairPrice = await CoinPairPrice.new();
-        await testobj.coinPairPrice.initialize(
-            testobj.governor.addr,
-            [accounts[0]],
-            COINPAIR,
-            testobj.token.address,
+        Object.assign(testobj, contracts);
+        testobj.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
+            ...contracts,
+            whitelist: [accounts[0]],
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            60, // roundLockPeriodInSecs,
-            3, // validPricePeriodInBlocks
-            2, // emergencyPublishingPeriodInBlocks
-            1000000000000000, // bootstrapPrice,
-            testobj.oracleMgr.address,
-        );
-
-        // Create sample coin pairs
-        await testobj.governor.registerCoinPair(
-            testobj.oracleMgr,
-            COINPAIR,
-            testobj.coinPairPrice.address,
-        );
-
+        });
         assert.equal(
             maxOraclesPerRound,
             (await testobj.coinPairPrice.maxOraclesPerRound()).toNumber(),

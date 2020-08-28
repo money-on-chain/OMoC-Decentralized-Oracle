@@ -1,5 +1,4 @@
-const {BN, expectEvent, expectRevert} = require('@openzeppelin/test-helpers');
-const {expect} = require('chai');
+const {BN, expectRevert} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 
 contract('CoinPairRegister', (accounts) => {
@@ -13,7 +12,6 @@ contract('CoinPairRegister', (accounts) => {
         const governor = await helpers.createGovernor(accounts[8]);
         const oracleManager = await OracleManager.new();
         const minOracleOwnerStake = '10000';
-        const minStayBlocks = 10;
         const Supporters = artifacts.require('Supporters');
         const supporters = await Supporters.new();
         const TestMOC = artifacts.require('TestMOC');
@@ -25,7 +23,10 @@ contract('CoinPairRegister', (accounts) => {
             new BN(10), // period
         );
 
-        await oracleManager.initialize(governor.addr, minOracleOwnerStake, supporters.address);
+        await oracleManager.initialize(governor.addr, minOracleOwnerStake, supporters.address, [
+            supporters.address,
+            accounts[0],
+        ]);
         this.coinPairRegister = {
             ...oracleManager,
             origRegisterCoinPair: oracleManager.registerCoinPair,

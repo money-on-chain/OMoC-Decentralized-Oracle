@@ -50,6 +50,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             this.governor.addr,
             minOracleOwnerStake,
             this.supporters.address,
+            [accounts[0]],
         );
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, COINPAIR, this.coinPairPrice.address);

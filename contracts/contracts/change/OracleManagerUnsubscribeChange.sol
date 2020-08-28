@@ -13,22 +13,22 @@ import {OracleManager} from "../OracleManager.sol";
  */
 contract OracleManagerUnsubscribeChange is ChangeContract {
     OracleManager public oracleManager;
-    address public oracleAddr;
+    address public oracleOwner;
     bytes32 public coinPair;
 
     /**
       @notice Constructor
       @param _oracleManager Address of oracle manager used to register the coin pair
-      @param _oracleAddr The coinpair contract implementation address
+      @param _oracleOwner The owner of the Oracle
       @param _coinPair The coinpair to register
     */
     constructor(
         OracleManager _oracleManager,
-        address _oracleAddr,
+        address _oracleOwner,
         bytes32 _coinPair
     ) public {
         oracleManager = _oracleManager;
-        oracleAddr = _oracleAddr;
+        oracleOwner = _oracleOwner;
         coinPair = _coinPair;
     }
 
@@ -36,7 +36,7 @@ contract OracleManagerUnsubscribeChange is ChangeContract {
       @notice Execute the changes.
       */
     function execute() external override {
-        oracleManager.unsubscribeFromCoinPair(msg.sender, coinPair);
+        oracleManager.unsubscribeFromCoinPair(oracleOwner, coinPair);
         oracleManager = OracleManager(0);
     }
 }

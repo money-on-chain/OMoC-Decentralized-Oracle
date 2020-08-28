@@ -69,11 +69,11 @@ library IterableOraclesLib {
         require(owner != address(0), "Owner address cannot be 0x0");
         uint256 valueIndex = self._indexes[owner];
         require(valueIndex != 0, "Owner not registered");
+        uint256 toDeleteIndex = valueIndex - 1;
         // Delete oracle address entry
-        delete self.registeredOwners[self._values[valueIndex].addr];
+        address oracleAddr = self._values[toDeleteIndex].addr;
 
         // EnumberableSet.remove (almost)
-        uint256 toDeleteIndex = valueIndex - 1;
         uint256 lastIndex = self._values.length - 1;
         Oracle memory lastValue = self._values[lastIndex];
         address lastOwner = self.registeredOwners[lastValue.addr];
@@ -82,6 +82,7 @@ library IterableOraclesLib {
         self._indexes[lastOwner] = toDeleteIndex + 1;
         self._values.pop();
         delete self._indexes[owner];
+        delete self.registeredOwners[oracleAddr];
     }
 
     /// @notice Sets oracle's name.

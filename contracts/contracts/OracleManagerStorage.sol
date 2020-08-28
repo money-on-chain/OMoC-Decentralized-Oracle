@@ -39,4 +39,18 @@ contract OracleManagerStorage is Initializable, GovernedAbstract, IIterableWhite
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;
+
+    /**
+    @notice Modifier that protects the function
+    @dev You should use this modifier in any function that should be called through the governance system
+    or a whitelisted  contract
+     */
+    modifier authorizedChangerOrWhitelisted() {
+        require(
+            iterableWhitelistData._isWhitelisted(msg.sender) ||
+                governor.isAuthorizedChanger(msg.sender),
+            "Address is not whitelisted"
+        );
+        _;
+    }
 }

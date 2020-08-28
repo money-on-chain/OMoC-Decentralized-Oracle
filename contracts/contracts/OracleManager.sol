@@ -132,7 +132,7 @@ contract OracleManager is OracleManagerStorage {
     /// @param coinPair Name of coin pair
     function subscribeToCoinPair(address ownerAddr, bytes32 coinPair)
         external
-        onlyWhitelisted(iterableWhitelistData)
+        authorizedChangerOrWhitelisted
     {
         require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
 
@@ -147,7 +147,7 @@ contract OracleManager is OracleManagerStorage {
     /// @param coinPair Name of coin pair
     function unsubscribeFromCoinPair(address ownerAddr, bytes32 coinPair)
         external
-        onlyWhitelisted(iterableWhitelistData)
+        authorizedChangerOrWhitelisted
     {
         require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
 
@@ -170,7 +170,7 @@ contract OracleManager is OracleManagerStorage {
     /// @param name The new name to set.
     function setOracleName(address ownerAddr, string calldata name)
         external
-        onlyWhitelisted(iterableWhitelistData)
+        authorizedChangerOrWhitelisted
     {
         require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
         registeredOracles._setName(ownerAddr, name);
@@ -181,7 +181,7 @@ contract OracleManager is OracleManagerStorage {
     /// @param oracleAddr The new oracle address.s
     function setOracleAddress(address ownerAddr, address oracleAddr)
         external
-        onlyWhitelisted(iterableWhitelistData)
+        authorizedChangerOrWhitelisted
     {
         require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
         registeredOracles._setOracleAddress(ownerAddr, oracleAddr);
@@ -208,7 +208,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Removes an oracle from the system if conditions in
     ///         contract he is participating apply, returning it's stake.
     /// @param ownerAddr Address of message sender
-    function removeOracle(address ownerAddr) external onlyWhitelisted(iterableWhitelistData) {
+    function removeOracle(address ownerAddr) external authorizedChangerOrWhitelisted {
         require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
 
         _unsubscribeAll(ownerAddr);

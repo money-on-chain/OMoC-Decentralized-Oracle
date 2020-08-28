@@ -125,7 +125,46 @@ function bytes32toBN(pr) {
     return new BN(pr, 16);
 }
 
-async function initContracts({governorOwner, period, minSubscriptionStake}) {
+async function initCoinpair(
+    name,
+    {
+        governor,
+        token,
+        oracleMgr,
+        whitelist,
+        maxOraclesPerRound = 10,
+        maxSubscribedOraclesPerRound = 30,
+        roundLockPeriodInSecs = 60,
+        validPricePeriodInBlocks = 3,
+        emergencyPublishingPeriodInBlocks = 2,
+        bootstrapPrice = '100000000',
+    },
+) {
+    const CoinPairPrice = artifacts.require('CoinPairPrice');
+    const ret = await CoinPairPrice.new();
+    await ret.initialize(
+        governor.addr,
+        whitelist,
+        web3.utils.asciiToHex(name),
+        token.address,
+        maxOraclesPerRound,
+        maxSubscribedOraclesPerRound,
+        roundLockPeriodInSecs,
+        validPricePeriodInBlocks,
+        emergencyPublishingPeriodInBlocks,
+        bootstrapPrice,
+        oracleMgr.address,
+    );
+    await governor.registerCoinPair(oracleMgr, web3.utils.asciiToHex(name), ret.address);
+    return ret;
+}
+
+async function initContracts({
+    governorOwner,
+    period = 20,
+    minSubscriptionStake = (10 ** 18).toString(),
+    oracleManagerWhitelisted = [],
+}) {
     const TestMOC = artifacts.require('TestMOC');
     const OracleManager = artifacts.require('OracleManager');
     const Supporters = artifacts.require('Supporters');
@@ -148,7 +187,8 @@ async function initContracts({governorOwner, period, minSubscriptionStake}) {
         token.address,
         period,
     );
-    await oracleMgr.initialize(governor.address, minSubscriptionStake, staking.address);
+    const wList = [staking.address, ...oracleManagerWhitelisted];
+    await oracleMgr.initialize(governor.address, minSubscriptionStake, staking.address, wList);
     await staking.initialize(
         governor.address,
         supporters.address,
@@ -182,6 +222,7 @@ module.exports = {
     findEvent,
     getDefaultEncodedMessage,
     initContracts,
+    initCoinpair,
     mineBlocks,
     mineUntilBlock,
     mineUntilNextRound,

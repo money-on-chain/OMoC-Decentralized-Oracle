@@ -1,8 +1,4 @@
-const OracleManager = artifacts.require('OracleManager');
-const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
-const TestMOC = artifacts.require('TestMOC');
-const Supporters = artifacts.require('Supporters');
 const CoinPairEmergencyWhitelistChange = artifacts.require('CoinPairEmergencyWhitelistChange');
 const {expect} = require('chai');
 const {expectRevert, BN} = require('@openzeppelin/test-helpers');
@@ -10,48 +6,21 @@ const ethers = require('ethers');
 
 contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (accounts) => {
     const EMERGENCY_PUBLISHER = accounts[2];
-    const coinPair = web3.utils.asciiToHex('BTCUSD');
-    const minOracleOwnerStake = (1 * 10 ** 18).toString();
-    const period = 20;
-    const maxOraclesPerRound = 2;
-    const maxSubscribedOraclesPerRound = 30;
-    const roundLockPeriodInSecs = 5;
-    const validPricePeriodInBlocks = 30;
     const emergencyPublishingPeriodInBlocks = 20;
-    const bootstrapPrice = new BN('100000000');
-
+    const minSubscriptionStake = (10 ** 18).toString();
+    const coinPair = web3.utils.asciiToHex('BTCUSD');
     before(async () => {
-        const {governor, oracleMgr, staking, supporters, token} = await helpers.initContracts({
+        const contracts = await helpers.initContracts({
             governorOwner: accounts[8],
-            period,
-            minSubscriptionStake: minOracleOwnerStake,
+            minSubscriptionStake,
         });
-
-        this.governor = governor;
-        this.oracleMgr = oracleMgr;
-        this.staking = staking;
-        this.supporters = supporters;
-        this.token = token;
-
-        this.coinPairPrice = await CoinPairPrice.new();
-
-        await this.coinPairPrice.initialize(
-            this.governor.address,
-            [accounts[0]], // peek whitelist
-            coinPair,
-            this.token.address,
-            maxOraclesPerRound,
-            maxSubscribedOraclesPerRound,
-            roundLockPeriodInSecs,
-            validPricePeriodInBlocks,
+        Object.assign(this, contracts);
+        this.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
+            ...contracts,
+            whitelist: [accounts[0]],
             emergencyPublishingPeriodInBlocks,
-            bootstrapPrice,
-            this.oracleMgr.address,
-        );
-
-        // Create sample coin pairs
-        await this.governor.registerCoinPair(this.oracleMgr, coinPair, this.coinPairPrice.address);
-
+            validPricePeriodInBlocks: 30,
+        });
         const change = await CoinPairEmergencyWhitelistChange.new(
             this.coinPairPrice.address,
             EMERGENCY_PUBLISHER,
@@ -101,8 +70,8 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
         const ORACLE_OWNER = accounts[0];
         const ORACLE_ADDR = accounts[1];
         await this.governor.mint(this.token.address, ORACLE_OWNER, '800000000000000000000');
-        await this.token.approve(this.staking.address, minOracleOwnerStake, {from: ORACLE_OWNER});
-        await this.staking.deposit(minOracleOwnerStake, ORACLE_OWNER, {from: ORACLE_OWNER});
+        await this.token.approve(this.staking.address, minSubscriptionStake, {from: ORACLE_OWNER});
+        await this.staking.deposit(minSubscriptionStake, ORACLE_OWNER, {from: ORACLE_OWNER});
         await this.staking.registerOracle(ORACLE_ADDR, 'SOME_NAME', {from: ORACLE_OWNER});
         await this.staking.subscribeToCoinPair(coinPair, {from: ORACLE_OWNER});
         await this.coinPairPrice.switchRound();

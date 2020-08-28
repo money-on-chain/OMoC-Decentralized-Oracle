@@ -1,59 +1,26 @@
-const OracleManager = artifacts.require('OracleManager');
-const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
-const TestMOC = artifacts.require('TestMOC');
-const Supporters = artifacts.require('Supporters');
 const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 const {ZERO_ADDRESS} = require('@openzeppelin/test-helpers/src/constants');
 
 contract('CoinPairPrice', async (accounts) => {
-    const minOracleOwnerStake = (1 * 10 ** 18).toString();
-    const period = 20;
     const feeSourceAccount = accounts[0];
 
     /* Account is the simulated oracle server address. The stake 
        will come from the owner's address. */
 
     before(async () => {
-        this.bootstrapPrice = new BN('100000000');
         this.validPricePeriodInBlocks = 3;
-        this.emergencyPublishingPeriodInBlocks = 2;
 
-        const {governor, oracleMgr, staking, supporters, token} = await helpers.initContracts({
-            governorOwner: accounts[8],
-            period,
-            minSubscriptionStake: minOracleOwnerStake,
+        const contracts = await helpers.initContracts({governorOwner: accounts[8]});
+        Object.assign(this, contracts);
+
+        this.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
+            ...contracts,
+            whitelist: [accounts[0]],
+            maxOraclesPerRound: 3,
+            validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
-
-        this.governor = governor;
-        this.token = token;
-        this.oracleMgr = oracleMgr;
-        this.staking = staking;
-        this.supporters = supporters;
-
-        this.coinPairPrice = await CoinPairPrice.new();
-
-        await this.coinPairPrice.initialize(
-            this.governor.addr,
-            [accounts[0]], // whitlist
-            web3.utils.asciiToHex('BTCUSD'),
-            this.token.address,
-            3, // maxOraclesPerRound
-            30, // maxSubscribedOraclesPerRound
-            60, // roundLockPeriodInSecs
-            this.validPricePeriodInBlocks,
-            this.emergencyPublishingPeriodInBlocks,
-            this.bootstrapPrice,
-            this.oracleMgr.address,
-        );
-
-        // Create sample coin pairs
-        await this.governor.registerCoinPair(
-            this.oracleMgr,
-            web3.utils.asciiToHex('BTCUSD'),
-            this.coinPairPrice.address,
-        );
         await this.governor.mint(this.token.address, accounts[0], '800000000000000000000');
         await this.governor.mint(this.token.address, accounts[2], '800000000000000000000');
         await this.governor.mint(this.token.address, accounts[4], '800000000000000000000');

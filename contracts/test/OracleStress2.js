@@ -1,6 +1,6 @@
 const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
-const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
+const {constants} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 const crypto = require('crypto');
 const TestMOC = artifacts.require('TestMOC');
@@ -62,6 +62,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             this.governor.addr,
             minOracleOwnerStake,
             this.supporters.address,
+            [accounts[0]],
         );
         // Create sample coin pairs
         await this.governor.registerCoinPair(this.oracleMgr, COINPAIR, this.coinPairPrice.address);

@@ -1,91 +1,26 @@
 const helpers = require('./helpers');
-const TestMOC = artifacts.require('TestMOC');
-const OracleManager = artifacts.require('OracleManager');
-const Supporters = artifacts.require('Supporters');
-const Staking = artifacts.require('Staking');
-const CoinPairPrice = artifacts.require('CoinPairPrice');
-const MockDelayMachine = artifacts.require('MockDelayMachine');
-const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
+const {expectRevert, BN} = require('@openzeppelin/test-helpers');
 
-contract('OracleManager', async (accounts) => {
-    const minCPSubscriptionStake = (1 * 10 ** 18).toString();
+contract('Staking', async (accounts) => {
+    const minCPSubscriptionStake = (10 ** 18).toString();
     const period = 20;
-    // Values to initialize CoinPairPrice instances
-    const maxOraclesPerRound = 10;
-    const maxSubscribedOraclesPerRound = 30;
-    const roundLockPeriodInSecs = 5;
-    const validPricePeriodInBlocks = 3;
-    const emergencyPublishingPeriodInBlocks = 2;
-    const bootstrapPrice = '100000000';
 
     before(async () => {
-        this.governor = await helpers.createGovernor(accounts[8]);
-        this.token = await TestMOC.new();
-        await this.token.initialize(this.governor.address);
-        this.oracleMgr = await OracleManager.new();
-        this.supporters = await Supporters.new();
-        this.mockDelayMachine = await MockDelayMachine.new();
-        await this.mockDelayMachine.initialize(this.governor.address, this.token.address);
-        this.staking = await Staking.new();
-
-        this.coinPairPrice_BTCUSD = await CoinPairPrice.new();
-        this.coinPairPrice_RIFBTC = await CoinPairPrice.new();
-        await this.coinPairPrice_BTCUSD.initialize(
-            this.governor.addr,
-            [accounts[0]],
-            web3.utils.asciiToHex('BTCUSD'),
-            this.token.address,
-            maxOraclesPerRound,
-            maxSubscribedOraclesPerRound,
-            roundLockPeriodInSecs,
-            validPricePeriodInBlocks,
-            emergencyPublishingPeriodInBlocks,
-            bootstrapPrice,
-            this.oracleMgr.address,
-        );
-
-        await this.coinPairPrice_RIFBTC.initialize(
-            this.governor.addr,
-            [accounts[0]],
-            web3.utils.asciiToHex('RIFBTC'),
-            this.token.address,
-            maxOraclesPerRound,
-            maxSubscribedOraclesPerRound,
-            roundLockPeriodInSecs,
-            validPricePeriodInBlocks,
-            emergencyPublishingPeriodInBlocks,
-            bootstrapPrice,
-            this.oracleMgr.address,
-        );
-
-        await this.supporters.initialize(
-            this.governor.addr,
-            [this.oracleMgr.address, this.staking.address],
-            this.token.address,
+        const contracts = await helpers.initContracts({
+            governorOwner: accounts[8],
             period,
-        );
-        await this.oracleMgr.initialize(
-            this.governor.addr,
-            minCPSubscriptionStake,
-            this.staking.address,
-        );
-        await this.staking.initialize(
-            this.governor.addr,
-            this.supporters.address,
-            this.oracleMgr.address,
-            this.mockDelayMachine.address,
-        );
+            minSubscriptionStake: minCPSubscriptionStake,
+        });
+        Object.assign(this, contracts);
 
-        await this.governor.registerCoinPair(
-            this.oracleMgr,
-            web3.utils.asciiToHex('BTCUSD'),
-            this.coinPairPrice_BTCUSD.address,
-        );
-        await this.governor.registerCoinPair(
-            this.oracleMgr,
-            web3.utils.asciiToHex('RIFBTC'),
-            this.coinPairPrice_RIFBTC.address,
-        );
+        this.coinPairPrice_BTCUSD = await helpers.initCoinpair('BTCUSD', {
+            ...contracts,
+            whitelist: [accounts[0]],
+        });
+        this.coinPairPrice_RIFBTC = await helpers.initCoinpair('RIFBTC', {
+            ...contracts,
+            whitelist: [accounts[0]],
+        });
         await this.governor.mint(this.token.address, accounts[0], '800000000000000000000');
         await this.governor.mint(this.token.address, accounts[2], '800000000000000000000');
         await this.governor.mint(this.token.address, accounts[4], '800000000000000000000');
@@ -130,21 +65,20 @@ contract('OracleManager', async (accounts) => {
             from: oracleData[2].owner,
         });
 
-        const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
+        const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner);
         assert.equal(info0.internetName, oracleData[0].name);
         assert.equal(info0.stake, 0);
 
-        const info1 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].account);
+        const info1 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].owner);
         assert.equal(info1.internetName, oracleData[1].name);
         assert.equal(info1.stake, 0);
 
-        const info2 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[2].account);
+        const info2 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[2].owner);
         assert.equal(info2.internetName, oracleData[2].name);
         assert.equal(info2.stake, 0);
-
-        assert.isTrue(await this.staking.isOracleRegistered(oracleData[0].account));
-        assert.isTrue(await this.staking.isOracleRegistered(oracleData[1].account));
-        assert.isTrue(await this.staking.isOracleRegistered(oracleData[2].account));
+        assert.isTrue(await this.staking.isOracleRegistered(oracleData[0].owner));
+        assert.isTrue(await this.staking.isOracleRegistered(oracleData[1].owner));
+        assert.isTrue(await this.staking.isOracleRegistered(oracleData[2].owner));
     });
 
     it('Should deposit stake for Oracle A, B, C', async () => {
@@ -198,26 +132,20 @@ contract('OracleManager', async (accounts) => {
     });
 
     it('Should subscribe Oracles A, B, C to coin pair BTCUSD', async () => {
-        await this.staking.subscribeToCoinPair(
-            oracleData[0].account,
-            web3.utils.asciiToHex('BTCUSD'),
-            {from: oracleData[0].owner},
-        );
-        assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[0].account));
+        await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
+            from: oracleData[0].owner,
+        });
+        assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[0].owner));
 
-        await this.staking.subscribeToCoinPair(
-            oracleData[1].account,
-            web3.utils.asciiToHex('BTCUSD'),
-            {from: oracleData[1].owner},
-        );
-        assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[1].account));
+        await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
+            from: oracleData[1].owner,
+        });
+        assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[1].owner));
 
-        await this.staking.subscribeToCoinPair(
-            oracleData[2].account,
-            web3.utils.asciiToHex('BTCUSD'),
-            {from: oracleData[2].owner},
-        );
-        assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[2].account));
+        await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
+            from: oracleData[2].owner,
+        });
+        assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[2].owner));
     });
 
     it('Should lock stake of oracle B', async () => {

@@ -13,23 +13,23 @@ import {OracleManager} from "../OracleManager.sol";
  */
 contract OracleManagerRemoveChange is ChangeContract {
     OracleManager public oracleManager;
-    address public oracleAddr;
+    address public oracleOwner;
 
     /**
       @notice Constructor
       @param _oracleManager Address of oracle manager used to register the coin pair
-      @param _oracleAddr The coinpair contract implementation address
+      @param _oracleOwner The owner of the Oracle
     */
-    constructor(OracleManager _oracleManager, address _oracleAddr) public {
+    constructor(OracleManager _oracleManager, address _oracleOwner) public {
         oracleManager = _oracleManager;
-        oracleAddr = _oracleAddr;
+        oracleOwner = _oracleOwner;
     }
 
     /**
       @notice Execute the changes.
       */
     function execute() external override {
-        oracleManager.removeOracle(msg.sender);
+        oracleManager.removeOracle(oracleOwner);
         oracleManager = OracleManager(0);
     }
 }
