@@ -116,7 +116,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
         });
     });
 
-    describe.only('During non zero we add oracles on subscription right away', () => {
+    describe('During non zero we add oracles on subscription right away', () => {
         let oracleList;
         let ORACLE_WITH_A_LOT_OF_STAKE;
         let ORACLE_WITH_SMALL_STAKE;
