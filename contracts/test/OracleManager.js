@@ -166,13 +166,13 @@ contract('OracleManager', async (accounts) => {
             }),
         );
         assert.isTrue(
-            await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {
-                from: oracleData[0].owner,
+            await this.oracleMgr.isOracleRegistered(oracleData[1].owner, {
+                from: oracleData[1].owner,
             }),
         );
         assert.isTrue(
-            await this.oracleMgr.isOracleRegistered(oracleData[0].owner, {
-                from: oracleData[0].owner,
+            await this.oracleMgr.isOracleRegistered(oracleData[2].owner, {
+                from: oracleData[2].owner,
             }),
         );
     });
