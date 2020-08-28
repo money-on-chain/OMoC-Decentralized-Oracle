@@ -44,7 +44,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             testobj.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            5, // roundLockPeriodInSecs,
+            60, // roundLockPeriodInSecs,
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
@@ -70,7 +70,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             const ownerAccount = await helpers.newUnlockedAccount();
             // Send funds to new owner account (token and base coin).
             await web3.eth.sendTransaction({
-                from: accounts[9],
+                from: accounts[10 + (i % 10)],
                 to: ownerAccount,
                 value: '1' + '0'.repeat(18),
             });
@@ -92,7 +92,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
         return oracleList;
     }
 
-    describe("During round zero we don't add oracles on subscription", () => {
+    describe.skip("During round zero we don't add oracles on subscription, WE DON't HAVE ROUND ZERO NOW", () => {
         let oracleList;
 
         it('creation', async () => {
@@ -116,7 +116,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
         });
     });
 
-    describe('During non zero we add oracles on subscription right away', () => {
+    describe.only('During non zero we add oracles on subscription right away', () => {
         let oracleList;
         let ORACLE_WITH_A_LOT_OF_STAKE;
         let ORACLE_WITH_SMALL_STAKE;
@@ -147,13 +147,13 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             }
         });
 
-        it('The oracles are added right away when we saturate the list the new ones even if have more stake must wait to next round', async () => {
+        it('The oracles are added right away when we saturate the selected list the new ones even if have more stake must wait to next round', async () => {
             assert.isTrue(
                 await this.oracleMgr.isSubscribed(ORACLE_WITH_SMALL_STAKE.ownerAddr, COINPAIR),
             );
             assert.isTrue(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(
-                    ORACLE_WITH_SMALL_STAKE.ownerAddr,
+                    ORACLE_WITH_SMALL_STAKE.oracleAddr,
                 ) >= 0,
             );
 
@@ -162,7 +162,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             );
             assert.isFalse(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(
-                    ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr,
+                    ORACLE_WITH_A_LOT_OF_STAKE.oracleAddr,
                 ) >= 0,
             );
         });
@@ -192,7 +192,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             );
         });
 
-        it('In the next round ORACLE_WITH_NO_STAKE loose his place', async () => {
+        it('In the next round ORACLE_WITH_SMALL_STAKE loose his place', async () => {
             await helpers.mineUntilNextRound(this.coinPairPrice);
             await this.coinPairPrice.switchRound();
             assert.isTrue(
@@ -205,7 +205,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             );
 
             assert.isTrue(
-                await this.oracleMgr.isSubscribed(ORACLE_WITH_A_LOT_OF_STAKE.oracleAddr, COINPAIR),
+                await this.oracleMgr.isSubscribed(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr, COINPAIR),
             );
             assert.isTrue(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(
@@ -221,7 +221,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracleAddr) >= 0,
             );
 
-            await this.staking.unsubscribeFromCoinPair(oracle_addr, COINPAIR, {from: ownerAddr});
+            await this.staking.unsubscribeFromCoinPair(COINPAIR, {from: ownerAddr});
             assert.isFalse(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             assert.equal(
                 maxOraclesPerRound,
@@ -238,7 +238,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
 
             // Even if we subscribe we don't get in the new round
             await this.staking.subscribeToCoinPair(COINPAIR, {from: ownerAddr});
-            assert.isTrue(await this.oracleMgr.isSubscribed(oracleAddr, COINPAIR));
+            assert.isTrue(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             assert.isFalse(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracleAddr) >= 0,
             );
