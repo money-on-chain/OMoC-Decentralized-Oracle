@@ -171,7 +171,7 @@ async function deploy(config) {
                 testMOC.options.address,
                 parseInt(config.maxOraclesPerRound[i]),
                 parseInt(config.maxSubscribedOraclesPerRound[i]),
-                parseInt(config.roundLockPeriodInBlocks[i]),
+                parseInt(config.roundLockPeriodInSecs[i]),
                 parseInt(config.validPricePeriodInBlocks[i]),
                 parseInt(config.emergencyPublishingPeriodInBlocks[i]),
                 config.bootstrapPrice[i],

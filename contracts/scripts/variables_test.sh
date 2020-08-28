@@ -10,7 +10,7 @@ export DEFAULT_MINORACLEOWNERSTAKE='10000000000'
 export DEFAULT_NUMIDLEROUNDS=2
 
 CurrencyPair+="BTCUSD;"
-roundLockPeriodInBlocks+="1800;"
+roundLockPeriodInSecs+="1800;"
 validPricePeriodInBlocks+="$DEFAULT_VALIDPRICEPERIODINBLOCKS;"
 emergencyPublishingPeriodInBlocks+="$DEFAULT_EMERGENCYPUBLISHPERIODINBLOCKS;"
 minOracleOwnerStake+="$DEFAULT_MINORACLEOWNERSTAKE;"
@@ -20,7 +20,7 @@ bootstrapPrice+="$DEFAULT_BOOTSTRAPPRICE;"
 numIdleRounds+="$DEFAULT_NUMIDLEROUNDS;"
 
 CurrencyPair+="RIFBTC;"
-roundLockPeriodInBlocks+="2000;"
+roundLockPeriodInSecs+="2000;"
 validPricePeriodInBlocks+="$DEFAULT_VALIDPRICEPERIODINBLOCKS;"
 emergencyPublishingPeriodInBlocks+="$DEFAULT_EMERGENCYPUBLISHPERIODINBLOCKS;"
 minOracleOwnerStake+="$DEFAULT_MINORACLEOWNERSTAKE;"
@@ -34,7 +34,7 @@ supportersAfterStopBlocks=90
 supportersMinStayBlocks=30
 
 export CurrencyPair
-export roundLockPeriodInBlocks
+export roundLockPeriodInSecs
 export validPricePeriodInBlocks
 export emergencyPublishingPeriodInBlocks
 export minOracleOwnerStake
