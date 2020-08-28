@@ -1,4 +1,5 @@
 const {constants, BN, time} = require('@openzeppelin/test-helpers');
+const crypto = require('crypto');
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 
@@ -161,6 +162,13 @@ async function initContracts({governorOwner, period, minSubscriptionStake}) {
     };
 }
 
+async function newUnlockedAccount() {
+    const pass = crypto.randomBytes(20).toString('hex');
+    const account = await web3.eth.personal.newAccount(pass);
+    await web3.eth.personal.unlockAccount(account, pass, 60000);
+    return account;
+}
+
 module.exports = {
     ADDRESS_ONE,
     ADDRESS_ZERO,
@@ -174,4 +182,5 @@ module.exports = {
     mineUntilBlock,
     mineUntilNextRound,
     printOracles,
+    newUnlockedAccount,
 };
