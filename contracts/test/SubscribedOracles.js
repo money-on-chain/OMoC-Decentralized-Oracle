@@ -96,7 +96,7 @@ contract('SubscribedOracles', (accounts) => {
         await subscribed.selectOracles(MAX_SELECTED_ORACLES);
         const selected = await subscribed.getSelectedOracles();
         for (let i = 0; i < selected.length; i += 1) {
-            await subscribed.onWithdraw(selected[i]);
+            await subscribed.onWithdraw(selected[i], i % 2 != 0);
         }
     });
 });
