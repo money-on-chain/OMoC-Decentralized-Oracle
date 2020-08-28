@@ -52,7 +52,7 @@ library IterableOraclesLib {
     ) internal {
         require(owner != address(0), "Owner address cannot be 0x0");
         require(oracle != address(0), "Oracle address cannot be 0x0");
-        require(!_isOwner(self, owner), "Oracle owner is already registered");
+        require(!_isOwnerRegistered(self, owner), "Oracle owner is already registered");
         require(!_isOracleRegistered(self, oracle), "Oracle address is already registered");
         // Add oracle address
         self.registeredOwners[oracle] = owner;
@@ -90,7 +90,7 @@ library IterableOraclesLib {
         address owner,
         string memory url
     ) internal {
-        require(_isOwner(self, owner), "Oracle owner is not registered");
+        require(_isOwnerRegistered(self, owner), "Oracle owner is not registered");
         uint256 valueIndex = self._indexes[owner];
         require(valueIndex != 0, "Owner not registered");
         self._values[valueIndex - 1].url = url;
@@ -102,7 +102,7 @@ library IterableOraclesLib {
         address owner,
         address oracleAddr
     ) internal {
-        require(_isOwner(self, owner), "Oracle owner is not registered");
+        require(_isOwnerRegistered(self, owner), "Oracle owner is not registered");
         require(!_isOracleRegistered(self, oracleAddr), "Oracle address already registered");
         require(owner != address(0), "Owner address cannot be 0x0");
         uint256 valueIndex = self._indexes[owner];

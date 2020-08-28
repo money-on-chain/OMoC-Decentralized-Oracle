@@ -73,12 +73,12 @@ contract SubscribedOraclesMock {
         return selectedOracles.asArray();
     }
 
-    function onWithdraw(address oracleOwnerAddr, bool remove) public {
+    function onWithdraw(address oracleOwnerAddr, bool _remove) public {
         (address addr, uint256 stake) = subscribedOracles.getMaxUnselectedStake(
             this.getStake,
             selectedOracles
         );
-        if (remove) {
+        if (_remove) {
             selectedOracles.remove(oracleOwnerAddr);
             selectedOracles.add(addr);
         }
