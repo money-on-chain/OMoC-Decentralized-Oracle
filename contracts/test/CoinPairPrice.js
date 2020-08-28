@@ -5,6 +5,7 @@ const TestMOC = artifacts.require('TestMOC');
 const Supporters = artifacts.require('Supporters');
 const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
+const {ZERO_ADDRESS} = require('@openzeppelin/test-helpers/src/constants');
 
 contract('CoinPairPrice', async (accounts) => {
     const minOracleOwnerStake = (1 * 10 ** 18).toString();
@@ -40,7 +41,7 @@ contract('CoinPairPrice', async (accounts) => {
             this.token.address,
             3, // maxOraclesPerRound
             30, // maxSubscribedOraclesPerRound
-            5, // roundLockPeriodInBlocks
+            60, // roundLockPeriodInSecs
             this.validPricePeriodInBlocks,
             this.emergencyPublishingPeriodInBlocks,
             this.bootstrapPrice,
@@ -86,7 +87,6 @@ contract('CoinPairPrice', async (accounts) => {
             owner: accounts[8],
         },
     ];
-
     it('Should register Oracles A, B, C', async () => {
         const initialBalance1 = await this.token.balanceOf(oracleData[0].owner);
         const initialBalance2 = await this.token.balanceOf(oracleData[1].owner);
@@ -213,9 +213,9 @@ contract('CoinPairPrice', async (accounts) => {
         assert.equal(roundInfo.round, 0);
         await this.coinPairPrice.switchRound();
         roundInfo = await this.coinPairPrice.getRoundInfo();
-        let info0 = await this.coinPairPrice.getOracleRoundInfo(oracleData[0].account);
-        let info1 = await this.coinPairPrice.getOracleRoundInfo(oracleData[1].account);
-        let info2 = await this.coinPairPrice.getOracleRoundInfo(oracleData[2].account);
+        let info0 = await this.coinPairPrice.getOracleRoundInfo(oracleData[0].owner);
+        let info1 = await this.coinPairPrice.getOracleRoundInfo(oracleData[1].owner);
+        let info2 = await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner);
         assert.equal(info0.points, 0);
         assert.equal(info1.points, 0);
         assert.equal(info2.points, 0);
@@ -224,12 +224,11 @@ contract('CoinPairPrice', async (accounts) => {
         info0 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[0]);
         info1 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[1]);
         info2 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[2]);
-        //FIXME: assert.isTrue(info0.stake > info1.stake);
-        //FIXME: assert.isTrue(info1.stake > info2.stake);
+        // assert.isTrue(info0.stake > info1.stake);
+        // assert.isTrue(info1.stake > info2.stake);
     });
 
     it('Should fail to publish with mismatching coinpair', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'ARSBTC',
@@ -258,7 +257,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish with zero price', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -287,7 +285,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish with non-V3 format', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             1,
             'BTCUSD',
@@ -316,7 +313,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish with inconsistent signature count', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -346,16 +342,12 @@ contract('CoinPairPrice', async (accounts) => {
 
     it('Should fail to switch to new round before lock period expiration', async () => {
         await time.advanceBlock(); // Just advance ONE block
-
         await expectRevert(
             this.coinPairPrice.switchRound(),
             ' The current round lock period is active',
         );
     });
-
-    it('Should fail to publish price if some signer is not subscribed', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
-
+    it.skip('Should fail to publish price if some signer is not subscribed. NOT TRUE ANYMORE', async () => {
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -383,8 +375,7 @@ contract('CoinPairPrice', async (accounts) => {
         );
     });
 
-    it('Should fail to publish price if signature v-component is invalid', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
+    it('Should fail to publish price if signature vf1component is invalid', async () => {
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -415,7 +406,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Oracle A should publish a valid price message signed by A,B and C', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -469,8 +459,7 @@ contract('CoinPairPrice', async (accounts) => {
         assert.isFalse(not_valid);
     });
 
-    it('Should fail to publish price from  unsubscribed address', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
+    it.skip('Should fail to publish price from unsubscribed address. NOT TRUE ANYMORE', async () => {
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -500,7 +489,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish price if sender is not a voted oracle', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -561,7 +549,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish price if signature count is  less than 50% of participating oracles', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -589,7 +576,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish if signatures are not unique', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -618,7 +604,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish if signatures are in the wrong order', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -657,7 +642,7 @@ contract('CoinPairPrice', async (accounts) => {
         await this.staking.deposit(oracleData[3].stake, oracleData[3].owner, {
             from: oracleData[3].owner,
         });
-        await this.staking.subscribeToCoinPair(oracleData[3].account, thisCoinPair, {
+        await this.staking.subscribeToCoinPair(thisCoinPair, {
             from: oracleData[3].owner,
         });
         assert.isTrue(
@@ -668,7 +653,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish if voter/sender is D (not a selected-in-round oracle)', async () => {
-        // console.log(await this.coinPairPrice.getRoundInfo());
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -726,11 +710,8 @@ contract('CoinPairPrice', async (accounts) => {
 
     it('Should add-up points submitting several prices from Oracles A,B and C', async () => {
         let roundInfo = await this.coinPairPrice.getRoundInfo();
-
         // Addup points submitting several prices from Oracles A,B and C
-
         // Oracle A    publications.
-
         {
             const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
                 3,
@@ -963,9 +944,9 @@ contract('CoinPairPrice', async (accounts) => {
         const balance1 = await this.token.balanceOf(oracleData[0].owner);
         const balance2 = await this.token.balanceOf(oracleData[1].owner);
         const balance3 = await this.token.balanceOf(oracleData[2].owner);
-        const points1 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[0].account)).points;
-        const points2 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[1].account)).points;
-        const points3 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[2].account)).points;
+        const points1 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[0].owner)).points;
+        const points2 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[1].owner)).points;
+        const points3 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner)).points;
         const totalPoints = points1.add(points2).add(points3);
 
         const expectReward1 = points1.mul(sourceBalance).div(totalPoints);
@@ -982,8 +963,8 @@ contract('CoinPairPrice', async (accounts) => {
 
         // Check if participating oracles in prev round are cleared properly.
 
-        for (i = 0; i < selOracles.length; i++) {
-            info = await this.coinPairPrice.getOracleRoundInfo(selOracles[i]);
+        for (let i = 0; i < selOracles.length; i++) {
+            const info = await this.coinPairPrice.getOracleRoundInfo(selOracles[i]);
             assert.equal(info.points, 0);
         }
 
@@ -991,7 +972,6 @@ contract('CoinPairPrice', async (accounts) => {
         const expectBalance2 = balance2.add(expectReward2);
         const expectBalance3 = balance3.add(expectReward3);
 
-        /*FIXME:
         assert.equal(
             expectBalance1.toString(),
             (await this.token.balanceOf(oracleData[0].owner)).toString(),
@@ -1009,7 +989,7 @@ contract('CoinPairPrice', async (accounts) => {
         assert.equal(
             postFeeBalance.toString(),
             BN(sourceBalance).sub(expectTotalReward).toString(),
-        );*/
+        );
     });
 
     it('Should exclude from round unsubscribed oracles and let remove after that', async () => {
@@ -1025,7 +1005,7 @@ contract('CoinPairPrice', async (accounts) => {
         const roundInfo2 = await this.coinPairPrice.getRoundInfo();
         assert.isTrue(roundInfo2.selectedOracles.includes(oracleData[0].account));
 
-        await this.staking.unsubscribeFromCoinPair(oracleData[0].account, thisCoinPair, {
+        await this.staking.unsubscribeFromCoinPair(thisCoinPair, {
             from: oracleData[0].owner,
         });
 
@@ -1040,19 +1020,13 @@ contract('CoinPairPrice', async (accounts) => {
         await helpers.mineUntilNextRound(this.coinPairPrice);
         await this.coinPairPrice.switchRound();
 
-        const info = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account);
+        const info = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner);
         assert.equal(info.internetName, 'oracle-a.io');
-        const initialBalance = await this.token.balanceOf(oracleData[0].owner);
 
-        await this.staking.removeOracle(oracleData[0].account, {from: oracleData[0].owner});
-
-        await expectRevert(
-            this.oracleMgr.getOracleRegistrationInfo(oracleData[0].account),
-            'Oracle not registered',
-        );
+        await this.staking.removeOracle({from: oracleData[0].owner});
         assert.equal(
-            (await this.token.balanceOf(oracleData[0].owner)).toString(),
-            initialBalance.add(info.stake).toString(),
+            (await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner)).oracleAddr,
+            ZERO_ADDRESS,
         );
     });
 });

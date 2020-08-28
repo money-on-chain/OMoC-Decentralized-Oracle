@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
 /**
@@ -110,7 +111,7 @@ library IterableOraclesLib {
     }
 
     /// @notice Returns the amount of owners registered.
-    function _getOwnerListLen(IterableOraclesData storage self) internal view returns (uint256) {
+    function _getLen(IterableOraclesData storage self) internal view returns (uint256) {
         return self._values.length;
     }
 
@@ -119,10 +120,15 @@ library IterableOraclesLib {
     function _getOracleAtIndex(IterableOraclesData storage self, uint256 idx)
         internal
         view
-        returns (Oracle memory)
+        returns (
+            address ownerAddr,
+            address oracleAddr,
+            string memory url
+        )
     {
         require(idx < self._values.length, "Illegal index");
-        return self._values[idx];
+        Oracle memory ret = self._values[idx];
+        return (self.registeredOwners[ret.addr], ret.addr, ret.url);
     }
 
     /// @notice Returns address of oracle's owner.

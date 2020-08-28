@@ -50,7 +50,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
             testobj.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            5, // roundLockPeriodInBlocks,
+            5, // roundLockPeriodInSecs,
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,

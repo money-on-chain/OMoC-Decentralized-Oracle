@@ -15,7 +15,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
     const period = 20;
     const maxOraclesPerRound = 2;
     const maxSubscribedOraclesPerRound = 30;
-    const roundLockPeriodInBlocks = 5;
+    const roundLockPeriodInSecs = 5;
     const validPricePeriodInBlocks = 30;
     const emergencyPublishingPeriodInBlocks = 20;
     const bootstrapPrice = new BN('100000000');
@@ -42,7 +42,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (account
             this.token.address,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,

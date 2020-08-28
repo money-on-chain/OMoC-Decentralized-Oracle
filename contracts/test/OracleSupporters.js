@@ -31,7 +31,7 @@ contract.skip('Oracle-Supporters integration', (accounts) => {
             this.token.address,
             1, // maxOraclesPerRound,
             2, // maxSubscribedOraclesPerRound,
-            1, // roundLockPeriodInBlocks,
+            1, // roundLockPeriodInSecs,
             1, // validPricePeriodInBlocks,
             1, // emergencyPublishingPeriodInBlocks
             0, // bootstrapPrice,

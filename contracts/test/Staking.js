@@ -12,7 +12,7 @@ contract('OracleManager', async (accounts) => {
     const period = 20;
     // Values to initialize CoinPairPrice instances
     const maxOraclesPerRound = 10;
-    const roundLockPeriodInBlocks = 5;
+    const roundLockPeriodInSecs = 5;
     const validPricePeriodInBlocks = 3;
     const emergencyPublishingPeriodInBlocks = 2;
     const bootstrapPrice = '100000000';
@@ -35,7 +35,7 @@ contract('OracleManager', async (accounts) => {
             web3.utils.asciiToHex('BTCUSD'),
             this.token.address,
             maxOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,
@@ -48,7 +48,7 @@ contract('OracleManager', async (accounts) => {
             web3.utils.asciiToHex('RIFBTC'),
             this.token.address,
             maxOraclesPerRound,
-            roundLockPeriodInBlocks,
+            roundLockPeriodInSecs,
             validPricePeriodInBlocks,
             emergencyPublishingPeriodInBlocks,
             bootstrapPrice,

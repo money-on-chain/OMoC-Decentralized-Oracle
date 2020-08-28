@@ -170,7 +170,7 @@ async function deploy(config) {
                 coinPair,
                 testMOC.options.address,
                 parseInt(config.maxOraclesPerRound[i]),
-                parseInt(config.roundLockPeriodInBlocks[i]),
+                parseInt(config.roundLockPeriodInSecs[i]),
                 parseInt(config.validPricePeriodInBlocks[i]),
                 parseInt(config.emergencyPublishingPeriodInBlocks[i]),
                 config.bootstrapPrice[i],

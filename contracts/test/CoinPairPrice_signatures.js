@@ -183,7 +183,7 @@ contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
                     this.token.address,
                     10, // maxOraclesPerRound
                     30, // maxSubscribedOraclesPerRound
-                    5, // roundLockPeriodInBlocks
+                    5, // roundLockPeriodInSecs
                     3, // validPricePeriodInBlocks
                     2, // emergencyPublishingPeriodInBlocks
                     '100000000', // bootstrapPrice

@@ -104,7 +104,6 @@ contract OracleManager is OracleManagerStorage {
     /// @param ownerAddr Address of message sender
     /// @param coinPair Name of coin pair
     function subscribeToCoinPair(address ownerAddr, bytes32 coinPair) external onlyStaking {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
         require(_isOwner(ownerAddr), "Must be called by oracle owner");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
@@ -117,7 +116,6 @@ contract OracleManager is OracleManagerStorage {
     /// @param ownerAddr Address of message sender
     /// @param coinPair Name of coin pair
     function unsubscribeFromCoinPair(address ownerAddr, bytes32 coinPair) external onlyStaking {
-        require(registeredOracles._isOracleRegistered(ownerAddr), "Oracle is not registered.");
         require(_isOwner(ownerAddr), "Must be called by oracle owner");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
@@ -212,6 +210,25 @@ contract OracleManager is OracleManagerStorage {
         return registeredOracles._getOwner(oracleAddr);
     }
 
+    /// @notice Returns the amount of owners registered.
+    function getRegisteredOraclesLen() external view returns (uint256) {
+        return registeredOracles._getLen();
+    }
+
+    /// @notice Returns the oracle name and address at index.
+    /// @param idx index to query.
+    function getRegisteredOracleAtIndex(uint256 idx)
+        external
+        view
+        returns (
+            address ownerAddr,
+            address oracleAddr,
+            string memory url
+        )
+    {
+        return registeredOracles._getOracleAtIndex(idx);
+    }
+
     /// @notice Returns the count of registered coin pairs.
     /// Keep in mind that Deleted coin-pairs will contain zeroed addresses.
     function getCoinPairCount() external view returns (uint256) {
@@ -259,7 +276,9 @@ contract OracleManager is OracleManagerStorage {
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         for (uint256 i = 0; i < coinPairCount; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            cp.unsubscribe(ownerAddr);
+            if (cp.isSubscribed(ownerAddr)) {
+                cp.unsubscribe(ownerAddr);
+            }
         }
     }
 
