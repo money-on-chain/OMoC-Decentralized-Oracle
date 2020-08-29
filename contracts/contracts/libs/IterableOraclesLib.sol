@@ -109,6 +109,7 @@ library IterableOraclesLib {
         uint256 valueIndex = self._indexes[owner];
         require(valueIndex != 0, "Owner not registered");
         self._values[valueIndex - 1].addr = oracleAddr;
+        self.registeredOwners[oracleAddr] = owner;
     }
 
     /// @notice Returns the amount of owners registered.
