@@ -134,7 +134,7 @@ contract OracleManager is OracleManagerStorage {
         external
         authorizedChangerOrWhitelisted
     {
-        require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
+        require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
         ctAddr.subscribe(ownerAddr);
@@ -149,7 +149,7 @@ contract OracleManager is OracleManagerStorage {
         external
         authorizedChangerOrWhitelisted
     {
-        require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
+        require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
         ctAddr.unsubscribe(ownerAddr);
@@ -172,7 +172,7 @@ contract OracleManager is OracleManagerStorage {
         external
         authorizedChangerOrWhitelisted
     {
-        require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
+        require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
         registeredOracles._setName(ownerAddr, name);
     }
 
@@ -183,7 +183,7 @@ contract OracleManager is OracleManagerStorage {
         external
         authorizedChangerOrWhitelisted
     {
-        require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
+        require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
         registeredOracles._setOracleAddress(ownerAddr, oracleAddr);
     }
 
@@ -209,7 +209,7 @@ contract OracleManager is OracleManagerStorage {
     ///         contract he is participating apply, returning it's stake.
     /// @param ownerAddr Address of message sender
     function removeOracle(address ownerAddr) external authorizedChangerOrWhitelisted {
-        require(_isOwnerRegistered(ownerAddr), "Must be called by oracle owner");
+        require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
 
         _unsubscribeAll(ownerAddr);
         registeredOracles._removeOracle(ownerAddr);
@@ -241,6 +241,12 @@ contract OracleManager is OracleManagerStorage {
     {
         (oracleAddr, internetName) = registeredOracles._getOracleInfo(ownerAddr);
         stake = getStake(ownerAddr);
+    }
+
+    /// @notice Returns true if oracle is registered.
+    /// @param ownerAddr The address of the oracle's owner.
+    function isRegistered(address ownerAddr) external view returns (bool) {
+        return _isOwnerRegistered(ownerAddr);
     }
 
     /// @notice Used by CoinPair
