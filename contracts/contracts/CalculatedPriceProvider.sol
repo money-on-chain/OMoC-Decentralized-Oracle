@@ -2,7 +2,7 @@
 pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
+import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {IPriceProvider} from "./libs/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
 import {CalculatedPriceProviderStorage} from "./CalculatedPriceProviderStorage.sol";

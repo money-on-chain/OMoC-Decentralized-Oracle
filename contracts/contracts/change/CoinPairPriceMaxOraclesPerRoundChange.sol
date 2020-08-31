@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
-import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 
 /**
   @title CoinPairPriceMaxOraclesPerRoundChange
@@ -11,7 +11,7 @@ import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
   parameter maxOraclesPerRound
  */
 contract CoinPairPriceMaxOraclesPerRoundChange is CoinPairPriceStorage, ChangeContract {
-    GovernedAbstract public coinPairPrice;
+    Governed public coinPairPrice;
     bytes public encodedData;
 
     /**
@@ -19,7 +19,7 @@ contract CoinPairPriceMaxOraclesPerRoundChange is CoinPairPriceStorage, ChangeCo
       @param _coinPairPrice Address of coin pair price to upgrade
       @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
     */
-    constructor(GovernedAbstract _coinPairPrice, uint256 _maxOraclesPerRound) public {
+    constructor(Governed _coinPairPrice, uint256 _maxOraclesPerRound) public {
         coinPairPrice = _coinPairPrice;
         encodedData = abi.encode(_maxOraclesPerRound);
     }

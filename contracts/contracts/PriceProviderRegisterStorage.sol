@@ -3,13 +3,14 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
-import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";
 import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
 
 /// @title A registry for the coin pair prices, this is more general than OracleManager that stores
 /// only the coin pairs that are published by oracles.
-contract PriceProviderRegisterStorage is Initializable, GovernedAbstract {
+contract PriceProviderRegisterStorage is Initializable, Governed {
     using SafeMath for uint256;
     using CoinPairRegisterLib for CoinPairRegisterLib.CoinPairRegisterData;
 

@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
-import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 
 // Based on https://github.com/fravoll/solidity-patterns EternalStorage
-contract EternalStorageGobernanza is Initializable, GovernedAbstract {
+contract EternalStorageGobernanza is Initializable, Governed {
     struct UIntVal {
         bool b;
         uint248 v;

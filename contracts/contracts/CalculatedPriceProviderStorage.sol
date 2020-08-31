@@ -3,13 +3,13 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
-import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 import {CalculatedPriceProviderLib} from "./libs/CalculatedPriceProviderLib.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD
-contract CalculatedPriceProviderStorage is Initializable, GovernedAbstract, IIterableWhitelist {
+contract CalculatedPriceProviderStorage is Initializable, Governed, IIterableWhitelist {
     using SafeMath for uint256;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
     using CalculatedPriceProviderLib for CalculatedPriceProviderLib.CalculatedPriceProviderData;
