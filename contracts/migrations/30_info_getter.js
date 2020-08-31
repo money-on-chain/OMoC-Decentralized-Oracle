@@ -1,7 +1,6 @@
 'use strict';
 const helpers = require('./helpers');
-const {files, scripts} = require('@openzeppelin/cli');
-const Governor = artifacts.require('../moc-gobernanza/contracts/Governance/Governor.sol');
+const {scripts} = require('@openzeppelin/cli');
 
 async function deploy(config) {
     console.log('Create InfoGetter Proxy');

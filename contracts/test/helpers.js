@@ -81,7 +81,7 @@ function findEvent(logs, name) {
 }
 
 async function createGovernor(owner) {
-    const Governor = artifacts.require('Governor');
+    const Governor = artifacts.require('@moc/shared/Governor');
     const OracleManagerPairChange = artifacts.require('OracleManagerPairChange');
     const TestMOCMintChange = artifacts.require('TestMOCMintChange');
     const governor = await Governor.new();
