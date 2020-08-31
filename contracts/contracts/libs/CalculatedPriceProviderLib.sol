@@ -2,8 +2,8 @@
 pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {IPriceProvider} from "./IPriceProvider.sol";
-import {IPriceProviderRegisterEntry} from "./IPriceProviderRegisterEntry.sol";
+import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
+import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate
 /// a deduced price, for example RIFBTC and BTCUSD gives the price of RIFUSD

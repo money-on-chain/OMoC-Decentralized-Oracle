@@ -5,7 +5,7 @@ import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/Ch
 import {OracleManager} from "../OracleManager.sol";
 import {CoinPairPrice} from "../CoinPairPrice.sol";
 import {PriceProviderRegister} from "../PriceProviderRegister.sol";
-import {IPriceProviderRegisterEntry} from "../libs/IPriceProviderRegisterEntry.sol";
+import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
 
 /**
   @title UpgraderTemplate

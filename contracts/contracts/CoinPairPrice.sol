@@ -5,8 +5,8 @@ import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
-import {IPriceProvider} from "./libs/IPriceProvider.sol";
-import {IPriceProviderRegisterEntry} from "./libs/IPriceProviderRegisterEntry.sol";
+import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
+import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
 import {AddressSetLib} from "./libs/AddressSetLib.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
