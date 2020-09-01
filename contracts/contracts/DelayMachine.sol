@@ -26,8 +26,13 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     /// @notice Construct this contract.
     /// @param governor The minimum amount of tokens required as stake for a coin pair subscription.
     /// @param token the Supporters contract contract address.
-    function initialize(IGovernor governor, IERC20 token) external initializer {
+    function initialize(
+        IGovernor governor,
+        IERC20 token,
+        address source
+    ) external initializer {
         _token = token;
+        _source = source;
         Governed._initialize(governor);
     }
 
@@ -39,18 +44,17 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     function deposit(
         uint256 mocs,
         address destination,
-        address source,
         uint256 expiration
     ) external override returns (uint256 id) {
-        bool done = _token.transferFrom(source, address(this), mocs);
+        require(msg.sender == _source, "Wrong source");
+        bool done = _token.transferFrom(_source, address(this), mocs);
         require(done, "Token transfer failed.");
         _id = _id + 1;
-        payments[_id].source = source;
         payments[_id].expiration = block.timestamp + expiration;
         // solhint-disable-previous-line not-rely-on-time
         payments[_id].amount = mocs;
         owners[destination].ids.add(_id);
-        emit PaymentDeposit(_id, source, destination, mocs, expiration);
+        emit PaymentDeposit(_id, _source, destination, mocs, expiration);
         return _id;
     }
 
@@ -59,17 +63,12 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     function cancel(uint256 id) external override {
         require(owners[msg.sender].ids.contains(id), "Invalid ID");
         owners[msg.sender].ids.remove(id);
-        bool done = _token.approve(payments[id].source, payments[id].amount);
+        bool done = _token.approve(_source, payments[id].amount);
         require(done, "Token approve failed.");
-        IStakingMachine(payments[id].source).depositFrom(
-            payments[id].amount,
-            msg.sender,
-            address(this)
-        );
-        address source = payments[id].source;
+        IStakingMachine(_source).depositFrom(payments[id].amount, msg.sender, address(this));
         uint256 amount = payments[id].amount;
         delete (payments[id]);
-        emit PaymentCancel(id, source, msg.sender, amount);
+        emit PaymentCancel(id, _source, msg.sender, amount);
     }
 
     /// @notice Withdraw stake, send it to the delay machine.
@@ -81,10 +80,9 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
         // solhint-disable-previous-line not-rely-on-time
         bool done = _token.transfer(msg.sender, payments[id].amount);
         require(done, "Token transfer failed.");
-        address source = payments[id].source;
         uint256 amount = payments[id].amount;
         delete (payments[id]);
-        emit PaymentWithdraw(id, source, msg.sender, amount);
+        emit PaymentWithdraw(id, _source, msg.sender, amount);
     }
 
     /// @notice Returns the list of transaction for some account
@@ -92,7 +90,6 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     /// @return ids transaction ids
     /// @return amounts token quantity
     /// @return expirations expiration dates
-    /// @return sources source addresses
     function getTransactions(address account)
         external
         override
@@ -100,20 +97,17 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
         returns (
             uint256[] memory ids,
             uint256[] memory amounts,
-            uint256[] memory expirations,
-            address[] memory sources
+            uint256[] memory expirations
         )
     {
         uint256 len = owners[account].ids.length();
         ids = new uint256[](len);
         amounts = new uint256[](len);
         expirations = new uint256[](len);
-        sources = new address[](len);
         for (uint256 i = 0; i < len; i++) {
             ids[i] = owners[account].ids.at(i);
             amounts[i] = payments[owners[account].ids.at(i)].amount;
             expirations[i] = payments[owners[account].ids.at(i)].expiration;
-            sources[i] = payments[owners[account].ids.at(i)].source;
         }
     }
 
@@ -121,11 +115,10 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     /// @param account destination address
     /// @return balance token quantity
     function getBalance(address account) external override view returns (uint256) {
-        uint256[] memory amounts;
-        (, amounts, , ) = this.getTransactions(account);
+        uint256 len = owners[account].ids.length();
         uint256 balance;
-        for (uint256 i = 0; i < amounts.length; i++) {
-            balance = balance + amounts[i];
+        for (uint256 i = 0; i < len; i++) {
+            balance = balance + payments[owners[account].ids.at(i)].amount;
         }
         return balance;
     }

@@ -2,6 +2,7 @@
 pragma solidity 0.6.12;
 
 import {IStakingMachine} from "@moc/shared/contracts/IStakingMachine.sol";
+import {IDelayMachine} from "@moc/shared/contracts/IDelayMachine.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
@@ -9,7 +10,6 @@ import {Supporters} from "./Supporters.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {StakingStorage} from "./StakingStorage.sol";
-import {MockDelayMachine} from "./testing_mocks/MockDelayMachine.sol";
 
 contract Staking is StakingStorage, IStakingMachine {
     using SafeMath for uint256;
@@ -32,7 +32,7 @@ contract Staking is StakingStorage, IStakingMachine {
         IGovernor _governor,
         Supporters _supporters,
         OracleManager _oracleManager,
-        MockDelayMachine _delayMachine
+        IDelayMachine _delayMachine
     ) external {
         Governed._initialize(_governor);
         oracleManager = _oracleManager;

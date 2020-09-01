@@ -31,7 +31,7 @@ contract MOCKStakingMachine {
     function withdraw(uint256 _mocs, uint256 _expiration) external returns (uint256) {
         // send to delay machine
         token.approve(address(delayAddr), _mocs);
-        uint256 id = delayAddr.deposit(_mocs, destination, address(this), _expiration);
+        uint256 id = delayAddr.deposit(_mocs, destination, _expiration);
         emit PaymentDeposit(id, address(this), destination, _mocs);
         return id;
     }

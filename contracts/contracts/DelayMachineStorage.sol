@@ -15,7 +15,6 @@ contract DelayMachineStorage is Initializable, Governed {
     using EnumerableSet for EnumerableSet.UintSet;
 
     struct Payment {
-        address source;
         uint256 expiration;
         uint256 amount;
     }
@@ -26,6 +25,7 @@ contract DelayMachineStorage is Initializable, Governed {
 
     uint256 public _id;
     IERC20 public _token;
+    address public _source;
     mapping(address => Owner) internal owners;
     mapping(uint256 => Payment) internal payments;
 
