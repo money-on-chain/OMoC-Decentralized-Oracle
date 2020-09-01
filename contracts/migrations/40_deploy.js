@@ -113,7 +113,8 @@ async function deploy(config) {
     await omcall.initialize(
         config.governorAddr,
         parseInt(config.minOracleOwnerStake),
-        supporters.options.address,
+        staking.options.address,
+        [staking.options.address]
     );
 
     console.log('Initialize Mock Delay Machine', 'governor', config.governorAddr);
