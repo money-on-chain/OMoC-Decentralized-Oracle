@@ -1,17 +1,15 @@
 // Most of the functionallity is tested via Supporters.js !!!
-const {BN, expectRevert, constants, expectEvent} = require('@openzeppelin/test-helpers');
+const {BN, expectRevert, constants} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const Supporters = artifacts.require('Supporters');
 const TestMOC = artifacts.require('TestMOC');
 const MockGovernor = artifacts.require('MockGovernor');
 const helpers = require('./helpers');
 
-contract('Supporters', (accounts) => {
+contract('SupportersWhitelisted', (accounts) => {
     let supporters;
     let token;
     const period = 10;
-    const minStayBlocks = 5;
-    const afterStopBlocks = 2;
     const BALANCE_USER1 = new BN(web3.utils.toWei('1', 'ether'));
     const BALANCE_USER2 = new BN(web3.utils.toWei('1', 'ether'));
     const BALANCE_USER3 = new BN(web3.utils.toWei('1', 'ether'));
@@ -59,8 +57,6 @@ contract('Supporters', (accounts) => {
 
     describe('Subaccounts', () => {
         const INITIAL_BALANCE = BALANCE_USER1.add(BALANCE_USER1);
-        const EARNINGS = new BN(web3.utils.toWei('1', 'ether'));
-        const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS);
 
         beforeEach(async () => {
             const governor = await helpers.createGovernor(accounts[8]);
@@ -204,9 +200,7 @@ contract('Supporters', (accounts) => {
 
     describe('Governance', () => {
         beforeEach(async () => {
-            const Governor = artifacts.require('Governor');
-            this.governor = await Governor.new();
-            await this.governor.initialize(GOVERNOR_OWNER);
+            this.governor = await helpers.createGovernor(GOVERNOR_OWNER);
             this.token = await TestMOC.new();
             await this.token.initialize(this.governor.address);
             this.supporters = await Supporters.new();
@@ -225,7 +219,7 @@ contract('Supporters', (accounts) => {
             const change = await artifacts
                 .require('SupportersPeriodChange')
                 .new(this.supporters.address, 123);
-            await this.governor.executeChange(change.address, {from: GOVERNOR_OWNER});
+            await this.governor.execute(change);
             // await this.supporters.setPeriod(123, {from: GOVERNOR});
             expect(await this.supporters.period()).to.be.bignumber.equal(new BN(123));
         });

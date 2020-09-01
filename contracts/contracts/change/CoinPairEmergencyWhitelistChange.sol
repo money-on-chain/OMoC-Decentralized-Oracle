@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
-import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 
 /**
   @title CoinPairEmergencyWhitelistChange
   @notice This contract is a ChangeContract intended to be used to add an emergency publisher to the whitelist.
  */
 contract CoinPairEmergencyWhitelistChange is CoinPairPriceStorage, ChangeContract {
-    GovernedAbstract public coinPairPrice;
+    Governed public coinPairPrice;
     bytes public encodedData;
 
     /**
@@ -18,7 +18,7 @@ contract CoinPairEmergencyWhitelistChange is CoinPairPriceStorage, ChangeContrac
       @param _coinPairPrice Address of coin pair price to upgrade
       @param _emergencyPublisher The address of the publisher to whitelist
     */
-    constructor(GovernedAbstract _coinPairPrice, address _emergencyPublisher) public {
+    constructor(Governed _coinPairPrice, address _emergencyPublisher) public {
         coinPairPrice = _coinPairPrice;
         encodedData = abi.encode(_emergencyPublisher);
     }

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
-import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {SupportersStorage} from "../SupportersStorage.sol";
 
 /**
@@ -11,7 +11,7 @@ import {SupportersStorage} from "../SupportersStorage.sol";
   parameter period
  */
 contract SupportersPeriodChange is SupportersStorage, ChangeContract {
-    GovernedAbstract public supporters;
+    Governed public supporters;
     bytes public encodedData;
 
     /**
@@ -19,7 +19,7 @@ contract SupportersPeriodChange is SupportersStorage, ChangeContract {
       @param _supporters Address of supporters whitelisted contract to upgrade
       @param _period The length of the round in blocks
     */
-    constructor(GovernedAbstract _supporters, uint256 _period) public {
+    constructor(Governed _supporters, uint256 _period) public {
         supporters = _supporters;
         encodedData = abi.encode(_period);
     }

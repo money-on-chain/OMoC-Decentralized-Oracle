@@ -5,14 +5,14 @@ pragma experimental ABIEncoderV2;
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
-import {IGovernor} from "./moc-gobernanza/Governance/IGovernor.sol";
-import {Governed} from "./moc-gobernanza/Governance/Governed.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract InfoGetter is Initializable, GovernedAbstract {
+contract InfoGetter is Initializable, Governed {
     struct FullOracleRoundInfo {
         uint256 stake;
         uint256 points;

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
-import {IGovernor} from "../moc-gobernanza/Governance/IGovernor.sol";
-import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 
 /**
   @title GobernorChange
@@ -11,14 +11,14 @@ import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
  */
 contract GovernorChange is ChangeContract {
     IGovernor public newGovernor;
-    GovernedAbstract[] public governed;
+    Governed[] public governed;
 
     /**
       @notice Constructor
       @param _newGovernor New governor address
       @param _governed The list of addresses of the governed contracts
     */
-    constructor(IGovernor _newGovernor, GovernedAbstract[] memory _governed) public {
+    constructor(IGovernor _newGovernor, Governed[] memory _governed) public {
         newGovernor = _newGovernor;
         governed = _governed;
     }

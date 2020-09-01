@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
-import {GovernedAbstract} from "./libs/GovernedAbstract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 import {SupportersLib} from "./libs/SupportersLib.sol";
 
@@ -14,7 +14,7 @@ import {SupportersLib} from "./libs/SupportersLib.sol";
     This can be split in the future in two smart-contracts if we want to add a specific set
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
-contract SupportersStorage is Initializable, GovernedAbstract, IIterableWhitelist {
+contract SupportersStorage is Initializable, Governed, IIterableWhitelist {
     using SafeMath for uint256;
     using SupportersLib for SupportersLib.SupportersData;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;

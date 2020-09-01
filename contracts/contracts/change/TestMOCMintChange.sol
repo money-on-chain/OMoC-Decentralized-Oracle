@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
-import {TestMOC} from "../TestMOC.sol";
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {IMintableERC20} from "@moc/shared/contracts/IMintableERC20.sol";
 
 /**
   @title MocRegistryInitChange
   @notice This contract is a ChangeContract intended to initialize all the MOC registry values
  */
 contract TestMOCMintChange is ChangeContract {
-    TestMOC public token;
+    IMintableERC20 public token;
     address public user;
     uint256 public amount;
 
@@ -17,7 +17,7 @@ contract TestMOCMintChange is ChangeContract {
       @notice Constructor
     */
     constructor(
-        TestMOC _token,
+        IMintableERC20 _token,
         address _user,
         uint256 _amount
     ) public {

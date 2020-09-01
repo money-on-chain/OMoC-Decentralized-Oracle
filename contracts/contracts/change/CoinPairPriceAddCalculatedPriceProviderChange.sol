@@ -2,9 +2,9 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {ChangeContract} from "../moc-gobernanza/Governance/ChangeContract.sol";
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
-import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 
 //import {IterableWhitelist} from "../libs/IterableWhitelist.sol";
 
@@ -14,7 +14,7 @@ import {GovernedAbstract} from "../libs/GovernedAbstract.sol";
   in various CoinPaiPrice contracts at once.
  */
 contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceStorage, ChangeContract {
-    GovernedAbstract[] public coinPairPrices;
+    Governed[] public coinPairPrices;
     bytes public encodedData;
 
     /**
@@ -22,9 +22,7 @@ contract CoinPairPriceAddCalculatedPriceProviderChange is CoinPairPriceStorage, 
       @param _calculatedPriceProvider Address of coin pair price calculator to add to whitelists
       @param _coinPairPrices List of coinPairPrice contracts that must whitelist the _coinPairPriceCalculator Address
     */
-    constructor(address _calculatedPriceProvider, GovernedAbstract[] memory _coinPairPrices)
-        public
-    {
+    constructor(address _calculatedPriceProvider, Governed[] memory _coinPairPrices) public {
         encodedData = abi.encode(_calculatedPriceProvider);
         coinPairPrices = _coinPairPrices;
     }
