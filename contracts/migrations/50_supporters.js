@@ -11,23 +11,6 @@ async function deploy(config) {
     const info_getter_addr = info_getter.address;
     console.log('infoGetterAddr', info_getter_addr);
 
-    console.log('Deploying TestMOC');
-    await scripts.add({contractsData: [{name: 'TestMOC', alias: 'TestMOC'}]});
-    await scripts.push({
-        network: config.network,
-        txParams: {...config.txParams, gas: 3500000},
-        force: true,
-    });
-    const testMOC = await scripts.create({
-        methodName: 'initialize',
-        methodArgs: [config.governorAddr],
-        admin: config.proxyAdminAddr,
-        contractAlias: 'TestMOC',
-        network: config.network,
-        txParams: config.txParams,
-    });
-    console.log('TestMOC: ', testMOC.options.address);
-
     console.log('Create Supporters Proxy');
     await scripts.add({contractsData: [{name: 'Supporters', alias: 'Supporters'}]});
     await scripts.push({

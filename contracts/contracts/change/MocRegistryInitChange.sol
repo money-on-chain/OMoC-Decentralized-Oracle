@@ -2,14 +2,14 @@
 pragma solidity 0.6.12;
 
 import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
-import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
+import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
 
 /**
   @title MocRegistryInitChange
   @notice This contract is a ChangeContract intended to initialize all the MOC registry values
  */
 contract MocRegistryInitChange is ChangeContract {
-    EternalStorageGobernanza public registry;
+    IRegistry public registry;
     address public oracle_manager;
     address public supporters_whitelisted;
     address public info_getter;
@@ -18,7 +18,7 @@ contract MocRegistryInitChange is ChangeContract {
       @notice Constructor
     */
     constructor(
-        EternalStorageGobernanza _registry,
+        IRegistry _registry,
         address _oracle_manager,
         address _supporters_whitelisted,
         address _info_getter
@@ -60,7 +60,7 @@ contract MocRegistryInitChange is ChangeContract {
         registry.setBytes(get_keccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"020406080a");
         registry.setUint(get_keccak("ORACLE_TRIGGER_VALID_PUBLICATION_BLOCKS"), 30);
         // usable just once!!!
-        registry = EternalStorageGobernanza(0);
+        registry = IRegistry(0);
     }
 
     function get_keccak(string memory k) internal pure returns (bytes32) {
