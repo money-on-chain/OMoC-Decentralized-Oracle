@@ -1,7 +1,7 @@
 const {BN, expectRevert} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const EternalStorageGobernanza = artifacts.require('EternalStorageGobernanza');
-const MockGovernor = artifacts.require('MockGovernor');
+const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
 
 contract('EternalStorageGobernanza', async (accounts) => {
     const GOVERNOR = accounts[8];

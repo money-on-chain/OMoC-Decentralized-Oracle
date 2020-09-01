@@ -3,7 +3,7 @@ const CoinPairPrice = artifacts.require('CoinPairPrice');
 const {constants} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 const crypto = require('crypto');
-const TestMOC = artifacts.require('TestMOC');
+const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
 const Supporters = artifacts.require('Supporters');
 
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');

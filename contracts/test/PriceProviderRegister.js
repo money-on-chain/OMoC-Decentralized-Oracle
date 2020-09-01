@@ -1,5 +1,5 @@
 const PriceProviderRegister = artifacts.require('PriceProviderRegister');
-const MockGovernor = artifacts.require('MockGovernor');
+const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
 const {BN, expectEvent, expectRevert, constants} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const helpers = require('./helpers');

@@ -3,7 +3,7 @@ const {expect} = require('chai');
 const helpers = require('./helpers');
 
 const SupportersMock = artifacts.require('SupportersMock');
-const TestMOC = artifacts.require('TestMOC');
+const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
 
 contract('Supporters', (accounts) => {
     let supporters;
