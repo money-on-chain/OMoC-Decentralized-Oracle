@@ -26,6 +26,7 @@ contract OracleManager is OracleManagerStorage {
     // -------------------------------------------------------------------------------------------------------------
 
     /// @notice Construct this contract.
+    /// @param _governor The address of the contract which governs this one
     /// @param _minCPSubscriptionStake The minimum amount of tokens required as stake for a coin pair subscription.
     /// @param _stakingContract the Staking contract address.
     /// @param _wlist whitelisted contract that can call this one (usually only staking).
@@ -37,7 +38,7 @@ contract OracleManager is OracleManagerStorage {
     ) external initializer {
         require(
             address(_stakingContract) != address(0),
-            "Supporters contract address must be != 0"
+            "Staking contract address must be != 0"
         );
         require(
             _minCPSubscriptionStake > 0,
