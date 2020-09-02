@@ -185,4 +185,8 @@ contract Staking is StakingStorage, IStakingMachine {
     function isSubscribed(address ownerAddr, bytes32 coinPair) external view returns (bool) {
         return oracleManager.isSubscribed(ownerAddr, coinPair);
     }
+
+    function getMaxBalance(address[] calldata addresses) external view returns (address, uint256) {
+        return supporters.getMaxMOCBalance(address(this), addresses);
+    }
 }
