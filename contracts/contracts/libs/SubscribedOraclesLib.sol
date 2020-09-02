@@ -95,21 +95,22 @@ library SubscribedOraclesLib {
     // prettier-ignore
     function getMaxUnselectedStake(
         SubscribedOracles storage set,
-        function(address) external view returns (uint256) getStake,
+        function(address[] memory) external view returns (address, uint256) getMaxStake,
         AddressSetLib.AddressSet storage selectedOracles
-    ) internal view returns (address addr, uint256 stake) {
+    ) internal view returns (address, uint256) {
+        uint256 l = length(set);
+        l -= selectedOracles.length();
+        address[] memory unselected = new address[](l);
+        uint256 j = 0;
         for (uint256 i = 0; i < length(set); i++) {
             address c = at(set, i);
             if (selectedOracles.contains(c)) {
                 continue;
             }
-            uint256 s = getStake(c);
-            if (s > stake) {
-                addr = c;
-                stake = s;
-            }
+            unselected[j] = c;
+            j += 1;
         }
-        return (addr, stake);
+        return getMaxStake(unselected);
     }
 
     /**

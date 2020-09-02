@@ -4,6 +4,14 @@ const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const {toWei} = require('web3-utils');
 
+function makeRange(num) {
+    const r = [];
+    for (let i = 0; i < num; i += 1) {
+        r.push(i);
+    }
+    return r;
+}
+
 contract('Staking-withdraw', async (accounts) => {
     const feesAccount = accounts[1];
     const TOKEN_FEES = toWei('100', 'ether');
@@ -14,6 +22,7 @@ contract('Staking-withdraw', async (accounts) => {
     const NUM_SELECTED_ORACLES = 10;
     const NUM_ORACLES = 30;
     const MAX_ORACLES = 30;
+    const NUM_COINPAIR = 4;
 
     before(async () => {
         const contracts = await helpers.initContracts({
@@ -23,11 +32,17 @@ contract('Staking-withdraw', async (accounts) => {
         });
         Object.assign(this, contracts);
 
-        this.coinPairPrice = await helpers.initCoinpair(COINPAIR_NAME, {
-            ...contracts,
-            maxOraclesPerRound: NUM_SELECTED_ORACLES,
-            whitelist: [governorOwner],
-        });
+        const r = makeRange(NUM_COINPAIR);
+
+        this.coinPairs = [];
+        for (const i of r) {
+            const coinPair = await helpers.initCoinpair(COINPAIR_NAME + i, {
+                ...contracts,
+                maxOraclesPerRound: NUM_SELECTED_ORACLES,
+                whitelist: [governorOwner],
+            });
+            this.coinPairs.push(coinPair);
+        }
 
         await this.governor.mint(this.token.address, feesAccount, TOKEN_FEES);
 
@@ -47,7 +62,6 @@ contract('Staking-withdraw', async (accounts) => {
     });
 
     it('subscription', async () => {
-        const COINPAIR_ID = await this.coinPairPrice.coinPair();
         for (let i = 0; i < NUM_ORACLES; i += 1) {
             const oracleOwner = Object.keys(this.oracles)[i];
             const oracleName = 'oracle-' + i;
@@ -57,38 +71,27 @@ contract('Staking-withdraw', async (accounts) => {
                 from: oracleOwner,
             });
             await this.staking.deposit(oracleStake, oracleOwner, {from: oracleOwner});
-            await this.staking.subscribeToCoinPair(COINPAIR_ID, {from: oracleOwner});
+            for (const coinPair of this.coinPairs) {
+                const COINPAIR_ID = await coinPair.coinPair();
+                await this.staking.subscribeToCoinPair(COINPAIR_ID, {from: oracleOwner});
+            }
         }
 
-        const {selectedOracles} = await this.coinPairPrice.getRoundInfo();
+        const coinPair = this.coinPairs[0];
+        const {selectedOracles} = await coinPair.getRoundInfo();
         expect(selectedOracles.length).to.equal(NUM_SELECTED_ORACLES);
-
-        for (let i = 0; i < NUM_SELECTED_ORACLES; i += 1) {
-            const oracleOwner = Object.keys(this.oracles)[i];
-            const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
-            const subscribed = await this.coinPairPrice.isSubscribed(oracleOwner);
-            expect(selected).to.be.true;
-            expect(subscribed).to.be.true;
-        }
-
-        for (let i = NUM_SELECTED_ORACLES; i < NUM_ORACLES; i += 1) {
-            const oracleOwner = Object.keys(this.oracles)[i];
-            const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
-            const subscribed = await this.coinPairPrice.isSubscribed(oracleOwner);
-            expect(selected).to.be.false;
-            expect(subscribed).to.be.true;
-        }
     });
 
     it('withdraw', async () => {
+        const coinPair = this.coinPairs[0];
         const oracleOwner = Object.keys(this.oracles)[0];
-        let selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
+        let selected = await coinPair.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.true;
         await this.staking.withdraw(1, {from: oracleOwner});
-        selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
+        selected = await coinPair.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.false;
         const newSelectedOwner = Object.keys(this.oracles)[NUM_ORACLES - 1];
-        const newSelected = await this.coinPairPrice.isOracleInCurrentRound(newSelectedOwner);
+        const newSelected = await coinPair.isOracleInCurrentRound(newSelectedOwner);
         expect(newSelected).to.be.true;
     });
 });

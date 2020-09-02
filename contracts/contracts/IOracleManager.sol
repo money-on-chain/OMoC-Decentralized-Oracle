@@ -147,5 +147,7 @@ interface IOracleManager {
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
     function getCoinPairIndex(bytes32 coinPair, uint256 hint) external view returns (uint256);
 
+    function getMaxStake(address[] calldata addresses) external view returns (address, uint256);
+
     //////////////////////////////////////////////////////////////////////////////////// GETTER TO LIST COIN PAIRS END
 }

@@ -293,6 +293,10 @@ contract OracleManager is OracleManagerStorage {
         return coinPairRegisterData._getContractAddress(coinpair);
     }
 
+    function getMaxStake(address[] calldata addresses) external view returns (address, uint256) {
+        return stakingContract.getMaxBalance(addresses);
+    }
+
     /// @notice Searches a coinpair in coinPairList
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
