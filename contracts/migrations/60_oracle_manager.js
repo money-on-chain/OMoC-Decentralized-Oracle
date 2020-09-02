@@ -2,15 +2,14 @@
 const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
-    console.log('Deploying InfoGetter');
-    const infoGetter = await helpers.ozAdd('InfoGetter', {
-        methodArgs: [governor.address],
+    console.log('Deploying OraclesManager');
+    const oracleManager = await helpers.ozAdd('OracleManager', {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         network: ozParams.network,
-        txParams: {...ozParams.txParams, gas: 3000000},
+        txParams: helpers.isProduction() ? {...config.txParams, gas: 4300000} : config.txParams,
     });
-    console.log('InfoGetter: ', infoGetter.address);
+    console.log('OracleManager: ', oracleManager.address);
 }
 
 // FOR TRUFFLE
