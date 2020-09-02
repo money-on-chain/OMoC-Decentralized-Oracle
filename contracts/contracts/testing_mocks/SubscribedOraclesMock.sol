@@ -74,7 +74,10 @@ contract SubscribedOraclesMock {
     }
 
     function onWithdraw(address oracleOwnerAddr, bool _remove) public {
-        (address addr, ) = subscribedOracles.getMaxUnselectedStake(this.getStake, selectedOracles);
+        (address addr, ) = subscribedOracles.getMaxUnselectedStake(
+            this.getMaxStake,
+            selectedOracles
+        );
         if (_remove) {
             selectedOracles.remove(oracleOwnerAddr);
             selectedOracles.add(addr);
@@ -91,5 +94,20 @@ contract SubscribedOraclesMock {
 
     function getStake(address oracle) external view returns (uint256) {
         return stakes[oracle];
+    }
+
+    function getMaxStake(address[] calldata oracles) external view returns (address, uint256) {
+        if (oracles.length == 0) {
+            return (address(0x0), 0);
+        }
+        address maxAddress = oracles[0];
+        uint256 maxStake = stakes[maxAddress];
+        for (uint256 i = 1; i < oracles.length; i += 1) {
+            if (stakes[oracles[i]] > maxStake) {
+                maxAddress = oracles[i];
+                maxStake = stakes[maxAddress];
+            }
+        }
+        return (maxAddress, maxStake);
     }
 }

@@ -150,7 +150,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         // If the current balance is lower than the unselected address that has the maximum stake
         // Then the oracle is replaces
         (address addr, uint256 stake) = subscribedOracles.getMaxUnselectedStake(
-            oracleManager.getStake,
+            oracleManager.getMaxStake,
             roundInfo.selectedOracles
         );
         if (stake > oracleManager.getStake(oracleOwnerAddr)) {
