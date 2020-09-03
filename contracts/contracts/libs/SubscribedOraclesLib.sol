@@ -99,10 +99,9 @@ library SubscribedOraclesLib {
         AddressSetLib.AddressSet storage selectedOracles
     ) internal view returns (address, uint256) {
         uint256 l = length(set);
-        l -= selectedOracles.length();
         address[] memory unselected = new address[](l);
         uint256 j = 0;
-        for (uint256 i = 0; i < length(set); i++) {
+        for (uint256 i = 0; i < l; i++) {
             address c = at(set, i);
             if (selectedOracles.contains(c)) {
                 continue;

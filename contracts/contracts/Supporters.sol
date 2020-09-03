@@ -326,6 +326,9 @@ contract Supporters is SupportersStorage {
         selected = addresses[0];
         maxBalance = supportersData._getMOCBalanceAt(owner, addresses[0]);
         for (uint256 i = 1; i < addresses.length; i += 1) {
+            if (addresses[i] == address(0)) {
+                continue;
+            }
             uint256 balance = supportersData._getMOCBalanceAt(owner, addresses[i]);
             if (balance > maxBalance) {
                 maxBalance = balance;

@@ -22,8 +22,9 @@ contract('Staking-withdraw', async (accounts) => {
     const NUM_SELECTED_ORACLES = 10;
     const NUM_ORACLES = 30;
     const MAX_ORACLES = 30;
-    const NUM_COINPAIR = 4;
-
+    // Just a hack to run: for i in 1 2 3 4 5; do COINPAIRS=$i npm test test/Staking_manycoinpairs.js | grep withdraw; done
+    const NUM_COINPAIR = process.env.COINPAIRS || 4;
+    console.log('withdraw COINPAIRS', NUM_COINPAIR);
     before(async () => {
         const contracts = await helpers.initContracts({
             governorOwner,
