@@ -12,7 +12,7 @@ function makeRange(num) {
     return r;
 }
 
-contract('Staking-withdraw', async (accounts) => {
+contract('Staking-withdraw with many coin pairs', async (accounts) => {
     const feesAccount = accounts[1];
     const TOKEN_FEES = toWei('100', 'ether');
     const governorOwner = accounts[8];
