@@ -19,9 +19,9 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
     const COINPAIR_NAME = 'BTCUSD';
     const ORACLE_STAKE = toWei('1', 'ether');
     const ORACLE_FEES = toWei('1', 'ether');
-    const NUM_SELECTED_ORACLES = 10;
+    const MAX_SELECTED_ORACLES = 10;
+    const NUM_SUBSCRIBED_ORACLES = 30;
     const NUM_ORACLES = 30;
-    const MAX_ORACLES = 30;
     // Just a hack to run: for i in 1 2 3 4 5; do COINPAIRS=$i npm test test/Staking_manycoinpairs.js | grep withdraw; done
     const NUM_COINPAIR = process.env.COINPAIRS || 4;
     console.log('withdraw COINPAIRS', NUM_COINPAIR);
@@ -29,7 +29,6 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
         const contracts = await helpers.initContracts({
             governorOwner,
             minSubscriptionStake: ORACLE_STAKE,
-            maxOraclesPerRound: MAX_ORACLES,
         });
         Object.assign(this, contracts);
 
@@ -39,7 +38,8 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
         for (const i of r) {
             const coinPair = await helpers.initCoinpair(COINPAIR_NAME + i, {
                 ...contracts,
-                maxOraclesPerRound: NUM_SELECTED_ORACLES,
+                maxOraclesPerRound: MAX_SELECTED_ORACLES,
+                maxSubscribedOraclesPerRound: NUM_SUBSCRIBED_ORACLES,
                 whitelist: [governorOwner],
             });
             this.coinPairs.push(coinPair);
@@ -80,7 +80,7 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
 
         const coinPair = this.coinPairs[0];
         const {selectedOracles} = await coinPair.getRoundInfo();
-        expect(selectedOracles.length).to.equal(NUM_SELECTED_ORACLES);
+        expect(selectedOracles.length).to.equal(MAX_SELECTED_ORACLES);
     });
 
     it('withdraw', async () => {
