@@ -149,37 +149,36 @@ contract InfoGetter is Initializable, Governed {
         Return all the information needed by the ui (one call, to avoid a lot of rpc)
 
         @param _oracleManager oracleManager contract
-        @param _prevEntry The address the entry to start iterating.
+        @param _from The index to start from.
         @param _cant Number of items to return.
     */
     function getManagerUIOracleInfo(
         OracleManager _oracleManager,
-        address _prevEntry,
+        uint256 _from,
         uint256 _cant
     ) external view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
-        /*address addr;
-        if (_prevEntry == address(0)) {
-            addr = _oracleManager.getRegisteredOracleHead();
+        uint256 len = _oracleManager.getRegisteredOraclesLen();
+        if (_from >= len) {
+            return (info, nextEntry);
         }
-
+        if (_cant > (len - _from)) {
+            _cant = len - _from;
+        }
         info = new ManagerUIOracleInfo[](_cant);
-        for (
-            uint256 i = 0;
-            addr != address(0) && i < _cant;
-            addr = _oracleManager.getRegisteredOracleNext(addr)
-        ) {
-            (string memory name, uint256 stake, address owner) = _oracleManager
-                .getOracleRegistrationInfo(addr);
-            info[i] = ManagerUIOracleInfo(
-                stake,
-                _oracleManager.token().balanceOf(addr),
-                addr.balance,
-                addr,
-                owner,
-                name
-            );
+        for (uint256 i = 0; i < _cant; i++) {
+            (address ownerAddr, address oracleAddr, string memory url) = _oracleManager
+                .getRegisteredOracleAtIndex(i + _from);
+            uint256 stake = _oracleManager.getStake(ownerAddr);
+            info[i] = ManagerUIOracleInfo({
+                stake: stake,
+                mocsBalance: _oracleManager.stakingContract().mocToken().balanceOf(oracleAddr),
+                basecoinBalance: oracleAddr.balance,
+                addr: oracleAddr,
+                owner: ownerAddr,
+                name: url
+            });
         }
-        nextEntry = addr;*/
+        return (info, nextEntry);
     }
 
     /**
