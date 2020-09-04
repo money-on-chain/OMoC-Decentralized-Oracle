@@ -1,5 +1,3 @@
-/* global artifacts  */
-// const { Contracts } = require('@openzeppelin/upgrades');
 const helpers = require('@moc/shared/lib/helpers');
 
 // FOR TRUFFLE
