@@ -1,5 +1,6 @@
 'use strict';
-const helpers = require('./helpers');
+const {ConfigManager} = require('@openzeppelin/cli');
+const helpers = require('@moc/shared/lib/helpers');
 global.artifacts = artifacts;
 global.web3 = web3;
 
@@ -15,15 +16,19 @@ async function main() {
     const governorOwner = accounts[0];
 
     const TestMOCMintChange = artifacts.require('TestMOCMintChange');
-    const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
-    const testMoc = await TestMOC.deployed();
-    const Governor = artifacts.require('Governor');
-    const governor = await Governor.deployed();
+    const testMOC = await helpers.ozGetContract(
+        artifacts,
+        '@moc/shared/TestMOC',
+        '@moc/shared/IMintableERC20',
+    );
+    console.log('using TestMOC: ', testMOC.address);
+    const governor = await helpers.ozGetContract(artifacts, '@moc/shared/Governor');
+    console.log('using governor: ', governor.address);
 
-    console.log('BALANCE BEFORE:', (await testMoc.balanceOf(destination)).toString());
-    const change = await TestMOCMintChange.new(testMoc.address, destination, quantity);
+    console.log('BALANCE BEFORE:', (await testMOC.balanceOf(destination)).toString());
+    const change = await TestMOCMintChange.new(testMOC.address, destination, quantity);
     await governor.executeChange(change.address, {from: governorOwner});
-    console.log('BALANCE AFTER:', (await testMoc.balanceOf(destination)).toString());
+    console.log('BALANCE AFTER:', (await testMOC.balanceOf(destination)).toString());
 }
 
 // For truffle exec
