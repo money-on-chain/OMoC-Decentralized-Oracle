@@ -16,7 +16,7 @@ contract OracleManagerStorage is Initializable, Governed, IIterableWhitelist {
     using IterableOraclesLib for IterableOraclesLib.IterableOraclesData;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
 
-    // Whitelisted contracts that can add/remove stake in this one.
+    // Whitelisted contracts that can operate oracles in this one.
     IterableWhitelistLib.IterableWhitelistData internal iterableWhitelistData;
 
     // Coin pair register
