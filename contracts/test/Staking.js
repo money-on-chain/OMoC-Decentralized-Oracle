@@ -4,6 +4,8 @@ const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
 contract('Staking', async (accounts) => {
     const minCPSubscriptionStake = (10 ** 18).toString();
     const period = 2;
+    const secsUntilStakeRelease = 45;
+    let untilTimestampLock;
 
     before(async () => {
         const contracts = await helpers.initContracts({
@@ -60,8 +62,8 @@ contract('Staking', async (accounts) => {
                 amount: (2).toString(),
                 reward: (1).toString(),
                 mocBalanceResult: (0).toString(),
-                tokenBalanceResult: (0).toString()
-            }
+                tokenBalanceResult: (0).toString(),
+            },
         ];
         for (let i = 0; i < testValues.length; i++) {
             // Previous approve for deposit in StakingMock
@@ -75,10 +77,8 @@ contract('Staking', async (accounts) => {
 
             console.log("Check the owner's stake in mocs was deposited");
             // Check the owner's stake in mocs was deposited
-            assert.isTrue(
-                (await this.stakingMock.getBalance()).eq(new BN(testValues[i].amount)),
-            );
-            console.log("Check the internal token balance.");
+            assert.isTrue((await this.stakingMock.getBalance()).eq(new BN(testValues[i].amount)));
+            console.log('Check the internal token balance.');
             // Check the internal token balance was added.
             assert.isTrue(
                 (await this.stakingMock.getBalanceInTokens()).eq(new BN(testValues[i].amount)),
@@ -87,7 +87,7 @@ contract('Staking', async (accounts) => {
             console.log("Get Supporters's balance before reward deposit");
             // Check Supporters's balance before reward deposit
             const prevSupportersBalance = await this.token.balanceOf(this.supporters.address);
-            console.log("Transfer rewards to Supporters contract to increase moc balance in it");
+            console.log('Transfer rewards to Supporters contract to increase moc balance in it');
             // Transfer rewards to Supporters contract to increase moc balance in it
             await this.token.transfer(this.supporters.address, testValues[i].reward);
             // Call distribute to update Supporters' total moc balance
@@ -107,61 +107,55 @@ contract('Staking', async (accounts) => {
             const afterSupportersBalance = await this.token.balanceOf(this.supporters.address);
             console.log("Check Supporters's balance changed correctly");
             // Check Supporters's balance changed correctly
-            console.log("afterSupportersBalance", afterSupportersBalance.toString());
-            console.log("prevSupportersBalance", prevSupportersBalance.toString());
-            console.log("testValues[i].reward", testValues[i].reward);
+            console.log('afterSupportersBalance', afterSupportersBalance.toString());
+            console.log('prevSupportersBalance', prevSupportersBalance.toString());
+            console.log('testValues[i].reward', testValues[i].reward);
             assert.isTrue(
-                (afterSupportersBalance.sub(prevSupportersBalance)).eq(new BN(testValues[i].reward)),
+                afterSupportersBalance.sub(prevSupportersBalance).eq(new BN(testValues[i].reward)),
             );
 
-            console.log("Check delay machine previous token balance to compare later");
+            console.log('Check delay machine previous token balance to compare later');
             // Check delay machine previous token balance to compare later
             const prevDelayBalance = await this.token.balanceOf(this.delayMachine.address);
 
             const mocBalanceBeforeWithdrawal = await this.stakingMock.getBalance();
             const tokenBalanceBeforeWithdrawal = await this.stakingMock.getBalanceInTokens();
-            console.log("mocBalanceBeforeWithdrawal", mocBalanceBeforeWithdrawal.toString());
-            console.log("tokenBalanceBeforeWithdrawal", tokenBalanceBeforeWithdrawal.toString());
+            console.log('mocBalanceBeforeWithdrawal', mocBalanceBeforeWithdrawal.toString());
+            console.log('tokenBalanceBeforeWithdrawal', tokenBalanceBeforeWithdrawal.toString());
 
-            console.log("Withdraw an amount of stake taken from the list");
+            console.log('Withdraw an amount of stake taken from the list');
             // Withdraw an amount of stake taken from the list
             await this.stakingMock.withdraw(testValues[i].amount, {from: oracleData[0].owner});
 
-            console.log("Check delay machine moc balance after withdrawal");
+            console.log('Check delay machine moc balance after withdrawal');
             // Check delay machine moc balance after withdrawal
             const afterDelayBalance = await this.token.balanceOf(this.delayMachine.address);
-            console.log("Assert that delay machine received the amount withdrawn");
+            console.log('Assert that delay machine received the amount withdrawn');
             // Assert that delay machine received the amount withdrawn
-            assert.isTrue(
-                (afterDelayBalance.sub(prevDelayBalance)).eq(new BN(testValues[i].amount)),
-            );
+            assert.isTrue(afterDelayBalance.sub(prevDelayBalance).eq(new BN(testValues[i].amount)));
 
             const balanceAfterWithdrawal = await this.stakingMock.getBalance();
-            console.log("Check moc balance of user after withdrawal");
+            console.log('Check moc balance of user after withdrawal');
             // Check moc balance of user after withdrawal
-            console.log("balanceAfterWithdrawal", balanceAfterWithdrawal.toString());
-            assert.isTrue(
-                (balanceAfterWithdrawal).eq(new BN(testValues[i].mocBalanceResult)),
-            );
-            console.log("Check the internal token balance.");
+            console.log('balanceAfterWithdrawal', balanceAfterWithdrawal.toString());
+            assert.isTrue(balanceAfterWithdrawal.eq(new BN(testValues[i].mocBalanceResult)));
+            console.log('Check the internal token balance.');
             // Check the internal token balance.
             assert.isTrue(
-                (await this.stakingMock.getBalanceInTokens()).eq(new BN(testValues[i].tokenBalanceResult)),
+                (await this.stakingMock.getBalanceInTokens()).eq(
+                    new BN(testValues[i].tokenBalanceResult),
+                ),
             );
 
-            console.log("Withdraw the rest of the stake to reset it");
+            console.log('Withdraw the rest of the stake to reset it');
             // Withdraw the rest of the stake to reset it
             await this.stakingMock.withdraw(balanceAfterWithdrawal, {from: oracleData[0].owner});
             console.log("Check the owner's moc balance is 0.");
             // Check the owner's moc balance is 0.
-            assert.isTrue(
-                (await this.stakingMock.getBalance()).eq(new BN(0)),
-            );
+            assert.isTrue((await this.stakingMock.getBalance()).eq(new BN(0)));
             console.log("Check the owner's internal token balance is 0.");
             // Check the owner's internal token balance is 0.
-            assert.isTrue(
-                (await this.stakingMock.getBalanceInTokens()).eq(new BN(0)),
-            );
+            assert.isTrue((await this.stakingMock.getBalanceInTokens()).eq(new BN(0)));
         }
     });
 
@@ -259,19 +253,37 @@ contract('Staking', async (accounts) => {
         assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[2].owner));
     });
 
-    it('Should lock stake of oracle B', async () => {
-        const timestamp = Date.now() + 3600;
-        await this.staking.lockMocs(oracleData[1].owner, timestamp, {from: oracleData[1].owner});
-    });
-
-    it('Should not be able to withdraw stake of oracle B', async () => {
+    it("Should not be able to lock mocs from an address other than the voting machine's", async () => {
+        untilTimestampLock = Math.round(Date.now() / 1000) + secsUntilStakeRelease;
         await expectRevert(
-            this.staking.withdraw(oracleData[1].stake, {from: oracleData[1].owner}),
-            'Stake not available for withdrawal.',
+            this.staking.lockMocs(oracleData[1].owner, new BN(untilTimestampLock), {
+                from: oracleData[1].owner,
+            }),
+            'Address is not whitelisted',
         );
     });
 
-    it('Should not be able to withdraw stake of oracle D', async () => {
+    it('Should lock stake of oracle B', async () => {
+        untilTimestampLock = Math.round(Date.now() / 1000) + secsUntilStakeRelease;
+        await this.votingMachine.lockMocs(oracleData[1].owner, new BN(untilTimestampLock), {
+            from: oracleData[1].owner,
+        });
+    });
+
+    it('Should not be able to withdraw stake of oracle B until it is unlocked', async () => {
+        let currentTimestamp = await time.latest();
+        while (currentTimestamp < untilTimestampLock) {
+            await expectRevert(
+                this.staking.withdraw(oracleData[1].stake, {from: oracleData[1].owner}),
+                'Stake not available for withdrawal.',
+            );
+            await helpers.mineBlocks(1);
+            currentTimestamp = await time.latest();
+        }
+        await this.staking.withdraw(oracleData[1].stake, {from: oracleData[1].owner});
+    });
+
+    it('Should not be able to withdraw stake of oracle D because it has none', async () => {
         await expectRevert(
             this.staking.withdraw(oracleData[3].stake, {from: oracleData[3].owner}),
             'Stake not available for withdrawal.',
@@ -303,25 +315,19 @@ contract('Staking', async (accounts) => {
                 from: oracleData[0].owner,
             });
             // Check the owner's stake in mocs was deposited
-            assert.isTrue(
-                (await this.stakingMock.getBalance()).eq(new BN(oracleData[0].stake)),
-            );
+            assert.isTrue((await this.stakingMock.getBalance()).eq(new BN(oracleData[0].stake)));
             // Withdraw an amount of stake taken from the list
             await this.stakingMock.withdraw(withdrawAmounts[i], {from: oracleData[0].owner});
             // Check the owner's stake balance in mocs was reduced accordingly
-            const balanceAfterWithdraw = (new BN(oracleData[0].stake)).sub(new BN(withdrawAmounts[i]));
-            assert.isTrue(
-                (await this.stakingMock.getBalance()).eq(balanceAfterWithdraw),
+            const balanceAfterWithdraw = new BN(oracleData[0].stake).sub(
+                new BN(withdrawAmounts[i]),
             );
+            assert.isTrue((await this.stakingMock.getBalance()).eq(balanceAfterWithdraw));
             // Withdraw the rest of the stake to reset it
             await this.stakingMock.withdraw(balanceAfterWithdraw, {from: oracleData[0].owner});
             // Check the owner's moc and internal token balances are 0.
-            assert.isTrue(
-                (await this.stakingMock.getBalance()).eq(new BN(0)),
-            );
-            assert.isTrue(
-                (await this.stakingMock.getBalanceInTokens()).eq(new BN(0)),
-            );
+            assert.isTrue((await this.stakingMock.getBalance()).eq(new BN(0)));
+            assert.isTrue((await this.stakingMock.getBalanceInTokens()).eq(new BN(0)));
         }
     });
 });

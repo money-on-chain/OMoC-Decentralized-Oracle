@@ -29,24 +29,33 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @param _supporters the Supporters contract contract address.
     /// @param _oracleManager the Oracle Manager contract contract address.
     /// @param _delayMachine the Delay Machine contract contract address.
+    /// @param _wlistlock Initial whitelist addresses for locking mocs
     function initialize(
         IGovernor _governor,
         Supporters _supporters,
         OracleManager _oracleManager,
-        IDelayMachine _delayMachine
+        IDelayMachine _delayMachine,
+        address[] calldata _wlistlock
     ) external {
         Governed._initialize(_governor);
         oracleManager = _oracleManager;
         supporters = _supporters;
         mocToken = _supporters.mocToken();
         delayMachine = _delayMachine;
+        for (uint256 i = 0; i < _wlistlock.length; i++) {
+            iterableWhitelistDataLock._addToWhitelist(_wlistlock[i]);
+        }
     }
 
     /// @notice Used by the voting machine to lock an amount of MOCs.
     /// Delegates to the Supporters smart contract.
     /// @param mocHolder the moc holder whose mocs will be locked.
     /// @param untilTimestamp timestamp until which the mocs will be locked.
-    function lockMocs(address mocHolder, uint256 untilTimestamp) external override {
+    function lockMocs(address mocHolder, uint256 untilTimestamp)
+        external
+        override
+        onlyWhitelisted(iterableWhitelistDataLock)
+    {
         supporters.lockMocs(mocHolder, untilTimestamp);
     }
 

@@ -348,10 +348,14 @@ contract Supporters is SupportersStorage {
         address subaccount,
         uint256 tokens
     ) {
+        uint256 lockedAmount = 0;
         uint256 mocs = supportersData._tokenToMoc(tokens);
         LockingInfo storage lockedMocsInfo = lockedMocs[subaccount];
         uint256 mocBalance = supportersData._getMOCBalanceAt(user, subaccount);
-        uint256 surplus = mocBalance - lockedMocsInfo.amount;
+        if (block.timestamp < lockedMocsInfo.untilTimestamp) {
+            lockedAmount = lockedMocsInfo.amount;
+        }
+        uint256 surplus = mocBalance - lockedAmount;
         require(mocs <= surplus, "Stake not available for withdrawal.");
         _;
     }

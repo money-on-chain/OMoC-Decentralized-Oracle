@@ -6,13 +6,21 @@ import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {Supporters} from "./Supporters.sol";
 import {OracleManager} from "./OracleManager.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 
-contract StakingStorage is Initializable, Governed {
+contract StakingStorage is Initializable, Governed, IIterableWhitelist {
+    using SafeMath for uint256;
+    using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
+
     Supporters public supporters;
     OracleManager public oracleManager;
     IERC20 public mocToken;
     IDelayMachine public delayMachine;
+
+    // Whitelisted contracts that can lock stake.
+    IterableWhitelistLib.IterableWhitelistData internal iterableWhitelistDataLock;
 
     uint256 thirtyDays = 60 * 60 * 24 * 30;
 
