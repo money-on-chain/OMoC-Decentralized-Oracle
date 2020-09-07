@@ -165,7 +165,7 @@ async function initContracts({
     minSubscriptionStake = (10 ** 18).toString(),
     oracleManagerWhitelisted = [],
 }) {
-    const TestMOC = artifacts.require('TestMOC');
+    const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
     const OracleManager = artifacts.require('OracleManager');
     const Supporters = artifacts.require('Supporters');
     const Staking = artifacts.require('Staking');

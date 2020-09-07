@@ -314,6 +314,31 @@ contract Supporters is SupportersStorage {
         return supportersData._mocToToken(_mocs);
     }
 
+    function getMaxMOCBalance(address owner, address[] calldata addresses)
+        external
+        view
+        returns (address selected, uint256 maxBalance)
+    {
+        if (addresses.length == 0) {
+            return (selected, maxBalance);
+        }
+
+        selected = addresses[0];
+        maxBalance = supportersData._getMOCBalanceAt(owner, addresses[0]);
+        for (uint256 i = 1; i < addresses.length; i += 1) {
+            if (addresses[i] == address(0)) {
+                continue;
+            }
+            uint256 balance = supportersData._getMOCBalanceAt(owner, addresses[i]);
+            if (balance > maxBalance) {
+                maxBalance = balance;
+                selected = addresses[i];
+            }
+        }
+
+        return (selected, maxBalance);
+    }
+
     /**
       @notice Modifier that checks locked stake for withdrawal availability
       @dev You should use this modifier in any function that withdraws a user's stake.

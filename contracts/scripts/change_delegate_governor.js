@@ -71,7 +71,6 @@ async function main() {
     console.log('Governables to change:');
     const governableList = [];
     const contractNames = [
-        'EternalStorageGobernanza',
         'InfoGetter',
         'SupportersVested',
         'Supporters',

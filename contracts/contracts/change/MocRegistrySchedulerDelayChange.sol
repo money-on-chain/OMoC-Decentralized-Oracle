@@ -2,19 +2,19 @@
 pragma solidity 0.6.12;
 
 import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
-import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
+import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
 
 /**
     @title MocRegistrySchedulerDelayChange
     @notice This contract is a ChangeContract intended to change some MOC registry values
  */
 contract MocRegistrySchedulerDelayChange is ChangeContract {
-    EternalStorageGobernanza public registry;
+    IRegistry public registry;
 
     /**
       @notice Constructor
     */
-    constructor(EternalStorageGobernanza _registry) public {
+    constructor(IRegistry _registry) public {
         registry = _registry;
     }
 

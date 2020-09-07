@@ -4,7 +4,7 @@ const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 const ethers = require('ethers');
 const crypto = require('crypto');
-const TestMOC = artifacts.require('TestMOC');
+const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
 const Supporters = artifacts.require('Supporters');
 
 const ORACLE_QUANTITY = 40;

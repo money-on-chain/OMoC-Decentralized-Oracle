@@ -6,8 +6,7 @@ import {AddressSetLib} from "./AddressSetLib.sol";
 /**
   @dev An iterable mapping of addresses to boolean, used to check if an address is whitelisted.
  */
-
-interface IIterableWhitelist {
+contract IIterableWhitelist {
     /**
       @notice Modifier that protects the function
       @dev You should use this modifier in any function that should be filtered by the whitelist

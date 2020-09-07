@@ -2,14 +2,16 @@
 pragma solidity 0.6.12;
 
 import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
-import {EternalStorageGobernanza} from "../EternalStorageGobernanza.sol";
+import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+import {RegistryConstants} from "@moc/shared/contracts/RegistryConstants.sol";
 
 /**
   @title MocRegistryInitChange
   @notice This contract is a ChangeContract intended to initialize all the MOC registry values
  */
 contract MocRegistryInitChange is ChangeContract {
-    EternalStorageGobernanza public registry;
+    IRegistry public registry;
+    address public delay_machine;
     address public oracle_manager;
     address public supporters_whitelisted;
     address public info_getter;
@@ -18,12 +20,14 @@ contract MocRegistryInitChange is ChangeContract {
       @notice Constructor
     */
     constructor(
-        EternalStorageGobernanza _registry,
+        IRegistry _registry,
+        address _delay_machine,
         address _oracle_manager,
         address _supporters_whitelisted,
         address _info_getter
     ) public {
         registry = _registry;
+        delay_machine = _delay_machine;
         oracle_manager = _oracle_manager;
         supporters_whitelisted = _supporters_whitelisted;
         info_getter = _info_getter;
@@ -37,6 +41,7 @@ contract MocRegistryInitChange is ChangeContract {
     function execute() external override {
         require(address(registry) != address(0), "Use once");
 
+        registry.setAddress(get_keccak("MOC_DELAY_MACHINE"), delay_machine);
         registry.setAddress(get_keccak("ORACLE_MANAGER_ADDR"), oracle_manager);
         registry.setAddress(get_keccak("SUPPORTERS_ADDR"), supporters_whitelisted);
         registry.setAddress(get_keccak("INFO_ADDR"), info_getter);
@@ -60,7 +65,7 @@ contract MocRegistryInitChange is ChangeContract {
         registry.setBytes(get_keccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"020406080a");
         registry.setUint(get_keccak("ORACLE_TRIGGER_VALID_PUBLICATION_BLOCKS"), 30);
         // usable just once!!!
-        registry = EternalStorageGobernanza(0);
+        registry = IRegistry(0);
     }
 
     function get_keccak(string memory k) internal pure returns (bytes32) {

@@ -2,8 +2,8 @@
 const {BN, expectRevert, constants} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const Supporters = artifacts.require('Supporters');
-const TestMOC = artifacts.require('TestMOC');
-const MockGovernor = artifacts.require('MockGovernor');
+const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
+const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
 const helpers = require('./helpers');
 
 contract('SupportersWhitelisted', (accounts) => {

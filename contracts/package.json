@@ -43,7 +43,7 @@
         "rsk_regtest": "truffle migrate --network rsk_regtest",
         "test_rsk": "truffle test --network rsk_testnet",
         "test": "truffle test",
-        "coverage": "truffle run coverage",
+        "coverage": "rimraf .openzeppelin ./build/contracts ./coverage && truffle run coverage",
         "prettier": "prettier --write *.{json,js} migrations/**/*.js test/**/*.js contracts/**/*.sol contracts/*.sol",
         "lint:solidity": "solhint -f table  contracts/**/*.sol contracts/*.sol",
         "lint:js": "eslint *.js migrations/**/*.js test/**/*.js",

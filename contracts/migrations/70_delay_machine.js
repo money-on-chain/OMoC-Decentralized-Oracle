@@ -2,15 +2,14 @@
 const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
-    console.log('Deploying InfoGetter');
-    const infoGetter = await helpers.ozAdd('InfoGetter', {
-        methodArgs: [governor.address],
+    console.log('Create DelayMachine');
+    const delayMachine = await helpers.ozAdd('DelayMachine', {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         network: ozParams.network,
-        txParams: {...ozParams.txParams, gas: 3000000},
+        txParams: helpers.isProduction() ? {...config.txParams, gas: 1800000} : config.txParams,
     });
-    console.log('InfoGetter: ', infoGetter.address);
+    console.log('DelayMachine: ', delayMachine.address);
 }
 
 // FOR TRUFFLE

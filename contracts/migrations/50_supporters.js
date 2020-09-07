@@ -2,15 +2,14 @@
 const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
-    console.log('Deploying InfoGetter');
-    const infoGetter = await helpers.ozAdd('InfoGetter', {
-        methodArgs: [governor.address],
+    console.log('Deploying Supporters');
+    const supporters = await helpers.ozAdd('Supporters', {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         network: ozParams.network,
-        txParams: {...ozParams.txParams, gas: 3000000},
+        txParams: {...ozParams.txParams, gas: 3500000},
     });
-    console.log('InfoGetter: ', infoGetter.address);
+    console.log('Supporters: ', supporters.address, 'Initialization still missing!!!');
 }
 
 // FOR TRUFFLE
