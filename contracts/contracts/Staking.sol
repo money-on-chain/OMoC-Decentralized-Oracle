@@ -25,6 +25,7 @@ contract Staking is StakingStorage, IStakingMachine {
     // -----------------------------------------------------------------------
 
     /// @notice Construct this contract.
+    /// @param _governor The address of the contract which governs this one
     /// @param _supporters the Supporters contract contract address.
     /// @param _oracleManager the Oracle Manager contract contract address.
     /// @param _delayMachine the Delay Machine contract contract address.

@@ -171,6 +171,7 @@ async function initContracts({
     const Staking = artifacts.require('Staking');
     // const CoinPairPrice = artifacts.require('CoinPairPrice');
     const MockDelayMachine = artifacts.require('MockDelayMachine');
+    const StakingMock = artifacts.require('StakingMock');
 
     const governor = await createGovernor(governorOwner);
     const token = await TestMOC.new();
@@ -180,6 +181,7 @@ async function initContracts({
     const delayMachine = await MockDelayMachine.new();
     await delayMachine.initialize(governor.address, token.address);
     const staking = await Staking.new();
+    const stakingMock = await StakingMock.new();
 
     await supporters.initialize(
         governor.address,
@@ -195,6 +197,10 @@ async function initContracts({
         oracleMgr.address,
         delayMachine.address,
     );
+    await stakingMock.initialize(
+        staking.address,
+        supporters.address
+    );
 
     return {
         governor,
@@ -203,6 +209,7 @@ async function initContracts({
         supporters,
         delayMachine,
         staking,
+        stakingMock
     };
 }
 
