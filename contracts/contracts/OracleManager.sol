@@ -36,10 +36,7 @@ contract OracleManager is OracleManagerStorage {
         Staking _stakingContract,
         address[] calldata _wlist
     ) external initializer {
-        require(
-            address(_stakingContract) != address(0),
-            "Staking contract address must be != 0"
-        );
+        require(address(_stakingContract) != address(0), "Staking contract address must be != 0");
         require(
             _minCPSubscriptionStake > 0,
             "The minimum coin pair subscription stake amount cannot be zero"

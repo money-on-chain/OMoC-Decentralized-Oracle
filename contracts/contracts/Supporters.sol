@@ -74,7 +74,10 @@ contract Supporters is SupportersStorage {
     /// @notice Used by the voting machine to lock an amount of MOCs.
     /// @param mocHolder the moc holder whose mocs will be locked.
     /// @param untilTimestamp timestamp until which the mocs will be locked.
-    function lockMocs(address mocHolder, uint256 untilTimestamp) external {
+    function lockMocs(address mocHolder, uint256 untilTimestamp)
+        external
+        onlyWhitelisted(iterableWhitelistData)
+    {
         LockingInfo storage lockedMocsInfo = lockedMocs[mocHolder];
         lockedMocsInfo.untilTimestamp = untilTimestamp;
         uint256 mocBalance = supportersData._getMOCBalanceAt(msg.sender, mocHolder);
