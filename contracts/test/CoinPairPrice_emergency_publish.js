@@ -4,7 +4,7 @@ const {expect} = require('chai');
 const {expectRevert, BN} = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
-contract('[ @skip-on-coverage ] CoinPairPrice Emergency Publish', async (accounts) => {
+contract('CoinPairPrice Emergency Publish', async (accounts) => {
     const EMERGENCY_PUBLISHER = accounts[2];
     const emergencyPublishingPeriodInBlocks = 20;
     const minSubscriptionStake = (10 ** 18).toString();

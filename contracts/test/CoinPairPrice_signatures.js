@@ -76,7 +76,7 @@ const TESTS_TO_RUN = [
         ],
     },
 ];
-contract('[ @skip-on-coverage ] CoinPairPrice Signature', async (accounts) => {
+contract('CoinPairPrice Signature', async (accounts) => {
     const feeSourceAccount = accounts[0];
     let ORACLE_DATA;
     before(() => {
