@@ -8,11 +8,14 @@ async function deploy({config, ozParams, governor}) {
     const delayMachineAddr = helpers.ozGetAddr('DelayMachine', ozParams);
     const stakingMachineAddr = helpers.ozGetAddr('Staking', ozParams);
     const stakingMachine = await artifacts.require('Staking').at(stakingMachineAddr);
+    // TODO: The whitelist needs tha address of the VotingMachine.
+    const iterableWhitelistDataLock = [];
     await stakingMachine.initialize(
         governor.address,
         supportersAddr,
         oracleManagerAddr,
         delayMachineAddr,
+        iterableWhitelistDataLock,
     );
 }
 
