@@ -1,5 +1,6 @@
 const helpers = require('./helpers');
 const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
+const {expect} = require('chai');
 
 contract('Staking', async (accounts) => {
     const minCPSubscriptionStake = (10 ** 18).toString();
@@ -265,9 +266,12 @@ contract('Staking', async (accounts) => {
 
     it('Should lock stake of oracle B', async () => {
         untilTimestampLock = Math.round(Date.now() / 1000) + secsUntilStakeRelease;
+        const balance = await this.staking.getBalance(oracleData[1].owner);
         await this.votingMachine.lockMocs(oracleData[1].owner, new BN(untilTimestampLock), {
             from: oracleData[1].owner,
         });
+        const locked = await this.staking.getLockedBalance(oracleData[1].owner);
+        expect(locked).to.be.bignumber.equal(balance);
     });
 
     it('Should not be able to withdraw stake of oracle B until it is unlocked', async () => {

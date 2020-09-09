@@ -2,6 +2,7 @@ const helpers = require('./helpers');
 const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 const {ZERO_ADDRESS} = require('@openzeppelin/test-helpers/src/constants');
+const {expect} = require('chai');
 
 contract('CoinPairPrice', async (accounts) => {
     const feeSourceAccount = accounts[0];
@@ -26,6 +27,11 @@ contract('CoinPairPrice', async (accounts) => {
         await this.governor.mint(this.token.address, accounts[4], '800000000000000000000');
         await this.governor.mint(this.token.address, accounts[6], '800000000000000000000');
         await this.governor.mint(this.token.address, accounts[8], '800000000000000000000');
+
+        const providerType = await this.coinPairPrice.getPriceProviderType();
+        expect(providerType).to.be.bignumber.equal(new BN(1));
+        const roundLockPeriod = await this.coinPairPrice.roundLockPeriodSecs();
+        expect(roundLockPeriod).to.be.bignumber.equal(new BN(60));
     });
 
     const oracleData = [
@@ -54,6 +60,14 @@ contract('CoinPairPrice', async (accounts) => {
             owner: accounts[8],
         },
     ];
+
+    it('Only Oracle manager can call subscribe', async () => {
+        await expectRevert(
+            this.coinPairPrice.subscribe(oracleData[0].account, {from: accounts[3]}),
+            'Must be called from Oracle manager',
+        );
+    });
+
     it('Should register Oracles A, B, C', async () => {
         const initialBalance1 = await this.token.balanceOf(oracleData[0].owner);
         const initialBalance2 = await this.token.balanceOf(oracleData[1].owner);
@@ -307,13 +321,6 @@ contract('CoinPairPrice', async (accounts) => {
         );
     });
 
-    it('Should fail to switch to new round before lock period expiration', async () => {
-        await time.advanceBlock(); // Just advance ONE block
-        await expectRevert(
-            this.coinPairPrice.switchRound(),
-            ' The current round lock period is active',
-        );
-    });
     it.skip('Should fail to publish price if some signer is not subscribed. NOT TRUE ANYMORE', async () => {
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
@@ -956,6 +963,14 @@ contract('CoinPairPrice', async (accounts) => {
         assert.equal(
             postFeeBalance.toString(),
             BN(sourceBalance).sub(expectTotalReward).toString(),
+        );
+    });
+
+    it('Should fail to switch to new round before lock period expiration', async () => {
+        await time.advanceBlock(); // Just advance ONE block
+        await expectRevert(
+            this.coinPairPrice.switchRound(),
+            'The current round lock period is active',
         );
     });
 
