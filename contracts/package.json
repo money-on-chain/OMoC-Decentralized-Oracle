@@ -4,7 +4,7 @@
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
-        "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#master",
+        "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#deploy",
         "@openzeppelin/contracts-ethereum-package": "^3.0.0"
     },
     "devDependencies": {
