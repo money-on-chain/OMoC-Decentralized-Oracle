@@ -3,7 +3,7 @@ const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
     console.log('Deploying Supporters');
-    const supporters = await helpers.ozAdd('Supporters', {
+    const supporters = await helpers.ozAdd('@moc/oracles/Supporters', {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         network: ozParams.network,

@@ -2,11 +2,11 @@
 const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
-    const oracleManagerAddr = await helpers.ozGetAddr('OracleManager', ozParams);
+    const oracleManagerAddr = await helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
     console.log('oracleManagerAddr', oracleManagerAddr);
 
     console.log('Create PriceProviderRegister');
-    const priceProviderRegister = await helpers.ozAdd('PriceProviderRegister', {
+    const priceProviderRegister = await helpers.ozAdd('@moc/oracles/PriceProviderRegister', {
         methodArgs: [governor.address],
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
@@ -16,7 +16,9 @@ async function deploy({config, ozParams, governor}) {
     console.log('PriceProviderRegister: ', priceProviderRegister.address);
 
     console.log('Register the OracleManager coinpairs in price provider register by gobernanza');
-    const ChangeContract = artifacts.require('PriceProviderOracleManagerRegisterPairChange');
+    const ChangeContract = artifacts.require(
+        '@moc/oracles/PriceProviderOracleManagerRegisterPairChange',
+    );
     const change = await ChangeContract.new(priceProviderRegister.address, oracleManagerAddr);
     await governor.executeChange(change.address);
 }

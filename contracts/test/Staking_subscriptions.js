@@ -54,7 +54,9 @@ contract('Staking-subscriptions', async (accounts) => {
             await this.staking.registerOracle(this.oracles[oracleOwner], oracleName, {
                 from: oracleOwner,
             });
-            await this.staking.depositFrom(oracleStake, oracleOwner, mocAccount, {from: mocAccount});
+            await this.staking.depositFrom(oracleStake, oracleOwner, mocAccount, {
+                from: mocAccount,
+            });
         }
 
         const COINPAIR_ID = await this.coinPairPrice.coinPair();
@@ -107,7 +109,9 @@ contract('Staking-subscriptions', async (accounts) => {
         const newURL = 'https://example.org/newURL';
         expect(oldURL).to.not.equal(newURL);
         await this.staking.setOracleName(newURL, {from: oracleOwner});
-        const {internetName: updatedURL} = await this.oracleMgr.getOracleRegistrationInfo(oracleOwner);
+        const {internetName: updatedURL} = await this.oracleMgr.getOracleRegistrationInfo(
+            oracleOwner,
+        );
         expect(updatedURL).to.equal(newURL);
     });
 });

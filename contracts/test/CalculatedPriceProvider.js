@@ -8,7 +8,13 @@ const ethers = require('ethers');
 contract('CalculatedPriceProvider', async (accounts) => {
     const GOVERNOR = accounts[8];
 
-    async function constructCalculatedPriceProvider(multiplicator, multiplyBy, divisor, divideBy, whitelist = []) {
+    async function constructCalculatedPriceProvider(
+        multiplicator,
+        multiplyBy,
+        divisor,
+        divideBy,
+        whitelist = [],
+    ) {
         const governor = await MockGovernor.new(GOVERNOR);
         const ret = await CalculatedPriceProvider.new();
         await ret.initialize(
@@ -114,7 +120,13 @@ contract('CalculatedPriceProvider', async (accounts) => {
 
     it('Whitelist manipulation', async () => {
         const whitelist = [helpers.ADDRESS_ONE, accounts[1]];
-        const calculatedPriceProvider = await constructCalculatedPriceProvider(1, [], 1, [], whitelist);
+        const calculatedPriceProvider = await constructCalculatedPriceProvider(
+            1,
+            [],
+            1,
+            [],
+            whitelist,
+        );
 
         const length = await calculatedPriceProvider.getWhiteListLen();
         expect(length).to.be.bignumber.equal(new BN(2));
@@ -126,7 +138,10 @@ contract('CalculatedPriceProvider', async (accounts) => {
 
         expect(await calculatedPriceProvider.getWhiteListLen()).to.be.bignumber.equal(new BN(3));
 
-        await expectRevert(calculatedPriceProvider.removeFromWhitelist(accounts[1]), 'Invalid changer');
+        await expectRevert(
+            calculatedPriceProvider.removeFromWhitelist(accounts[1]),
+            'Invalid changer',
+        );
         await calculatedPriceProvider.removeFromWhitelist(accounts[1], {from: GOVERNOR});
 
         expect(await calculatedPriceProvider.getWhiteListLen()).to.be.bignumber.equal(new BN(2));

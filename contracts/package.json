@@ -1,5 +1,5 @@
 {
-    "name": "moc-oraculos",
+    "name": "@moc/oracles",
     "version": "1.0.0",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",

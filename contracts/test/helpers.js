@@ -259,7 +259,7 @@ async function publishPrice({coinPairPrice, coinPairName, price, oracle, signers
         ss,
         {from: oracle},
     );
-};
+}
 
 module.exports = {
     ADDRESS_ONE,

@@ -6,7 +6,7 @@ async function deploy({config, ozParams, governor}) {
     const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
 
     console.log('Deploy a CoinPairPriceFree for', coin);
-    const coinPairPriceFree = await helpers.ozAdd('CoinPairPriceFree', {
+    const coinPairPriceFree = await helpers.ozAdd('@moc/oracles/CoinPairPriceFree', {
         contractAlias: 'CoinPairPriceFree_' + coin,
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
@@ -14,9 +14,12 @@ async function deploy({config, ozParams, governor}) {
     });
     console.log('coinPairPriceFree: ', coinPairPriceFree.address, 'for coin', coin);
 
-    const priceProviderRegisterAddr = await helpers.ozGetAddr('PriceProviderRegister', ozParams);
+    const priceProviderRegisterAddr = await helpers.ozGetAddr(
+        '@moc/oracles/PriceProviderRegister',
+        ozParams,
+    );
     const priceProviderRegister = await artifacts
-        .require('PriceProviderRegister')
+        .require('@moc/oracles/PriceProviderRegister')
         .at(priceProviderRegisterAddr);
     console.log('priceProviderRegisterAddr', priceProviderRegisterAddr);
 
@@ -36,7 +39,7 @@ async function deploy({config, ozParams, governor}) {
     console.log('coinPairPrice multiply', baseMultiplicator, multiplyByPairs, multiplyBy);
     console.log('coinPairPrice divide', baseDivisor, divideByPairs, divideBy);
 
-    const calculatedPriceProvider = await helpers.ozAdd('CalculatedPriceProvider', {
+    const calculatedPriceProvider = await helpers.ozAdd('@moc/oracles/CalculatedPriceProvider', {
         methodArgs: [
             governor.address,
             [coinPairPriceFree.address],
@@ -53,7 +56,7 @@ async function deploy({config, ozParams, governor}) {
     console.log('calculatedPriceProvider: ', calculatedPriceProvider.address);
 
     console.log('Initialize coinpair price free for', coin);
-    const CoinPairPriceFree = artifacts.require('CoinPairPriceFree');
+    const CoinPairPriceFree = artifacts.require('@moc/oracles/CoinPairPriceFree');
     const cpfcall = await CoinPairPriceFree.at(coinPairPriceFree.address);
     await cpfcall.initialize(calculatedPriceProvider.address);
 
@@ -77,7 +80,9 @@ async function deploy({config, ozParams, governor}) {
     await governor.executeChange(change1.address);
 
     console.log('Register coin', coin, 'via governor', config.governorAddr);
-    const PriceProviderRegisterPairChange = artifacts.require('PriceProviderRegisterPairChange');
+    const PriceProviderRegisterPairChange = artifacts.require(
+        '@moc/oracles/PriceProviderRegisterPairChange',
+    );
     const change2 = await PriceProviderRegisterPairChange.new(
         priceProviderRegisterAddr,
         coinPair,

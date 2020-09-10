@@ -2,17 +2,17 @@
 const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
-    const CoinPairPriceFree = artifacts.require('CoinPairPriceFree');
-    const OracleManagerPairChange = artifacts.require('OracleManagerPairChange');
-    const testMOCAddr = helpers.ozGetAddr('TestMOC', ozParams);
-    const infoGetterAddr = helpers.ozGetAddr('InfoGetter', ozParams);
-    const oracleManagerAddr = helpers.ozGetAddr('OracleManager', ozParams);
+    const CoinPairPriceFree = artifacts.require('@moc/oracles/CoinPairPriceFree');
+    const OracleManagerPairChange = artifacts.require('@moc/oracles/OracleManagerPairChange');
+    const testMOCAddr = helpers.ozGetAddr('@moc/shared/TestMOC', ozParams);
+    const infoGetterAddr = helpers.ozGetAddr('@moc/oracles/InfoGetter', ozParams);
+    const oracleManagerAddr = helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
     const proxyAdmin = await helpers.getProxyAdmin(config, ozParams);
 
     for (const coin of Object.keys(config.stakingMachine.coinPairs)) {
         const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
         const coinData = config.stakingMachine.coinPairs[coin];
-        const coinPairPriceFree = await helpers.ozAdd('CoinPairPriceFree', {
+        const coinPairPriceFree = await helpers.ozAdd('@moc/oracles/CoinPairPriceFree', {
             contractAlias: 'CoinPairPriceFree_' + coin,
             admin: proxyAdmin,
             force: true,
@@ -20,7 +20,7 @@ async function deploy({config, ozParams, governor}) {
         });
         console.log('coinPairPriceFree: ', coinPairPriceFree.address, 'for coin', coin);
 
-        const coinPairPrice = await helpers.ozAdd('CoinPairPrice', {
+        const coinPairPrice = await helpers.ozAdd('@moc/oracles/CoinPairPrice', {
             methodArgs: [
                 governor.address,
                 [coinPairPriceFree.address, infoGetterAddr],

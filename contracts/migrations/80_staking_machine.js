@@ -3,7 +3,7 @@ const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
     console.log('Create StakingMachine');
-    const stakingMachine = await helpers.ozAdd('Staking', {
+    const stakingMachine = await helpers.ozAdd('@moc/oracles/Staking', {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         ...ozParams,

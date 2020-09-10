@@ -110,7 +110,7 @@ contract('Staking-withdraw', async (accounts) => {
             coinPairPrice: this.coinPairPrice,
             coinPairName: COINPAIR_NAME,
             price: (10 ** 18).toString(),
-            oracle: this.oracles[oracleOwner], 
+            oracle: this.oracles[oracleOwner],
             signers,
         });
 
@@ -144,7 +144,7 @@ contract('Staking-withdraw', async (accounts) => {
             coinPairPrice: this.coinPairPrice,
             coinPairName: COINPAIR_NAME,
             price: (10 ** 18).toString(),
-            oracle: this.oracles[newOracleOwner], 
+            oracle: this.oracles[newOracleOwner],
             signers,
         });
 
