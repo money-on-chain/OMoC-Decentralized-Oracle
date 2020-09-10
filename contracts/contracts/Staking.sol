@@ -64,11 +64,7 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @param mocs token quantity
     /// @param destination the destination account of this deposit.
     function deposit(uint256 mocs, address destination) external override {
-        // Transfer stake [should be approved by owner first]
-        require(mocToken.transferFrom(msg.sender, address(this), mocs), "error in transferFrom");
-        // Stake at Supporters contract
-        require(mocToken.approve(address(supporters), mocs), "error in approve");
-        supporters.stakeAtFrom(mocs, destination, address(this));
+        depositFrom(mocs, destination, msg.sender);
     }
 
     /// @notice Accept a deposit from an account.
@@ -80,7 +76,15 @@ contract Staking is StakingStorage, IStakingMachine {
         uint256 mocs,
         address destination,
         address source
-    ) external override {
+    ) public override {
+        // This operation is to take into account that the user can only operate with multiples of the token price
+        // the check mocs!=tokens is to capture the situation in which there are no tokens or mocs in the system.
+        // if the token price is 1 moc its ok to deposit or withdraw any amount.
+        //        uint256 tokens = supporters.mocToToken(mocs);
+        //        if (mocs != tokens) {
+        //            mocs = supporters.tokenToMoc(tokens);
+        //        }
+        //        require(mocs > 0, "not enough MOCs");
         // Transfer stake [should be approved by owner first]
         require(mocToken.transferFrom(source, address(this), mocs), "error in transferFrom");
         // Stake at Supporters contract
@@ -97,6 +101,15 @@ contract Staking is StakingStorage, IStakingMachine {
         require(mocToken.approve(address(delayMachine), mocs), "error in approve");
         uint256 expiration = oracleManager.onWithdraw(msg.sender);
         delayMachine.deposit(mocs, msg.sender, expiration);
+    }
+
+    /// @notice Get the value of the token, withdraw and deposit can be done only in multiples of the token value.
+    function totalMoc() external view returns (uint256) {
+        return supporters.totalMoc();
+    }
+
+    function totalToken() external view returns (uint256) {
+        return supporters.totalToken();
     }
 
     /// @notice Reports the balance of MOCs for a specific user.

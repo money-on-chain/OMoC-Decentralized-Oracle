@@ -317,6 +317,26 @@ contract Supporters is SupportersStorage {
         return supportersData._mocToToken(_mocs);
     }
 
+    /**
+      Convert amount tokens to equivalent in MOCS
+
+      @param _token Amount of tokens
+      @return Equivalent amount of tokens
+    */
+    function tokenToMoc(uint256 _token) external view returns (uint256) {
+        return supportersData._tokenToMoc(_token);
+    }
+
+    // @notice total amount of mocs inside the supporters contract
+    function totalMoc() external view returns (uint256) {
+        return supportersData._getAvailableMOC();
+    }
+
+    // @notice total amount of tokens inside the supporters contect.
+    function totalToken() external view returns (uint256) {
+        return supportersData._getTokens();
+    }
+
     function getMaxMOCBalance(address owner, address[] calldata addresses)
         external
         view
