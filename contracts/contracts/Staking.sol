@@ -89,10 +89,10 @@ contract Staking is StakingStorage, IStakingMachine {
     }
 
     /// @notice Withdraw stake, send it to the delay machine.
-    /// @param mocs token quantity
-    function withdraw(uint256 mocs) external override {
-        uint256 tokens = supporters.mocToToken(mocs);
-        supporters.withdrawFromTo(tokens, msg.sender, address(this));
+    /// @param _mocs token quantity
+    function withdraw(uint256 _mocs) external override {
+        uint256 tokens = supporters.mocToToken(_mocs);
+        uint256 mocs = supporters.withdrawFromTo(tokens, msg.sender, address(this));
         // Approve stake transfer for Delay Machine contract
         require(mocToken.approve(address(delayMachine), mocs), "error in approve");
         uint256 expiration = oracleManager.onWithdraw(msg.sender);
