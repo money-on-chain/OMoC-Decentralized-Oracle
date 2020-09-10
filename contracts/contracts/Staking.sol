@@ -117,6 +117,27 @@ contract Staking is StakingStorage, IStakingMachine {
     //   Oracles
     // -----------------------------------------------------------------------
 
+    /// @notice Returns the amount of owners registered.
+    /// Delegates to the Oracle Manager smart contract.
+    function getRegisteredOraclesLen() external view returns (uint256) {
+        return oracleManager.getRegisteredOraclesLen();
+    }
+
+    /// @notice Returns the oracle name and address at index.
+    /// Delegates to the Oracle Manager smart contract.
+    /// @param idx index to query.
+    function getRegisteredOracleAtIndex(uint256 idx)
+        external
+        view
+        returns (
+            address ownerAddr,
+            address oracleAddr,
+            string memory url
+        )
+    {
+        return oracleManager.getRegisteredOracleAtIndex(idx);
+    }
+
     /// @notice Set an oracle's name (url) and address.
     /// Delegates to the Oracle Manager smart contract.
     /// @param oracleAddr address of the oracle (from which we publish prices)
