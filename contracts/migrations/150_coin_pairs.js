@@ -1,5 +1,6 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
+const Web3 = require('web3');
 
 async function deploy({config, ozParams, governor}) {
     const CoinPairPriceFree = artifacts.require('@moc/oracles/CoinPairPriceFree');
@@ -10,7 +11,7 @@ async function deploy({config, ozParams, governor}) {
     const proxyAdmin = await helpers.getProxyAdmin(config, ozParams);
 
     for (const coin of Object.keys(config.stakingMachine.coinPairs)) {
-        const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
+        const coinPair = Web3.utils.asciiToHex(coin).padEnd(66, '0');
         const coinData = config.stakingMachine.coinPairs[coin];
         const coinPairPriceFree = await helpers.ozAdd('@moc/oracles/CoinPairPriceFree', {
             contractAlias: 'CoinPairPriceFree_' + coin,

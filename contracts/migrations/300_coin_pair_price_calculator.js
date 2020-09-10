@@ -1,9 +1,10 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
+const Web3 = require('web3');
 
 async function deploy({config, ozParams, governor}) {
     const coin = 'RIFUSD';
-    const coinPair = web3.utils.asciiToHex(coin).padEnd(66, '0');
+    const coinPair = Web3.utils.asciiToHex(coin).padEnd(66, '0');
 
     console.log('Deploy a CoinPairPriceFree for', coin);
     const coinPairPriceFree = await helpers.ozAdd('@moc/oracles/CoinPairPriceFree', {
@@ -25,16 +26,16 @@ async function deploy({config, ozParams, governor}) {
 
     console.log('Deploying CalculatedPriceProvider');
     const baseMultiplicator = '1';
-    const baseDivisor = web3.utils.toBN(10 ** 18).toString();
+    const baseDivisor = Web3.utils.toBN(10 ** 18).toString();
     const multiplyByPairs = ['BTCUSD', 'RIFBTC'];
     const divideByPairs = [];
     const multiplyBy = await Promise.all(
         multiplyByPairs.map((x) =>
-            priceProviderRegister.getContractAddress(web3.utils.fromAscii(x)),
+            priceProviderRegister.getContractAddress(Web3.utils.fromAscii(x)),
         ),
     );
     const divideBy = await Promise.all(
-        divideByPairs.map((x) => priceProviderRegister.getContractAddress(web3.utils.fromAscii(x))),
+        divideByPairs.map((x) => priceProviderRegister.getContractAddress(Web3.utils.fromAscii(x))),
     );
     console.log('coinPairPrice multiply', baseMultiplicator, multiplyByPairs, multiplyBy);
     console.log('coinPairPrice divide', baseDivisor, divideByPairs, divideBy);
@@ -62,7 +63,7 @@ async function deploy({config, ozParams, governor}) {
 
     console.log('Deploy change contract to add the calculator to the whitelist');
     const CoinPairPriceAddCalculatedPriceProviderChange = artifacts.require(
-        'CoinPairPriceAddCalculatedPriceProviderChange',
+        '@moc/oracles/CoinPairPriceAddCalculatedPriceProviderChange',
     );
     const change1 = await CoinPairPriceAddCalculatedPriceProviderChange.new(
         calculatedPriceProvider.address,
