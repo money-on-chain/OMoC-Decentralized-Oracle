@@ -1,5 +1,6 @@
 const {constants, BN, time} = require('@openzeppelin/test-helpers');
 const crypto = require('crypto');
+const ethers = require('ethers');
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 
@@ -222,6 +223,44 @@ async function newUnlockedAccount() {
     return account;
 }
 
+async function publishPrice({coinPairPrice, coinPairName, price, oracle, signers}) {
+    const lastPublicationBlock = await coinPairPrice.lastPublicationBlock();
+
+    const {msg, encMsg} = await getDefaultEncodedMessage(
+        3,
+        coinPairName,
+        price,
+        oracle,
+        lastPublicationBlock.toString(),
+    );
+
+    const sortedSigners = signers.slice(0);
+    sortedSigners.sort((x, y) => x.localeCompare(y, 'en', {sensitivity: 'base'}));
+
+    const sv = [];
+    const sr = [];
+    const ss = [];
+    for (const signer of sortedSigners) {
+        const s = ethers.utils.splitSignature(await web3.eth.sign(encMsg, signer));
+
+        sv.push(s.v);
+        sr.push(s.r);
+        ss.push(s.s);
+    }
+
+    await coinPairPrice.publishPrice(
+        msg.version,
+        web3.utils.asciiToHex(coinPairName),
+        msg.price,
+        msg.votedOracle,
+        lastPublicationBlock.toString(),
+        sv,
+        sr,
+        ss,
+        {from: oracle},
+    );
+};
+
 module.exports = {
     ADDRESS_ONE,
     ADDRESS_ZERO,
@@ -236,5 +275,6 @@ module.exports = {
     mineUntilBlock,
     mineUntilNextRound,
     printOracles,
+    publishPrice,
     newUnlockedAccount,
 };

@@ -16,10 +16,7 @@ contract StakingMock {
     /// @notice Construct this contract.
     /// @param _staking the Staking contract address.
     /// @param _supporters the Supporters contract contract address.
-    function initialize(
-        Staking _staking,
-        Supporters _supporters
-    ) external {
+    function initialize(Staking _staking, Supporters _supporters) external {
         staking = _staking;
         mocToken = _supporters.mocToken();
         supporters = _supporters;

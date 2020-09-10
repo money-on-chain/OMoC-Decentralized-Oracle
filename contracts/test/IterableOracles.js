@@ -79,7 +79,7 @@ contract('IterableOracles', (accounts) => {
         const length = await iterableOracles.getLen();
         expect(length).to.be.bignumber.equal(new BN(ORACLES_DATA.length));
 
-        expectRevert(iterableOracles.getOracleAtIndex(length.toNumber()), 'Illegal index');
+        await expectRevert(iterableOracles.getOracleAtIndex(length.toNumber()), 'Illegal index');
         const result = await iterableOracles.getOracleAtIndex(0);
         expect(result.ownerAddress).to.equal(ORACLES_DATA[0].owner);
         expect(result.oracleAddress).to.equal(ORACLES_DATA[0].address);

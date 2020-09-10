@@ -8,9 +8,8 @@ const ethers = require('ethers');
 contract('CalculatedPriceProvider', async (accounts) => {
     const GOVERNOR = accounts[8];
 
-    async function constructCalculatedPriceProvider(multiplicator, multiplyBy, divisor, divideBy) {
+    async function constructCalculatedPriceProvider(multiplicator, multiplyBy, divisor, divideBy, whitelist = []) {
         const governor = await MockGovernor.new(GOVERNOR);
-        const whitelist = [];
         const ret = await CalculatedPriceProvider.new();
         await ret.initialize(
             governor.address,
@@ -25,7 +24,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
 
     it('Check type', async () => {
         const CalculatedType = 2;
-        const calculatedPriceProvider = await CalculatedPriceProvider.new(1, [], 1, []);
+        const calculatedPriceProvider = await CalculatedPriceProvider.new();
         assert.equal(await calculatedPriceProvider.getPriceProviderType(), CalculatedType);
     });
 
@@ -111,5 +110,25 @@ contract('CalculatedPriceProvider', async (accounts) => {
         const result = (456 * 123 * 321) / (789 * 123);
         // new BN round the result.
         expect(web3.utils.toBN(val[0]), 'price').to.be.bignumber.equal(new BN(result));
+    });
+
+    it('Whitelist manipulation', async () => {
+        const whitelist = [helpers.ADDRESS_ONE, accounts[1]];
+        const calculatedPriceProvider = await constructCalculatedPriceProvider(1, [], 1, [], whitelist);
+
+        const length = await calculatedPriceProvider.getWhiteListLen();
+        expect(length).to.be.bignumber.equal(new BN(2));
+        expect(await calculatedPriceProvider.getWhiteListAtIndex(0)).to.equal(whitelist[0]);
+        expect(await calculatedPriceProvider.getWhiteListAtIndex(1)).to.equal(whitelist[1]);
+
+        await expectRevert(calculatedPriceProvider.addToWhitelist(accounts[2]), 'Invalid changer');
+        calculatedPriceProvider.addToWhitelist(accounts[2], {from: GOVERNOR});
+
+        expect(await calculatedPriceProvider.getWhiteListLen()).to.be.bignumber.equal(new BN(3));
+
+        await expectRevert(calculatedPriceProvider.removeFromWhitelist(accounts[1]), 'Invalid changer');
+        await calculatedPriceProvider.removeFromWhitelist(accounts[1], {from: GOVERNOR});
+
+        expect(await calculatedPriceProvider.getWhiteListLen()).to.be.bignumber.equal(new BN(2));
     });
 });

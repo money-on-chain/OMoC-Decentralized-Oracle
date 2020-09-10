@@ -1,58 +1,19 @@
 /* global artifacts, beforeEach, contract, it */
 const helpers = require('./helpers');
-const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
+const {BN} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
-const {toWei} = require('web3-utils');
-const ethers = require('ethers');
+const {toWei, toBN} = require('web3-utils');
 
 contract('Staking-withdraw', async (accounts) => {
     const feesAccount = accounts[1];
-    const TOKEN_FEES = toWei('100', 'ether');
+    const TOKEN_FEES = toBN(toWei('100', 'ether'));
     const governorOwner = accounts[8];
     const COINPAIR_NAME = 'BTCUSD';
-    const ORACLE_STAKE = toWei('1', 'ether');
-    const ORACLE_FEES = toWei('1', 'ether');
+    const ORACLE_STAKE = toBN(toWei('1', 'ether'));
+    const ORACLE_FEES = toBN(toWei('1', 'ether'));
     const MAX_SELECTED_ORACLES = 10;
     const MAX_SUBSCRIBED_ORACLES = 30;
     const NUM_ORACLES = 30;
-
-    const publishPrice = async (price, oracle, signers) => {
-        const lastPublicationBlock = await this.coinPairPrice.lastPublicationBlock();
-
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
-            3,
-            COINPAIR_NAME,
-            price,
-            oracle,
-            lastPublicationBlock.toString(),
-        );
-
-        const sortedSigners = signers.slice(0);
-        sortedSigners.sort((x, y) => x.localeCompare(y, 'en', {sensitivity: 'base'}));
-
-        const sv = [];
-        const sr = [];
-        const ss = [];
-        for (const signer of sortedSigners) {
-            const s = ethers.utils.splitSignature(await web3.eth.sign(encMsg, signer));
-
-            sv.push(s.v);
-            sr.push(s.r);
-            ss.push(s.s);
-        }
-
-        await this.coinPairPrice.publishPrice(
-            msg.version,
-            web3.utils.asciiToHex(COINPAIR_NAME),
-            msg.price,
-            msg.votedOracle,
-            lastPublicationBlock.toString(),
-            sv,
-            sr,
-            ss,
-            {from: oracle},
-        );
-    };
 
     before(async () => {
         const contracts = await helpers.initContracts({
@@ -74,7 +35,7 @@ contract('Staking-withdraw', async (accounts) => {
         for (let i = 0; i < NUM_ORACLES; i += 1) {
             const oracleOwner = await helpers.newUnlockedAccount();
             const oracle = await helpers.newUnlockedAccount();
-            const oracleStake = ORACLE_STAKE + (NUM_ORACLES - i);
+            const oracleStake = ORACLE_STAKE.add(toBN(NUM_ORACLES - i));
             this.oracles[oracleOwner] = oracle;
             await this.governor.mint(this.token.address, oracleOwner, oracleStake);
             await web3.eth.sendTransaction({
@@ -95,7 +56,7 @@ contract('Staking-withdraw', async (accounts) => {
         for (let i = 0; i < NUM_ORACLES; i += 1) {
             const oracleOwner = Object.keys(this.oracles)[i];
             const oracleName = 'oracle-' + i;
-            const oracleStake = ORACLE_STAKE + (NUM_ORACLES - i);
+            const oracleStake = ORACLE_STAKE.add(toBN(NUM_ORACLES - i));
             await this.token.approve(this.staking.address, oracleStake, {from: oracleOwner});
             await this.staking.registerOracle(this.oracles[oracleOwner], oracleName, {
                 from: oracleOwner,
@@ -145,7 +106,13 @@ contract('Staking-withdraw', async (accounts) => {
             signers.push(this.oracles[Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1 - i]]);
         }
 
-        await publishPrice((10 ** 18).toString(), this.oracles[oracleOwner], signers);
+        await helpers.publishPrice({
+            coinPairPrice: this.coinPairPrice,
+            coinPairName: COINPAIR_NAME,
+            price: (10 ** 18).toString(),
+            oracle: this.oracles[oracleOwner], 
+            signers,
+        });
 
         const {points} = await this.coinPairPrice.getOracleRoundInfo(oracleOwner);
         expect(points).to.be.bignumber.equal(new BN(1));
@@ -173,7 +140,13 @@ contract('Staking-withdraw', async (accounts) => {
         }
         signers.push(this.oracles[newOracleOwner]);
 
-        await publishPrice((10 ** 18).toString(), this.oracles[newOracleOwner], signers);
+        await helpers.publishPrice({
+            coinPairPrice: this.coinPairPrice,
+            coinPairName: COINPAIR_NAME,
+            price: (10 ** 18).toString(),
+            oracle: this.oracles[newOracleOwner], 
+            signers,
+        });
 
         const {points} = await this.coinPairPrice.getOracleRoundInfo(newOracleOwner);
         expect(points).to.be.bignumber.equal(new BN(1));

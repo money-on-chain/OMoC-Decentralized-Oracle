@@ -14,7 +14,7 @@ MockGovernor.setProvider(DelayMachine.currentProvider);
 MockGovernor.defaults(DelayMachine.defaults());
 
 contract('DelayMachine', (accounts) => {
-    const [GOVERNOR_OWNER, DESTIONATION_MOC_HOLDER, SOURCE_MOC_HOLDER] = accounts;
+    const [GOVERNOR_OWNER, DESTIONATION_MOC_HOLDER, SOURCE_MOC_HOLDER, DUMMY_ACCOUNT] = accounts;
     const INITIAL_BALANCE = new BN('100000000000000000000');
 
     async function notExpired(expiration, currentTime, expirationDelta) {
@@ -98,6 +98,20 @@ contract('DelayMachine', (accounts) => {
             expect(
                 await token.allowance(SOURCE_MOC_HOLDER, contract.address),
             ).to.be.bignumber.equal(new BN(123));
+        });
+
+        it('deposit fail', async () => {
+            const expirationSecs = new BN(Math.random() * 10000);
+            const amount = new BN(Math.random() * 10000);
+            await expectRevert(
+                contract.deposit(
+                    amount,
+                    DESTIONATION_MOC_HOLDER,
+                    expirationSecs,
+                    {from: DUMMY_ACCOUNT},
+                ),
+                'Wrong source',
+            );
         });
 
         it('deposit', async () => {

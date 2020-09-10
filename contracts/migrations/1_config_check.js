@@ -1,6 +1,11 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
-const NEEDED = ['coinPairs', 'minCPSubscriptionStake', 'supportersEarnPeriodInBlocks'];
+const NEEDED = [
+    'coinPairs',
+    'minCPSubscriptionStake',
+    'supportersEarnPeriodInBlocks',
+    'supportersEarnPeriodInBlocks',
+];
 
 async function deploy({config}) {
     if (helpers.isProduction() && !process.env.PRIVATE_KEY) {

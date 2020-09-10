@@ -6,7 +6,7 @@ const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const maxOraclesPerRound = 10;
 const maxSubscribedOraclesPerRound = 30;
 
-contract('[ @skip-on-coverage ] CoinPairPrice Subscribe', async (accounts) => {
+contract('CoinPairPrice Subscribe', async (accounts) => {
     async function register(token, staking, oracleManager, ownerAddr, stake, name, oracleAddr) {
         const initialBalance = await token.balanceOf(ownerAddr);
         await token.approve(staking.address, stake, {from: ownerAddr});
