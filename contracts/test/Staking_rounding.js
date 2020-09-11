@@ -23,326 +23,325 @@ contract('Staking_rounding', async (accounts) => {
 
     // IS ONLY POSSIBLE TO DEPOSIT OR WITHDRAW MULTIPLES OF THE TOKEN VALUE IN MOCS!!!
     describe('Should check several problematic cases where an oracle might loose mocs when making deposits or withdrawals', async () => {
-        const originalTestValues = [
-            {
-                amount: (1).toString(), // Amount deposited to test
-                reward: (1).toString(), // Amount transfered as reward
-                addAmount: (0).toString(), // Amount deposited by another account
-                withdrawAmount: (1).toString(), // Amount withdrawn by original account
-                mocBalanceResult: (2).toString(), // Moc balance after first withdrawal
-                tokenBalanceResult: (1).toString(), // Token balance after first withdrawal
-                delayBalanceResult: (0).toString(), // Delay machine balance after first withdrawal
-                otherMocBalanceResult: (0).toString(), // Moc balance after other user's deposit
-                otherTokenBalanceResult: (0).toString(), // Token balance after other user's deposit
-                otherDelayBalanceResult: (0).toString(), // Delay machine balance after other user's withdrawal
-            },
-            {
-                amount: (1).toString(),
-                reward: (1).toString(),
-                addAmount: (0).toString(),
-                withdrawAmount: (2).toString(),
-                mocBalanceResult: (0).toString(),
-                tokenBalanceResult: (0).toString(),
-                delayBalanceResult: (2).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (1).toString(),
-                reward: (1).toString(),
-                addAmount: (1).toString(),
-                withdrawAmount: (1).toString(),
-                mocBalanceResult: (3).toString(),
-                tokenBalanceResult: (1).toString(),
-                delayBalanceResult: (0).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (1).toString(),
-                reward: (1).toString(),
-                addAmount: (1).toString(),
-                withdrawAmount: (2).toString(),
-                mocBalanceResult: (3).toString(),
-                tokenBalanceResult: (1).toString(),
-                delayBalanceResult: (0).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (1).toString(),
-                reward: (1).toString(),
-                addAmount: (1).toString(),
-                withdrawAmount: (3).toString(),
-                mocBalanceResult: (0).toString(),
-                tokenBalanceResult: (0).toString(),
-                delayBalanceResult: (3).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (2).toString(),
-                reward: (1).toString(),
-                addAmount: (0).toString(),
-                withdrawAmount: (1).toString(),
-                mocBalanceResult: (3).toString(),
-                tokenBalanceResult: (2).toString(),
-                delayBalanceResult: (0).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (2).toString(),
-                reward: (1).toString(),
-                addAmount: (0).toString(),
-                withdrawAmount: (2).toString(),
-                mocBalanceResult: (2).toString(),
-                tokenBalanceResult: (1).toString(),
-                delayBalanceResult: (1).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (2).toString(),
-                reward: (1).toString(),
-                addAmount: (0).toString(),
-                withdrawAmount: (3).toString(),
-                mocBalanceResult: (0).toString(),
-                tokenBalanceResult: (0).toString(),
-                delayBalanceResult: (3).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (2).toString(),
-                reward: (1).toString(),
-                addAmount: (1).toString(),
-                withdrawAmount: (1).toString(),
-                mocBalanceResult: (4).toString(),
-                tokenBalanceResult: (2).toString(),
-                delayBalanceResult: (0).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (2).toString(),
-                reward: (1).toString(),
-                addAmount: (1).toString(),
-                withdrawAmount: (2).toString(),
-                mocBalanceResult: (2).toString(),
-                tokenBalanceResult: (1).toString(),
-                delayBalanceResult: (2).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (2).toString(),
-                reward: (1).toString(),
-                addAmount: (1).toString(),
-                withdrawAmount: (3).toString(),
-                mocBalanceResult: (2).toString(),
-                tokenBalanceResult: (1).toString(),
-                delayBalanceResult: (2).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-            {
-                amount: (2).toString(),
-                reward: (1).toString(),
-                addAmount: (1).toString(),
-                withdrawAmount: (4).toString(),
-                mocBalanceResult: (0).toString(),
-                tokenBalanceResult: (0).toString(),
-                delayBalanceResult: (4).toString(),
-                otherMocBalanceResult: (0).toString(),
-                otherTokenBalanceResult: (0).toString(),
-                otherDelayBalanceResult: (0).toString(),
-            },
-        ];
-
         const testValues = [
             {
-                description: "alice deposit 1 has 1 reward can't remove 1 MOC",
+                testNumber: '1',
+                description: "alice deposits 1, has 1 reward, can't remove 1 MOC",
                 amount: '1', // Amount deposited to test
                 reward: '1', // Amount transfered as reward
                 addAmount: '0', // Amount deposited by another account
                 withdrawAmount: '1', // Amount withdrawn by original account
-                mocBalanceResult: '2', // Moc balance after first withdrawal
-                tokenBalanceResult: '1', // Token balance after first withdrawal
-                delayBalanceResult: '0', // Delay machine balance after first withdrawal
-                otherMocBalanceResult: '0', // Moc balance after other user's deposit
-                otherTokenBalanceResult: '0', // Token balance after other user's deposit
-                otherDelayBalanceResult: '0', // Delay machine balance after other user's withdrawal
+                mocBalanceAfterWithdrawal: '2', // Moc balance after first withdrawal
+                tokenBalanceAfterWithdrawal: '1', // Token balance after first withdrawal
+                delayMocBalanceChangeAfterWithdrawal: '0', // Delay machine balance after first withdrawal
+                otherUserMocBalanceAfterSecondDeposit: '0', // Moc balance after other user's deposit
+                otherUserTokenBalanceAfterSecondDeposit: '0', // Token balance after other user's deposit
+                otherDelayBalanceAfterSecondWithdrawal: '0', // Delay machine balance after other user's withdrawal
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
-                description: "alice deposit 1 has 1 reward can't remove 1MOC but can remove 2 MOC",
+                testNumber: '2',
+                description: 'alice deposits 1, has 1 reward, can remove 2 MOC',
                 amount: '1',
                 reward: '1',
                 addAmount: '0',
                 withdrawAmount: '2',
-                mocBalanceResult: '0',
-                tokenBalanceResult: '0',
-                delayBalanceResult: '2',
-                otherMocBalanceResult: '0',
-                otherTokenBalanceResult: '0',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '0',
+                tokenBalanceAfterWithdrawal: '0',
+                delayMocBalanceChangeAfterWithdrawal: '2',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '3',
                 description:
-                    "alice deposit 1 has 1 reward bob deposits 2mocs alice can't withdraw 1 MOC",
+                    "alice deposits 1, has 1 reward, bob deposits 1, alice can't withdraw 1 MOC",
                 amount: '1',
                 reward: '1',
-                addAmount: '2',
+                addAmount: '1',
                 withdrawAmount: '1',
-                mocBalanceResult: '2',
-                tokenBalanceResult: '1',
-                delayBalanceResult: '0',
-                otherMocBalanceResult: '2',
-                otherTokenBalanceResult: '1',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '3',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '0',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '4',
                 description:
-                    'alice deposit 1 has 1 reward bob deposits 2mocs alice can withdraw 2 MOC',
+                    "alice deposits 1, has 1 reward, bob deposits 1, alice can't withdraw 2 MOC",
                 amount: '1',
                 reward: '1',
-                addAmount: '2',
+                addAmount: '1',
                 withdrawAmount: '2',
-                mocBalanceResult: '0',
-                tokenBalanceResult: '0',
-                delayBalanceResult: '2',
-                otherMocBalanceResult: '2',
-                otherTokenBalanceResult: '1',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '3',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '0',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
-                description: "alice deposit 2 has 1 reward alice can't withdraw 1",
+                testNumber: '5',
+                description:
+                    'alice deposits 1, has 1 reward, bob deposits 1, alice can withdraw 3 MOC',
+                amount: '1',
+                reward: '1',
+                addAmount: '1',
+                withdrawAmount: '3',
+                mocBalanceAfterWithdrawal: '0',
+                tokenBalanceAfterWithdrawal: '0',
+                delayMocBalanceChangeAfterWithdrawal: '3',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
+            },
+            {
+                testNumber: '6',
+                description: "alice deposits 2, has 1 reward, alice can't withdraw 1 MOC",
                 amount: '2',
                 reward: '1',
                 addAmount: '0',
                 withdrawAmount: '1',
-                mocBalanceResult: '3',
-                tokenBalanceResult: '2',
-                delayBalanceResult: '0',
-                otherMocBalanceResult: '0',
-                otherTokenBalanceResult: '0',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '3',
+                tokenBalanceAfterWithdrawal: '2',
+                delayMocBalanceChangeAfterWithdrawal: '0',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '7',
                 // TODO: Check the same situation with bob participating.
-                description: 'alice deposit 2 has 1 reward alice try to withdraw 2 but gets 1',
+                description:
+                    'alice deposits 2, has 1 reward, alice tries to withdraw 2, withdraws 1 MOC',
                 amount: '2',
                 reward: '1',
                 addAmount: '0',
                 withdrawAmount: '2',
-                mocBalanceResult: '2',
-                tokenBalanceResult: '1',
-                delayBalanceResult: '1',
-                otherMocBalanceResult: '0',
-                otherTokenBalanceResult: '0',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '2',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '1',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
-                description: 'alice deposit 2 has 1 reward alice can withdraw 3',
+                testNumber: '8',
+                description: 'alice deposits 2, has 1 reward, alice can withdraw 3 MOC',
                 amount: '2',
                 reward: '1',
                 addAmount: '0',
                 withdrawAmount: '3',
-                mocBalanceResult: '0',
-                tokenBalanceResult: '0',
-                delayBalanceResult: '3',
-                otherMocBalanceResult: '0',
-                otherTokenBalanceResult: '0',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '0',
+                tokenBalanceAfterWithdrawal: '0',
+                delayMocBalanceChangeAfterWithdrawal: '3',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '9',
                 description:
-                    "alice deposit 2 has 1 reward bob deposit 2 and get 1 moc alice can't withdraw 1",
+                    "alice deposits 2, has 1 reward, bob deposits 1, alice can't withdraw 1 MOC",
                 amount: '2',
                 reward: '1',
-                addAmount: '2',
+                addAmount: '1',
                 withdrawAmount: '1',
-                mocBalanceResult: '2',
-                tokenBalanceResult: '2',
-                delayBalanceResult: '0',
-                otherMocBalanceResult: '1',
-                otherTokenBalanceResult: '1',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '4',
+                tokenBalanceAfterWithdrawal: '2',
+                delayMocBalanceChangeAfterWithdrawal: '0',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '10',
                 description:
-                    'alice deposit 2 has 1 reward bob deposit 2 and get 1 token alice can withdraw 2',
+                    'alice deposits 2, has 1 reward, bob deposits 1, alice can withdraw 2 MOC',
                 amount: '2',
                 reward: '1',
-                addAmount: '2',
+                addAmount: '1',
                 withdrawAmount: '2',
-                mocBalanceResult: '0',
-                tokenBalanceResult: '0',
-                delayBalanceResult: '2',
-                otherMocBalanceResult: '1',
-                otherTokenBalanceResult: '1',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '2',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '2',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '11',
                 description:
-                    'alice deposit 2 has 1 reward bob deposit 2 and get 1 moc alice try to withdraw 3 but withdraw 2',
+                    'alice deposits 2, has 1 reward, bob deposits 1, alice tries to withdraw 3, withdraws 2 MOC',
                 amount: '2',
                 reward: '1',
-                addAmount: '2',
+                addAmount: '1',
                 withdrawAmount: '3',
-                mocBalanceResult: '2',
-                tokenBalanceResult: '1',
-                delayBalanceResult: '2',
-                otherMocBalanceResult: '1',
-                otherTokenBalanceResult: '1',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '2',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '2',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '12',
                 description:
-                    'alice deposit 2 has 1 reward bob deposit 1 (this gives 1 moc to alice) alice can withdraw 4',
+                    'alice deposits 2, has 1 reward, bob deposits 1 (alice can withdraw it), alice can withdraw 4 MOC',
                 amount: '2',
                 reward: '1',
                 addAmount: '1',
                 withdrawAmount: '4',
-                mocBalanceResult: '0',
-                tokenBalanceResult: '0',
-                delayBalanceResult: '4',
-                otherMocBalanceResult: '0',
-                otherTokenBalanceResult: '0',
-                otherDelayBalanceResult: '0',
+                mocBalanceAfterWithdrawal: '0',
+                tokenBalanceAfterWithdrawal: '0',
+                delayMocBalanceChangeAfterWithdrawal: '4',
+                otherUserMocBalanceAfterSecondDeposit: '0',
+                otherUserTokenBalanceAfterSecondDeposit: '0',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
             {
+                testNumber: '13',
                 description:
-                    "alice deposit 100 has 10000 reward can't remove 100 MOC must remove multiples of 101==10100/100",
+                    "alice deposits 1, has 1 reward, bob deposits 2, alice can't withdraw 1 MOC",
+                amount: '1',
+                reward: '1',
+                addAmount: '2',
+                withdrawAmount: '1',
+                mocBalanceAfterWithdrawal: '2',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '0',
+                otherUserMocBalanceAfterSecondDeposit: '2',
+                otherUserTokenBalanceAfterSecondDeposit: '1',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
+            },
+            {
+                testNumber: '14',
+                description:
+                    'alice deposits 1, has 1 reward, bob deposits 2, alice can withdraw 2 MOC',
+                amount: '1',
+                reward: '1',
+                addAmount: '2',
+                withdrawAmount: '2',
+                mocBalanceAfterWithdrawal: '0',
+                tokenBalanceAfterWithdrawal: '0',
+                delayMocBalanceChangeAfterWithdrawal: '2',
+                otherUserMocBalanceAfterSecondDeposit: '2',
+                otherUserTokenBalanceAfterSecondDeposit: '1',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
+            },
+            {
+                testNumber: '18',
+                description:
+                    "alice deposits 2, has 1 reward, bob deposits 2 and gets 1, alice can't withdraw 1",
+                amount: '2',
+                reward: '1',
+                addAmount: '2',
+                withdrawAmount: '1',
+                mocBalanceAfterWithdrawal: '3',
+                tokenBalanceAfterWithdrawal: '2',
+                delayMocBalanceChangeAfterWithdrawal: '0',
+                otherUserMocBalanceAfterSecondDeposit: '1',
+                otherUserTokenBalanceAfterSecondDeposit: '1',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
+                mocBalanceAfterReset: '2',
+                tokenBalanceAfterReset: '1',
+            },
+            {
+                testNumber: '19',
+                description:
+                    'alice deposits 2, has 1 reward, bob deposits 2 and gets 1, alice tries to withdraw 2, withdraws 1 MOC',
+                amount: '2',
+                reward: '1',
+                addAmount: '2',
+                withdrawAmount: '2',
+                mocBalanceAfterWithdrawal: '2',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '1',
+                otherUserMocBalanceAfterSecondDeposit: '1',
+                otherUserTokenBalanceAfterSecondDeposit: '1',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
+            },
+            {
+                testNumber: '20',
+                description:
+                    'alice deposits 2, has 1 reward, bob deposits 2 and gets 1, alice tries to withdraw 3, withdraws 1 MOC',
+                amount: '2',
+                reward: '1',
+                addAmount: '2',
+                withdrawAmount: '3',
+                mocBalanceAfterWithdrawal: '2',
+                tokenBalanceAfterWithdrawal: '1',
+                delayMocBalanceChangeAfterWithdrawal: '1',
+                otherUserMocBalanceAfterSecondDeposit: '1',
+                otherUserTokenBalanceAfterSecondDeposit: '1',
+                otherDelayBalanceAfterSecondWithdrawal: '0',
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
+            },
+            {
+                testNumber: '22',
+                description:
+                    "alice deposits 100, has 10000 reward, alice can't withdraw 100 MOC, must withdraw multiples of 101==10100/100",
                 amount: '100', // Amount deposited to test
                 reward: (100 * 100).toString(), // Amount transfered as reward
                 addAmount: '0', // Amount deposited by another account
                 withdrawAmount: '100', // Amount withdrawn by original account
-                mocBalanceResult: '10100', // Moc balance after first withdrawal
-                tokenBalanceResult: '100', // Token balance after first withdrawal
-                delayBalanceResult: '0', // Delay machine balance after first withdrawal
-                otherMocBalanceResult: '0', // Moc balance after other user's deposit
-                otherTokenBalanceResult: '0', // Token balance after other user's deposit
-                otherDelayBalanceResult: '0', // Delay machine balance after other user's withdrawal
+                mocBalanceAfterWithdrawal: '10100', // Moc balance after first withdrawal
+                tokenBalanceAfterWithdrawal: '100', // Token balance after first withdrawal
+                delayMocBalanceChangeAfterWithdrawal: '0', // Delay machine balance after first withdrawal
+                otherUserMocBalanceAfterSecondDeposit: '0', // Moc balance after other user's deposit
+                otherUserTokenBalanceAfterSecondDeposit: '0', // Token balance after other user's deposit
+                otherDelayBalanceAfterSecondWithdrawal: '0', // Delay machine balance after other user's withdrawal
+                mocBalanceAfterReset: '0',
+                tokenBalanceAfterReset: '0',
             },
         ];
         for (let i = 0; i < testValues.length; i++) {
-            it(testValues[i].description, async () => {
+            it(testValues[i].testNumber + ': ' + testValues[i].description, async () => {
+                console.log('Test number:', testValues[i].testNumber);
                 // Previous approve for deposit in StakingMock
                 await this.token.approve(this.staking.address, testValues[i].amount, {
                     from: ALICE,
                 });
-                console.log('Making deposit of', testValues[i].amount, 'mocs <---------------');
+                console.log(
+                    'Making deposit of',
+                    testValues[i].amount,
+                    'mocs by ALICE<---------------',
+                );
                 // Deposit mocs in StakingMock
                 await this.staking.deposit(testValues[i].amount, ALICE, {
                     from: ALICE,
@@ -353,11 +352,11 @@ contract('Staking_rounding', async (accounts) => {
                     ALICE,
                 );
                 console.log(
-                    "Original user's moc balance after first deposit",
+                    "ALICE's moc balance after first deposit",
                     mocBalanceAfterFirstDeposit.toString(),
                 );
                 console.log(
-                    "Original user's token balance after first deposit",
+                    "ALICE's token balance after first deposit",
                     tokenBalanceAfterFirstDeposit.toString(),
                 );
 
@@ -367,7 +366,9 @@ contract('Staking_rounding', async (accounts) => {
                 assert.isTrue(tokenBalanceAfterFirstDeposit.eq(new BN(testValues[i].amount)));
 
                 // Check Supporters's balance before reward deposit
-                const prevSupportersBalance = await this.token.balanceOf(this.supporters.address);
+                const supportersBalanceBeforeTransfer = await this.token.balanceOf(
+                    this.supporters.address,
+                );
                 console.log(
                     'Transfering',
                     testValues[i].reward,
@@ -380,35 +381,53 @@ contract('Staking_rounding', async (accounts) => {
                 console.log('Calling distribute() in Supporters <---------------');
                 // Call distribute to update Supporters' total moc balance
                 await this.supporters.distribute({
-                    from: ALICE,
+                    from: REWARDS,
                 });
 
                 // Check Supporters's balance after reward deposit
-                const afterSupportersBalance = await this.token.balanceOf(this.supporters.address);
+                const supportersBalanceAfterTransfer = await this.token.balanceOf(
+                    this.supporters.address,
+                );
                 // Check Supporters's balance changed correctly
                 assert.isTrue(
-                    afterSupportersBalance
-                        .sub(prevSupportersBalance)
+                    supportersBalanceAfterTransfer
+                        .sub(supportersBalanceBeforeTransfer)
                         .eq(new BN(testValues[i].reward)),
                 );
 
                 // Check delay machine previous token balance to compare later
-                const prevDelayBalance = await this.token.balanceOf(this.delayMachine.address);
+                const delayMocBalanceBeforeWithdrawal = await this.token.balanceOf(
+                    this.delayMachine.address,
+                );
 
                 await helpers.mineBlocks(period);
 
                 if (testValues[i].addAmount !== '0') {
-                    const mocBalanceBeforeOtherDeposit = await this.staking.getBalance(BOB);
+                    const mocBalanceBeforeOtherDeposit = await this.staking.getBalance(ALICE);
                     const tokenBalanceBeforeOtherDeposit = await this.stakingMock.getBalanceInTokens(
+                        ALICE,
+                    );
+                    const otherUserMocBalanceBeforeOtherDeposit = await this.staking.getBalance(
+                        BOB,
+                    );
+                    const otherUserTokenBalanceBeforeOtherDeposit = await this.stakingMock.getBalanceInTokens(
                         BOB,
                     );
                     console.log(
-                        "Original user's moc balance before another user's deposit",
+                        "ALICE's moc balance before BOB's deposit",
                         mocBalanceBeforeOtherDeposit.toString(),
                     );
                     console.log(
-                        "Original user's token balance before another user's deposit",
+                        "ALICE's token balance before BOB's deposit",
                         tokenBalanceBeforeOtherDeposit.toString(),
+                    );
+                    console.log(
+                        "BOB's moc balance before BOB's deposit",
+                        otherUserMocBalanceBeforeOtherDeposit.toString(),
+                    );
+                    console.log(
+                        "BOB's token balance before BOB's deposit",
+                        otherUserTokenBalanceBeforeOtherDeposit.toString(),
                     );
 
                     // Previous approve for deposit in Staking
@@ -416,46 +435,56 @@ contract('Staking_rounding', async (accounts) => {
                         from: BOB,
                     });
                     console.log(
-                        "Making another user's deposit of",
-                        testValues[i].addAmount,
-                        'mocs <---------------',
+                        "Total mocs before BOB's deposit:",
+                        (await this.staking.totalMoc()).toString(),
+                        '//',
+                        "Total tokens before BOB's deposit:",
+                        (await this.staking.totalToken()).toString(),
                     );
                     console.log(
-                        '--------------------->',
-                        await this.staking.totalMoc(),
-                        await this.staking.totalToken(),
+                        "Making BOB's deposit of",
+                        testValues[i].addAmount,
+                        'mocs <---------------',
                     );
                     // Deposit mocs in Staking
                     await this.staking.deposit(testValues[i].addAmount, BOB, {
                         from: BOB,
                     });
                     console.log(
-                        '--------------------->',
-                        await this.staking.totalMoc(),
-                        await this.staking.totalToken(),
+                        "Total mocs after BOB's deposit:",
+                        (await this.staking.totalMoc()).toString(),
+                        '//',
+                        "Total tokens after BOB's deposit:",
+                        (await this.staking.totalToken()).toString(),
                     );
-                    const otherUserMocBalanceAfterDeposit = await this.staking.getBalance(BOB);
-                    const otherUserTokenBalanceAfterDeposit = await this.stakingMock.getBalanceInTokens(
+                    const otherUserMocBalanceAfterSecondDeposit = await this.staking.getBalance(
+                        BOB,
+                    );
+                    const otherUserTokenBalanceAfterSecondDeposit = await this.stakingMock.getBalanceInTokens(
                         BOB,
                     );
                     console.log(
-                        "Other user's moc balance after deposit",
-                        otherUserMocBalanceAfterDeposit.toString(),
+                        "BOB's moc balance after deposit:",
+                        otherUserMocBalanceAfterSecondDeposit.toString(),
+                        'Expected:',
+                        testValues[i].otherUserMocBalanceAfterSecondDeposit,
                     );
                     console.log(
-                        "Other user's token balance after deposit",
-                        otherUserTokenBalanceAfterDeposit.toString(),
+                        "BOB's token balance after deposit",
+                        otherUserTokenBalanceAfterSecondDeposit.toString(),
+                        'Expected:',
+                        testValues[i].otherUserTokenBalanceAfterSecondDeposit,
                     );
                     // Check the other user's stake in mocs was deposited
                     assert.isTrue(
-                        otherUserMocBalanceAfterDeposit.eq(
-                            new BN(testValues[i].otherMocBalanceResult),
+                        otherUserMocBalanceAfterSecondDeposit.eq(
+                            new BN(testValues[i].otherUserMocBalanceAfterSecondDeposit),
                         ),
                     );
                     // Check the other user's token balance was correctly deposited
                     assert.isTrue(
-                        otherUserTokenBalanceAfterDeposit.eq(
-                            new BN(testValues[i].otherTokenBalanceResult),
+                        otherUserTokenBalanceAfterSecondDeposit.eq(
+                            new BN(testValues[i].otherUserTokenBalanceAfterSecondDeposit),
                         ),
                     );
                 }
@@ -465,63 +494,96 @@ contract('Staking_rounding', async (accounts) => {
                     ALICE,
                 );
                 console.log(
-                    "Original user's moc balance before withdrawal",
+                    "ALICE's moc balance before withdrawal",
                     mocBalanceBeforeWithdrawal.toString(),
                 );
                 console.log(
-                    "Original user's token balance before withdrawal",
+                    "ALICE's token balance before withdrawal",
                     tokenBalanceBeforeWithdrawal.toString(),
                 );
 
-                console.log('Making withdrawal of', testValues[i].withdrawAmount, 'mocs');
+                console.log('Making withdrawal of', testValues[i].withdrawAmount, 'mocs by ALICE');
                 // Withdraw an amount of stake taken from the list
                 await this.staking.withdraw(testValues[i].withdrawAmount, {
                     from: ALICE,
                 });
 
                 // Check delay machine moc balance after withdrawal
-                const afterDelayBalance = await this.token.balanceOf(this.delayMachine.address);
+                const delayMocBalanceAfterWithdrawal = await this.token.balanceOf(
+                    this.delayMachine.address,
+                );
+                const delayMocBalanceChangeAfterWithdrawal = delayMocBalanceAfterWithdrawal.sub(
+                    delayMocBalanceBeforeWithdrawal,
+                );
                 console.log(
-                    "Assert the expected Delay Machine's balance change (",
-                    testValues[i].delayBalanceResult,
-                    ') equals the actual change (',
-                    afterDelayBalance.sub(prevDelayBalance).toString(),
-                    ')',
+                    "Delay Machine's moc balance change after withdrawal:",
+                    delayMocBalanceChangeAfterWithdrawal.toString(),
+                    'Expected:',
+                    testValues[i].delayMocBalanceChangeAfterWithdrawal,
                 );
                 // Assert that delay machine received the amount withdrawn
                 assert.isTrue(
-                    afterDelayBalance
-                        .sub(prevDelayBalance)
-                        .eq(new BN(testValues[i].delayBalanceResult)),
+                    delayMocBalanceChangeAfterWithdrawal.eq(
+                        new BN(testValues[i].delayMocBalanceChangeAfterWithdrawal),
+                    ),
                 );
 
-                const balanceAfterWithdrawal = await this.staking.getBalance(ALICE);
-                // Check moc balance of user after withdrawal
-                console.log('balanceAfterWithdrawal', balanceAfterWithdrawal.toString());
-                assert.isTrue(balanceAfterWithdrawal.eq(new BN(testValues[i].mocBalanceResult)));
-
+                const mocBalanceAfterWithdrawal = await this.staking.getBalance(ALICE);
                 const tokenBalanceAfterWithdrawal = await this.stakingMock.getBalanceInTokens(
                     ALICE,
                 );
-                // Check the internal token balance.
-                console.log('tokenBalanceAfterWithdrawal', tokenBalanceAfterWithdrawal.toString());
+                console.log(
+                    "ALICE's moc balance after withdrawal:",
+                    mocBalanceAfterWithdrawal.toString(),
+                    'Expected:',
+                    testValues[i].mocBalanceAfterWithdrawal,
+                );
+                console.log(
+                    "ALICE's token balance after withdrawal:",
+                    tokenBalanceAfterWithdrawal.toString(),
+                    'Expected:',
+                    testValues[i].tokenBalanceAfterWithdrawal,
+                );
+
+                // Check moc balance of user after withdrawal
                 assert.isTrue(
-                    tokenBalanceAfterWithdrawal.eq(new BN(testValues[i].tokenBalanceResult)),
+                    mocBalanceAfterWithdrawal.eq(new BN(testValues[i].mocBalanceAfterWithdrawal)),
+                );
+
+                // Check the internal token balance.
+                assert.isTrue(
+                    tokenBalanceAfterWithdrawal.eq(
+                        new BN(testValues[i].tokenBalanceAfterWithdrawal),
+                    ),
                 );
 
                 console.log(
-                    'Withdraw the rest of the stake to reset it, which is',
-                    balanceAfterWithdrawal.toString(),
+                    'ALICE withdraws the rest of the stake to reset it, which is',
+                    mocBalanceAfterWithdrawal.toString(),
                     'mocs',
                 );
                 // Withdraw the rest of the stake to reset it
-                await this.staking.withdraw(balanceAfterWithdrawal, {from: ALICE});
-                console.log("Check the owner's moc balance is 0.");
+                await this.staking.withdraw(mocBalanceAfterWithdrawal, {from: ALICE});
+                const mocBalanceAfterReset = await this.staking.getBalance(ALICE);
+                const tokenBalanceAfterReset = await this.stakingMock.getBalanceInTokens(ALICE);
+                console.log(
+                    "ALICE's moc balance after reset:",
+                    mocBalanceAfterReset.toString(),
+                    'Expected:',
+                    testValues[i].mocBalanceAfterReset,
+                );
+                console.log(
+                    "ALICE's token balance after reset:",
+                    tokenBalanceAfterReset.toString(),
+                    'Expected:',
+                    testValues[i].tokenBalanceAfterReset,
+                );
                 // Check the owner's moc balance is 0.
-                assert.isTrue((await this.staking.getBalance(ALICE)).eq(new BN(0)));
-                console.log("Check the owner's internal token balance is 0.");
+                assert.isTrue(mocBalanceAfterReset.eq(new BN(testValues[i].mocBalanceAfterReset)));
                 // Check the owner's internal token balance is 0.
-                assert.isTrue((await this.stakingMock.getBalanceInTokens(ALICE)).eq(new BN(0)));
+                assert.isTrue(
+                    tokenBalanceAfterReset.eq(new BN(testValues[i].tokenBalanceAfterReset)),
+                );
 
                 /*
                 console.log('Making other user\'s withdrawal of', testValues[i].withdrawAmount, 'mocs');
