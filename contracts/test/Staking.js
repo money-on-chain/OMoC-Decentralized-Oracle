@@ -194,28 +194,36 @@ contract('Staking', async (accounts) => {
             (parseInt(oracleData[3].stake, 10) - 1111).toString(),
         ];
         for (let i = 0; i < withdrawAmounts.length; i++) {
-            // Previous approve for deposit in StakingMock
-            await this.token.approve(this.stakingMock.address, oracleData[3].stake, {
+            // Previous approve for deposit in Staking
+            await this.token.approve(this.staking.address, oracleData[3].stake, {
                 from: oracleData[3].owner,
             });
             // Deposit mocs in StakingMock
-            await this.stakingMock.deposit(oracleData[3].stake, this.stakingMock.address, {
+            await this.staking.deposit(oracleData[3].stake, oracleData[3].owner, {
                 from: oracleData[3].owner,
             });
             // Check the owner's stake in mocs was deposited
-            assert.isTrue((await this.stakingMock.getBalance()).eq(new BN(oracleData[3].stake)));
+            assert.isTrue(
+                (await this.staking.getBalance(oracleData[3].owner)).eq(
+                    new BN(oracleData[3].stake),
+                ),
+            );
             // Withdraw an amount of stake taken from the list
-            await this.stakingMock.withdraw(withdrawAmounts[i], {from: oracleData[3].owner});
+            await this.staking.withdraw(withdrawAmounts[i], {from: oracleData[3].owner});
             // Check the owner's stake balance in mocs was reduced accordingly
             const balanceAfterWithdraw = new BN(oracleData[3].stake).sub(
                 new BN(withdrawAmounts[i]),
             );
-            assert.isTrue((await this.stakingMock.getBalance()).eq(balanceAfterWithdraw));
+            assert.isTrue(
+                (await this.staking.getBalance(oracleData[3].owner)).eq(balanceAfterWithdraw),
+            );
             // Withdraw the rest of the stake to reset it
-            await this.stakingMock.withdraw(balanceAfterWithdraw, {from: oracleData[3].owner});
+            await this.staking.withdraw(balanceAfterWithdraw, {from: oracleData[3].owner});
             // Check the owner's moc and internal token balances are 0.
-            assert.isTrue((await this.stakingMock.getBalance()).eq(new BN(0)));
-            assert.isTrue((await this.stakingMock.getBalanceInTokens()).eq(new BN(0)));
+            assert.isTrue((await this.staking.getBalance(oracleData[3].owner)).eq(new BN(0)));
+            assert.isTrue(
+                (await this.stakingMock.getBalanceInTokens(oracleData[3].owner)).eq(new BN(0)),
+            );
         }
     });
 });
