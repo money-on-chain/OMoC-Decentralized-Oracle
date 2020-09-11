@@ -18,10 +18,7 @@ contract('InfoGetter', async (accounts) => {
 
         this.coinPairPrice = await helpers.initCoinpair(COINPAIR_NAME, {
             ...contracts,
-            whitelist: [
-                accounts[0], 
-                this.infoGetter.address,
-            ],
+            whitelist: [accounts[0], this.infoGetter.address],
             maxOraclesPerRound: 3,
             validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
@@ -60,7 +57,7 @@ contract('InfoGetter', async (accounts) => {
             coinPairPrice: this.coinPairPrice,
             coinPairName: COINPAIR_NAME,
             price,
-            oracle, 
+            oracle,
             signers: [oracle],
         });
 
@@ -83,30 +80,18 @@ contract('InfoGetter', async (accounts) => {
     });
 
     it('getManagerUICoinPairInfo', async () => {
-        const result = await this.infoGetter.getManagerUICoinPairInfo(
-            this.oracleMgr.address,
-            0,
-            1,
-        );
+        const result = await this.infoGetter.getManagerUICoinPairInfo(this.oracleMgr.address, 0, 1);
         expect(result).to.not.be.undefined;
         expect(result.length).to.equal(1);
         expect(result[0].addr).to.not.be.undefined;
         expect(result[0].coinPair).to.not.be.undefined;
 
         // Test offset and limit
-        await this.infoGetter.getManagerUICoinPairInfo(
-            this.oracleMgr.address,
-            1000,
-            1000,
-        );
+        await this.infoGetter.getManagerUICoinPairInfo(this.oracleMgr.address, 1000, 1000);
     });
 
     it('getManagerUIOracleInfo', async () => {
-        const result = await this.infoGetter.getManagerUIOracleInfo(
-            this.oracleMgr.address,
-            0,
-            1,
-        );
+        const result = await this.infoGetter.getManagerUIOracleInfo(this.oracleMgr.address, 0, 1);
         expect(result).to.not.be.undefined;
         expect(result.info).to.not.be.undefined;
         expect(result.nextEntry).to.not.be.undefined;
@@ -119,16 +104,8 @@ contract('InfoGetter', async (accounts) => {
         expect(result.info[0].name).to.not.be.undefined;
 
         // test offset and limit
-        await this.infoGetter.getManagerUIOracleInfo(
-            this.oracleMgr.address,
-            0,
-            1000,
-        );
-        await this.infoGetter.getManagerUIOracleInfo(
-            this.oracleMgr.address,
-            1000,
-            1000,
-        );
+        await this.infoGetter.getManagerUIOracleInfo(this.oracleMgr.address, 0, 1000);
+        await this.infoGetter.getManagerUIOracleInfo(this.oracleMgr.address, 1000, 1000);
     });
 
     it('getOracleServerInfo', async () => {

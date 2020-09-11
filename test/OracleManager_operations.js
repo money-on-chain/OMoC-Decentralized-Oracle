@@ -34,40 +34,34 @@ contract('OracleManager operations', async (accounts) => {
             [GOVERNOR_OWNER],
             COINPAIR_ID,
             ADDRESS_ONE, // token_address
-            10,          // maxOraclesPerRound
-            30,          // maxSubscribedOraclesPerRound
-            60,          // roundLockPeriodInSecs,
-            3,           // validPricePeriodInBlocks,
-            2,           // emergencyPublishingPeriodInBlocks,
+            10, // maxOraclesPerRound
+            30, // maxSubscribedOraclesPerRound
+            60, // roundLockPeriodInSecs,
+            3, // validPricePeriodInBlocks,
+            2, // emergencyPublishingPeriodInBlocks,
             '100000000', // bootstrapPrice,
             this.oracleMgr.address,
         );
-    
-        await this.oracleMgr.registerCoinPair(
-            COINPAIR_ID,
-            this.coinPairPrice.address,
-            {from: GOVERNOR_OWNER},
-        );
+
+        await this.oracleMgr.registerCoinPair(COINPAIR_ID, this.coinPairPrice.address, {
+            from: GOVERNOR_OWNER,
+        });
     });
 
     it('Whitelist manipulation', async () => {
-        await expectRevert(
-            this.oracleMgr.addToWhitelist(accounts[2]),
-            'Invalid changer',
-        );
+        await expectRevert(this.oracleMgr.addToWhitelist(accounts[2]), 'Invalid changer');
 
         await this.oracleMgr.addToWhitelist(accounts[2], {from: GOVERNOR_OWNER});
 
-        await expectRevert(
-            this.oracleMgr.removeFromWhitelist(accounts[2]),
-            'Invalid changer',
-        );
+        await expectRevert(this.oracleMgr.removeFromWhitelist(accounts[2]), 'Invalid changer');
 
         await this.oracleMgr.removeFromWhitelist(accounts[2], {from: GOVERNOR_OWNER});
     });
 
     it('Change oracle address', async () => {
-        await this.oracleMgr.registerOracle(ORACLE_OWNER, ADDRESS_ONE, "ORACLE-A", {from: GOVERNOR_OWNER});
+        await this.oracleMgr.registerOracle(ORACLE_OWNER, ADDRESS_ONE, 'ORACLE-A', {
+            from: GOVERNOR_OWNER,
+        });
         const registered = await this.oracleMgr.isRegistered(ORACLE_OWNER);
         expect(registered).to.be.true;
 
@@ -115,21 +109,21 @@ contract('OracleManager operations', async (accounts) => {
         const oracleManager = await OracleManager.new();
         await expectRevert(
             oracleManager.initialize(
-                this.governor.address,      // governor
-                MIN_ORACLE_STAKE,           // minCPSubscriptionStake
-                ADDRESS_ZERO,               // stakingContract
-                [],                         // wlist
+                this.governor.address, // governor
+                MIN_ORACLE_STAKE, // minCPSubscriptionStake
+                ADDRESS_ZERO, // stakingContract
+                [], // wlist
             ),
-            'Staking contract address must be != 0'
+            'Staking contract address must be != 0',
         );
         await expectRevert(
             oracleManager.initialize(
-                this.governor.address,      // governor
-                0,                          // minCPSubscriptionStake
-                ADDRESS_ONE,                // stakingContract
-                [],                         // wlist
+                this.governor.address, // governor
+                0, // minCPSubscriptionStake
+                ADDRESS_ONE, // stakingContract
+                [], // wlist
             ),
-            'The minimum coin pair subscription stake amount cannot be zero'
+            'The minimum coin pair subscription stake amount cannot be zero',
         );
     });
 });

@@ -48,6 +48,23 @@ We describe the different components involved in this system and their interacti
 
 **Governance**: Control changes and upgrades over the contracts
 
+# Smart-Contract Code structure
+
+All the contracts are upgradeables so when they are deployed there are two instances
+one has the implementation code and one the storage. We must have 
+the storage well organized so different upgrades can reuse the same storage without
+clashes. 
+During upgrade the implementation code can be changed, but the storage
+doesn't change (the variables keep the same slots). So it is 
+better to have the storage separated from the implementation even in the source code.
+
+To do that we have all the storage in one base contract that is inherited by the
+implementation. All the reusable code is in libraries and doesn't use any
+storage (libraries are stateless).   
+
+
+
+
 ## Operation
 
 Foundation will setup and deploy contracts and will provide theirs addresses for anyone willing to participate. When minimal participants join the contracts will be "started".
@@ -74,3 +91,4 @@ To publish a price it is required the consensus from half plus one of the round-
 
 Supporters do have a round-system too but it is transparent for the users. Reward is collected all during a certain period, and after that it is assigned to current supporters according to their stake and will be all available for the user at the end of the following round. If the user decides to retire before it will receive a part proportional to how long it stayed in the system.
 Each participant registering a price-provider will automatically also be registered as supporter and will receive proportional support-rewards as any other supporter no matter if is selected as price-provider.
+

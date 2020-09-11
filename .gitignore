@@ -1,23 +1,29 @@
-markdown/build/*
-contracts/build
-contracts/.coverage*
-contracts/coverage.json
-scripts/index*db*
-dapp/src/contracts
-builds
-contracts/node_modules
-coverage
-contracts/zos.dev*.json
-contracts/contracts/Oracle_*.sol
+# Editors
 .idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+
+# Dot env
 .env
-venv
-.cache
-__pycache__
-*.pyc
-*.log
-contracts/contracts/Oracle_*
-contracts/.openzeppelin/
-node_modules
-dapp/contracts/*
-dapp/src/contracts/*
+
+# Node
+node_modules/
+yarn.lock
+# Optional npm cache directory
+.npm
+# Optional eslint cache
+.eslintcache
+# Optional REPL history
+.node_repl_history
+
+# Coverage
+coverage
+coverage.json
+
+# To remove in a library
+build/
+
+# openzeppeling deploy
+.openzeppelin/
+.openzeppelin/.session

@@ -59,7 +59,7 @@
         "url": "git+https://github.com/money-on-chain/MoC-Gobernanza.git"
     },
     "author": "",
-    "license": "",
+    "license": "ISC",
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged",
@@ -107,7 +107,15 @@
     },
     "config": {
         "commitizen": {
-            "path": "./contracts/node_modules/cz-conventional-changelog"
+            "path": "./node_modules/cz-conventional-changelog"
         }
-    }
+    },
+    "bugs": {
+        "url": "https://github.com/money-on-chain/MoC-Gobernanza/issues"
+    },
+    "homepage": "https://github.com/money-on-chain/MoC-Gobernanza#readme",
+    "directories": {
+        "test": "test"
+    },
+    "keywords": []
 }

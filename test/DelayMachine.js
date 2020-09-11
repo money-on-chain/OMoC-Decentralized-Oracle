@@ -104,12 +104,9 @@ contract('DelayMachine', (accounts) => {
             const expirationSecs = new BN(Math.random() * 10000);
             const amount = new BN(Math.random() * 10000);
             await expectRevert(
-                contract.deposit(
-                    amount,
-                    DESTIONATION_MOC_HOLDER,
-                    expirationSecs,
-                    {from: DUMMY_ACCOUNT},
-                ),
+                contract.deposit(amount, DESTIONATION_MOC_HOLDER, expirationSecs, {
+                    from: DUMMY_ACCOUNT,
+                }),
                 'Wrong source',
             );
         });

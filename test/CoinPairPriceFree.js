@@ -7,7 +7,7 @@ const CoinPairPriceFree = artifacts.require('CoinPairPriceFree');
 contract('CoinPairPriceFree', async (accounts) => {
     const feesAccount = accounts[1];
     const ORACLE_FEES = toBN(toWei('1', 'ether'));
-    const ORACLE_STAKE = toBN(toWei("1", "ether"));
+    const ORACLE_STAKE = toBN(toWei('1', 'ether'));
     const COINPAIR_NAME = 'BTCUSD';
     const ORACLE_NAME = 'ORACLE-A';
 
@@ -19,10 +19,7 @@ contract('CoinPairPriceFree', async (accounts) => {
 
         this.coinPairPrice = await helpers.initCoinpair(COINPAIR_NAME, {
             ...contracts,
-            whitelist: [
-                accounts[0], 
-                this.coinPairPriceFree.address,
-            ],
+            whitelist: [accounts[0], this.coinPairPriceFree.address],
             maxOraclesPerRound: 3,
             validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
@@ -61,17 +58,19 @@ contract('CoinPairPriceFree', async (accounts) => {
             coinPairPrice: this.coinPairPrice,
             coinPairName: COINPAIR_NAME,
             price,
-            oracle, 
+            oracle,
             signers: [oracle],
         });
 
         await expectRevert(
-            this.coinPairPrice.peek({ from: accounts[9] }),
+            this.coinPairPrice.peek({from: accounts[9]}),
             'Address is not whitelisted',
         );
 
-        const {0: publishedPrice, 1: valid} = await this.coinPairPriceFree.peek({from: accounts[9]});
+        const {0: publishedPrice, 1: valid} = await this.coinPairPriceFree.peek({
+            from: accounts[9],
+        });
         expect(valid).to.be.true;
         expect(toBN(publishedPrice)).to.be.bignumber.equal(toBN(price));
-    })
+    });
 });
