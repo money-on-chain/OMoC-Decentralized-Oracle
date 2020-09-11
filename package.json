@@ -4,14 +4,15 @@
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
-        "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#deploy",
-        "@openzeppelin/contracts-ethereum-package": "^3.0.0"
+        "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#deploy"
     },
     "devDependencies": {
         "@commitlint/cli": "^9.1.1",
         "@commitlint/config-conventional": "^9.1.1",
+        "@openzeppelin/cli": "^2.8.2",
+        "@openzeppelin/contracts": "^3.1.0",
+        "@openzeppelin/contracts-ethereum-package": "^3.0.0",
         "@openzeppelin/test-helpers": "^0.5.6",
-        "@openzeppelin/cli": "2.7.1",
         "chai": "^4.2.0",
         "commitizen": "^4.1.2",
         "ganache-cli": "^6.9.1",
