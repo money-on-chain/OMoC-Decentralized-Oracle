@@ -77,14 +77,6 @@ contract Staking is StakingStorage, IStakingMachine {
         address destination,
         address source
     ) public override {
-        // This operation is to take into account that the user can only operate with multiples of the token price
-        // the check mocs!=tokens is to capture the situation in which there are no tokens or mocs in the system.
-        // if the token price is 1 moc its ok to deposit or withdraw any amount.
-        //        uint256 tokens = supporters.mocToToken(mocs);
-        //        if (mocs != tokens) {
-        //            mocs = supporters.tokenToMoc(tokens);
-        //        }
-        //        require(mocs > 0, "not enough MOCs");
         // Transfer stake [should be approved by owner first]
         require(mocToken.transferFrom(source, address(this), mocs), "error in transferFrom");
         // Stake at Supporters contract

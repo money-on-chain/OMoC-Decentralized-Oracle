@@ -23,7 +23,7 @@ contract('Staking_rounding', async (accounts) => {
 
     // IS ONLY POSSIBLE TO DEPOSIT OR WITHDRAW MULTIPLES OF THE TOKEN VALUE IN MOCS!!!
     describe('Should check several problematic cases where an oracle might loose mocs when making deposits or withdrawals', async () => {
-        const originalValues = [
+        const originalTestValues = [
             {
                 amount: (1).toString(), // Amount deposited to test
                 reward: (1).toString(), // Amount transfered as reward
