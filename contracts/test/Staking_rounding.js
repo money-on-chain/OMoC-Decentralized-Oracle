@@ -260,7 +260,7 @@ contract('Staking_rounding', async (accounts) => {
                 tokenBalanceAfterReset: '0',
             },
             {
-                testNumber: '18',
+                testNumber: '15',
                 description:
                     "alice deposits 2, has 1 reward, bob deposits 2 and gets 1, alice can't withdraw 1",
                 amount: '2',
@@ -279,7 +279,7 @@ contract('Staking_rounding', async (accounts) => {
                 tokenBalanceAfterReset: '1',
             },
             {
-                testNumber: '19',
+                testNumber: '16',
                 description:
                     'alice deposits 2, has 1 reward, bob deposits 2 and gets 1, alice tries to withdraw 2, withdraws 1 MOC',
                 amount: '2',
@@ -296,7 +296,7 @@ contract('Staking_rounding', async (accounts) => {
                 tokenBalanceAfterReset: '0',
             },
             {
-                testNumber: '20',
+                testNumber: '17',
                 description:
                     'alice deposits 2, has 1 reward, bob deposits 2 and gets 1, alice tries to withdraw 3, withdraws 1 MOC',
                 amount: '2',
@@ -313,7 +313,7 @@ contract('Staking_rounding', async (accounts) => {
                 tokenBalanceAfterReset: '0',
             },
             {
-                testNumber: '22',
+                testNumber: '18',
                 description:
                     "alice deposits 100, has 10000 reward, alice can't withdraw 100 MOC, must withdraw multiples of 101==10100/100",
                 amount: '100', // Amount deposited to test
