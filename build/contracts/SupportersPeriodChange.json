@@ -1,0 +1,1830 @@
+{
+  "contractName": "SupportersPeriodChange",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract Governed",
+          "name": "_supporters",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_period",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IGovernor",
+          "name": "newIGovernor",
+          "type": "address"
+        }
+      ],
+      "name": "changeIGovernor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "delegateCallToChanger",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "encodedData",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "governor",
+      "outputs": [
+        {
+          "internalType": "contract IGovernor",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "supporters",
+      "outputs": [
+        {
+          "internalType": "contract Governed",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "execute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "impersonate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract Governed\",\"name\":\"_supporters\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_period\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"newIGovernor\",\"type\":\"address\"}],\"name\":\"changeIGovernor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"delegateCallToChanger\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"encodedData\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"governor\",\"outputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"impersonate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"supporters\",\"outputs\":[{\"internalType\":\"contract Governed\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"changeIGovernor(address)\":{\"params\":{\"newIGovernor\":\"New governor address\"}},\"constructor\":{\"params\":{\"_period\":\"The length of the round in blocks\",\"_supporters\":\"Address of supporters whitelisted contract to upgrade\"}},\"delegateCallToChanger(bytes)\":{\"params\":{\"data\":\"the serialized function arguments\"}},\"execute()\":{\"details\":\"Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture\"}},\"title\":\"SupportersPeriodChange\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"changeIGovernor(address)\":{\"notice\":\"Change the contract's governor. Should be called through the old governance system\"},\"constructor\":\"Constructor\",\"delegateCallToChanger(bytes)\":{\"notice\":\"This method is used by a change contract to access the storage freely even without a setter.\"},\"execute()\":{\"notice\":\"Execute the changes.\"},\"governor()\":{\"notice\":\"The address of the contract which governs this one\"},\"impersonate(bytes)\":{\"notice\":\"Called by the Governed contract delegateCallToChanger method This methods runs in the Governed contract storage.\"}},\"notice\":\"This contract is a ChangeContract intended to be used to change the Supporters contract parameter period\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/SupportersPeriodChange.sol\":\"SupportersPeriodChange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol\":{\"keccak256\":\"0xd3d5b2e2b294ea1b893e658775f5e038efc5e361253a99381f81b90f1717ef52\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://3e3473b12ebc8c94a389bb09bcf3c94834939a9a14d2683df49c1792829594d2\",\"dweb:/ipfs/Qmcuws5rDpz8BYDQrtgcdGfjuQrSBr3KWi1wdr6NQveotK\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/SupportersPeriodChange.sol\":{\"keccak256\":\"0x63a2e81b7319f5902d2477a733d5167b535fd609a8e23e69564b1be69f8e8ed2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://1b16fb31cb44dd63748b8f232794d18ea6c8314a31c4561a8c7da3c59ad5443b\",\"dweb:/ipfs/QmYXRNAmJbvGF1pk2q3fiZ7pMZ8umUAJCUAADundvCgeZm\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/AddressSetLib.sol\":{\"keccak256\":\"0x748d2a1c77986a9f343d0acbb10b746df926d91ba30531ba0d30d5178231ecaf\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6b1d555caddf034bd0bb6ea29a643a10a6fa3d17e009790fe10243ade13869ba\",\"dweb:/ipfs/QmVfjVCvfU7aqsYmLRLczjnPzD6Wo4g79GeV9nX1TgmYpQ\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableWhitelistLib.sol\":{\"keccak256\":\"0x2319e0dfd6ac0478c5a8bc1501b6f9111eacd91e9aa88de2c96480b8b87c9f0b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://670b33cba543b9408cb7b4ca40d3ca1e562637191f12cd06d955cb97b4a95e2e\",\"dweb:/ipfs/QmQF6eVwg7mFozevyyYamLJWqaFKpuZqgrUFcPVkdNE3XG\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SupportersLib.sol\":{\"keccak256\":\"0xa80f2b92a59e78b256fa6e7799f2f6b271d044b72eda3909547dded83d9f7252\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://de9a6e237bc9c10dcc4149ba6bb4948dbb6031a6ea485d9c7dad27b1e617c4d8\",\"dweb:/ipfs/QmS5x4RpZXqB3bEGqcYW5siJDeYedbf93TrHwcqQ1o25FX\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]},\"@moc/shared/contracts/moc-governance/Governance/Governed.sol\":{\"keccak256\":\"0xf948f3ef0d990c9b5199cb96ed42a7b4b96b1dce0abfc168289f9de8576286e2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5b770c1391989e9db75789bb15cc4413d520eecb327fed0c114a66407a3f4404\",\"dweb:/ipfs/QmPqRtG3cfB3tc5fFs9Q8yMNkxHB4oxMSY27jDXYhB754c\"]},\"@moc/shared/contracts/moc-governance/Governance/IGovernor.sol\":{\"keccak256\":\"0xed68469a6e1759efc5dece43aaf7fdf25e39163626df454bd9f9662ca8e9df61\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://a615e8209f9f332ed8d16452fd83c412f44162bd6fb8af6a1556bdc033a36735\",\"dweb:/ipfs/Qmda7FzLXHG9WZSTVBXwGCjLT7xU5Ugh287jQ4qafAr5WX\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]},\"@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50604051610bf8380380610bf88339818101604052604081101561003357600080fd5b8101908080519060200190929190805190602001909291905050508160a260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550806040516020018082815260200191505060405160208183030381529060405260a390805190602001906100c49291906100cc565b505050610169565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061010d57805160ff191683800117855561013b565b8280016001018555821561013b579182015b8281111561013a57825182559160200191906001019061011f565b5b509050610148919061014c565b5090565b5b8082111561016557600081600090555060010161014d565b5090565b610a80806101786000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c8063b6e083301161005b578063b6e0833014610139578063d2b0bf7c1461017d578063dc8990e114610200578063fdc31f6f146102795761007d565b80630c340a241461008257806361461954146100b6578063a16227ca146100c0575b600080fd5b61008a6102ad565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100be6102d3565b005b610137600480360360208110156100d657600080fd5b81019080803590602001906401000000008111156100f357600080fd5b82018360208201111561010557600080fd5b8035906020019184600183028401116401000000008311171561012757600080fd5b90919293919293905050506103e5565b005b61017b6004803603602081101561014f57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610413565b005b6101856105f8565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156101c55780820151818401526020810190506101aa565b50505050905090810190601f1680156101f25780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6102776004803603602081101561021657600080fd5b810190808035906020019064010000000081111561023357600080fd5b82018360208201111561024557600080fd5b8035906020019184600183028401116401000000008311171561026757600080fd5b9091929391929390505050610696565b005b610281610a24565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60a260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663dc8990e160a36040518263ffffffff1660e01b815260040180806020018281038252838181546001816001161561010002031660029004815260200191508054600181600116156101000203166002900480156103ab5780601f10610380576101008083540402835291602001916103ab565b820191906000526020600020905b81548152906001019060200180831161038e57829003601f168201915b505092505050600060405180830381600087803b1580156103cb57600080fd5b505af11580156103df573d6000803e3d6000fd5b50505050565b818160208110156103f557600080fd5b81019080803590602001909291905050506068600601819055505050565b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d994d6d5336040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561049c57600080fd5b505afa1580156104b0573d6000803e3d6000fd5b505050506040513d60208110156104c657600080fd5b81019080805190602001909291905050506040518060400160405280601681526020017f6e6f745f617574686f72697a65645f6368616e67657200000000000000000000815250906105b3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b8381101561057857808201518184015260208101905061055d565b50505050905090810190601f1680156105a55780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b5080603360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60a38054600181600116156101000203166002900480601f01602080910402602001604051908101604052809291908181526020018280546001816001161561010002031660029004801561068e5780601f106106635761010080835404028352916020019161068e565b820191906000526020600020905b81548152906001019060200180831161067157829003601f168201915b505050505081565b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d994d6d5336040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561071f57600080fd5b505afa158015610733573d6000803e3d6000fd5b505050506040513d602081101561074957600080fd5b81019080805190602001909291905050506040518060400160405280601681526020017f6e6f745f617574686f72697a65645f6368616e6765720000000000000000000081525090610836576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b838110156107fb5780820151818401526020810190506107e0565b50505050905090810190601f1680156108285780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600033905060008173ffffffffffffffffffffffffffffffffffffffff16848460405160240180806020018281038252848482818152602001925080828437600081840152601f19601f82011690508083019250505093505050506040516020818303038152906040527fa16227ca000000000000000000000000000000000000000000000000000000007bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19166020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff83818316178352505050506040518082805190602001908083835b60208310610942578051825260208201915060208101905060208303925061091f565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855af49150503d80600081146109a2576040519150601f19603f3d011682016040523d82523d6000602084013e6109a7565b606091505b5050905080610a1e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260168152602001807f4572726f7220696e2064656c65676174652063616c6c0000000000000000000081525060200191505060405180910390fd5b50505050565b60a260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168156fea2646970667358221220d258d321f1030775d7a1a196ac283fea05729508491026b3018a3b68d29cf4b164736f6c634300060c0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c8063b6e083301161005b578063b6e0833014610139578063d2b0bf7c1461017d578063dc8990e114610200578063fdc31f6f146102795761007d565b80630c340a241461008257806361461954146100b6578063a16227ca146100c0575b600080fd5b61008a6102ad565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100be6102d3565b005b610137600480360360208110156100d657600080fd5b81019080803590602001906401000000008111156100f357600080fd5b82018360208201111561010557600080fd5b8035906020019184600183028401116401000000008311171561012757600080fd5b90919293919293905050506103e5565b005b61017b6004803603602081101561014f57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610413565b005b6101856105f8565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156101c55780820151818401526020810190506101aa565b50505050905090810190601f1680156101f25780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6102776004803603602081101561021657600080fd5b810190808035906020019064010000000081111561023357600080fd5b82018360208201111561024557600080fd5b8035906020019184600183028401116401000000008311171561026757600080fd5b9091929391929390505050610696565b005b610281610a24565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60a260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663dc8990e160a36040518263ffffffff1660e01b815260040180806020018281038252838181546001816001161561010002031660029004815260200191508054600181600116156101000203166002900480156103ab5780601f10610380576101008083540402835291602001916103ab565b820191906000526020600020905b81548152906001019060200180831161038e57829003601f168201915b505092505050600060405180830381600087803b1580156103cb57600080fd5b505af11580156103df573d6000803e3d6000fd5b50505050565b818160208110156103f557600080fd5b81019080803590602001909291905050506068600601819055505050565b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d994d6d5336040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561049c57600080fd5b505afa1580156104b0573d6000803e3d6000fd5b505050506040513d60208110156104c657600080fd5b81019080805190602001909291905050506040518060400160405280601681526020017f6e6f745f617574686f72697a65645f6368616e67657200000000000000000000815250906105b3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b8381101561057857808201518184015260208101905061055d565b50505050905090810190601f1680156105a55780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b5080603360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60a38054600181600116156101000203166002900480601f01602080910402602001604051908101604052809291908181526020018280546001816001161561010002031660029004801561068e5780601f106106635761010080835404028352916020019161068e565b820191906000526020600020905b81548152906001019060200180831161067157829003601f168201915b505050505081565b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d994d6d5336040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561071f57600080fd5b505afa158015610733573d6000803e3d6000fd5b505050506040513d602081101561074957600080fd5b81019080805190602001909291905050506040518060400160405280601681526020017f6e6f745f617574686f72697a65645f6368616e6765720000000000000000000081525090610836576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b838110156107fb5780820151818401526020810190506107e0565b50505050905090810190601f1680156108285780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600033905060008173ffffffffffffffffffffffffffffffffffffffff16848460405160240180806020018281038252848482818152602001925080828437600081840152601f19601f82011690508083019250505093505050506040516020818303038152906040527fa16227ca000000000000000000000000000000000000000000000000000000007bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19166020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff83818316178352505050506040518082805190602001908083835b60208310610942578051825260208201915060208101905060208303925061091f565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855af49150503d80600081146109a2576040519150601f19603f3d011682016040523d82523d6000602084013e6109a7565b606091505b5050905080610a1e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260168152602001807f4572726f7220696e2064656c65676174652063616c6c0000000000000000000081525060200191505060405180910390fd5b50505050565b60a260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168156fea2646970667358221220d258d321f1030775d7a1a196ac283fea05729508491026b3018a3b68d29cf4b164736f6c634300060c0033",
+  "immutableReferences": {},
+  "sourceMap": "468:1090:34:-:0;;;781:142;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;862:11;849:10;;:24;;;;;;;;;;;;;;;;;;908:7;897:19;;;;;;;;;;;;;;;;;;;;;;;;;883:11;:33;;;;;;;;;;;;:::i;:::-;;781:142;;468:1090;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
+  "deployedSourceMap": "468:1090:34:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;550:25:60;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;1145:142:34;;;:::i;:::-;;1437:119;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;1511:120:60;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;575:24:34;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1812:318:60;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;543:26:34;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;550:25:60;;;;;;;;;;;;;:::o;1145:142:34:-;1192:10;;;;;;;;;;;:32;;;1225:11;1192:45;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1145:142::o;1437:119::-;1533:4;;1522:27;;;;;;;;;;;;;;;;;;;;;;;;;;1498:14;:21;;:51;;;;1437:119;;:::o;1511:120:60:-;893:8;;;;;;;;;;;:28;;;922:10;893:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;935:22;;;;;;;;;;;;;;;;;885:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1612:12:::1;1601:8;;:23;;;;;;;;;;;;;;;;;;1511:120:::0;:::o;575:24:34:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1812:318:60:-;893:8;;;;;;;;;;;:28;;;922:10;893:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;935:22;;;;;;;;;;;;;;;;;885:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1905:22:::1;1930:10;1905:35;;1951:12;1969:14;:27;;2056:4;;2010:51;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1969:102;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1950:121;;;2089:7;2081:42;;;;;;;;;;;;;;;;;;;;;;;;;;;::::0;::::1;;;;;;;;;;;;;968:1;;1812:318:::0;;:::o;543:26:34:-;;;;;;;;;;;;;:::o",
+  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {ChangeContract} from \"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\";\nimport {Governed} from \"@moc/shared/contracts/moc-governance/Governance/Governed.sol\";\nimport {SupportersStorage} from \"../SupportersStorage.sol\";\n\n/**\n  @title SupportersPeriodChange\n  @notice This contract is a ChangeContract intended to be used to change the Supporters contract\n  parameter period\n */\ncontract SupportersPeriodChange is SupportersStorage, ChangeContract {\n    Governed public supporters;\n    bytes public encodedData;\n\n    /**\n      @notice Constructor\n      @param _supporters Address of supporters whitelisted contract to upgrade\n      @param _period The length of the round in blocks\n    */\n    constructor(Governed _supporters, uint256 _period) public {\n        supporters = _supporters;\n        encodedData = abi.encode(_period);\n    }\n\n    /**\n      @notice Execute the changes.\n      @dev Should be called by the governor, but this contract does not check that explicitly because\n      it is not its responsability in the current architecture\n     */\n    function execute() external override {\n        supporters.delegateCallToChanger(encodedData);\n        // TODO: Make it usable just once.\n    }\n\n    /**\n        Called by the Governed contract delegateCallToChanger method\n        This methods runs in the Governed contract storage.\n    */\n    function impersonate(bytes calldata data) external {\n        supportersData.period = abi.decode(data, (uint256));\n    }\n}\n",
+  "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/SupportersPeriodChange.sol",
+  "ast": {
+    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/SupportersPeriodChange.sol",
+    "exportedSymbols": {
+      "SupportersPeriodChange": [
+        6664
+      ]
+    },
+    "id": 6665,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6597,
+        "literals": [
+          "solidity",
+          "0.6",
+          ".12"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:23:34"
+      },
+      {
+        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+        "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+        "id": 6599,
+        "nodeType": "ImportDirective",
+        "scope": 6665,
+        "sourceUnit": 11431,
+        "src": "64:98:34",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 6598,
+              "name": "ChangeContract",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "72:14:34",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/Governed.sol",
+        "file": "@moc/shared/contracts/moc-governance/Governance/Governed.sol",
+        "id": 6601,
+        "nodeType": "ImportDirective",
+        "scope": 6665,
+        "sourceUnit": 11515,
+        "src": "163:86:34",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 6600,
+              "name": "Governed",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "171:8:34",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol",
+        "file": "../SupportersStorage.sol",
+        "id": 6603,
+        "nodeType": "ImportDirective",
+        "scope": 6665,
+        "sourceUnit": 5368,
+        "src": "250:59:34",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 6602,
+              "name": "SupportersStorage",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "258:17:34",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 6605,
+              "name": "SupportersStorage",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5367,
+              "src": "503:17:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_SupportersStorage_$5367",
+                "typeString": "contract SupportersStorage"
+              }
+            },
+            "id": 6606,
+            "nodeType": "InheritanceSpecifier",
+            "src": "503:17:34"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 6607,
+              "name": "ChangeContract",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11430,
+              "src": "522:14:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ChangeContract_$11430",
+                "typeString": "contract ChangeContract"
+              }
+            },
+            "id": 6608,
+            "nodeType": "InheritanceSpecifier",
+            "src": "522:14:34"
+          }
+        ],
+        "contractDependencies": [
+          5367,
+          8058,
+          11430,
+          11514,
+          11609
+        ],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 6604,
+          "nodeType": "StructuredDocumentation",
+          "src": "311:156:34",
+          "text": "@title SupportersPeriodChange\n@notice This contract is a ChangeContract intended to be used to change the Supporters contract\nparameter period"
+        },
+        "fullyImplemented": true,
+        "id": 6664,
+        "linearizedBaseContracts": [
+          6664,
+          11430,
+          5367,
+          8058,
+          11514,
+          11609
+        ],
+        "name": "SupportersPeriodChange",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "fdc31f6f",
+            "id": 6610,
+            "mutability": "mutable",
+            "name": "supporters",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6664,
+            "src": "543:26:34",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_Governed_$11514",
+              "typeString": "contract Governed"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 6609,
+              "name": "Governed",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11514,
+              "src": "543:8:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Governed_$11514",
+                "typeString": "contract Governed"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "d2b0bf7c",
+            "id": 6612,
+            "mutability": "mutable",
+            "name": "encodedData",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6664,
+            "src": "575:24:34",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes_storage",
+              "typeString": "bytes"
+            },
+            "typeName": {
+              "id": 6611,
+              "name": "bytes",
+              "nodeType": "ElementaryTypeName",
+              "src": "575:5:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_storage_ptr",
+                "typeString": "bytes"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6631,
+              "nodeType": "Block",
+              "src": "839:84:34",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6622,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6620,
+                      "name": "supporters",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6610,
+                      "src": "849:10:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Governed_$11514",
+                        "typeString": "contract Governed"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 6621,
+                      "name": "_supporters",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6615,
+                      "src": "862:11:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Governed_$11514",
+                        "typeString": "contract Governed"
+                      }
+                    },
+                    "src": "849:24:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Governed_$11514",
+                      "typeString": "contract Governed"
+                    }
+                  },
+                  "id": 6623,
+                  "nodeType": "ExpressionStatement",
+                  "src": "849:24:34"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6629,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6624,
+                      "name": "encodedData",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6612,
+                      "src": "883:11:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage",
+                        "typeString": "bytes storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 6627,
+                          "name": "_period",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 6617,
+                          "src": "908:7:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 6625,
+                          "name": "abi",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -1,
+                          "src": "897:3:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_abi",
+                            "typeString": "abi"
+                          }
+                        },
+                        "id": 6626,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "encode",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "897:10:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
+                          "typeString": "function () pure returns (bytes memory)"
+                        }
+                      },
+                      "id": 6628,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "897:19:34",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes memory"
+                      }
+                    },
+                    "src": "883:33:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage",
+                      "typeString": "bytes storage ref"
+                    }
+                  },
+                  "id": 6630,
+                  "nodeType": "ExpressionStatement",
+                  "src": "883:33:34"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 6613,
+              "nodeType": "StructuredDocumentation",
+              "src": "606:170:34",
+              "text": "@notice Constructor\n@param _supporters Address of supporters whitelisted contract to upgrade\n@param _period The length of the round in blocks"
+            },
+            "id": 6632,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6618,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6615,
+                  "mutability": "mutable",
+                  "name": "_supporters",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6632,
+                  "src": "793:20:34",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_Governed_$11514",
+                    "typeString": "contract Governed"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 6614,
+                    "name": "Governed",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 11514,
+                    "src": "793:8:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Governed_$11514",
+                      "typeString": "contract Governed"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6617,
+                  "mutability": "mutable",
+                  "name": "_period",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6632,
+                  "src": "815:15:34",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6616,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "815:7:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "792:39:34"
+            },
+            "returnParameters": {
+              "id": 6619,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "839:0:34"
+            },
+            "scope": 6664,
+            "src": "781:142:34",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "baseFunctions": [
+              11429
+            ],
+            "body": {
+              "id": 6643,
+              "nodeType": "Block",
+              "src": "1182:105:34",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 6640,
+                        "name": "encodedData",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6612,
+                        "src": "1225:11:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_storage",
+                          "typeString": "bytes storage ref"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_storage",
+                          "typeString": "bytes storage ref"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6637,
+                        "name": "supporters",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6610,
+                        "src": "1192:10:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Governed_$11514",
+                          "typeString": "contract Governed"
+                        }
+                      },
+                      "id": 6639,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "delegateCallToChanger",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 11509,
+                      "src": "1192:32:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes_memory_ptr_$returns$__$",
+                        "typeString": "function (bytes memory) external"
+                      }
+                    },
+                    "id": 6641,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1192:45:34",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 6642,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1192:45:34"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 6633,
+              "nodeType": "StructuredDocumentation",
+              "src": "929:211:34",
+              "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because\nit is not its responsability in the current architecture"
+            },
+            "functionSelector": "61461954",
+            "id": 6644,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nodeType": "FunctionDefinition",
+            "overrides": {
+              "id": 6635,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "1173:8:34"
+            },
+            "parameters": {
+              "id": 6634,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1161:2:34"
+            },
+            "returnParameters": {
+              "id": 6636,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1182:0:34"
+            },
+            "scope": 6664,
+            "src": "1145:142:34",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 6662,
+              "nodeType": "Block",
+              "src": "1488:68:34",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6660,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6650,
+                        "name": "supportersData",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5358,
+                        "src": "1498:14:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_SupportersData_$9062_storage",
+                          "typeString": "struct SupportersLib.SupportersData storage ref"
+                        }
+                      },
+                      "id": 6652,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "period",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 9059,
+                      "src": "1498:21:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 6655,
+                          "name": "data",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 6647,
+                          "src": "1533:4:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bytes_calldata_ptr",
+                            "typeString": "bytes calldata"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "components": [
+                            {
+                              "argumentTypes": null,
+                              "id": 6657,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "lValueRequested": false,
+                              "nodeType": "ElementaryTypeNameExpression",
+                              "src": "1540:7:34",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_type$_t_uint256_$",
+                                "typeString": "type(uint256)"
+                              },
+                              "typeName": {
+                                "id": 6656,
+                                "name": "uint256",
+                                "nodeType": "ElementaryTypeName",
+                                "src": "1540:7:34",
+                                "typeDescriptions": {
+                                  "typeIdentifier": null,
+                                  "typeString": null
+                                }
+                              }
+                            }
+                          ],
+                          "id": 6658,
+                          "isConstant": false,
+                          "isInlineArray": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "nodeType": "TupleExpression",
+                          "src": "1539:9:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_uint256_$",
+                            "typeString": "type(uint256)"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_bytes_calldata_ptr",
+                            "typeString": "bytes calldata"
+                          },
+                          {
+                            "typeIdentifier": "t_type$_t_uint256_$",
+                            "typeString": "type(uint256)"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 6653,
+                          "name": "abi",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -1,
+                          "src": "1522:3:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_abi",
+                            "typeString": "abi"
+                          }
+                        },
+                        "id": 6654,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "decode",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "1522:10:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_abidecode_pure$__$returns$__$",
+                          "typeString": "function () pure"
+                        }
+                      },
+                      "id": 6659,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1522:27:34",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1498:51:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 6661,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1498:51:34"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 6645,
+              "nodeType": "StructuredDocumentation",
+              "src": "1293:139:34",
+              "text": "Called by the Governed contract delegateCallToChanger method\nThis methods runs in the Governed contract storage."
+            },
+            "functionSelector": "a16227ca",
+            "id": 6663,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "impersonate",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6648,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6647,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6663,
+                  "src": "1458:19:34",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6646,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1458:5:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1457:21:34"
+            },
+            "returnParameters": {
+              "id": 6649,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1488:0:34"
+            },
+            "scope": 6664,
+            "src": "1437:119:34",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6665,
+        "src": "468:1090:34"
+      }
+    ],
+    "src": "39:1520:34"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/SupportersPeriodChange.sol",
+    "exportedSymbols": {
+      "SupportersPeriodChange": [
+        6664
+      ]
+    },
+    "id": 6665,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6597,
+        "literals": [
+          "solidity",
+          "0.6",
+          ".12"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:23:34"
+      },
+      {
+        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+        "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+        "id": 6599,
+        "nodeType": "ImportDirective",
+        "scope": 6665,
+        "sourceUnit": 11431,
+        "src": "64:98:34",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 6598,
+              "name": "ChangeContract",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "72:14:34",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/Governed.sol",
+        "file": "@moc/shared/contracts/moc-governance/Governance/Governed.sol",
+        "id": 6601,
+        "nodeType": "ImportDirective",
+        "scope": 6665,
+        "sourceUnit": 11515,
+        "src": "163:86:34",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 6600,
+              "name": "Governed",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "171:8:34",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol",
+        "file": "../SupportersStorage.sol",
+        "id": 6603,
+        "nodeType": "ImportDirective",
+        "scope": 6665,
+        "sourceUnit": 5368,
+        "src": "250:59:34",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 6602,
+              "name": "SupportersStorage",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "258:17:34",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 6605,
+              "name": "SupportersStorage",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5367,
+              "src": "503:17:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_SupportersStorage_$5367",
+                "typeString": "contract SupportersStorage"
+              }
+            },
+            "id": 6606,
+            "nodeType": "InheritanceSpecifier",
+            "src": "503:17:34"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 6607,
+              "name": "ChangeContract",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11430,
+              "src": "522:14:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ChangeContract_$11430",
+                "typeString": "contract ChangeContract"
+              }
+            },
+            "id": 6608,
+            "nodeType": "InheritanceSpecifier",
+            "src": "522:14:34"
+          }
+        ],
+        "contractDependencies": [
+          5367,
+          8058,
+          11430,
+          11514,
+          11609
+        ],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 6604,
+          "nodeType": "StructuredDocumentation",
+          "src": "311:156:34",
+          "text": "@title SupportersPeriodChange\n@notice This contract is a ChangeContract intended to be used to change the Supporters contract\nparameter period"
+        },
+        "fullyImplemented": true,
+        "id": 6664,
+        "linearizedBaseContracts": [
+          6664,
+          11430,
+          5367,
+          8058,
+          11514,
+          11609
+        ],
+        "name": "SupportersPeriodChange",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "fdc31f6f",
+            "id": 6610,
+            "mutability": "mutable",
+            "name": "supporters",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6664,
+            "src": "543:26:34",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_Governed_$11514",
+              "typeString": "contract Governed"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 6609,
+              "name": "Governed",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11514,
+              "src": "543:8:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Governed_$11514",
+                "typeString": "contract Governed"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "d2b0bf7c",
+            "id": 6612,
+            "mutability": "mutable",
+            "name": "encodedData",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6664,
+            "src": "575:24:34",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes_storage",
+              "typeString": "bytes"
+            },
+            "typeName": {
+              "id": 6611,
+              "name": "bytes",
+              "nodeType": "ElementaryTypeName",
+              "src": "575:5:34",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_storage_ptr",
+                "typeString": "bytes"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6631,
+              "nodeType": "Block",
+              "src": "839:84:34",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6622,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6620,
+                      "name": "supporters",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6610,
+                      "src": "849:10:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Governed_$11514",
+                        "typeString": "contract Governed"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 6621,
+                      "name": "_supporters",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6615,
+                      "src": "862:11:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Governed_$11514",
+                        "typeString": "contract Governed"
+                      }
+                    },
+                    "src": "849:24:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Governed_$11514",
+                      "typeString": "contract Governed"
+                    }
+                  },
+                  "id": 6623,
+                  "nodeType": "ExpressionStatement",
+                  "src": "849:24:34"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6629,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6624,
+                      "name": "encodedData",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6612,
+                      "src": "883:11:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage",
+                        "typeString": "bytes storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 6627,
+                          "name": "_period",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 6617,
+                          "src": "908:7:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 6625,
+                          "name": "abi",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -1,
+                          "src": "897:3:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_abi",
+                            "typeString": "abi"
+                          }
+                        },
+                        "id": 6626,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "encode",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "897:10:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
+                          "typeString": "function () pure returns (bytes memory)"
+                        }
+                      },
+                      "id": 6628,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "897:19:34",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes memory"
+                      }
+                    },
+                    "src": "883:33:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage",
+                      "typeString": "bytes storage ref"
+                    }
+                  },
+                  "id": 6630,
+                  "nodeType": "ExpressionStatement",
+                  "src": "883:33:34"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 6613,
+              "nodeType": "StructuredDocumentation",
+              "src": "606:170:34",
+              "text": "@notice Constructor\n@param _supporters Address of supporters whitelisted contract to upgrade\n@param _period The length of the round in blocks"
+            },
+            "id": 6632,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6618,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6615,
+                  "mutability": "mutable",
+                  "name": "_supporters",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6632,
+                  "src": "793:20:34",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_Governed_$11514",
+                    "typeString": "contract Governed"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 6614,
+                    "name": "Governed",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 11514,
+                    "src": "793:8:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Governed_$11514",
+                      "typeString": "contract Governed"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6617,
+                  "mutability": "mutable",
+                  "name": "_period",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6632,
+                  "src": "815:15:34",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6616,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "815:7:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "792:39:34"
+            },
+            "returnParameters": {
+              "id": 6619,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "839:0:34"
+            },
+            "scope": 6664,
+            "src": "781:142:34",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "baseFunctions": [
+              11429
+            ],
+            "body": {
+              "id": 6643,
+              "nodeType": "Block",
+              "src": "1182:105:34",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 6640,
+                        "name": "encodedData",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6612,
+                        "src": "1225:11:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_storage",
+                          "typeString": "bytes storage ref"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_storage",
+                          "typeString": "bytes storage ref"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6637,
+                        "name": "supporters",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6610,
+                        "src": "1192:10:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Governed_$11514",
+                          "typeString": "contract Governed"
+                        }
+                      },
+                      "id": 6639,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "delegateCallToChanger",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 11509,
+                      "src": "1192:32:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes_memory_ptr_$returns$__$",
+                        "typeString": "function (bytes memory) external"
+                      }
+                    },
+                    "id": 6641,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1192:45:34",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 6642,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1192:45:34"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 6633,
+              "nodeType": "StructuredDocumentation",
+              "src": "929:211:34",
+              "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because\nit is not its responsability in the current architecture"
+            },
+            "functionSelector": "61461954",
+            "id": 6644,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nodeType": "FunctionDefinition",
+            "overrides": {
+              "id": 6635,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "1173:8:34"
+            },
+            "parameters": {
+              "id": 6634,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1161:2:34"
+            },
+            "returnParameters": {
+              "id": 6636,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1182:0:34"
+            },
+            "scope": 6664,
+            "src": "1145:142:34",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 6662,
+              "nodeType": "Block",
+              "src": "1488:68:34",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6660,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6650,
+                        "name": "supportersData",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5358,
+                        "src": "1498:14:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_SupportersData_$9062_storage",
+                          "typeString": "struct SupportersLib.SupportersData storage ref"
+                        }
+                      },
+                      "id": 6652,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "period",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 9059,
+                      "src": "1498:21:34",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 6655,
+                          "name": "data",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 6647,
+                          "src": "1533:4:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bytes_calldata_ptr",
+                            "typeString": "bytes calldata"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "components": [
+                            {
+                              "argumentTypes": null,
+                              "id": 6657,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "lValueRequested": false,
+                              "nodeType": "ElementaryTypeNameExpression",
+                              "src": "1540:7:34",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_type$_t_uint256_$",
+                                "typeString": "type(uint256)"
+                              },
+                              "typeName": {
+                                "id": 6656,
+                                "name": "uint256",
+                                "nodeType": "ElementaryTypeName",
+                                "src": "1540:7:34",
+                                "typeDescriptions": {
+                                  "typeIdentifier": null,
+                                  "typeString": null
+                                }
+                              }
+                            }
+                          ],
+                          "id": 6658,
+                          "isConstant": false,
+                          "isInlineArray": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "nodeType": "TupleExpression",
+                          "src": "1539:9:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_uint256_$",
+                            "typeString": "type(uint256)"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_bytes_calldata_ptr",
+                            "typeString": "bytes calldata"
+                          },
+                          {
+                            "typeIdentifier": "t_type$_t_uint256_$",
+                            "typeString": "type(uint256)"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 6653,
+                          "name": "abi",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -1,
+                          "src": "1522:3:34",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_abi",
+                            "typeString": "abi"
+                          }
+                        },
+                        "id": 6654,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "decode",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "1522:10:34",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_abidecode_pure$__$returns$__$",
+                          "typeString": "function () pure"
+                        }
+                      },
+                      "id": 6659,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1522:27:34",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1498:51:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 6661,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1498:51:34"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 6645,
+              "nodeType": "StructuredDocumentation",
+              "src": "1293:139:34",
+              "text": "Called by the Governed contract delegateCallToChanger method\nThis methods runs in the Governed contract storage."
+            },
+            "functionSelector": "a16227ca",
+            "id": 6663,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "impersonate",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6648,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6647,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6663,
+                  "src": "1458:19:34",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6646,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1458:5:34",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1457:21:34"
+            },
+            "returnParameters": {
+              "id": 6649,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1488:0:34"
+            },
+            "scope": 6664,
+            "src": "1437:119:34",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6665,
+        "src": "468:1090:34"
+      }
+    ],
+    "src": "39:1520:34"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.4",
+  "updatedAt": "2020-09-11T20:34:45.487Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "changeIGovernor(address)": {
+        "params": {
+          "newIGovernor": "New governor address"
+        }
+      },
+      "constructor": {
+        "params": {
+          "_period": "The length of the round in blocks",
+          "_supporters": "Address of supporters whitelisted contract to upgrade"
+        }
+      },
+      "delegateCallToChanger(bytes)": {
+        "params": {
+          "data": "the serialized function arguments"
+        }
+      },
+      "execute()": {
+        "details": "Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture"
+      }
+    },
+    "title": "SupportersPeriodChange",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "changeIGovernor(address)": {
+        "notice": "Change the contract's governor. Should be called through the old governance system"
+      },
+      "constructor": "Constructor",
+      "delegateCallToChanger(bytes)": {
+        "notice": "This method is used by a change contract to access the storage freely even without a setter."
+      },
+      "execute()": {
+        "notice": "Execute the changes."
+      },
+      "governor()": {
+        "notice": "The address of the contract which governs this one"
+      },
+      "impersonate(bytes)": {
+        "notice": "Called by the Governed contract delegateCallToChanger method This methods runs in the Governed contract storage."
+      }
+    },
+    "notice": "This contract is a ChangeContract intended to be used to change the Supporters contract parameter period",
+    "version": 1
+  }
+}
