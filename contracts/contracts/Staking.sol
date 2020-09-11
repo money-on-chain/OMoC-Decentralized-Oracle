@@ -64,11 +64,7 @@ contract Staking is StakingStorage, IStakingMachine {
     /// @param mocs token quantity
     /// @param destination the destination account of this deposit.
     function deposit(uint256 mocs, address destination) external override {
-        // Transfer stake [should be approved by owner first]
-        require(mocToken.transferFrom(msg.sender, address(this), mocs), "error in transferFrom");
-        // Stake at Supporters contract
-        require(mocToken.approve(address(supporters), mocs), "error in approve");
-        supporters.stakeAtFrom(mocs, destination, address(this));
+        depositFrom(mocs, destination, msg.sender);
     }
 
     /// @notice Accept a deposit from an account.
@@ -80,7 +76,7 @@ contract Staking is StakingStorage, IStakingMachine {
         uint256 mocs,
         address destination,
         address source
-    ) external override {
+    ) public override {
         // Transfer stake [should be approved by owner first]
         require(mocToken.transferFrom(source, address(this), mocs), "error in transferFrom");
         // Stake at Supporters contract
@@ -89,14 +85,23 @@ contract Staking is StakingStorage, IStakingMachine {
     }
 
     /// @notice Withdraw stake, send it to the delay machine.
-    /// @param mocs token quantity
-    function withdraw(uint256 mocs) external override {
-        uint256 tokens = supporters.mocToToken(mocs);
-        supporters.withdrawFromTo(tokens, msg.sender, address(this));
+    /// @param _mocs token quantity
+    function withdraw(uint256 _mocs) external override {
+        uint256 tokens = supporters.mocToToken(_mocs);
+        uint256 mocs = supporters.withdrawFromTo(tokens, msg.sender, address(this));
         // Approve stake transfer for Delay Machine contract
         require(mocToken.approve(address(delayMachine), mocs), "error in approve");
         uint256 expiration = oracleManager.onWithdraw(msg.sender);
         delayMachine.deposit(mocs, msg.sender, expiration);
+    }
+
+    /// @notice Get the value of the token, withdraw and deposit can be done only in multiples of the token value.
+    function totalMoc() external view returns (uint256) {
+        return supporters.totalMoc();
+    }
+
+    function totalToken() external view returns (uint256) {
+        return supporters.totalToken();
     }
 
     /// @notice Reports the balance of MOCs for a specific user.
@@ -116,6 +121,27 @@ contract Staking is StakingStorage, IStakingMachine {
     // -----------------------------------------------------------------------
     //   Oracles
     // -----------------------------------------------------------------------
+
+    /// @notice Returns the amount of owners registered.
+    /// Delegates to the Oracle Manager smart contract.
+    function getRegisteredOraclesLen() external view returns (uint256) {
+        return oracleManager.getRegisteredOraclesLen();
+    }
+
+    /// @notice Returns the oracle name and address at index.
+    /// Delegates to the Oracle Manager smart contract.
+    /// @param idx index to query.
+    function getRegisteredOracleAtIndex(uint256 idx)
+        external
+        view
+        returns (
+            address ownerAddr,
+            address oracleAddr,
+            string memory url
+        )
+    {
+        return oracleManager.getRegisteredOracleAtIndex(idx);
+    }
 
     /// @notice Set an oracle's name (url) and address.
     /// Delegates to the Oracle Manager smart contract.
