@@ -24,10 +24,10 @@ contract MocRegistryEnteringFallbacksAmountsChange is ChangeContract {
       not its responsability in the current architecture
      */
     function execute() external override {
-        registry.setBytes(get_keccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"010204");
+        registry.setBytes(getKeccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"010204");
     }
 
-    function get_keccak(string memory k) internal pure returns (bytes32) {
+    function getKeccak(string memory k) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked("MOC_ORACLE\\1\\", k));
     }
 }

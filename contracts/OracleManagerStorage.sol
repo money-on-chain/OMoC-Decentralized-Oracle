@@ -33,9 +33,8 @@ contract OracleManagerStorage is Initializable, Governed, IIterableWhitelist {
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
+    // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
-
-    // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;

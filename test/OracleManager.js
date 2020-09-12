@@ -140,7 +140,7 @@ contract('OracleManager', async (accounts) => {
                     from: WHITELISTED_CALLER,
                 },
             ),
-            'Oracle owner is already registered',
+            'Owner already registered',
         );
     });
 

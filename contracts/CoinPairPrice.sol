@@ -199,18 +199,18 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @param _price Price to report.
     /// @param _votedOracle The address of the oracle voted as a publisher by the network.
     /// @param _blockNumber The blocknumber acting as nonce to prevent replay attacks.
-    /// @param _sig_v The array of V-component of Oracle signatures.
-    /// @param _sig_r The array of R-component of Oracle signatures.
-    /// @param _sig_s The array of S-component of Oracle signatures.
+    /// @param _sigV The array of V-component of Oracle signatures.
+    /// @param _sigR The array of R-component of Oracle signatures.
+    /// @param _sigS The array of S-component of Oracle signatures.
     function publishPrice(
         uint256 _version,
         bytes32 _coinpair,
         uint256 _price,
         address _votedOracle,
         uint256 _blockNumber,
-        uint8[] calldata _sig_v,
-        bytes32[] calldata _sig_r,
-        bytes32[] calldata _sig_s
+        uint8[] calldata _sigV,
+        bytes32[] calldata _sigR,
+        bytes32[] calldata _sigS
     ) external {
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
         require(roundInfo.number > 0, "Round not open");
@@ -227,11 +227,11 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
 
         // Verify signatures
         require(
-            _sig_s.length == _sig_r.length && _sig_r.length == _sig_v.length,
+            _sigS.length == _sigR.length && _sigR.length == _sigV.length,
             "Inconsistent signature count"
         );
         require(
-            _sig_s.length > roundInfo.length() / 2,
+            _sigS.length > roundInfo.length() / 2,
             "Signature count must exceed 50% of active oracles"
         );
 
@@ -251,8 +251,8 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         bytes32 messageHash = keccak256(hData);
 
         address lastAddr = address(0);
-        for (uint256 i = 0; i < _sig_s.length; i++) {
-            address rec = _recoverSigner(_sig_v[i], _sig_r[i], _sig_s[i], messageHash);
+        for (uint256 i = 0; i < _sigS.length; i++) {
+            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], messageHash);
             require(rec != address(0), "Cannot recover signature");
             address ownerRec = oracleManager.getOracleOwner(rec);
             // require(subscribedOracles.contains(ownerRec), "Signing oracle not subscribed");

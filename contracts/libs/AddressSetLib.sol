@@ -117,7 +117,7 @@ library AddressSetLib {
      * - `index` must be strictly less than {length}.
      */
     function at(AddressSet storage set, uint256 index) internal view returns (address) {
-        require(set._values.length > index, "EnumerableSet: index out of bounds");
+        require(set._values.length > index, "index out of bounds");
         return set._values[index];
     }
 

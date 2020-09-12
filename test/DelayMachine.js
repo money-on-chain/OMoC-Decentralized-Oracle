@@ -2,16 +2,10 @@
 /* eslint-disable no-unused-expressions */
 const {expect} = require('chai');
 const {BN, expectRevert, expectEvent, time} = require('@openzeppelin/test-helpers');
-const TruffleContract = require('@truffle/contract');
 const DelayMachine = artifacts.require('DelayMachine');
 const MOCKStakingMachine = artifacts.require('MOCKStakingMachine');
-const GovernedERC20 = TruffleContract(require('@moc/shared/build/contracts/GovernedERC20.json'));
-GovernedERC20.setProvider(DelayMachine.currentProvider);
-GovernedERC20.defaults(DelayMachine.defaults());
-
-const MockGovernor = TruffleContract(require('@moc/shared/build/contracts/MockGovernor.json'));
-MockGovernor.setProvider(DelayMachine.currentProvider);
-MockGovernor.defaults(DelayMachine.defaults());
+const GovernedERC20 = artifacts.require('@moc/shared/GovernedERC20');
+const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
 
 contract('DelayMachine', (accounts) => {
     const [GOVERNOR_OWNER, DESTIONATION_MOC_HOLDER, SOURCE_MOC_HOLDER, DUMMY_ACCOUNT] = accounts;

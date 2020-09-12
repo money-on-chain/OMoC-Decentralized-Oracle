@@ -54,18 +54,18 @@ interface ICoinPairPrice {
     /// @param _price Price to report.
     /// @param _votedOracle The address of the oracle voted as a publisher by the network.
     /// @param _blockNumber The blocknumber acting as nonce to prevent replay attacks.
-    /// @param _sig_v The array of V-component of Oracle signatures.
-    /// @param _sig_r The array of R-component of Oracle signatures.
-    /// @param _sig_s The array of S-component of Oracle signatures.
+    /// @param _sigV The array of V-component of Oracle signatures.
+    /// @param _sigR The array of R-component of Oracle signatures.
+    /// @param _sigS The array of S-component of Oracle signatures.
     function publishPrice(
         uint256 _version,
         bytes32 _coinpair,
         uint256 _price,
         address _votedOracle,
         uint256 _blockNumber,
-        uint8[] calldata _sig_v,
-        bytes32[] calldata _sig_r,
-        bytes32[] calldata _sig_s
+        uint8[] calldata _sigV,
+        bytes32[] calldata _sigR,
+        bytes32[] calldata _sigS
     ) external;
 
     /// @notice Publish a price without signature validation (when there is an emergecy!!!).

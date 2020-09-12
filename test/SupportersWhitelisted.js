@@ -191,10 +191,7 @@ contract('SupportersWhitelisted', (accounts) => {
             expect(await this.supporters.getWhiteListAtIndex(1)).to.be.equal(accounts[5]);
             expect(await this.supporters.getWhiteListAtIndex(2)).to.be.equal(accounts[6]);
             expect(await this.supporters.getWhiteListAtIndex(3)).to.be.equal(accounts[7]);
-            await expectRevert(
-                this.supporters.getWhiteListAtIndex(4),
-                'EnumerableSet: index out of bounds',
-            );
+            await expectRevert(this.supporters.getWhiteListAtIndex(4), 'index out of bounds');
         });
     });
 

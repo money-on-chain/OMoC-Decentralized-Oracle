@@ -13,11 +13,11 @@ contract SubscribedOraclesMock {
 
     SubscribedOraclesLib.SubscribedOracles internal subscribedOracles;
 
-    mapping(address => uint256) stakes;
+    mapping(address => uint256) public stakes;
 
     uint256 public maxSubscribedOraclesPerRound;
 
-    AddressSetLib.AddressSet selectedOracles;
+    AddressSetLib.AddressSet internal selectedOracles;
 
     constructor(uint256 _maxSubscribedOraclesPerRound) public {
         maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;

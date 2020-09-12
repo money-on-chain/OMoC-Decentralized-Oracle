@@ -11,26 +11,26 @@ import {RegistryConstants} from "@moc/shared/contracts/RegistryConstants.sol";
  */
 contract MocRegistryInitChange is ChangeContract {
     IRegistry public registry;
-    address public delay_machine;
-    address public oracle_manager;
-    address public supporters_whitelisted;
-    address public info_getter;
+    address public delayMachine;
+    address public oracleManager;
+    address public supporters;
+    address public infoGetter;
 
     /**
       @notice Constructor
     */
     constructor(
         IRegistry _registry,
-        address _delay_machine,
-        address _oracle_manager,
-        address _supporters_whitelisted,
-        address _info_getter
+        address _delayMachine,
+        address _oracleManager,
+        address _supporters,
+        address _infoGetter
     ) public {
         registry = _registry;
-        delay_machine = _delay_machine;
-        oracle_manager = _oracle_manager;
-        supporters_whitelisted = _supporters_whitelisted;
-        info_getter = _info_getter;
+        delayMachine = _delayMachine;
+        oracleManager = _oracleManager;
+        supporters = _supporters;
+        infoGetter = _infoGetter;
     }
 
     /**
@@ -41,34 +41,34 @@ contract MocRegistryInitChange is ChangeContract {
     function execute() external override {
         require(address(registry) != address(0), "Use once");
 
-        registry.setAddress(get_keccak("MOC_DELAY_MACHINE"), delay_machine);
-        registry.setAddress(get_keccak("ORACLE_MANAGER_ADDR"), oracle_manager);
-        registry.setAddress(get_keccak("SUPPORTERS_ADDR"), supporters_whitelisted);
-        registry.setAddress(get_keccak("INFO_ADDR"), info_getter);
+        registry.setAddress(getKeccak("MOC_DELAY_MACHINE"), delayMachine);
+        registry.setAddress(getKeccak("ORACLE_MANAGER_ADDR"), oracleManager);
+        registry.setAddress(getKeccak("SUPPORTERS_ADDR"), supporters);
+        registry.setAddress(getKeccak("INFO_ADDR"), infoGetter);
 
-        registry.setUint(get_keccak("ORACLE_PRICE_FETCH_RATE"), 5);
-        registry.setUint(get_keccak("ORACLE_BLOCKCHAIN_INFO_INTERVAL"), 3);
-        registry.setUint(get_keccak("ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL"), 5);
-        registry.setUint(get_keccak("ORACLE_MAIN_LOOP_TASK_INTERVAL"), 120);
-        registry.setDecimal(get_keccak("ORACLE_PRICE_REJECT_DELTA_PCT"), 5, 1);
-        registry.setUint(get_keccak("ORACLE_CONFIGURATION_TASK_INTERVAL"), 240);
-        registry.setUint(get_keccak("ORACLE_GATHER_SIGNATURE_TIMEOUT"), 60);
-        registry.setUint(get_keccak("ORACLE_MAIN_EXECUTOR_TASK_INTERVAL"), 20);
-        registry.setUint(get_keccak("SCHEDULER_POOL_DELAY"), 1 * 60);
-        registry.setUint(get_keccak("SCHEDULER_ROUND_DELAY"), 30 * 60);
-        registry.setUint(get_keccak("ORACLE_PRICE_DIGITS"), 18);
-        registry.setUint(get_keccak("ORACLE_QUEUE_LEN"), 30);
-        registry.setUint(get_keccak("MESSAGE_VERSION"), 3);
-        registry.setUint(get_keccak("ORACLE_STAKE_LIMIT_MULTIPLICATOR"), 2);
-        registry.setDecimal(get_keccak("ORACLE_PRICE_DELTA_PCT"), 5, -2);
-        registry.setUint(get_keccak("ORACLE_PRICE_PUBLISH_BLOCKS"), 0);
-        registry.setBytes(get_keccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"020406080a");
-        registry.setUint(get_keccak("ORACLE_TRIGGER_VALID_PUBLICATION_BLOCKS"), 30);
+        registry.setUint(getKeccak("ORACLE_PRICE_FETCH_RATE"), 5);
+        registry.setUint(getKeccak("ORACLE_BLOCKCHAIN_INFO_INTERVAL"), 3);
+        registry.setUint(getKeccak("ORACLE_COIN_PAIR_LOOP_TASK_INTERVAL"), 5);
+        registry.setUint(getKeccak("ORACLE_MAIN_LOOP_TASK_INTERVAL"), 120);
+        registry.setDecimal(getKeccak("ORACLE_PRICE_REJECT_DELTA_PCT"), 5, 1);
+        registry.setUint(getKeccak("ORACLE_CONFIGURATION_TASK_INTERVAL"), 240);
+        registry.setUint(getKeccak("ORACLE_GATHER_SIGNATURE_TIMEOUT"), 60);
+        registry.setUint(getKeccak("ORACLE_MAIN_EXECUTOR_TASK_INTERVAL"), 20);
+        registry.setUint(getKeccak("SCHEDULER_POOL_DELAY"), 1 * 60);
+        registry.setUint(getKeccak("SCHEDULER_ROUND_DELAY"), 30 * 60);
+        registry.setUint(getKeccak("ORACLE_PRICE_DIGITS"), 18);
+        registry.setUint(getKeccak("ORACLE_QUEUE_LEN"), 30);
+        registry.setUint(getKeccak("MESSAGE_VERSION"), 3);
+        registry.setUint(getKeccak("ORACLE_STAKE_LIMIT_MULTIPLICATOR"), 2);
+        registry.setDecimal(getKeccak("ORACLE_PRICE_DELTA_PCT"), 5, -2);
+        registry.setUint(getKeccak("ORACLE_PRICE_PUBLISH_BLOCKS"), 0);
+        registry.setBytes(getKeccak("ORACLE_ENTERING_FALLBACKS_AMOUNTS"), hex"020406080a");
+        registry.setUint(getKeccak("ORACLE_TRIGGER_VALID_PUBLICATION_BLOCKS"), 30);
         // usable just once!!!
         registry = IRegistry(0);
     }
 
-    function get_keccak(string memory k) internal pure returns (bytes32) {
+    function getKeccak(string memory k) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked("MOC_ORACLE\\1\\", k));
     }
 }

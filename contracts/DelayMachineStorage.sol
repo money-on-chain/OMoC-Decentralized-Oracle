@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.6.0;
+pragma solidity ^0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 // prettier-ignore
@@ -31,9 +31,8 @@ contract DelayMachineStorage is Initializable, Governed {
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
+    // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
-
-    // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;

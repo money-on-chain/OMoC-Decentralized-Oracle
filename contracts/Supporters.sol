@@ -36,7 +36,7 @@ contract Supporters is SupportersStorage {
     );
 
     event Withdraw(
-        address indexed msg_sender,
+        address indexed msgSender,
         address indexed subacount,
         address indexed receiver,
         uint256 mocs,
@@ -48,7 +48,7 @@ contract Supporters is SupportersStorage {
         uint256 amount;
     }
 
-    mapping(address => LockingInfo) lockedMocs;
+    mapping(address => LockingInfo) public lockedMocs;
 
     /**
      @notice Contract creation
@@ -375,6 +375,7 @@ contract Supporters is SupportersStorage {
         uint256 mocs = supportersData._tokenToMoc(tokens);
         LockingInfo storage lockedMocsInfo = lockedMocs[subaccount];
         uint256 mocBalance = supportersData._getMOCBalanceAt(user, subaccount);
+        // solhint-disable-next-line not-rely-on-time
         if (block.timestamp < lockedMocsInfo.untilTimestamp) {
             lockedAmount = lockedMocsInfo.amount;
         }

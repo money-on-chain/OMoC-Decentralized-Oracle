@@ -64,7 +64,7 @@ contract('CoinPairPrice', async (accounts) => {
     it('Only Oracle manager can call subscribe', async () => {
         await expectRevert(
             this.coinPairPrice.subscribe(oracleData[0].account, {from: accounts[3]}),
-            'Must be called from Oracle manager',
+            'Oracle manager only',
         );
     });
 

@@ -9,7 +9,7 @@ import {IterableOraclesLib} from "../libs/IterableOraclesLib.sol";
 contract IterableOraclesMock {
     using IterableOraclesLib for IterableOraclesLib.IterableOraclesData;
 
-    IterableOraclesLib.IterableOraclesData iterableOracles;
+    IterableOraclesLib.IterableOraclesData internal iterableOracles;
 
     function isOracleRegistered(address oracleAddress) public view returns (bool) {
         return iterableOracles._isOracleRegistered(oracleAddress);

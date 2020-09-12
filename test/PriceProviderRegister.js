@@ -31,7 +31,7 @@ contract('PriceProviderRegister', (accounts) => {
             this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
                 from: accounts[0],
             }),
-            'This coin pair is already registered',
+            'Pair is already registered',
         );
     });
 
@@ -44,7 +44,7 @@ contract('PriceProviderRegister', (accounts) => {
             this.priceProviderRegister.unRegisterCoinPair(web3.utils.asciiToHex('TEST1'), 0, {
                 from: accounts[0],
             }),
-            'This coin pair is already unregistered',
+            'Pair is already unregistered',
         );
     });
 

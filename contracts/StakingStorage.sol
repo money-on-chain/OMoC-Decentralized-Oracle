@@ -22,13 +22,12 @@ contract StakingStorage is Initializable, Governed, IIterableWhitelist {
     // Whitelisted contracts that can lock stake.
     IterableWhitelistLib.IterableWhitelistData internal iterableWhitelistDataLock;
 
-    uint256 thirtyDays = 60 * 60 * 24 * 30;
+    uint256 public thirtyDays = 60 * 60 * 24 * 30;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
+    // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
-
-    // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;

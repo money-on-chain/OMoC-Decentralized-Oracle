@@ -87,6 +87,7 @@ library RoundInfoLib {
     }
 
     function isReadyToSwitch(RoundInfo storage _self) internal view returns (bool) {
+        // solhint-disable-next-line not-rely-on-time
         return block.timestamp > _self.lockPeriodTimestamp;
     }
 
@@ -97,6 +98,7 @@ library RoundInfoLib {
         _self.number = _self.number + 1;
         _self.totalPoints = 0;
         _self.startBlock = block.number + 1;
+        // solhint-disable-next-line not-rely-on-time
         _self.lockPeriodTimestamp = block.timestamp + 1 + _self.roundLockPeriodSecs;
         _self.selectedOracles.clear();
     }

@@ -19,10 +19,10 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
 
     // The publish message has a version field
-    uint256 constant PUBLISH_MESSAGE_VERSION = 3;
+    uint256 public constant PUBLISH_MESSAGE_VERSION = 3;
 
     // Maximum number of subscribed oracles.
-    uint256 maxSubscribedOraclesPerRound;
+    uint256 public maxSubscribedOraclesPerRound;
 
     // Round information.
     RoundInfoLib.RoundInfo internal roundInfo;
@@ -57,9 +57,8 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
+    // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
-
-    // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;
@@ -69,7 +68,7 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
       @dev You should use this modifier in any function that should be called only by oracle manager
      */
     modifier onlyOracleManager() {
-        require(msg.sender == address(oracleManager), "Must be called from Oracle manager");
+        require(msg.sender == address(oracleManager), "Oracle manager only");
         _;
     }
 }

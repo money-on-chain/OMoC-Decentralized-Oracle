@@ -94,11 +94,11 @@ contract('IterableOracles', (accounts) => {
                 ADDRESS_ONE,
                 'https://example.org/oracle0',
             ),
-            'Oracle owner is already registered',
+            'Owner already registered',
         );
         await expectRevert(
             iterableOracles.registerOracle(dummy, oracle.address, 'https://example.org/oracle0'),
-            'Oracle address is already registered',
+            'Oracle already registered',
         );
     });
 
@@ -131,7 +131,7 @@ contract('IterableOracles', (accounts) => {
         );
         await expectRevert(
             iterableOracles.setOracleAddress(oracle.owner, oracle.address),
-            'Oracle address already registered',
+            'Oracle already registered',
         );
     });
 

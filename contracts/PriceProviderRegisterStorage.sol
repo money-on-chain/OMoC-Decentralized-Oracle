@@ -15,13 +15,12 @@ contract PriceProviderRegisterStorage is Initializable, Governed {
     using CoinPairRegisterLib for CoinPairRegisterLib.CoinPairRegisterData;
 
     // Coin Pair register, has the same entries as OracleManage + calculated prices.
-    CoinPairRegisterLib.CoinPairRegisterData coinPairRegisterData;
+    CoinPairRegisterLib.CoinPairRegisterData internal coinPairRegisterData;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
+    // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
-
-    // solhint-disable-previous-line no-empty-blocks
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;

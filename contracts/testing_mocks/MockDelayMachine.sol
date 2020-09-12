@@ -8,8 +8,8 @@ import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/E
 
 contract MockDelayMachine is Governed {
     using SafeMath for uint256;
-    uint256 id;
-    IERC20 token;
+    uint256 public id;
+    IERC20 public token;
 
     function initialize(IGovernor _governor, IERC20 _token) external {
         token = _token;

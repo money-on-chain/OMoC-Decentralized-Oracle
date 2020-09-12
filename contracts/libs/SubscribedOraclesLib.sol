@@ -98,10 +98,10 @@ library SubscribedOraclesLib {
         function(address[] memory) external view returns (address, uint256) getMaxStake,
         AddressSetLib.AddressSet storage selectedOracles
     ) internal view returns (address, uint256) {
-        uint256 l = length(set);
-        address[] memory unselected = new address[](l);
+        uint256 len = length(set);
+        address[] memory unselected = new address[](len);
         uint256 j = 0;
-        for (uint256 i = 0; i < l; i++) {
+        for (uint256 i = 0; i < len; i++) {
             address c = at(set, i);
             if (selectedOracles.contains(c)) {
                 continue;

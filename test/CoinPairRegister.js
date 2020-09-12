@@ -55,7 +55,7 @@ contract('CoinPairRegister', (accounts) => {
                 web3.utils.asciiToHex(this.pairs[1].coinpair),
                 this.pairs[1].address,
             ),
-            'This coin pair is already registered',
+            'Pair is already registered',
         );
     });
 

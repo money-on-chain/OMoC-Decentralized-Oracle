@@ -19,7 +19,7 @@ library CoinPairRegisterLib {
         address addr
     ) internal {
         require(addr != address(0), "Address cannot be zero");
-        require(self.coinPairMap[coinPair] == address(0x0), "This coin pair is already registered");
+        require(self.coinPairMap[coinPair] == address(0x0), "Pair is already registered");
         self.coinPairMap[coinPair] = addr;
         self.coinPairList.push(coinPair);
     }
@@ -32,10 +32,7 @@ library CoinPairRegisterLib {
         bytes32 coinPair,
         uint256 hint
     ) internal {
-        require(
-            self.coinPairMap[coinPair] != address(0x0),
-            "This coin pair is already unregistered"
-        );
+        require(self.coinPairMap[coinPair] != address(0x0), "Pair is already unregistered");
         uint256 idx = _getCoinPairIndex(self, coinPair, hint);
         require(idx < self.coinPairList.length, "Coin pair not found");
         delete self.coinPairMap[coinPair];
