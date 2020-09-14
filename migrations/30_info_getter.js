@@ -8,7 +8,7 @@ async function deploy({config, ozParams, governor}) {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         network: ozParams.network,
-        txParams: {...ozParams.txParams, gas: 3000000},
+        txParams: {...ozParams.txParams, gas: 4000000},
     });
     console.log('InfoGetter: ', infoGetter.address);
 }

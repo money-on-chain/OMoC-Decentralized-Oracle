@@ -7,6 +7,7 @@ async function deploy({config, ozParams, governor}) {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         ...ozParams,
+        txParams: {...ozParams.txParams, gas: 5000000},
     });
     console.log('Staking: ', stakingMachine.address);
 }
