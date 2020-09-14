@@ -2,28 +2,27 @@
 const helpers = require('@moc/shared/lib/helpers');
 
 async function deploy({ozParams, governor}) {
-    const delayMachineAddr = await helpers.ozGetAddr('@moc/oracles/DelayMachine', ozParams);
-    console.log('delayMachineAddr', delayMachineAddr);
+    const oracles = {
+        delayMachine: 'DelayMachine',
+        oracleManager: 'OracleManager',
+        supporters: 'Supporters',
+        infoGetter: 'InfoGetter',
+    };
+    const addrs = {};
+    for (const o of Object.keys(oracles)) {
+        addrs[o] = helpers.ozGetAddr('@moc/oracles/' + oracles[o], ozParams);
+    }
 
-    const oracleManagerAddr = await helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
-    console.log('oracleManagerAddr', oracleManagerAddr);
+    addrs.registry = helpers.ozGetAddr('@moc/shared/Registry', ozParams);
 
-    const supportersAddr = await helpers.ozGetAddr('@moc/oracles/Supporters', ozParams);
-    console.log('supportersAddr', supportersAddr);
-
-    const infoGetterAddr = await helpers.ozGetAddr('@moc/oracles/InfoGetter', ozParams);
-    console.log('infoGetterAddr', infoGetterAddr);
-
-    const registryAddr = helpers.ozGetAddr('@moc/shared/Registry', ozParams);
-    console.log('Registry: ', registryAddr);
-
+    console.log('Populate registry using', addrs);
     const MocRegistryInitChange = artifacts.require('@moc/oracles/MocRegistryInitChange');
     const change = await MocRegistryInitChange.new(
-        registryAddr,
-        delayMachineAddr,
-        oracleManagerAddr,
-        supportersAddr,
-        infoGetterAddr,
+        addrs.registry,
+        addrs.delayMachine,
+        addrs.oracleManager,
+        addrs.supporters,
+        addrs.infoGetter,
     );
     console.log(
         'Initialize registry for MOC Oracles',
