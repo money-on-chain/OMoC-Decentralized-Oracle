@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {IStakingMachine} from "@moc/shared/contracts/IStakingMachine.sol";
+import {IStakingMachine, IStakingMachineOracles} from "@moc/shared/contracts/IStakingMachine.sol";
 import {IDelayMachine} from "@moc/shared/contracts/IDelayMachine.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
@@ -11,7 +11,7 @@ import {OracleManager} from "./OracleManager.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {StakingStorage} from "./StakingStorage.sol";
 
-contract Staking is StakingStorage, IStakingMachine {
+contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     using SafeMath for uint256;
 
     // -----------------------------------------------------------------------
@@ -147,78 +147,88 @@ contract Staking is StakingStorage, IStakingMachine {
     /// Delegates to the Oracle Manager smart contract.
     /// @param oracleAddr address of the oracle (from which we publish prices)
     /// @param url url used by the oracle server
-    function registerOracle(address oracleAddr, string calldata url) external {
+    function registerOracle(address oracleAddr, string calldata url) external override {
         oracleManager.registerOracle(msg.sender, oracleAddr, url);
     }
 
     /// @notice Change the oracle "internet" name (URI)
     /// @param url The new url to set.
-    function setOracleName(string calldata url) external {
+    function setOracleName(string calldata url) external override {
         oracleManager.setOracleName(msg.sender, url);
     }
 
     /// @notice Return true if the oracle is registered.
     /// @param ownerAddr The address of the owner of the Oracle to check for.
-    function isOracleRegistered(address ownerAddr) external view returns (bool) {
+    function isOracleRegistered(address ownerAddr) external override view returns (bool) {
         return oracleManager.isOracleRegistered(ownerAddr);
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param ownerAddr the address of the owner of the oracle to lookup.
-    function canRemoveOracle(address ownerAddr) external view returns (bool) {
+    function canRemoveOracle(address ownerAddr) external override view returns (bool) {
         return oracleManager.canRemoveOracle(ownerAddr);
     }
 
     /// @notice Remove an oracle.
     /// Delegates to the Oracle Manager smart contract.
-    function removeOracle() external {
+    function removeOracle() external override {
         oracleManager.removeOracle(msg.sender);
     }
 
     /// @notice Returns the count of registered coin pairs.
     /// Keep in mind that Deleted coin-pairs will contain zeroed addresses.
-    function getCoinPairCount() external view returns (uint256) {
+    function getCoinPairCount() external override view returns (uint256) {
         return oracleManager.getCoinPairCount();
     }
 
     /// @notice Returns the coin pair at index.
     /// @param i index to query.
-    function getCoinPairAtIndex(uint256 i) external view returns (bytes32) {
+    function getCoinPairAtIndex(uint256 i) external override view returns (bytes32) {
         return oracleManager.getCoinPairAtIndex(i);
     }
 
     /// @notice Return the contract address for a specified registered coin pair.
     /// @param coinPair Coin-pair string to lookup (e.g: BTCUSD)
     /// @return address Address of contract or zero if does not exist or was deleted.
-    function getContractAddress(bytes32 coinPair) external view returns (address) {
+    function getContractAddress(bytes32 coinPair) external override view returns (address) {
         return oracleManager.getContractAddress(coinPair);
     }
 
     /// @notice Searches a coinpair in coinPairList
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
-    function getCoinPairIndex(bytes32 coinPair, uint256 hint) external view returns (uint256) {
+    function getCoinPairIndex(bytes32 coinPair, uint256 hint)
+        external
+        override
+        view
+        returns (uint256)
+    {
         return oracleManager.getCoinPairIndex(coinPair, hint);
     }
 
     /// @notice Subscribe an oracle to a coin pair.
     /// Delegates to the Oracle Manager smart contract.
     /// @param coinPair coin pair to subscribe, for example BTCUSD
-    function subscribeToCoinPair(bytes32 coinPair) external {
+    function subscribeToCoinPair(bytes32 coinPair) external override {
         oracleManager.subscribeToCoinPair(msg.sender, coinPair);
     }
 
     /// @notice Unsubscribe an oracle from a coin pair.
     /// Delegates to the Oracle Manager smart contract.
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
-    function unsubscribeFromCoinPair(bytes32 coinPair) external {
+    function unSubscribeFromCoinPair(bytes32 coinPair) external override {
         oracleManager.unsubscribeFromCoinPair(msg.sender, coinPair);
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair
     /// @param ownerAddr address of the oracle
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
-    function isSubscribed(address ownerAddr, bytes32 coinPair) external view returns (bool) {
+    function isSubscribed(address ownerAddr, bytes32 coinPair)
+        external
+        override
+        view
+        returns (bool)
+    {
         return oracleManager.isSubscribed(ownerAddr, coinPair);
     }
 
