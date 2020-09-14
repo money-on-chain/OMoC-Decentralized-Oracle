@@ -1,1011 +1,984 @@
 {
-  "contractName": "CoinPairPriceFree",
-  "abi": [
-    {
-      "inputs": [],
-      "name": "coinPairPrice",
-      "outputs": [
+    "contractName": "CoinPairPriceFree",
+    "abi": [
         {
-          "internalType": "contract IPriceProvider",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IPriceProvider",
-          "name": "_coinPairPrice",
-          "type": "address"
-        }
-      ],
-      "name": "initialize",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "peek",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
+            "inputs": [],
+            "name": "coinPairPrice",
+            "outputs": [
+                {
+                    "internalType": "contract IPriceProvider",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
         },
         {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+            "inputs": [
+                {
+                    "internalType": "contract IPriceProvider",
+                    "name": "_coinPairPrice",
+                    "type": "address"
+                }
+            ],
+            "name": "initialize",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "peek",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function",
+            "constant": true
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"coinPairPrice\",\"outputs\":[{\"internalType\":\"contract IPriceProvider\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IPriceProvider\",\"name\":\"_coinPairPrice\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"peek\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"title\":\"This contract provides an interface for feeding prices from oracles, and        get the current price. One contract must be instanced per supported coin pair,        and registered through OracleManager global contract.\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"peek()\":{\"notice\":\"Return the current price, compatible with old MOC Oracle\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol\":\"CoinPairPriceFree\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol\":{\"keccak256\":\"0x729d246bf4aa03d9b37ceee78b2b4cbea6672813a790d2e04bdc8839ea481722\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6379dfd47a72fd8344fca4312f31c856c6ca67725ac621bee3c7a54441e13e44\",\"dweb:/ipfs/QmW1u46VWkBcPGnxj4JSmJr917539UH5qKT5hDGLbZckvs\"]},\"@moc/shared/contracts/IPriceProvider.sol\":{\"keccak256\":\"0xe23c45a9401a30709263ca8a1c4c81c7fcabbbdce4124058c46859b017be748b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://43bf5597963c3f7c9e258ae09a12d26a32b171163e847c0ea22255552a835605\",\"dweb:/ipfs/QmUetpLBWhBCQugHS2JFkERKurP67hQUcunuG48ZHKid3z\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]}},\"version\":1}",
+    "bytecode": "0x608060405234801561001057600080fd5b5061026b806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80634b6123041461004657806359e02dd71461006a578063c4d66de81461008b575b600080fd5b61004e6100b3565b604080516001600160a01b039092168252519081900360200190f35b6100726100c2565b6040805192835290151560208301528051918290030190f35b6100b1600480360360208110156100a157600080fd5b50356001600160a01b0316610143565b005b6033546001600160a01b031681565b603354604080516359e02dd760e01b8152815160009384936001600160a01b03909116926359e02dd79260048083019392829003018186803b15801561010757600080fd5b505afa15801561011b573d6000803e3d6000fd5b505050506040513d604081101561013157600080fd5b50805160209091015190925090509091565b600054610100900460ff168061015c575061015c610201565b8061016a575060005460ff16155b6101a55760405162461bcd60e51b815260040180806020018281038252602e815260200180610208602e913960400191505060405180910390fd5b600054610100900460ff161580156101d0576000805460ff1961ff0019909116610100171660011790555b603380546001600160a01b0319166001600160a01b03841617905580156101fd576000805461ff00191690555b5050565b303b159056fe436f6e747261637420696e7374616e63652068617320616c7265616479206265656e20696e697469616c697a6564a2646970667358221220ac41a500049404342a405af328e8f39818f659695317c9628f4775d4d254cea464736f6c634300060c0033",
+    "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c80634b6123041461004657806359e02dd71461006a578063c4d66de81461008b575b600080fd5b61004e6100b3565b604080516001600160a01b039092168252519081900360200190f35b6100726100c2565b6040805192835290151560208301528051918290030190f35b6100b1600480360360208110156100a157600080fd5b50356001600160a01b0316610143565b005b6033546001600160a01b031681565b603354604080516359e02dd760e01b8152815160009384936001600160a01b03909116926359e02dd79260048083019392829003018186803b15801561010757600080fd5b505afa15801561011b573d6000803e3d6000fd5b505050506040513d604081101561013157600080fd5b50805160209091015190925090509091565b600054610100900460ff168061015c575061015c610201565b8061016a575060005460ff16155b6101a55760405162461bcd60e51b815260040180806020018281038252602e815260200180610208602e913960400191505060405180910390fd5b600054610100900460ff161580156101d0576000805460ff1961ff0019909116610100171660011790555b603380546001600160a01b0319166001600160a01b03841617905580156101fd576000805461ff00191690555b5050565b303b159056fe436f6e747261637420696e7374616e63652068617320616c7265616479206265656e20696e697469616c697a6564a2646970667358221220ac41a500049404342a405af328e8f39818f659695317c9628f4775d4d254cea464736f6c634300060c0033",
+    "immutableReferences": {},
+    "sourceMap": "477:413:3:-:0;;;;;;;;;;;;;;;;;;;",
+    "deployedSourceMap": "477:413:3:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;543:35;;;:::i;:::-;;;;-1:-1:-1;;;;;543:35:3;;;;;;;;;;;;;;781:107;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;585:117;;;;;;;;;;;;;;;;-1:-1:-1;585:117:3;-1:-1:-1;;;;;585:117:3;;:::i;:::-;;543:35;;;-1:-1:-1;;;;;543:35:3;;:::o;781:107::-;861:13;;:20;;;-1:-1:-1;;;861:20:3;;;;829:7;;;;-1:-1:-1;;;;;861:13:3;;;;:18;;:20;;;;;;;;;;;:13;:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;861:20:3;;;;;;;;;-1:-1:-1;861:20:3;-1:-1:-1;781:107:3;;:::o;585:117::-;1024:12:62;;;;;;;;:31;;;1040:15;:13;:15::i;:::-;1024:47;;;-1:-1:-1;1060:11:62;;;;1059:12;1024:47;1016:106;;;;-1:-1:-1;;;1016:106:62;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1129:19;1152:12;;;;;;1151:13;1170:80;;;;1198:12;:19;;-1:-1:-1;;;;1198:19:62;;;;;1225:18;1213:4;1225:18;;;1170:80;665:13:3::1;:30:::0;;-1:-1:-1;;;;;;665:30:3::1;-1:-1:-1::0;;;;;665:30:3;::::1;;::::0;;1264:55:62;;;;1307:5;1292:20;;-1:-1:-1;;1292:20:62;;;1264:55;585:117:3;;:::o;1409:498:62:-;1820:4;1864:17;1895:7;1409:498;:::o",
+    "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {IPriceProvider} from \"@moc/shared/contracts/IPriceProvider.sol\";\nimport {Initializable} from \"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\";\n\n/// @title This contract provides an interface for feeding prices from oracles, and\n///        get the current price. One contract must be instanced per supported coin pair,\n///        and registered through OracleManager global contract.\ncontract CoinPairPriceFree is Initializable, IPriceProvider {\n    IPriceProvider public coinPairPrice;\n\n    function initialize(IPriceProvider _coinPairPrice) public initializer {\n        coinPairPrice = _coinPairPrice;\n    }\n\n    /// @notice Return the current price, compatible with old MOC Oracle\n    function peek() external override view returns (bytes32, bool) {\n        return coinPairPrice.peek();\n    }\n}\n",
+    "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol",
+    "ast": {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol",
+        "exportedSymbols": {
+            "CoinPairPriceFree": [1377]
+        },
+        "id": 1378,
+        "license": "UNLICENSED",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1339,
+                "literals": ["solidity", "0.6", ".12"],
+                "nodeType": "PragmaDirective",
+                "src": "39:23:3"
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/IPriceProvider.sol",
+                "file": "@moc/shared/contracts/IPriceProvider.sol",
+                "id": 1341,
+                "nodeType": "ImportDirective",
+                "scope": 1378,
+                "sourceUnit": 10963,
+                "src": "64:72:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 1340,
+                            "name": "IPriceProvider",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "72:14:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
+                "file": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
+                "id": 1343,
+                "nodeType": "ImportDirective",
+                "scope": 1378,
+                "sourceUnit": 11552,
+                "src": "137:99:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 1342,
+                            "name": "Initializable",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "145:13:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 1345,
+                            "name": "Initializable",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11551,
+                            "src": "507:13:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_Initializable_$11551",
+                                "typeString": "contract Initializable"
+                            }
+                        },
+                        "id": 1346,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "507:13:3"
+                    },
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 1347,
+                            "name": "IPriceProvider",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 10962,
+                            "src": "522:14:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                "typeString": "contract IPriceProvider"
+                            }
+                        },
+                        "id": 1348,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "522:14:3"
+                    }
+                ],
+                "contractDependencies": [10962, 11551],
+                "contractKind": "contract",
+                "documentation": {
+                    "id": 1344,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "238:239:3",
+                    "text": "@title This contract provides an interface for feeding prices from oracles, and\n        get the current price. One contract must be instanced per supported coin pair,\n        and registered through OracleManager global contract."
+                },
+                "fullyImplemented": true,
+                "id": 1377,
+                "linearizedBaseContracts": [1377, 10962, 11551],
+                "name": "CoinPairPriceFree",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "functionSelector": "4b612304",
+                        "id": 1350,
+                        "mutability": "mutable",
+                        "name": "coinPairPrice",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 1377,
+                        "src": "543:35:3",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                            "typeString": "contract IPriceProvider"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 1349,
+                            "name": "IPriceProvider",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 10962,
+                            "src": "543:14:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                "typeString": "contract IPriceProvider"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 1361,
+                            "nodeType": "Block",
+                            "src": "655:47:3",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 1359,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1357,
+                                            "name": "coinPairPrice",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1350,
+                                            "src": "665:13:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                                "typeString": "contract IPriceProvider"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1358,
+                                            "name": "_coinPairPrice",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1352,
+                                            "src": "681:14:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                                "typeString": "contract IPriceProvider"
+                                            }
+                                        },
+                                        "src": "665:30:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                            "typeString": "contract IPriceProvider"
+                                        }
+                                    },
+                                    "id": 1360,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "665:30:3"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "functionSelector": "c4d66de8",
+                        "id": 1362,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [
+                            {
+                                "arguments": null,
+                                "id": 1355,
+                                "modifierName": {
+                                    "argumentTypes": null,
+                                    "id": 1354,
+                                    "name": "initializer",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 11524,
+                                    "src": "643:11:3",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_modifier$__$",
+                                        "typeString": "modifier ()"
+                                    }
+                                },
+                                "nodeType": "ModifierInvocation",
+                                "src": "643:11:3"
+                            }
+                        ],
+                        "name": "initialize",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 1353,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1352,
+                                    "mutability": "mutable",
+                                    "name": "_coinPairPrice",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 1362,
+                                    "src": "605:29:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                        "typeString": "contract IPriceProvider"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 1351,
+                                        "name": "IPriceProvider",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 10962,
+                                        "src": "605:14:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                            "typeString": "contract IPriceProvider"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "604:31:3"
+                        },
+                        "returnParameters": {
+                            "id": 1356,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "655:0:3"
+                        },
+                        "scope": 1377,
+                        "src": "585:117:3",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "baseFunctions": [10961],
+                        "body": {
+                            "id": 1375,
+                            "nodeType": "Block",
+                            "src": "844:44:3",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [],
+                                        "expression": {
+                                            "argumentTypes": [],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 1371,
+                                                "name": "coinPairPrice",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 1350,
+                                                "src": "861:13:3",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                                    "typeString": "contract IPriceProvider"
+                                                }
+                                            },
+                                            "id": 1372,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "peek",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 10961,
+                                            "src": "861:18:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$_t_bool_$",
+                                                "typeString": "function () view external returns (bytes32,bool)"
+                                            }
+                                        },
+                                        "id": 1373,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "861:20:3",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$_t_bytes32_$_t_bool_$",
+                                            "typeString": "tuple(bytes32,bool)"
+                                        }
+                                    },
+                                    "functionReturnParameters": 1370,
+                                    "id": 1374,
+                                    "nodeType": "Return",
+                                    "src": "854:27:3"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 1363,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "708:68:3",
+                            "text": "@notice Return the current price, compatible with old MOC Oracle"
+                        },
+                        "functionSelector": "59e02dd7",
+                        "id": 1376,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "peek",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": {
+                            "id": 1365,
+                            "nodeType": "OverrideSpecifier",
+                            "overrides": [],
+                            "src": "806:8:3"
+                        },
+                        "parameters": {
+                            "id": 1364,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "794:2:3"
+                        },
+                        "returnParameters": {
+                            "id": 1370,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1367,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 1376,
+                                    "src": "829:7:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 1366,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "829:7:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 1369,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 1376,
+                                    "src": "838:4:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 1368,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "838:4:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "828:15:3"
+                        },
+                        "scope": 1377,
+                        "src": "781:107:3",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1378,
+                "src": "477:413:3"
+            }
+        ],
+        "src": "39:852:3"
+    },
+    "legacyAST": {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol",
+        "exportedSymbols": {
+            "CoinPairPriceFree": [1377]
+        },
+        "id": 1378,
+        "license": "UNLICENSED",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1339,
+                "literals": ["solidity", "0.6", ".12"],
+                "nodeType": "PragmaDirective",
+                "src": "39:23:3"
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/IPriceProvider.sol",
+                "file": "@moc/shared/contracts/IPriceProvider.sol",
+                "id": 1341,
+                "nodeType": "ImportDirective",
+                "scope": 1378,
+                "sourceUnit": 10963,
+                "src": "64:72:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 1340,
+                            "name": "IPriceProvider",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "72:14:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
+                "file": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
+                "id": 1343,
+                "nodeType": "ImportDirective",
+                "scope": 1378,
+                "sourceUnit": 11552,
+                "src": "137:99:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 1342,
+                            "name": "Initializable",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "145:13:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 1345,
+                            "name": "Initializable",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11551,
+                            "src": "507:13:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_Initializable_$11551",
+                                "typeString": "contract Initializable"
+                            }
+                        },
+                        "id": 1346,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "507:13:3"
+                    },
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 1347,
+                            "name": "IPriceProvider",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 10962,
+                            "src": "522:14:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                "typeString": "contract IPriceProvider"
+                            }
+                        },
+                        "id": 1348,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "522:14:3"
+                    }
+                ],
+                "contractDependencies": [10962, 11551],
+                "contractKind": "contract",
+                "documentation": {
+                    "id": 1344,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "238:239:3",
+                    "text": "@title This contract provides an interface for feeding prices from oracles, and\n        get the current price. One contract must be instanced per supported coin pair,\n        and registered through OracleManager global contract."
+                },
+                "fullyImplemented": true,
+                "id": 1377,
+                "linearizedBaseContracts": [1377, 10962, 11551],
+                "name": "CoinPairPriceFree",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "functionSelector": "4b612304",
+                        "id": 1350,
+                        "mutability": "mutable",
+                        "name": "coinPairPrice",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 1377,
+                        "src": "543:35:3",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                            "typeString": "contract IPriceProvider"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 1349,
+                            "name": "IPriceProvider",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 10962,
+                            "src": "543:14:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                "typeString": "contract IPriceProvider"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 1361,
+                            "nodeType": "Block",
+                            "src": "655:47:3",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 1359,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1357,
+                                            "name": "coinPairPrice",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1350,
+                                            "src": "665:13:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                                "typeString": "contract IPriceProvider"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1358,
+                                            "name": "_coinPairPrice",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1352,
+                                            "src": "681:14:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                                "typeString": "contract IPriceProvider"
+                                            }
+                                        },
+                                        "src": "665:30:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                            "typeString": "contract IPriceProvider"
+                                        }
+                                    },
+                                    "id": 1360,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "665:30:3"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "functionSelector": "c4d66de8",
+                        "id": 1362,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [
+                            {
+                                "arguments": null,
+                                "id": 1355,
+                                "modifierName": {
+                                    "argumentTypes": null,
+                                    "id": 1354,
+                                    "name": "initializer",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 11524,
+                                    "src": "643:11:3",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_modifier$__$",
+                                        "typeString": "modifier ()"
+                                    }
+                                },
+                                "nodeType": "ModifierInvocation",
+                                "src": "643:11:3"
+                            }
+                        ],
+                        "name": "initialize",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 1353,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1352,
+                                    "mutability": "mutable",
+                                    "name": "_coinPairPrice",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 1362,
+                                    "src": "605:29:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                        "typeString": "contract IPriceProvider"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 1351,
+                                        "name": "IPriceProvider",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 10962,
+                                        "src": "605:14:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                            "typeString": "contract IPriceProvider"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "604:31:3"
+                        },
+                        "returnParameters": {
+                            "id": 1356,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "655:0:3"
+                        },
+                        "scope": 1377,
+                        "src": "585:117:3",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "baseFunctions": [10961],
+                        "body": {
+                            "id": 1375,
+                            "nodeType": "Block",
+                            "src": "844:44:3",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [],
+                                        "expression": {
+                                            "argumentTypes": [],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 1371,
+                                                "name": "coinPairPrice",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 1350,
+                                                "src": "861:13:3",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_IPriceProvider_$10962",
+                                                    "typeString": "contract IPriceProvider"
+                                                }
+                                            },
+                                            "id": 1372,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "peek",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 10961,
+                                            "src": "861:18:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$_t_bool_$",
+                                                "typeString": "function () view external returns (bytes32,bool)"
+                                            }
+                                        },
+                                        "id": 1373,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "861:20:3",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$_t_bytes32_$_t_bool_$",
+                                            "typeString": "tuple(bytes32,bool)"
+                                        }
+                                    },
+                                    "functionReturnParameters": 1370,
+                                    "id": 1374,
+                                    "nodeType": "Return",
+                                    "src": "854:27:3"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 1363,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "708:68:3",
+                            "text": "@notice Return the current price, compatible with old MOC Oracle"
+                        },
+                        "functionSelector": "59e02dd7",
+                        "id": 1376,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "peek",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": {
+                            "id": 1365,
+                            "nodeType": "OverrideSpecifier",
+                            "overrides": [],
+                            "src": "806:8:3"
+                        },
+                        "parameters": {
+                            "id": 1364,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "794:2:3"
+                        },
+                        "returnParameters": {
+                            "id": 1370,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1367,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 1376,
+                                    "src": "829:7:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 1366,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "829:7:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 1369,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 1376,
+                                    "src": "838:4:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 1368,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "838:4:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "828:15:3"
+                        },
+                        "scope": 1377,
+                        "src": "781:107:3",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1378,
+                "src": "477:413:3"
+            }
+        ],
+        "src": "39:852:3"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.2.4",
+    "updatedAt": "2020-09-14T21:54:39.356Z",
+    "networkType": "ethereum",
+    "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "title": "This contract provides an interface for feeding prices from oracles, and        get the current price. One contract must be instanced per supported coin pair,        and registered through OracleManager global contract.",
+        "version": 1
+    },
+    "userdoc": {
+        "kind": "user",
+        "methods": {
+            "peek()": {
+                "notice": "Return the current price, compatible with old MOC Oracle"
+            }
+        },
+        "version": 1
     }
-  ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"coinPairPrice\",\"outputs\":[{\"internalType\":\"contract IPriceProvider\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IPriceProvider\",\"name\":\"_coinPairPrice\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"peek\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"title\":\"This contract provides an interface for feeding prices from oracles, and        get the current price. One contract must be instanced per supported coin pair,        and registered through OracleManager global contract.\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"peek()\":{\"notice\":\"Return the current price, compatible with old MOC Oracle\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol\":\"CoinPairPriceFree\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol\":{\"keccak256\":\"0x729d246bf4aa03d9b37ceee78b2b4cbea6672813a790d2e04bdc8839ea481722\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6379dfd47a72fd8344fca4312f31c856c6ca67725ac621bee3c7a54441e13e44\",\"dweb:/ipfs/QmW1u46VWkBcPGnxj4JSmJr917539UH5qKT5hDGLbZckvs\"]},\"@moc/shared/contracts/IPriceProvider.sol\":{\"keccak256\":\"0xe23c45a9401a30709263ca8a1c4c81c7fcabbbdce4124058c46859b017be748b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://43bf5597963c3f7c9e258ae09a12d26a32b171163e847c0ea22255552a835605\",\"dweb:/ipfs/QmUetpLBWhBCQugHS2JFkERKurP67hQUcunuG48ZHKid3z\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5061037d806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80634b6123041461004657806359e02dd71461007a578063c4d66de8146100a1575b600080fd5b61004e6100e5565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b61008261010b565b6040518083815260200182151581526020019250505060405180910390f35b6100e3600480360360208110156100b757600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506101c2565b005b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166359e02dd76040518163ffffffff1660e01b8152600401604080518083038186803b15801561017557600080fd5b505afa158015610189573d6000803e3d6000fd5b505050506040513d604081101561019f57600080fd5b810190808051906020019092919080519060200190929190505050915091509091565b600060019054906101000a900460ff16806101e157506101e0610302565b5b806101f7575060008054906101000a900460ff16155b61024c576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252602e81526020018061031a602e913960400191505060405180910390fd5b60008060019054906101000a900460ff16159050801561029c576001600060016101000a81548160ff02191690831515021790555060016000806101000a81548160ff0219169083151502179055505b81603360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080156102fe5760008060016101000a81548160ff0219169083151502179055505b5050565b6000803090506000813b905060008114925050509056fe436f6e747261637420696e7374616e63652068617320616c7265616479206265656e20696e697469616c697a6564a2646970667358221220033a0bd69e9ae89806345090c5377411ad6ef2fc1cda86441f2494a4279698e364736f6c634300060c0033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c80634b6123041461004657806359e02dd71461007a578063c4d66de8146100a1575b600080fd5b61004e6100e5565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b61008261010b565b6040518083815260200182151581526020019250505060405180910390f35b6100e3600480360360208110156100b757600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506101c2565b005b603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080603360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166359e02dd76040518163ffffffff1660e01b8152600401604080518083038186803b15801561017557600080fd5b505afa158015610189573d6000803e3d6000fd5b505050506040513d604081101561019f57600080fd5b810190808051906020019092919080519060200190929190505050915091509091565b600060019054906101000a900460ff16806101e157506101e0610302565b5b806101f7575060008054906101000a900460ff16155b61024c576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252602e81526020018061031a602e913960400191505060405180910390fd5b60008060019054906101000a900460ff16159050801561029c576001600060016101000a81548160ff02191690831515021790555060016000806101000a81548160ff0219169083151502179055505b81603360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080156102fe5760008060016101000a81548160ff0219169083151502179055505b5050565b6000803090506000813b905060008114925050509056fe436f6e747261637420696e7374616e63652068617320616c7265616479206265656e20696e697469616c697a6564a2646970667358221220033a0bd69e9ae89806345090c5377411ad6ef2fc1cda86441f2494a4279698e364736f6c634300060c0033",
-  "immutableReferences": {},
-  "sourceMap": "477:413:3:-:0;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "477:413:3:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;543:35;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;781:107;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;585:117;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;543:35;;;;;;;;;;;;;:::o;781:107::-;829:7;838:4;861:13;;;;;;;;;;;:18;;;:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;854:27;;;;781:107;;:::o;585:117::-;1024:12:62;;;;;;;;;;;:31;;;;1040:15;:13;:15::i;:::-;1024:31;:47;;;;1060:11;;;;;;;;;;1059:12;1024:47;1016:106;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1129:19;1152:12;;;;;;;;;;;1151:13;1129:35;;1174:14;1170:80;;;1213:4;1198:12;;:19;;;;;;;;;;;;;;;;;;1239:4;1225:11;;:18;;;;;;;;;;;;;;;;;;1170:80;681:14:3::1;665:13;;:30;;;;;;;;;;;;;;;;;;1268:14:62::0;1264:55;;;1307:5;1292:12;;:20;;;;;;;;;;;;;;;;;;1264:55;585:117:3;;:::o;1409:498:62:-;1456:4;1797:12;1820:4;1797:28;;1831:10;1876:4;1864:17;1858:23;;1901:1;1895:2;:7;1888:14;;;;1409:498;:::o",
-  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {IPriceProvider} from \"@moc/shared/contracts/IPriceProvider.sol\";\nimport {Initializable} from \"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\";\n\n/// @title This contract provides an interface for feeding prices from oracles, and\n///        get the current price. One contract must be instanced per supported coin pair,\n///        and registered through OracleManager global contract.\ncontract CoinPairPriceFree is Initializable, IPriceProvider {\n    IPriceProvider public coinPairPrice;\n\n    function initialize(IPriceProvider _coinPairPrice) public initializer {\n        coinPairPrice = _coinPairPrice;\n    }\n\n    /// @notice Return the current price, compatible with old MOC Oracle\n    function peek() external override view returns (bytes32, bool) {\n        return coinPairPrice.peek();\n    }\n}\n",
-  "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol",
-  "ast": {
-    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol",
-    "exportedSymbols": {
-      "CoinPairPriceFree": [
-        1377
-      ]
-    },
-    "id": 1378,
-    "license": "UNLICENSED",
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 1339,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "39:23:3"
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/IPriceProvider.sol",
-        "file": "@moc/shared/contracts/IPriceProvider.sol",
-        "id": 1341,
-        "nodeType": "ImportDirective",
-        "scope": 1378,
-        "sourceUnit": 11006,
-        "src": "64:72:3",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 1340,
-              "name": "IPriceProvider",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "72:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
-        "file": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
-        "id": 1343,
-        "nodeType": "ImportDirective",
-        "scope": 1378,
-        "sourceUnit": 11610,
-        "src": "137:99:3",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 1342,
-              "name": "Initializable",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "145:13:3",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "abstract": false,
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 1345,
-              "name": "Initializable",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11609,
-              "src": "507:13:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Initializable_$11609",
-                "typeString": "contract Initializable"
-              }
-            },
-            "id": 1346,
-            "nodeType": "InheritanceSpecifier",
-            "src": "507:13:3"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 1347,
-              "name": "IPriceProvider",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11005,
-              "src": "522:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                "typeString": "contract IPriceProvider"
-              }
-            },
-            "id": 1348,
-            "nodeType": "InheritanceSpecifier",
-            "src": "522:14:3"
-          }
-        ],
-        "contractDependencies": [
-          11005,
-          11609
-        ],
-        "contractKind": "contract",
-        "documentation": {
-          "id": 1344,
-          "nodeType": "StructuredDocumentation",
-          "src": "238:239:3",
-          "text": "@title This contract provides an interface for feeding prices from oracles, and\n        get the current price. One contract must be instanced per supported coin pair,\n        and registered through OracleManager global contract."
-        },
-        "fullyImplemented": true,
-        "id": 1377,
-        "linearizedBaseContracts": [
-          1377,
-          11005,
-          11609
-        ],
-        "name": "CoinPairPriceFree",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "functionSelector": "4b612304",
-            "id": 1350,
-            "mutability": "mutable",
-            "name": "coinPairPrice",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 1377,
-            "src": "543:35:3",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-              "typeString": "contract IPriceProvider"
-            },
-            "typeName": {
-              "contractScope": null,
-              "id": 1349,
-              "name": "IPriceProvider",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11005,
-              "src": "543:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                "typeString": "contract IPriceProvider"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 1361,
-              "nodeType": "Block",
-              "src": "655:47:3",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 1359,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 1357,
-                      "name": "coinPairPrice",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 1350,
-                      "src": "665:13:3",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                        "typeString": "contract IPriceProvider"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 1358,
-                      "name": "_coinPairPrice",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 1352,
-                      "src": "681:14:3",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                        "typeString": "contract IPriceProvider"
-                      }
-                    },
-                    "src": "665:30:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                      "typeString": "contract IPriceProvider"
-                    }
-                  },
-                  "id": 1360,
-                  "nodeType": "ExpressionStatement",
-                  "src": "665:30:3"
-                }
-              ]
-            },
-            "documentation": null,
-            "functionSelector": "c4d66de8",
-            "id": 1362,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [
-              {
-                "arguments": null,
-                "id": 1355,
-                "modifierName": {
-                  "argumentTypes": null,
-                  "id": 1354,
-                  "name": "initializer",
-                  "nodeType": "Identifier",
-                  "overloadedDeclarations": [],
-                  "referencedDeclaration": 11582,
-                  "src": "643:11:3",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_modifier$__$",
-                    "typeString": "modifier ()"
-                  }
-                },
-                "nodeType": "ModifierInvocation",
-                "src": "643:11:3"
-              }
-            ],
-            "name": "initialize",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 1353,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 1352,
-                  "mutability": "mutable",
-                  "name": "_coinPairPrice",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 1362,
-                  "src": "605:29:3",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                    "typeString": "contract IPriceProvider"
-                  },
-                  "typeName": {
-                    "contractScope": null,
-                    "id": 1351,
-                    "name": "IPriceProvider",
-                    "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 11005,
-                    "src": "605:14:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                      "typeString": "contract IPriceProvider"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "604:31:3"
-            },
-            "returnParameters": {
-              "id": 1356,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "655:0:3"
-            },
-            "scope": 1377,
-            "src": "585:117:3",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "public"
-          },
-          {
-            "baseFunctions": [
-              11004
-            ],
-            "body": {
-              "id": 1375,
-              "nodeType": "Block",
-              "src": "844:44:3",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [],
-                    "expression": {
-                      "argumentTypes": [],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 1371,
-                        "name": "coinPairPrice",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 1350,
-                        "src": "861:13:3",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                          "typeString": "contract IPriceProvider"
-                        }
-                      },
-                      "id": 1372,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "peek",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11004,
-                      "src": "861:18:3",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$_t_bool_$",
-                        "typeString": "function () view external returns (bytes32,bool)"
-                      }
-                    },
-                    "id": 1373,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "861:20:3",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$_t_bytes32_$_t_bool_$",
-                      "typeString": "tuple(bytes32,bool)"
-                    }
-                  },
-                  "functionReturnParameters": 1370,
-                  "id": 1374,
-                  "nodeType": "Return",
-                  "src": "854:27:3"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 1363,
-              "nodeType": "StructuredDocumentation",
-              "src": "708:68:3",
-              "text": "@notice Return the current price, compatible with old MOC Oracle"
-            },
-            "functionSelector": "59e02dd7",
-            "id": 1376,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "peek",
-            "nodeType": "FunctionDefinition",
-            "overrides": {
-              "id": 1365,
-              "nodeType": "OverrideSpecifier",
-              "overrides": [],
-              "src": "806:8:3"
-            },
-            "parameters": {
-              "id": 1364,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "794:2:3"
-            },
-            "returnParameters": {
-              "id": 1370,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 1367,
-                  "mutability": "mutable",
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 1376,
-                  "src": "829:7:3",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bytes32",
-                    "typeString": "bytes32"
-                  },
-                  "typeName": {
-                    "id": 1366,
-                    "name": "bytes32",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "829:7:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes32",
-                      "typeString": "bytes32"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 1369,
-                  "mutability": "mutable",
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 1376,
-                  "src": "838:4:3",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
-                  },
-                  "typeName": {
-                    "id": 1368,
-                    "name": "bool",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "838:4:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "828:15:3"
-            },
-            "scope": 1377,
-            "src": "781:107:3",
-            "stateMutability": "view",
-            "virtual": false,
-            "visibility": "external"
-          }
-        ],
-        "scope": 1378,
-        "src": "477:413:3"
-      }
-    ],
-    "src": "39:852:3"
-  },
-  "legacyAST": {
-    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol",
-    "exportedSymbols": {
-      "CoinPairPriceFree": [
-        1377
-      ]
-    },
-    "id": 1378,
-    "license": "UNLICENSED",
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 1339,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "39:23:3"
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/IPriceProvider.sol",
-        "file": "@moc/shared/contracts/IPriceProvider.sol",
-        "id": 1341,
-        "nodeType": "ImportDirective",
-        "scope": 1378,
-        "sourceUnit": 11006,
-        "src": "64:72:3",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 1340,
-              "name": "IPriceProvider",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "72:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
-        "file": "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol",
-        "id": 1343,
-        "nodeType": "ImportDirective",
-        "scope": 1378,
-        "sourceUnit": 11610,
-        "src": "137:99:3",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 1342,
-              "name": "Initializable",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "145:13:3",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "abstract": false,
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 1345,
-              "name": "Initializable",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11609,
-              "src": "507:13:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Initializable_$11609",
-                "typeString": "contract Initializable"
-              }
-            },
-            "id": 1346,
-            "nodeType": "InheritanceSpecifier",
-            "src": "507:13:3"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 1347,
-              "name": "IPriceProvider",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11005,
-              "src": "522:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                "typeString": "contract IPriceProvider"
-              }
-            },
-            "id": 1348,
-            "nodeType": "InheritanceSpecifier",
-            "src": "522:14:3"
-          }
-        ],
-        "contractDependencies": [
-          11005,
-          11609
-        ],
-        "contractKind": "contract",
-        "documentation": {
-          "id": 1344,
-          "nodeType": "StructuredDocumentation",
-          "src": "238:239:3",
-          "text": "@title This contract provides an interface for feeding prices from oracles, and\n        get the current price. One contract must be instanced per supported coin pair,\n        and registered through OracleManager global contract."
-        },
-        "fullyImplemented": true,
-        "id": 1377,
-        "linearizedBaseContracts": [
-          1377,
-          11005,
-          11609
-        ],
-        "name": "CoinPairPriceFree",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "functionSelector": "4b612304",
-            "id": 1350,
-            "mutability": "mutable",
-            "name": "coinPairPrice",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 1377,
-            "src": "543:35:3",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-              "typeString": "contract IPriceProvider"
-            },
-            "typeName": {
-              "contractScope": null,
-              "id": 1349,
-              "name": "IPriceProvider",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11005,
-              "src": "543:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                "typeString": "contract IPriceProvider"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 1361,
-              "nodeType": "Block",
-              "src": "655:47:3",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 1359,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 1357,
-                      "name": "coinPairPrice",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 1350,
-                      "src": "665:13:3",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                        "typeString": "contract IPriceProvider"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 1358,
-                      "name": "_coinPairPrice",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 1352,
-                      "src": "681:14:3",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                        "typeString": "contract IPriceProvider"
-                      }
-                    },
-                    "src": "665:30:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                      "typeString": "contract IPriceProvider"
-                    }
-                  },
-                  "id": 1360,
-                  "nodeType": "ExpressionStatement",
-                  "src": "665:30:3"
-                }
-              ]
-            },
-            "documentation": null,
-            "functionSelector": "c4d66de8",
-            "id": 1362,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [
-              {
-                "arguments": null,
-                "id": 1355,
-                "modifierName": {
-                  "argumentTypes": null,
-                  "id": 1354,
-                  "name": "initializer",
-                  "nodeType": "Identifier",
-                  "overloadedDeclarations": [],
-                  "referencedDeclaration": 11582,
-                  "src": "643:11:3",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_modifier$__$",
-                    "typeString": "modifier ()"
-                  }
-                },
-                "nodeType": "ModifierInvocation",
-                "src": "643:11:3"
-              }
-            ],
-            "name": "initialize",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 1353,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 1352,
-                  "mutability": "mutable",
-                  "name": "_coinPairPrice",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 1362,
-                  "src": "605:29:3",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                    "typeString": "contract IPriceProvider"
-                  },
-                  "typeName": {
-                    "contractScope": null,
-                    "id": 1351,
-                    "name": "IPriceProvider",
-                    "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 11005,
-                    "src": "605:14:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                      "typeString": "contract IPriceProvider"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "604:31:3"
-            },
-            "returnParameters": {
-              "id": 1356,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "655:0:3"
-            },
-            "scope": 1377,
-            "src": "585:117:3",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "public"
-          },
-          {
-            "baseFunctions": [
-              11004
-            ],
-            "body": {
-              "id": 1375,
-              "nodeType": "Block",
-              "src": "844:44:3",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [],
-                    "expression": {
-                      "argumentTypes": [],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 1371,
-                        "name": "coinPairPrice",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 1350,
-                        "src": "861:13:3",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IPriceProvider_$11005",
-                          "typeString": "contract IPriceProvider"
-                        }
-                      },
-                      "id": 1372,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "peek",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11004,
-                      "src": "861:18:3",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$_t_bool_$",
-                        "typeString": "function () view external returns (bytes32,bool)"
-                      }
-                    },
-                    "id": 1373,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "861:20:3",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$_t_bytes32_$_t_bool_$",
-                      "typeString": "tuple(bytes32,bool)"
-                    }
-                  },
-                  "functionReturnParameters": 1370,
-                  "id": 1374,
-                  "nodeType": "Return",
-                  "src": "854:27:3"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 1363,
-              "nodeType": "StructuredDocumentation",
-              "src": "708:68:3",
-              "text": "@notice Return the current price, compatible with old MOC Oracle"
-            },
-            "functionSelector": "59e02dd7",
-            "id": 1376,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "peek",
-            "nodeType": "FunctionDefinition",
-            "overrides": {
-              "id": 1365,
-              "nodeType": "OverrideSpecifier",
-              "overrides": [],
-              "src": "806:8:3"
-            },
-            "parameters": {
-              "id": 1364,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "794:2:3"
-            },
-            "returnParameters": {
-              "id": 1370,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 1367,
-                  "mutability": "mutable",
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 1376,
-                  "src": "829:7:3",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bytes32",
-                    "typeString": "bytes32"
-                  },
-                  "typeName": {
-                    "id": 1366,
-                    "name": "bytes32",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "829:7:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes32",
-                      "typeString": "bytes32"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 1369,
-                  "mutability": "mutable",
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 1376,
-                  "src": "838:4:3",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
-                  },
-                  "typeName": {
-                    "id": 1368,
-                    "name": "bool",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "838:4:3",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "828:15:3"
-            },
-            "scope": 1377,
-            "src": "781:107:3",
-            "stateMutability": "view",
-            "virtual": false,
-            "visibility": "external"
-          }
-        ],
-        "scope": 1378,
-        "src": "477:413:3"
-      }
-    ],
-    "src": "39:852:3"
-  },
-  "compiler": {
-    "name": "solc",
-    "version": "0.6.12+commit.27d51765.Emscripten.clang"
-  },
-  "networks": {},
-  "schemaVersion": "3.2.4",
-  "updatedAt": "2020-09-11T20:34:45.452Z",
-  "devdoc": {
-    "kind": "dev",
-    "methods": {},
-    "title": "This contract provides an interface for feeding prices from oracles, and        get the current price. One contract must be instanced per supported coin pair,        and registered through OracleManager global contract.",
-    "version": 1
-  },
-  "userdoc": {
-    "kind": "user",
-    "methods": {
-      "peek()": {
-        "notice": "Return the current price, compatible with old MOC Oracle"
-      }
-    },
-    "version": 1
-  }
 }

@@ -1,1261 +1,1235 @@
 {
-  "contractName": "OracleManagerRemoveChange",
-  "abi": [
-    {
-      "inputs": [
+    "contractName": "OracleManagerRemoveChange",
+    "abi": [
         {
-          "internalType": "contract OracleManager",
-          "name": "_oracleManager",
-          "type": "address"
+            "inputs": [
+                {
+                    "internalType": "contract OracleManager",
+                    "name": "_oracleManager",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_oracleOwner",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
         },
         {
-          "internalType": "address",
-          "name": "_oracleOwner",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
-      "inputs": [],
-      "name": "oracleManager",
-      "outputs": [
+            "inputs": [],
+            "name": "oracleManager",
+            "outputs": [
+                {
+                    "internalType": "contract OracleManager",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
         {
-          "internalType": "contract OracleManager",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "oracleOwner",
-      "outputs": [
+            "inputs": [],
+            "name": "oracleOwner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
         {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+            "inputs": [],
+            "name": "execute",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"_oracleManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_oracleOwner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oracleManager\",\"outputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oracleOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"_oracleManager\":\"Address of oracle manager used to register the coin pair\",\"_oracleOwner\":\"The owner of the Oracle\"}}},\"title\":\"UpgraderTemplate\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":\"Constructor\",\"execute()\":{\"notice\":\"Execute the changes.\"}},\"notice\":\"This contract is a ChangeContract intended to be used when upgrading any contract upgradeable through the zos-lib upgradeability system. This doesn't initialize the upgraded contract, that should be done extending this one or taking it as a guide\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol\":\"OracleManagerRemoveChange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPrice.sol\":{\"keccak256\":\"0x6aa9082c94222886b48681e6d8c6c3c6f490ce2486ad61a808936f4f54234691\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://64f4f828e395677d37b13545b064ce7d67aa19f0fd0c5e19218c51a259e30ef0\",\"dweb:/ipfs/QmegiUZuVHxXVsoN26FAjwZmpFWCRF72ekZCyehbxX4jMf\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceStorage.sol\":{\"keccak256\":\"0xfcdf96be7b5a27cad4546ad99ab997ed70d3ea89e092da96bf1ab1422744571f\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://60b0ee0bf253db442588c2d9223e66d7e665752c18940c63bee54257072e8c6a\",\"dweb:/ipfs/QmNQWwWrBRMSVB36GBnqziXbU8oUTixAxwk1pYa5n24Ptz\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol\":{\"keccak256\":\"0x14d30d0a1704bce00b278b9e3a3f0dab24199712a35f0a0823913cdf5f936dbc\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://ae3faa74a8259997c0757d402c0df1a2ecb6575f183047c5d4efb73879c955f6\",\"dweb:/ipfs/QmTFso7AFx8pDWEu6imfzDF7VseRPjBhsxeLLnR1tSxf4d\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManagerStorage.sol\":{\"keccak256\":\"0x3fc4061da2b3d68e6fe768fec430d87a247ea91c32eda2770cd6c6b7a1af04f3\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://08a75cb1ed72f09bcb76fed63b16040b196b2a511eadffa28d1d1381db4ec53d\",\"dweb:/ipfs/QmYSr8yRNkfmNDk5SwM4mdukukxKzxvWx5124J5rrHK2KM\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Staking.sol\":{\"keccak256\":\"0x4b874e64829c7e0489c6554eacf74f8e89b7f5cd7674de2559c355643edddd96\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://12702183a0bc5ce9f1563156eab8b295cb42c4e2e88b3609ade7f4a4230cd2e2\",\"dweb:/ipfs/QmTsRZErg4to53ThzZsiieDwqNnvAgi3ZCwzbyxmFjhuLB\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/StakingStorage.sol\":{\"keccak256\":\"0x17766038b0532101749ff36ff8d282faea246363fa4a6c18bc47beae1a002bb1\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://0a9e37ad5bf3a061f0fc4a45985b71602573b7e48e169dea32c30476b5dec3a6\",\"dweb:/ipfs/QmYdL7q4YWN5joaifD3C5AP8LEFsrqnyw962eHaJiMWXCU\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Supporters.sol\":{\"keccak256\":\"0xbb6ff7c3d33441dd3eb3b66bac10be374c36e262fe791f732a0ff1d1b769a784\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://acc546e5e045fa37bd73d058ec99b71c7b123010763267c8d06681db4cb223a3\",\"dweb:/ipfs/QmYqMd5JKxAJaVQ2h4hHVdwBRNjXjDkE3oaBVWPvthYC3i\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol\":{\"keccak256\":\"0xd9ae212fa5c55c4499a9f14d7cc65a0507a28afe2b59525975e62bbefa474f7c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c6c4e003a0cb609fa8f9ac9548f4afb3c1befd6e7169c82172dfb420f9fa4bc3\",\"dweb:/ipfs/Qmc6dzBLV7vuGx2Px5pCDvEUh7JB9USDTv9M7b2QAMFHMZ\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol\":{\"keccak256\":\"0x7bffcb643f0eb27b7997bae858e9dc1b751f5ee24dc79cbd5b3bd579d71b6618\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://45aa5fea043fb1da4a805df4ce0e5028c615e93e9361eb258158284f59819c37\",\"dweb:/ipfs/QmZMgvkSC8yjN5SUpZSWJxUdQaejdDfCvXg1YJWAp4DfJL\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/AddressSetLib.sol\":{\"keccak256\":\"0x164a53571663eed760ad55e9e580e757bee459f73485337d2d6edbb4a15d11d7\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://01b4a24867c85179f07dd19d962b89fdf5d4e9a452221536d2f9430fcf235ad4\",\"dweb:/ipfs/QmU4sWw2EZCVR6HEccoLaRNDXUq6T4PXwKyWg2axukGQFH\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/CoinPairRegisterLib.sol\":{\"keccak256\":\"0x5e5add9d7b0afc8c9d4cfaa84cf69e704994cf496199821361169b719ed6861b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c1412e11b85604b88b92e38f0e7c127d6ec41ed086c3ae320fa253e9a9526a76\",\"dweb:/ipfs/QmcyeqFmWgVDxzBbr912u4crkmKhSFFVE2KtmfQYiEdmid\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableOraclesLib.sol\":{\"keccak256\":\"0xd447415cc8821c7a686852719487d9b650cabd9de96e807e2672a4c89622fa0c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://13d22ef00fa84a1c85f297d7595b999d7ecd0028ab84d3c84a0db82f4a45e632\",\"dweb:/ipfs/QmVWryR9rwn9W2pZCZMQ3NZr7F6CALcQbrD4x4quVGDECB\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableWhitelistLib.sol\":{\"keccak256\":\"0x2319e0dfd6ac0478c5a8bc1501b6f9111eacd91e9aa88de2c96480b8b87c9f0b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://670b33cba543b9408cb7b4ca40d3ca1e562637191f12cd06d955cb97b4a95e2e\",\"dweb:/ipfs/QmQF6eVwg7mFozevyyYamLJWqaFKpuZqgrUFcPVkdNE3XG\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/RoundInfoLib.sol\":{\"keccak256\":\"0x0a890ce2f07ac5f53555b447ea4dc60c890aa60317329217a3aebd3c4a323e06\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://240e0f16f22a7304f2bed2c6760c4b711a12b345138fba9b36e3971255455879\",\"dweb:/ipfs/QmViKyKz6scQrNUQZoQbnfFFxrBdRsmFWGzNiM7mKCJiuS\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SubscribedOraclesLib.sol\":{\"keccak256\":\"0xff0cacfd5779d8aac2840650c78ee98961f29aaf48c894ce255aac90f9d213ec\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://e2b1b2e11dbd5a84802c9fa8488d48f8cbaa84e9fee67417fc27f1e82a289f81\",\"dweb:/ipfs/QmX5ufFKwojzAQnpW4St7xb7HmqGZhsMzBbaUAcfmyA7G2\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SupportersLib.sol\":{\"keccak256\":\"0xa80f2b92a59e78b256fa6e7799f2f6b271d044b72eda3909547dded83d9f7252\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://de9a6e237bc9c10dcc4149ba6bb4948dbb6031a6ea485d9c7dad27b1e617c4d8\",\"dweb:/ipfs/QmS5x4RpZXqB3bEGqcYW5siJDeYedbf93TrHwcqQ1o25FX\"]},\"@moc/shared/contracts/IDelayMachine.sol\":{\"keccak256\":\"0x23337ca0b602e0b41b6da21f44ab567f1bd5c970f8735109f34d7cff9ff894ef\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c5ca4656aa5776c58e9ff13603459232ab6fde49bff3ebeecff5dfda20db5fdb\",\"dweb:/ipfs/QmciATUjQHgwNNpVgxrG9pMx8jJhF9h2cnvRfw1u8rMoER\"]},\"@moc/shared/contracts/IPriceProvider.sol\":{\"keccak256\":\"0xe23c45a9401a30709263ca8a1c4c81c7fcabbbdce4124058c46859b017be748b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://43bf5597963c3f7c9e258ae09a12d26a32b171163e847c0ea22255552a835605\",\"dweb:/ipfs/QmUetpLBWhBCQugHS2JFkERKurP67hQUcunuG48ZHKid3z\"]},\"@moc/shared/contracts/IPriceProviderRegisterEntry.sol\":{\"keccak256\":\"0x224dc253c7d3dcd60e27617780cd9c656203e8632d67699f4cda4dc51c7f5e14\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7e91997efaf82d34c4df20fcfbaae754a8c45f875a71767c3a1b5f6b3881b142\",\"dweb:/ipfs/Qme6rjQN9RAXYoWr52QERnTtGHPfB25qu6K4KaBQzNKog5\"]},\"@moc/shared/contracts/IStakingMachine.sol\":{\"keccak256\":\"0x90634c47af7e040cd475e726a92fb37a19dfe3cc4c40f66798de39575054736a\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6f7af0b7a2fa9d639efacdb61079739633397732ff0d03b8eba15ad5e81c38ff\",\"dweb:/ipfs/QmPYDJ99QTgsJDJJA4CNV3wJgbuWmGzrj9AB7mr1m6KWA4\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]},\"@moc/shared/contracts/moc-governance/Governance/Governed.sol\":{\"keccak256\":\"0xf948f3ef0d990c9b5199cb96ed42a7b4b96b1dce0abfc168289f9de8576286e2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5b770c1391989e9db75789bb15cc4413d520eecb327fed0c114a66407a3f4404\",\"dweb:/ipfs/QmPqRtG3cfB3tc5fFs9Q8yMNkxHB4oxMSY27jDXYhB754c\"]},\"@moc/shared/contracts/moc-governance/Governance/IGovernor.sol\":{\"keccak256\":\"0xed68469a6e1759efc5dece43aaf7fdf25e39163626df454bd9f9662ca8e9df61\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://a615e8209f9f332ed8d16452fd83c412f44162bd6fb8af6a1556bdc033a36735\",\"dweb:/ipfs/Qmda7FzLXHG9WZSTVBXwGCjLT7xU5Ugh287jQ4qafAr5WX\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]},\"@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
+    "bytecode": "0x608060405234801561001057600080fd5b506040516101c23803806101c28339818101604052604081101561003357600080fd5b508051602090910151600080546001600160a01b039384166001600160a01b031991821617909155600180549390921692169190911790556101488061007a6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063565d878c14610046578063614619541461006a578063a578be1614610074575b600080fd5b61004e61007c565b604080516001600160a01b039092168252519081900360200190f35b61007261008b565b005b61004e610103565b6000546001600160a01b031681565b6000805460015460408051633f7217f160e21b81526001600160a01b0392831660048201529051919092169263fdc85fc4926024808201939182900301818387803b1580156100d957600080fd5b505af11580156100ed573d6000803e3d6000fd5b5050600080546001600160a01b03191690555050565b6001546001600160a01b03168156fea2646970667358221220513367640101d1dbf67c54ab302c4d4467bad1fac2eb9bfcf344c86c4d0e6b3a64736f6c634300060c0033",
+    "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063565d878c14610046578063614619541461006a578063a578be1614610074575b600080fd5b61004e61007c565b604080516001600160a01b039092168252519081900360200190f35b61007261008b565b005b61004e610103565b6000546001600160a01b031681565b6000805460015460408051633f7217f160e21b81526001600160a01b0392831660048201529051919092169263fdc85fc4926024808201939182900301818387803b1580156100d957600080fd5b505af11580156100ed573d6000803e3d6000fd5b5050600080546001600160a01b03191690555050565b6001546001600160a01b03168156fea2646970667358221220513367640101d1dbf67c54ab302c4d4467bad1fac2eb9bfcf344c86c4d0e6b3a64736f6c634300060c0033",
+    "immutableReferences": {},
+    "sourceMap": "513:657:30:-:0;;;821:154;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;821:154:30;;;;;;;902:13;:30;;-1:-1:-1;;;;;902:30:30;;;-1:-1:-1;;;;;;902:30:30;;;;;;;;942:26;;;;;;;;;;;;;;513:657;;;;;;",
+    "deployedSourceMap": "513:657:30:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;572:34;;;:::i;:::-;;;;-1:-1:-1;;;;;572:34:30;;;;;;;;;;;;;;1033:135;;;:::i;:::-;;612:26;;;:::i;572:34::-;;;-1:-1:-1;;;;;572:34:30;;:::o;1033:135::-;1080:13;;;;1107:11;1080:39;;;-1:-1:-1;;;1080:39:30;;-1:-1:-1;;;;;1107:11:30;;;1080:39;;;;;;:13;;;;;:26;;:39;;;;;;;;;;;:13;;:39;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1159:1:30;1129:32;;-1:-1:-1;;;;;;1129:32:30;;;-1:-1:-1;;1033:135:30:o;612:26::-;;;-1:-1:-1;;;;;612:26:30;;:::o",
+    "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {ChangeContract} from \"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\";\nimport {OracleManager} from \"../OracleManager.sol\";\n\n/**\n  @title UpgraderTemplate\n  @notice This contract is a ChangeContract intended to be used when\n  upgrading any contract upgradeable through the zos-lib upgradeability\n  system. This doesn't initialize the upgraded contract, that should be done extending\n  this one or taking it as a guide\n */\ncontract OracleManagerRemoveChange is ChangeContract {\n    OracleManager public oracleManager;\n    address public oracleOwner;\n\n    /**\n      @notice Constructor\n      @param _oracleManager Address of oracle manager used to register the coin pair\n      @param _oracleOwner The owner of the Oracle\n    */\n    constructor(OracleManager _oracleManager, address _oracleOwner) public {\n        oracleManager = _oracleManager;\n        oracleOwner = _oracleOwner;\n    }\n\n    /**\n      @notice Execute the changes.\n      */\n    function execute() external override {\n        oracleManager.removeOracle(oracleOwner);\n        oracleManager = OracleManager(0);\n    }\n}\n",
+    "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol",
+    "ast": {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol",
+        "exportedSymbols": {
+            "OracleManagerRemoveChange": [6352]
+        },
+        "id": 6353,
+        "license": "UNLICENSED",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 6305,
+                "literals": ["solidity", "0.6", ".12"],
+                "nodeType": "PragmaDirective",
+                "src": "39:23:30"
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "id": 6307,
+                "nodeType": "ImportDirective",
+                "scope": 6353,
+                "sourceUnit": 11373,
+                "src": "64:98:30",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6306,
+                            "name": "ChangeContract",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "72:14:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol",
+                "file": "../OracleManager.sol",
+                "id": 6309,
+                "nodeType": "ImportDirective",
+                "scope": 6353,
+                "sourceUnit": 3798,
+                "src": "163:51:30",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6308,
+                            "name": "OracleManager",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "171:13:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 6311,
+                            "name": "ChangeContract",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11372,
+                            "src": "551:14:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ChangeContract_$11372",
+                                "typeString": "contract ChangeContract"
+                            }
+                        },
+                        "id": 6312,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "551:14:30"
+                    }
+                ],
+                "contractDependencies": [11372],
+                "contractKind": "contract",
+                "documentation": {
+                    "id": 6310,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "216:296:30",
+                    "text": "@title UpgraderTemplate\n@notice This contract is a ChangeContract intended to be used when\nupgrading any contract upgradeable through the zos-lib upgradeability\nsystem. This doesn't initialize the upgraded contract, that should be done extending\nthis one or taking it as a guide"
+                },
+                "fullyImplemented": true,
+                "id": 6352,
+                "linearizedBaseContracts": [6352, 11372],
+                "name": "OracleManagerRemoveChange",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "functionSelector": "565d878c",
+                        "id": 6314,
+                        "mutability": "mutable",
+                        "name": "oracleManager",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 6352,
+                        "src": "572:34:30",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                            "typeString": "contract OracleManager"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 6313,
+                            "name": "OracleManager",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 3797,
+                            "src": "572:13:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                "typeString": "contract OracleManager"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "functionSelector": "a578be16",
+                        "id": 6316,
+                        "mutability": "mutable",
+                        "name": "oracleOwner",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 6352,
+                        "src": "612:26:30",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 6315,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "612:7:30",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 6332,
+                            "nodeType": "Block",
+                            "src": "892:83:30",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6326,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6324,
+                                            "name": "oracleManager",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6314,
+                                            "src": "902:13:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6325,
+                                            "name": "_oracleManager",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6319,
+                                            "src": "918:14:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "src": "902:30:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                            "typeString": "contract OracleManager"
+                                        }
+                                    },
+                                    "id": 6327,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "902:30:30"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6330,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6328,
+                                            "name": "oracleOwner",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6316,
+                                            "src": "942:11:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6329,
+                                            "name": "_oracleOwner",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6321,
+                                            "src": "956:12:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "942:26:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 6331,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "942:26:30"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6317,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "645:171:30",
+                            "text": "@notice Constructor\n@param _oracleManager Address of oracle manager used to register the coin pair\n@param _oracleOwner The owner of the Oracle"
+                        },
+                        "id": 6333,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 6322,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6319,
+                                    "mutability": "mutable",
+                                    "name": "_oracleManager",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6333,
+                                    "src": "833:28:30",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                        "typeString": "contract OracleManager"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 6318,
+                                        "name": "OracleManager",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 3797,
+                                        "src": "833:13:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                            "typeString": "contract OracleManager"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 6321,
+                                    "mutability": "mutable",
+                                    "name": "_oracleOwner",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6333,
+                                    "src": "863:20:30",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 6320,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "863:7:30",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "832:52:30"
+                        },
+                        "returnParameters": {
+                            "id": 6323,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "892:0:30"
+                        },
+                        "scope": 6352,
+                        "src": "821:154:30",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "baseFunctions": [11371],
+                        "body": {
+                            "id": 6350,
+                            "nodeType": "Block",
+                            "src": "1070:98:30",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 6341,
+                                                "name": "oracleOwner",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6316,
+                                                "src": "1107:11:30",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 6338,
+                                                "name": "oracleManager",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6314,
+                                                "src": "1080:13:30",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                    "typeString": "contract OracleManager"
+                                                }
+                                            },
+                                            "id": 6340,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "removeOracle",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 3487,
+                                            "src": "1080:26:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                                                "typeString": "function (address) external"
+                                            }
+                                        },
+                                        "id": 6342,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1080:39:30",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 6343,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1080:39:30"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6348,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6344,
+                                            "name": "oracleManager",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6314,
+                                            "src": "1129:13:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "arguments": [
+                                                {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "30",
+                                                    "id": 6346,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "1159:1:30",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_0_by_1",
+                                                        "typeString": "int_const 0"
+                                                    },
+                                                    "value": "0"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": [
+                                                    {
+                                                        "typeIdentifier": "t_rational_0_by_1",
+                                                        "typeString": "int_const 0"
+                                                    }
+                                                ],
+                                                "id": 6345,
+                                                "name": "OracleManager",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 3797,
+                                                "src": "1145:13:30",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_type$_t_contract$_OracleManager_$3797_$",
+                                                    "typeString": "type(contract OracleManager)"
+                                                }
+                                            },
+                                            "id": 6347,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "kind": "typeConversion",
+                                            "lValueRequested": false,
+                                            "names": [],
+                                            "nodeType": "FunctionCall",
+                                            "src": "1145:16:30",
+                                            "tryCall": false,
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "src": "1129:32:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                            "typeString": "contract OracleManager"
+                                        }
+                                    },
+                                    "id": 6349,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1129:32:30"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6334,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "981:47:30",
+                            "text": "@notice Execute the changes."
+                        },
+                        "functionSelector": "61461954",
+                        "id": 6351,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "execute",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": {
+                            "id": 6336,
+                            "nodeType": "OverrideSpecifier",
+                            "overrides": [],
+                            "src": "1061:8:30"
+                        },
+                        "parameters": {
+                            "id": 6335,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1049:2:30"
+                        },
+                        "returnParameters": {
+                            "id": 6337,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1070:0:30"
+                        },
+                        "scope": 6352,
+                        "src": "1033:135:30",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 6353,
+                "src": "513:657:30"
+            }
+        ],
+        "src": "39:1132:30"
     },
-    {
-      "inputs": [],
-      "name": "execute",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
+    "legacyAST": {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol",
+        "exportedSymbols": {
+            "OracleManagerRemoveChange": [6352]
+        },
+        "id": 6353,
+        "license": "UNLICENSED",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 6305,
+                "literals": ["solidity", "0.6", ".12"],
+                "nodeType": "PragmaDirective",
+                "src": "39:23:30"
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "id": 6307,
+                "nodeType": "ImportDirective",
+                "scope": 6353,
+                "sourceUnit": 11373,
+                "src": "64:98:30",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6306,
+                            "name": "ChangeContract",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "72:14:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol",
+                "file": "../OracleManager.sol",
+                "id": 6309,
+                "nodeType": "ImportDirective",
+                "scope": 6353,
+                "sourceUnit": 3798,
+                "src": "163:51:30",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6308,
+                            "name": "OracleManager",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "171:13:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 6311,
+                            "name": "ChangeContract",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11372,
+                            "src": "551:14:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ChangeContract_$11372",
+                                "typeString": "contract ChangeContract"
+                            }
+                        },
+                        "id": 6312,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "551:14:30"
+                    }
+                ],
+                "contractDependencies": [11372],
+                "contractKind": "contract",
+                "documentation": {
+                    "id": 6310,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "216:296:30",
+                    "text": "@title UpgraderTemplate\n@notice This contract is a ChangeContract intended to be used when\nupgrading any contract upgradeable through the zos-lib upgradeability\nsystem. This doesn't initialize the upgraded contract, that should be done extending\nthis one or taking it as a guide"
+                },
+                "fullyImplemented": true,
+                "id": 6352,
+                "linearizedBaseContracts": [6352, 11372],
+                "name": "OracleManagerRemoveChange",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "functionSelector": "565d878c",
+                        "id": 6314,
+                        "mutability": "mutable",
+                        "name": "oracleManager",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 6352,
+                        "src": "572:34:30",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                            "typeString": "contract OracleManager"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 6313,
+                            "name": "OracleManager",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 3797,
+                            "src": "572:13:30",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                "typeString": "contract OracleManager"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "functionSelector": "a578be16",
+                        "id": 6316,
+                        "mutability": "mutable",
+                        "name": "oracleOwner",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 6352,
+                        "src": "612:26:30",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 6315,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "612:7:30",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 6332,
+                            "nodeType": "Block",
+                            "src": "892:83:30",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6326,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6324,
+                                            "name": "oracleManager",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6314,
+                                            "src": "902:13:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6325,
+                                            "name": "_oracleManager",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6319,
+                                            "src": "918:14:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "src": "902:30:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                            "typeString": "contract OracleManager"
+                                        }
+                                    },
+                                    "id": 6327,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "902:30:30"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6330,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6328,
+                                            "name": "oracleOwner",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6316,
+                                            "src": "942:11:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6329,
+                                            "name": "_oracleOwner",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6321,
+                                            "src": "956:12:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "942:26:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 6331,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "942:26:30"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6317,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "645:171:30",
+                            "text": "@notice Constructor\n@param _oracleManager Address of oracle manager used to register the coin pair\n@param _oracleOwner The owner of the Oracle"
+                        },
+                        "id": 6333,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 6322,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6319,
+                                    "mutability": "mutable",
+                                    "name": "_oracleManager",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6333,
+                                    "src": "833:28:30",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                        "typeString": "contract OracleManager"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 6318,
+                                        "name": "OracleManager",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 3797,
+                                        "src": "833:13:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                            "typeString": "contract OracleManager"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 6321,
+                                    "mutability": "mutable",
+                                    "name": "_oracleOwner",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6333,
+                                    "src": "863:20:30",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 6320,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "863:7:30",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "832:52:30"
+                        },
+                        "returnParameters": {
+                            "id": 6323,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "892:0:30"
+                        },
+                        "scope": 6352,
+                        "src": "821:154:30",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "baseFunctions": [11371],
+                        "body": {
+                            "id": 6350,
+                            "nodeType": "Block",
+                            "src": "1070:98:30",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 6341,
+                                                "name": "oracleOwner",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6316,
+                                                "src": "1107:11:30",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 6338,
+                                                "name": "oracleManager",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6314,
+                                                "src": "1080:13:30",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                    "typeString": "contract OracleManager"
+                                                }
+                                            },
+                                            "id": 6340,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "removeOracle",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 3487,
+                                            "src": "1080:26:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                                                "typeString": "function (address) external"
+                                            }
+                                        },
+                                        "id": 6342,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1080:39:30",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 6343,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1080:39:30"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6348,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6344,
+                                            "name": "oracleManager",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6314,
+                                            "src": "1129:13:30",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "arguments": [
+                                                {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "30",
+                                                    "id": 6346,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "1159:1:30",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_0_by_1",
+                                                        "typeString": "int_const 0"
+                                                    },
+                                                    "value": "0"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": [
+                                                    {
+                                                        "typeIdentifier": "t_rational_0_by_1",
+                                                        "typeString": "int_const 0"
+                                                    }
+                                                ],
+                                                "id": 6345,
+                                                "name": "OracleManager",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 3797,
+                                                "src": "1145:13:30",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_type$_t_contract$_OracleManager_$3797_$",
+                                                    "typeString": "type(contract OracleManager)"
+                                                }
+                                            },
+                                            "id": 6347,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "kind": "typeConversion",
+                                            "lValueRequested": false,
+                                            "names": [],
+                                            "nodeType": "FunctionCall",
+                                            "src": "1145:16:30",
+                                            "tryCall": false,
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                                "typeString": "contract OracleManager"
+                                            }
+                                        },
+                                        "src": "1129:32:30",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OracleManager_$3797",
+                                            "typeString": "contract OracleManager"
+                                        }
+                                    },
+                                    "id": 6349,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1129:32:30"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6334,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "981:47:30",
+                            "text": "@notice Execute the changes."
+                        },
+                        "functionSelector": "61461954",
+                        "id": 6351,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "execute",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": {
+                            "id": 6336,
+                            "nodeType": "OverrideSpecifier",
+                            "overrides": [],
+                            "src": "1061:8:30"
+                        },
+                        "parameters": {
+                            "id": 6335,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1049:2:30"
+                        },
+                        "returnParameters": {
+                            "id": 6337,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1070:0:30"
+                        },
+                        "scope": 6352,
+                        "src": "1033:135:30",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 6353,
+                "src": "513:657:30"
+            }
+        ],
+        "src": "39:1132:30"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.2.4",
+    "updatedAt": "2020-09-14T20:07:21.969Z",
+    "devdoc": {
+        "kind": "dev",
+        "methods": {
+            "constructor": {
+                "params": {
+                    "_oracleManager": "Address of oracle manager used to register the coin pair",
+                    "_oracleOwner": "The owner of the Oracle"
+                }
+            }
+        },
+        "title": "UpgraderTemplate",
+        "version": 1
+    },
+    "userdoc": {
+        "kind": "user",
+        "methods": {
+            "constructor": "Constructor",
+            "execute()": {
+                "notice": "Execute the changes."
+            }
+        },
+        "notice": "This contract is a ChangeContract intended to be used when upgrading any contract upgradeable through the zos-lib upgradeability system. This doesn't initialize the upgraded contract, that should be done extending this one or taking it as a guide",
+        "version": 1
     }
-  ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"_oracleManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_oracleOwner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oracleManager\",\"outputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oracleOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"_oracleManager\":\"Address of oracle manager used to register the coin pair\",\"_oracleOwner\":\"The owner of the Oracle\"}}},\"title\":\"UpgraderTemplate\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":\"Constructor\",\"execute()\":{\"notice\":\"Execute the changes.\"}},\"notice\":\"This contract is a ChangeContract intended to be used when upgrading any contract upgradeable through the zos-lib upgradeability system. This doesn't initialize the upgraded contract, that should be done extending this one or taking it as a guide\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol\":\"OracleManagerRemoveChange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPrice.sol\":{\"keccak256\":\"0xc38c26c75f86c12f181bc4f50d34ed0d27c5c651be5d7928f687cb311da47b99\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6d265fab572b32c2b3dd31e22301c0ed99d7fd475dda4c0946baa11332d05d63\",\"dweb:/ipfs/QmafPW8VBbd7oBZ2fnEA1rdLQdgvA8oqEyYB5jioWEWAU8\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceStorage.sol\":{\"keccak256\":\"0x897208910dd3ba385c3424d451365f2fc3a30e0a4f056543e734eda3da8f7741\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://aaf9f5e2fc11755598a983372625fb401db9b1a975a77be6232f304b2d78a78a\",\"dweb:/ipfs/QmaENK8jYkU6esAZzCkbYHX3utjTpF5ojdMfnVEZ7TtJZo\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol\":{\"keccak256\":\"0x14d30d0a1704bce00b278b9e3a3f0dab24199712a35f0a0823913cdf5f936dbc\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://ae3faa74a8259997c0757d402c0df1a2ecb6575f183047c5d4efb73879c955f6\",\"dweb:/ipfs/QmTFso7AFx8pDWEu6imfzDF7VseRPjBhsxeLLnR1tSxf4d\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManagerStorage.sol\":{\"keccak256\":\"0xaaaa97aa29ed94a634b9c8580c22a044f0c1b791681c3682da5f62fbe719fa3b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://eab1cb790373b87581af559b158b9d6fab66ba8ce5de86c741299de5f0c8dab7\",\"dweb:/ipfs/QmfLBNHtxAJjGfcNnSW7UjQc9GU6rdCVZHvwbWhpq7CLbi\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Staking.sol\":{\"keccak256\":\"0xddd8bcf5618c58b14406f5c76674cee1f3d8f0f3ca48c6c1619bc03c6846464e\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://35ddb2686e84eb5e2db6770685c397d9001180ee47380e49b97d4d1f2b1b6150\",\"dweb:/ipfs/Qma8S7ZeW56pLi24WtbnxnX11hoCFkVgSUpxAHzMaZMCgd\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/StakingStorage.sol\":{\"keccak256\":\"0x52344a4b8d44c450383b13a7096004d1e9e18d0d79c6f6cb7501d6b818ae6556\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://985ddcfca57a9eb41538f1dd8bbc1fc7fbd130d1261eb37ac8ffa912b21d5212\",\"dweb:/ipfs/QmYcDz81q4AUjm25gabCzjKGoE55ZEYJVmt8DhoNAMFu45\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Supporters.sol\":{\"keccak256\":\"0x58761448e0d93e56d184e31f603de44280f9b6971bc8754036e8eb9eb143721b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://0713f38624997d845dd15695e368e24a2dd0cee700953143255850a29dc79ed6\",\"dweb:/ipfs/QmR1GviujzoXxJyWyJHx9ttBfis4CFgPKYXv6ucrVgs4G4\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol\":{\"keccak256\":\"0xd3d5b2e2b294ea1b893e658775f5e038efc5e361253a99381f81b90f1717ef52\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://3e3473b12ebc8c94a389bb09bcf3c94834939a9a14d2683df49c1792829594d2\",\"dweb:/ipfs/Qmcuws5rDpz8BYDQrtgcdGfjuQrSBr3KWi1wdr6NQveotK\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol\":{\"keccak256\":\"0x7bffcb643f0eb27b7997bae858e9dc1b751f5ee24dc79cbd5b3bd579d71b6618\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://45aa5fea043fb1da4a805df4ce0e5028c615e93e9361eb258158284f59819c37\",\"dweb:/ipfs/QmZMgvkSC8yjN5SUpZSWJxUdQaejdDfCvXg1YJWAp4DfJL\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/AddressSetLib.sol\":{\"keccak256\":\"0x748d2a1c77986a9f343d0acbb10b746df926d91ba30531ba0d30d5178231ecaf\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6b1d555caddf034bd0bb6ea29a643a10a6fa3d17e009790fe10243ade13869ba\",\"dweb:/ipfs/QmVfjVCvfU7aqsYmLRLczjnPzD6Wo4g79GeV9nX1TgmYpQ\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/CoinPairRegisterLib.sol\":{\"keccak256\":\"0x812c08e259428d140374bdd45d77b0be81b2de49ce6397039140f8c4e6a5cb63\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://9c296e7969873c616931a7cc6da6ba200ac430fea935c9c6648c66876b847244\",\"dweb:/ipfs/Qmcs7SW5cfyPGhPPEyA6XWjtNcJHJyM3vEJS6x5gLTGGkK\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableOraclesLib.sol\":{\"keccak256\":\"0x22abd41bd74957a43ab79dc68b194c7202e41fd3d51df200b97970c01c96b2cc\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://019cd63cf4c223853fe86282d23e41d1384315bd11f722acf11ea1050808826d\",\"dweb:/ipfs/QmVAeZ9FC7FnW6ofswPXmySHHTpmFeNNdqJ4PQ58vdzDFx\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableWhitelistLib.sol\":{\"keccak256\":\"0x2319e0dfd6ac0478c5a8bc1501b6f9111eacd91e9aa88de2c96480b8b87c9f0b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://670b33cba543b9408cb7b4ca40d3ca1e562637191f12cd06d955cb97b4a95e2e\",\"dweb:/ipfs/QmQF6eVwg7mFozevyyYamLJWqaFKpuZqgrUFcPVkdNE3XG\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/RoundInfoLib.sol\":{\"keccak256\":\"0x97b8ed196425c5ff991129551954a4cd7e91757a889142f1862c2c8a9fb7a3fa\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://78261d2e7b8c301a5aa4092e92cc23bddafb0d60651506cb72facd787175049f\",\"dweb:/ipfs/QmW9PLcLj4wKvvR3KXHGqZA9fLJq4PFnRZ5PErG4TBvYtn\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SubscribedOraclesLib.sol\":{\"keccak256\":\"0x324d9e9c7d04da5c9a6c9305039764f4cec8611db55d93629fabd9768ccc965d\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7d102d1e79e16166a8830db021eea36f72f99e2ff6ef43b1f5e9aedbe3674c39\",\"dweb:/ipfs/QmfJbkpy9m2cnQUZQgpviVSdnC1TpZAnZDZEH2RCPZvSAQ\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SupportersLib.sol\":{\"keccak256\":\"0xa80f2b92a59e78b256fa6e7799f2f6b271d044b72eda3909547dded83d9f7252\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://de9a6e237bc9c10dcc4149ba6bb4948dbb6031a6ea485d9c7dad27b1e617c4d8\",\"dweb:/ipfs/QmS5x4RpZXqB3bEGqcYW5siJDeYedbf93TrHwcqQ1o25FX\"]},\"@moc/shared/contracts/IDelayMachine.sol\":{\"keccak256\":\"0x23337ca0b602e0b41b6da21f44ab567f1bd5c970f8735109f34d7cff9ff894ef\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c5ca4656aa5776c58e9ff13603459232ab6fde49bff3ebeecff5dfda20db5fdb\",\"dweb:/ipfs/QmciATUjQHgwNNpVgxrG9pMx8jJhF9h2cnvRfw1u8rMoER\"]},\"@moc/shared/contracts/IPriceProvider.sol\":{\"keccak256\":\"0xe23c45a9401a30709263ca8a1c4c81c7fcabbbdce4124058c46859b017be748b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://43bf5597963c3f7c9e258ae09a12d26a32b171163e847c0ea22255552a835605\",\"dweb:/ipfs/QmUetpLBWhBCQugHS2JFkERKurP67hQUcunuG48ZHKid3z\"]},\"@moc/shared/contracts/IPriceProviderRegisterEntry.sol\":{\"keccak256\":\"0x224dc253c7d3dcd60e27617780cd9c656203e8632d67699f4cda4dc51c7f5e14\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7e91997efaf82d34c4df20fcfbaae754a8c45f875a71767c3a1b5f6b3881b142\",\"dweb:/ipfs/Qme6rjQN9RAXYoWr52QERnTtGHPfB25qu6K4KaBQzNKog5\"]},\"@moc/shared/contracts/IStakingMachine.sol\":{\"keccak256\":\"0x22afe10e8d9884f07888d9cd39fa6bfcfb404c80f63db835efdd0ddfd3e7dd25\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://29a1358f5e83bfdd7c3036d8890b0a2f767347ce25b2cdbf23c52535fb13c0bd\",\"dweb:/ipfs/QmdqYZDEcGroUnvxC9jV9HqNAtAx1JZAdzf525v1xo3psj\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]},\"@moc/shared/contracts/moc-governance/Governance/Governed.sol\":{\"keccak256\":\"0xf948f3ef0d990c9b5199cb96ed42a7b4b96b1dce0abfc168289f9de8576286e2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5b770c1391989e9db75789bb15cc4413d520eecb327fed0c114a66407a3f4404\",\"dweb:/ipfs/QmPqRtG3cfB3tc5fFs9Q8yMNkxHB4oxMSY27jDXYhB754c\"]},\"@moc/shared/contracts/moc-governance/Governance/IGovernor.sol\":{\"keccak256\":\"0xed68469a6e1759efc5dece43aaf7fdf25e39163626df454bd9f9662ca8e9df61\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://a615e8209f9f332ed8d16452fd83c412f44162bd6fb8af6a1556bdc033a36735\",\"dweb:/ipfs/Qmda7FzLXHG9WZSTVBXwGCjLT7xU5Ugh287jQ4qafAr5WX\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]},\"@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5060405161031e38038061031e8339818101604052604081101561003357600080fd5b810190808051906020019092919080519060200190929190505050816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505061023e806100e06000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063565d878c14610046578063614619541461007a578063a578be1614610084575b600080fd5b61004e6100b8565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100826100dc565b005b61008c6101e2565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663fdc85fc4600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff168152602001915050600060405180830381600087803b15801561018757600080fd5b505af115801561019b573d6000803e3d6000fd5b5050505060008060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168156fea2646970667358221220d256f2bc045a91e76557072ae21014ad213f79cd1387410a61eb4d7834f2f78164736f6c634300060c0033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063565d878c14610046578063614619541461007a578063a578be1614610084575b600080fd5b61004e6100b8565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100826100dc565b005b61008c6101e2565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663fdc85fc4600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff168152602001915050600060405180830381600087803b15801561018757600080fd5b505af115801561019b573d6000803e3d6000fd5b5050505060008060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168156fea2646970667358221220d256f2bc045a91e76557072ae21014ad213f79cd1387410a61eb4d7834f2f78164736f6c634300060c0033",
-  "immutableReferences": {},
-  "sourceMap": "513:657:30:-:0;;;821:154;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;918:14;902:13;;:30;;;;;;;;;;;;;;;;;;956:12;942:11;;:26;;;;;;;;;;;;;;;;;;821:154;;513:657;;;;;;",
-  "deployedSourceMap": "513:657:30:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;572:34;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;1033:135;;;:::i;:::-;;612:26;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;572:34;;;;;;;;;;;;:::o;1033:135::-;1080:13;;;;;;;;;;:26;;;1107:11;;;;;;;;;;;1080:39;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1159:1;1129:13;;:32;;;;;;;;;;;;;;;;;;1033:135::o;612:26::-;;;;;;;;;;;;;:::o",
-  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {ChangeContract} from \"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\";\nimport {OracleManager} from \"../OracleManager.sol\";\n\n/**\n  @title UpgraderTemplate\n  @notice This contract is a ChangeContract intended to be used when\n  upgrading any contract upgradeable through the zos-lib upgradeability\n  system. This doesn't initialize the upgraded contract, that should be done extending\n  this one or taking it as a guide\n */\ncontract OracleManagerRemoveChange is ChangeContract {\n    OracleManager public oracleManager;\n    address public oracleOwner;\n\n    /**\n      @notice Constructor\n      @param _oracleManager Address of oracle manager used to register the coin pair\n      @param _oracleOwner The owner of the Oracle\n    */\n    constructor(OracleManager _oracleManager, address _oracleOwner) public {\n        oracleManager = _oracleManager;\n        oracleOwner = _oracleOwner;\n    }\n\n    /**\n      @notice Execute the changes.\n      */\n    function execute() external override {\n        oracleManager.removeOracle(oracleOwner);\n        oracleManager = OracleManager(0);\n    }\n}\n",
-  "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol",
-  "ast": {
-    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol",
-    "exportedSymbols": {
-      "OracleManagerRemoveChange": [
-        6395
-      ]
-    },
-    "id": 6396,
-    "license": "UNLICENSED",
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 6348,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "39:23:30"
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "id": 6350,
-        "nodeType": "ImportDirective",
-        "scope": 6396,
-        "sourceUnit": 11431,
-        "src": "64:98:30",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6349,
-              "name": "ChangeContract",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "72:14:30",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol",
-        "file": "../OracleManager.sol",
-        "id": 6352,
-        "nodeType": "ImportDirective",
-        "scope": 6396,
-        "sourceUnit": 3798,
-        "src": "163:51:30",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6351,
-              "name": "OracleManager",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "171:13:30",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "abstract": false,
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 6354,
-              "name": "ChangeContract",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11430,
-              "src": "551:14:30",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ChangeContract_$11430",
-                "typeString": "contract ChangeContract"
-              }
-            },
-            "id": 6355,
-            "nodeType": "InheritanceSpecifier",
-            "src": "551:14:30"
-          }
-        ],
-        "contractDependencies": [
-          11430
-        ],
-        "contractKind": "contract",
-        "documentation": {
-          "id": 6353,
-          "nodeType": "StructuredDocumentation",
-          "src": "216:296:30",
-          "text": "@title UpgraderTemplate\n@notice This contract is a ChangeContract intended to be used when\nupgrading any contract upgradeable through the zos-lib upgradeability\nsystem. This doesn't initialize the upgraded contract, that should be done extending\nthis one or taking it as a guide"
-        },
-        "fullyImplemented": true,
-        "id": 6395,
-        "linearizedBaseContracts": [
-          6395,
-          11430
-        ],
-        "name": "OracleManagerRemoveChange",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "functionSelector": "565d878c",
-            "id": 6357,
-            "mutability": "mutable",
-            "name": "oracleManager",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 6395,
-            "src": "572:34:30",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_contract$_OracleManager_$3797",
-              "typeString": "contract OracleManager"
-            },
-            "typeName": {
-              "contractScope": null,
-              "id": 6356,
-              "name": "OracleManager",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3797,
-              "src": "572:13:30",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_OracleManager_$3797",
-                "typeString": "contract OracleManager"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "constant": false,
-            "functionSelector": "a578be16",
-            "id": 6359,
-            "mutability": "mutable",
-            "name": "oracleOwner",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 6395,
-            "src": "612:26:30",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_address",
-              "typeString": "address"
-            },
-            "typeName": {
-              "id": 6358,
-              "name": "address",
-              "nodeType": "ElementaryTypeName",
-              "src": "612:7:30",
-              "stateMutability": "nonpayable",
-              "typeDescriptions": {
-                "typeIdentifier": "t_address",
-                "typeString": "address"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 6375,
-              "nodeType": "Block",
-              "src": "892:83:30",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6369,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6367,
-                      "name": "oracleManager",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6357,
-                      "src": "902:13:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 6368,
-                      "name": "_oracleManager",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6362,
-                      "src": "918:14:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "src": "902:30:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_OracleManager_$3797",
-                      "typeString": "contract OracleManager"
-                    }
-                  },
-                  "id": 6370,
-                  "nodeType": "ExpressionStatement",
-                  "src": "902:30:30"
-                },
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6373,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6371,
-                      "name": "oracleOwner",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6359,
-                      "src": "942:11:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 6372,
-                      "name": "_oracleOwner",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6364,
-                      "src": "956:12:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
-                      }
-                    },
-                    "src": "942:26:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "id": 6374,
-                  "nodeType": "ExpressionStatement",
-                  "src": "942:26:30"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6360,
-              "nodeType": "StructuredDocumentation",
-              "src": "645:171:30",
-              "text": "@notice Constructor\n@param _oracleManager Address of oracle manager used to register the coin pair\n@param _oracleOwner The owner of the Oracle"
-            },
-            "id": 6376,
-            "implemented": true,
-            "kind": "constructor",
-            "modifiers": [],
-            "name": "",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 6365,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6362,
-                  "mutability": "mutable",
-                  "name": "_oracleManager",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6376,
-                  "src": "833:28:30",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_OracleManager_$3797",
-                    "typeString": "contract OracleManager"
-                  },
-                  "typeName": {
-                    "contractScope": null,
-                    "id": 6361,
-                    "name": "OracleManager",
-                    "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3797,
-                    "src": "833:13:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_OracleManager_$3797",
-                      "typeString": "contract OracleManager"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 6364,
-                  "mutability": "mutable",
-                  "name": "_oracleOwner",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6376,
-                  "src": "863:20:30",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
-                  },
-                  "typeName": {
-                    "id": 6363,
-                    "name": "address",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "863:7:30",
-                    "stateMutability": "nonpayable",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "832:52:30"
-            },
-            "returnParameters": {
-              "id": 6366,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "892:0:30"
-            },
-            "scope": 6395,
-            "src": "821:154:30",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "public"
-          },
-          {
-            "baseFunctions": [
-              11429
-            ],
-            "body": {
-              "id": 6393,
-              "nodeType": "Block",
-              "src": "1070:98:30",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "id": 6384,
-                        "name": "oracleOwner",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6359,
-                        "src": "1107:11:30",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_address",
-                          "typeString": "address"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_address",
-                          "typeString": "address"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 6381,
-                        "name": "oracleManager",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6357,
-                        "src": "1080:13:30",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_OracleManager_$3797",
-                          "typeString": "contract OracleManager"
-                        }
-                      },
-                      "id": 6383,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "removeOracle",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3487,
-                      "src": "1080:26:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
-                        "typeString": "function (address) external"
-                      }
-                    },
-                    "id": 6385,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "1080:39:30",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 6386,
-                  "nodeType": "ExpressionStatement",
-                  "src": "1080:39:30"
-                },
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6391,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6387,
-                      "name": "oracleManager",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6357,
-                      "src": "1129:13:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "arguments": [
-                        {
-                          "argumentTypes": null,
-                          "hexValue": "30",
-                          "id": 6389,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "1159:1:30",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_0_by_1",
-                            "typeString": "int_const 0"
-                          },
-                          "value": "0"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": [
-                          {
-                            "typeIdentifier": "t_rational_0_by_1",
-                            "typeString": "int_const 0"
-                          }
-                        ],
-                        "id": 6388,
-                        "name": "OracleManager",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 3797,
-                        "src": "1145:13:30",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_OracleManager_$3797_$",
-                          "typeString": "type(contract OracleManager)"
-                        }
-                      },
-                      "id": 6390,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": true,
-                      "kind": "typeConversion",
-                      "lValueRequested": false,
-                      "names": [],
-                      "nodeType": "FunctionCall",
-                      "src": "1145:16:30",
-                      "tryCall": false,
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "src": "1129:32:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_OracleManager_$3797",
-                      "typeString": "contract OracleManager"
-                    }
-                  },
-                  "id": 6392,
-                  "nodeType": "ExpressionStatement",
-                  "src": "1129:32:30"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6377,
-              "nodeType": "StructuredDocumentation",
-              "src": "981:47:30",
-              "text": "@notice Execute the changes."
-            },
-            "functionSelector": "61461954",
-            "id": 6394,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "execute",
-            "nodeType": "FunctionDefinition",
-            "overrides": {
-              "id": 6379,
-              "nodeType": "OverrideSpecifier",
-              "overrides": [],
-              "src": "1061:8:30"
-            },
-            "parameters": {
-              "id": 6378,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "1049:2:30"
-            },
-            "returnParameters": {
-              "id": 6380,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "1070:0:30"
-            },
-            "scope": 6395,
-            "src": "1033:135:30",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "external"
-          }
-        ],
-        "scope": 6396,
-        "src": "513:657:30"
-      }
-    ],
-    "src": "39:1132:30"
-  },
-  "legacyAST": {
-    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerRemoveChange.sol",
-    "exportedSymbols": {
-      "OracleManagerRemoveChange": [
-        6395
-      ]
-    },
-    "id": 6396,
-    "license": "UNLICENSED",
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 6348,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "39:23:30"
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "id": 6350,
-        "nodeType": "ImportDirective",
-        "scope": 6396,
-        "sourceUnit": 11431,
-        "src": "64:98:30",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6349,
-              "name": "ChangeContract",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "72:14:30",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol",
-        "file": "../OracleManager.sol",
-        "id": 6352,
-        "nodeType": "ImportDirective",
-        "scope": 6396,
-        "sourceUnit": 3798,
-        "src": "163:51:30",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6351,
-              "name": "OracleManager",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "171:13:30",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "abstract": false,
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 6354,
-              "name": "ChangeContract",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11430,
-              "src": "551:14:30",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ChangeContract_$11430",
-                "typeString": "contract ChangeContract"
-              }
-            },
-            "id": 6355,
-            "nodeType": "InheritanceSpecifier",
-            "src": "551:14:30"
-          }
-        ],
-        "contractDependencies": [
-          11430
-        ],
-        "contractKind": "contract",
-        "documentation": {
-          "id": 6353,
-          "nodeType": "StructuredDocumentation",
-          "src": "216:296:30",
-          "text": "@title UpgraderTemplate\n@notice This contract is a ChangeContract intended to be used when\nupgrading any contract upgradeable through the zos-lib upgradeability\nsystem. This doesn't initialize the upgraded contract, that should be done extending\nthis one or taking it as a guide"
-        },
-        "fullyImplemented": true,
-        "id": 6395,
-        "linearizedBaseContracts": [
-          6395,
-          11430
-        ],
-        "name": "OracleManagerRemoveChange",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "functionSelector": "565d878c",
-            "id": 6357,
-            "mutability": "mutable",
-            "name": "oracleManager",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 6395,
-            "src": "572:34:30",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_contract$_OracleManager_$3797",
-              "typeString": "contract OracleManager"
-            },
-            "typeName": {
-              "contractScope": null,
-              "id": 6356,
-              "name": "OracleManager",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3797,
-              "src": "572:13:30",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_OracleManager_$3797",
-                "typeString": "contract OracleManager"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "constant": false,
-            "functionSelector": "a578be16",
-            "id": 6359,
-            "mutability": "mutable",
-            "name": "oracleOwner",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 6395,
-            "src": "612:26:30",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_address",
-              "typeString": "address"
-            },
-            "typeName": {
-              "id": 6358,
-              "name": "address",
-              "nodeType": "ElementaryTypeName",
-              "src": "612:7:30",
-              "stateMutability": "nonpayable",
-              "typeDescriptions": {
-                "typeIdentifier": "t_address",
-                "typeString": "address"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 6375,
-              "nodeType": "Block",
-              "src": "892:83:30",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6369,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6367,
-                      "name": "oracleManager",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6357,
-                      "src": "902:13:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 6368,
-                      "name": "_oracleManager",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6362,
-                      "src": "918:14:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "src": "902:30:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_OracleManager_$3797",
-                      "typeString": "contract OracleManager"
-                    }
-                  },
-                  "id": 6370,
-                  "nodeType": "ExpressionStatement",
-                  "src": "902:30:30"
-                },
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6373,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6371,
-                      "name": "oracleOwner",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6359,
-                      "src": "942:11:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 6372,
-                      "name": "_oracleOwner",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6364,
-                      "src": "956:12:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
-                      }
-                    },
-                    "src": "942:26:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "id": 6374,
-                  "nodeType": "ExpressionStatement",
-                  "src": "942:26:30"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6360,
-              "nodeType": "StructuredDocumentation",
-              "src": "645:171:30",
-              "text": "@notice Constructor\n@param _oracleManager Address of oracle manager used to register the coin pair\n@param _oracleOwner The owner of the Oracle"
-            },
-            "id": 6376,
-            "implemented": true,
-            "kind": "constructor",
-            "modifiers": [],
-            "name": "",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 6365,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6362,
-                  "mutability": "mutable",
-                  "name": "_oracleManager",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6376,
-                  "src": "833:28:30",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_OracleManager_$3797",
-                    "typeString": "contract OracleManager"
-                  },
-                  "typeName": {
-                    "contractScope": null,
-                    "id": 6361,
-                    "name": "OracleManager",
-                    "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3797,
-                    "src": "833:13:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_OracleManager_$3797",
-                      "typeString": "contract OracleManager"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 6364,
-                  "mutability": "mutable",
-                  "name": "_oracleOwner",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6376,
-                  "src": "863:20:30",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
-                  },
-                  "typeName": {
-                    "id": 6363,
-                    "name": "address",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "863:7:30",
-                    "stateMutability": "nonpayable",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "832:52:30"
-            },
-            "returnParameters": {
-              "id": 6366,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "892:0:30"
-            },
-            "scope": 6395,
-            "src": "821:154:30",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "public"
-          },
-          {
-            "baseFunctions": [
-              11429
-            ],
-            "body": {
-              "id": 6393,
-              "nodeType": "Block",
-              "src": "1070:98:30",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "id": 6384,
-                        "name": "oracleOwner",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6359,
-                        "src": "1107:11:30",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_address",
-                          "typeString": "address"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_address",
-                          "typeString": "address"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 6381,
-                        "name": "oracleManager",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6357,
-                        "src": "1080:13:30",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_OracleManager_$3797",
-                          "typeString": "contract OracleManager"
-                        }
-                      },
-                      "id": 6383,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "removeOracle",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3487,
-                      "src": "1080:26:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
-                        "typeString": "function (address) external"
-                      }
-                    },
-                    "id": 6385,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "1080:39:30",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 6386,
-                  "nodeType": "ExpressionStatement",
-                  "src": "1080:39:30"
-                },
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6391,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6387,
-                      "name": "oracleManager",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6357,
-                      "src": "1129:13:30",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "arguments": [
-                        {
-                          "argumentTypes": null,
-                          "hexValue": "30",
-                          "id": 6389,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "1159:1:30",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_0_by_1",
-                            "typeString": "int_const 0"
-                          },
-                          "value": "0"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": [
-                          {
-                            "typeIdentifier": "t_rational_0_by_1",
-                            "typeString": "int_const 0"
-                          }
-                        ],
-                        "id": 6388,
-                        "name": "OracleManager",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 3797,
-                        "src": "1145:13:30",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_OracleManager_$3797_$",
-                          "typeString": "type(contract OracleManager)"
-                        }
-                      },
-                      "id": 6390,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": true,
-                      "kind": "typeConversion",
-                      "lValueRequested": false,
-                      "names": [],
-                      "nodeType": "FunctionCall",
-                      "src": "1145:16:30",
-                      "tryCall": false,
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_OracleManager_$3797",
-                        "typeString": "contract OracleManager"
-                      }
-                    },
-                    "src": "1129:32:30",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_OracleManager_$3797",
-                      "typeString": "contract OracleManager"
-                    }
-                  },
-                  "id": 6392,
-                  "nodeType": "ExpressionStatement",
-                  "src": "1129:32:30"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6377,
-              "nodeType": "StructuredDocumentation",
-              "src": "981:47:30",
-              "text": "@notice Execute the changes."
-            },
-            "functionSelector": "61461954",
-            "id": 6394,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "execute",
-            "nodeType": "FunctionDefinition",
-            "overrides": {
-              "id": 6379,
-              "nodeType": "OverrideSpecifier",
-              "overrides": [],
-              "src": "1061:8:30"
-            },
-            "parameters": {
-              "id": 6378,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "1049:2:30"
-            },
-            "returnParameters": {
-              "id": 6380,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "1070:0:30"
-            },
-            "scope": 6395,
-            "src": "1033:135:30",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "external"
-          }
-        ],
-        "scope": 6396,
-        "src": "513:657:30"
-      }
-    ],
-    "src": "39:1132:30"
-  },
-  "compiler": {
-    "name": "solc",
-    "version": "0.6.12+commit.27d51765.Emscripten.clang"
-  },
-  "networks": {},
-  "schemaVersion": "3.2.4",
-  "updatedAt": "2020-09-11T20:34:45.485Z",
-  "devdoc": {
-    "kind": "dev",
-    "methods": {
-      "constructor": {
-        "params": {
-          "_oracleManager": "Address of oracle manager used to register the coin pair",
-          "_oracleOwner": "The owner of the Oracle"
-        }
-      }
-    },
-    "title": "UpgraderTemplate",
-    "version": 1
-  },
-  "userdoc": {
-    "kind": "user",
-    "methods": {
-      "constructor": "Constructor",
-      "execute()": {
-        "notice": "Execute the changes."
-      }
-    },
-    "notice": "This contract is a ChangeContract intended to be used when upgrading any contract upgradeable through the zos-lib upgradeability system. This doesn't initialize the upgraded contract, that should be done extending this one or taking it as a guide",
-    "version": 1
-  }
 }

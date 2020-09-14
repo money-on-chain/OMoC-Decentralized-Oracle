@@ -1,1846 +1,1820 @@
 {
-  "contractName": "MocRegistrySchedulerDelayChange",
-  "abi": [
-    {
-      "inputs": [
+    "contractName": "MocRegistrySchedulerDelayChange",
+    "abi": [
         {
-          "internalType": "contract IRegistry",
-          "name": "_registry",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
-      "inputs": [],
-      "name": "registry",
-      "outputs": [
+            "inputs": [
+                {
+                    "internalType": "contract IRegistry",
+                    "name": "_registry",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
         {
-          "internalType": "contract IRegistry",
-          "name": "",
-          "type": "address"
+            "inputs": [],
+            "name": "registry",
+            "outputs": [
+                {
+                    "internalType": "contract IRegistry",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "execute",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"_registry\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"registry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"execute()\":{\"details\":\"Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture\"}},\"title\":\"MocRegistrySchedulerDelayChange\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":\"Constructor\",\"execute()\":{\"notice\":\"Execute the changes.\"}},\"notice\":\"This contract is a ChangeContract intended to change some MOC registry values\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol\":\"MocRegistrySchedulerDelayChange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol\":{\"keccak256\":\"0xba695776b9574899eacf826727f91b357fad574b67f104735661b4dff9ca0b6d\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://740d7afd4f2866f01286c4d60e4386192e1d83efed1570ac53a9b3c0e6219f0e\",\"dweb:/ipfs/QmQ5aHP34u2wwksMHjm6FknWU1cdNEoQuX8WHFaZ8nvNyF\"]},\"@moc/shared/contracts/IRegistry.sol\":{\"keccak256\":\"0x1e42a096b195737ccad2117179b6d5899c0cf7a627019f5d81239998caf07ab6\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://f0ba0767e85b8cb329367ef438010b74324f6f935ea1ecc0bbc8055941008b1f\",\"dweb:/ipfs/QmWQEid2V3nkkV4avEBMCrUWv1AeDmEZvW7tbh3zJZjPuw\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]}},\"version\":1}",
+    "bytecode": "0x608060405234801561001057600080fd5b506040516102e63803806102e68339818101604052602081101561003357600080fd5b5051600080546001600160a01b039092166001600160a01b0319909216919091179055610281806100656000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063614619541461003b5780637b10399914610045575b600080fd5b610043610069565b005b61004d6101ad565b604080516001600160a01b039092168252519081900360200190f35b6000546040805180820190915260148152735343484544554c45525f504f4f4c5f44454c415960601b60208201526001600160a01b0390911690639ed44022906100b2906101bc565b603c6040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b1580156100f157600080fd5b505af1158015610105573d6000803e3d6000fd5b50506000546040805180820190915260158152745343484544554c45525f524f554e445f44454c415960581b60208201526001600160a01b039091169250639ed440229150610153906101bc565b6107086040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b15801561019357600080fd5b505af11580156101a7573d6000803e3d6000fd5b50505050565b6000546001600160a01b031681565b60008160405160200180806c1353d0d7d3d49050d311570c57609a1b815250600d0182805190602001908083835b602083106102095780518252601f1990920191602091820191016101ea565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405160208183030381529060405280519060200120905091905056fea2646970667358221220fd31999efee0340126f47833efc29a7a011cd4679e1a8bd1d3e3d0c8cf0e58d464736f6c634300060c0033",
+    "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c8063614619541461003b5780637b10399914610045575b600080fd5b610043610069565b005b61004d6101ad565b604080516001600160a01b039092168252519081900360200190f35b6000546040805180820190915260148152735343484544554c45525f504f4f4c5f44454c415960601b60208201526001600160a01b0390911690639ed44022906100b2906101bc565b603c6040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b1580156100f157600080fd5b505af1158015610105573d6000803e3d6000fd5b50506000546040805180820190915260158152745343484544554c45525f524f554e445f44454c415960581b60208201526001600160a01b039091169250639ed440229150610153906101bc565b6107086040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b15801561019357600080fd5b505af11580156101a7573d6000803e3d6000fd5b50505050565b6000546001600160a01b031681565b60008160405160200180806c1353d0d7d3d49050d311570c57609a1b815250600d0182805190602001908083835b602083106102095780518252601f1990920191602091820191016101ea565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405160208183030381529060405280519060200120905091905056fea2646970667358221220fd31999efee0340126f47833efc29a7a011cd4679e1a8bd1d3e3d0c8cf0e58d464736f6c634300060c0033",
+    "immutableReferences": {},
+    "sourceMap": "368:813:28:-:0;;;506:77;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;506:77:28;556:8;:20;;-1:-1:-1;;;;;556:20:28;;;-1:-1:-1;;;;;;556:20:28;;;;;;;;;368:813;;;;;;",
+    "deployedSourceMap": "368:813:28:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;805:227;;;:::i;:::-;;433:25;;;:::i;:::-;;;;-1:-1:-1;;;;;433:25:28;;;;;;;;;;;;;;805:227;852:8;;869:33;;;;;;;;;;;;-1:-1:-1;;;869:33:28;;;;-1:-1:-1;;;;;852:8:28;;;;:16;;869:33;;:9;:33::i;:::-;904:6;852:59;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;921:8:28;;938:34;;;;;;;;;;;;-1:-1:-1;;;938:34:28;;;;-1:-1:-1;;;;;921:8:28;;;;-1:-1:-1;921:16:28;;-1:-1:-1;938:34:28;;:9;:34::i;:::-;974:7;921:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;805:227::o;433:25::-;;;-1:-1:-1;;;;;433:25:28;;:::o;1038:141::-;1097:7;1169:1;1133:38;;;;;;-1:-1:-1;;;1133:38:28;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1133:38:28;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1123:49;;;;;;1116:56;;1038:141;;;:::o",
+    "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {ChangeContract} from \"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\";\nimport {IRegistry} from \"@moc/shared/contracts/IRegistry.sol\";\n\n/**\n    @title MocRegistrySchedulerDelayChange\n    @notice This contract is a ChangeContract intended to change some MOC registry values\n */\ncontract MocRegistrySchedulerDelayChange is ChangeContract {\n    IRegistry public registry;\n\n    /**\n      @notice Constructor\n    */\n    constructor(IRegistry _registry) public {\n        registry = _registry;\n    }\n\n    /**\n      @notice Execute the changes.\n      @dev Should be called by the governor, but this contract does not check that explicitly because it is\n      not its responsability in the current architecture\n     */\n    function execute() external override {\n        registry.setUint(getKeccak(\"SCHEDULER_POOL_DELAY\"), 1 * 60);\n        registry.setUint(getKeccak(\"SCHEDULER_ROUND_DELAY\"), 30 * 60);\n        // TODO: Make it usable just once.\n    }\n\n    function getKeccak(string memory k) internal pure returns (bytes32) {\n        return keccak256(abi.encodePacked(\"MOC_ORACLE\\\\1\\\\\", k));\n    }\n}\n",
+    "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol",
+    "ast": {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol",
+        "exportedSymbols": {
+            "MocRegistrySchedulerDelayChange": [6251]
+        },
+        "id": 6252,
+        "license": "UNLICENSED",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 6186,
+                "literals": ["solidity", "0.6", ".12"],
+                "nodeType": "PragmaDirective",
+                "src": "39:23:28"
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "id": 6188,
+                "nodeType": "ImportDirective",
+                "scope": 6252,
+                "sourceUnit": 11373,
+                "src": "64:98:28",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6187,
+                            "name": "ChangeContract",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "72:14:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/IRegistry.sol",
+                "file": "@moc/shared/contracts/IRegistry.sol",
+                "id": 6190,
+                "nodeType": "ImportDirective",
+                "scope": 6252,
+                "sourceUnit": 11117,
+                "src": "163:62:28",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6189,
+                            "name": "IRegistry",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "171:9:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 6192,
+                            "name": "ChangeContract",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11372,
+                            "src": "412:14:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ChangeContract_$11372",
+                                "typeString": "contract ChangeContract"
+                            }
+                        },
+                        "id": 6193,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "412:14:28"
+                    }
+                ],
+                "contractDependencies": [11372],
+                "contractKind": "contract",
+                "documentation": {
+                    "id": 6191,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "227:140:28",
+                    "text": "@title MocRegistrySchedulerDelayChange\n@notice This contract is a ChangeContract intended to change some MOC registry values"
+                },
+                "fullyImplemented": true,
+                "id": 6251,
+                "linearizedBaseContracts": [6251, 11372],
+                "name": "MocRegistrySchedulerDelayChange",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "functionSelector": "7b103999",
+                        "id": 6195,
+                        "mutability": "mutable",
+                        "name": "registry",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 6251,
+                        "src": "433:25:28",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_IRegistry_$11116",
+                            "typeString": "contract IRegistry"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 6194,
+                            "name": "IRegistry",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11116,
+                            "src": "433:9:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                "typeString": "contract IRegistry"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 6205,
+                            "nodeType": "Block",
+                            "src": "546:37:28",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6203,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6201,
+                                            "name": "registry",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6195,
+                                            "src": "556:8:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                "typeString": "contract IRegistry"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6202,
+                                            "name": "_registry",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6198,
+                                            "src": "567:9:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                "typeString": "contract IRegistry"
+                                            }
+                                        },
+                                        "src": "556:20:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                            "typeString": "contract IRegistry"
+                                        }
+                                    },
+                                    "id": 6204,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "556:20:28"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6196,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "465:36:28",
+                            "text": "@notice Constructor"
+                        },
+                        "id": 6206,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 6199,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6198,
+                                    "mutability": "mutable",
+                                    "name": "_registry",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6206,
+                                    "src": "518:19:28",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                        "typeString": "contract IRegistry"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 6197,
+                                        "name": "IRegistry",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 11116,
+                                        "src": "518:9:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                            "typeString": "contract IRegistry"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "517:21:28"
+                        },
+                        "returnParameters": {
+                            "id": 6200,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "546:0:28"
+                        },
+                        "scope": 6251,
+                        "src": "506:77:28",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "baseFunctions": [11371],
+                        "body": {
+                            "id": 6233,
+                            "nodeType": "Block",
+                            "src": "842:190:28",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "hexValue": "5343484544554c45525f504f4f4c5f44454c4159",
+                                                        "id": 6215,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "kind": "string",
+                                                        "lValueRequested": false,
+                                                        "nodeType": "Literal",
+                                                        "src": "879:22:28",
+                                                        "subdenomination": null,
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
+                                                            "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
+                                                        },
+                                                        "value": "SCHEDULER_POOL_DELAY"
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
+                                                            "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
+                                                        }
+                                                    ],
+                                                    "id": 6214,
+                                                    "name": "getKeccak",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 6250,
+                                                    "src": "869:9:28",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
+                                                        "typeString": "function (string memory) pure returns (bytes32)"
+                                                    }
+                                                },
+                                                "id": 6216,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "869:33:28",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_rational_60_by_1",
+                                                    "typeString": "int_const 60"
+                                                },
+                                                "id": 6219,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "31",
+                                                    "id": 6217,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "904:1:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_1_by_1",
+                                                        "typeString": "int_const 1"
+                                                    },
+                                                    "value": "1"
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "*",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "3630",
+                                                    "id": 6218,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "908:2:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_60_by_1",
+                                                        "typeString": "int_const 60"
+                                                    },
+                                                    "value": "60"
+                                                },
+                                                "src": "904:6:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_60_by_1",
+                                                    "typeString": "int_const 60"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_rational_60_by_1",
+                                                    "typeString": "int_const 60"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 6211,
+                                                "name": "registry",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6195,
+                                                "src": "852:8:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                    "typeString": "contract IRegistry"
+                                                }
+                                            },
+                                            "id": 6213,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "setUint",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 11045,
+                                            "src": "852:16:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
+                                                "typeString": "function (bytes32,uint248) external"
+                                            }
+                                        },
+                                        "id": 6220,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "852:59:28",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 6221,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "852:59:28"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "hexValue": "5343484544554c45525f524f554e445f44454c4159",
+                                                        "id": 6226,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "kind": "string",
+                                                        "lValueRequested": false,
+                                                        "nodeType": "Literal",
+                                                        "src": "948:23:28",
+                                                        "subdenomination": null,
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
+                                                            "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
+                                                        },
+                                                        "value": "SCHEDULER_ROUND_DELAY"
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
+                                                            "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
+                                                        }
+                                                    ],
+                                                    "id": 6225,
+                                                    "name": "getKeccak",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 6250,
+                                                    "src": "938:9:28",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
+                                                        "typeString": "function (string memory) pure returns (bytes32)"
+                                                    }
+                                                },
+                                                "id": 6227,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "938:34:28",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_rational_1800_by_1",
+                                                    "typeString": "int_const 1800"
+                                                },
+                                                "id": 6230,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "3330",
+                                                    "id": 6228,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "974:2:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_30_by_1",
+                                                        "typeString": "int_const 30"
+                                                    },
+                                                    "value": "30"
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "*",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "3630",
+                                                    "id": 6229,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "979:2:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_60_by_1",
+                                                        "typeString": "int_const 60"
+                                                    },
+                                                    "value": "60"
+                                                },
+                                                "src": "974:7:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1800_by_1",
+                                                    "typeString": "int_const 1800"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_rational_1800_by_1",
+                                                    "typeString": "int_const 1800"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 6222,
+                                                "name": "registry",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6195,
+                                                "src": "921:8:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                    "typeString": "contract IRegistry"
+                                                }
+                                            },
+                                            "id": 6224,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "setUint",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 11045,
+                                            "src": "921:16:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
+                                                "typeString": "function (bytes32,uint248) external"
+                                            }
+                                        },
+                                        "id": 6231,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "921:61:28",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 6232,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "921:61:28"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6207,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "589:211:28",
+                            "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because it is\nnot its responsability in the current architecture"
+                        },
+                        "functionSelector": "61461954",
+                        "id": 6234,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "execute",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": {
+                            "id": 6209,
+                            "nodeType": "OverrideSpecifier",
+                            "overrides": [],
+                            "src": "833:8:28"
+                        },
+                        "parameters": {
+                            "id": 6208,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "821:2:28"
+                        },
+                        "returnParameters": {
+                            "id": 6210,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "842:0:28"
+                        },
+                        "scope": 6251,
+                        "src": "805:227:28",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": {
+                            "id": 6249,
+                            "nodeType": "Block",
+                            "src": "1106:73:28",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "hexValue": "4d4f435f4f5241434c455c315c",
+                                                        "id": 6244,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "kind": "string",
+                                                        "lValueRequested": false,
+                                                        "nodeType": "Literal",
+                                                        "src": "1150:17:28",
+                                                        "subdenomination": null,
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
+                                                            "typeString": "literal_string \"MOC_ORACLE\\1\\\""
+                                                        },
+                                                        "value": "MOC_ORACLE\\1\\"
+                                                    },
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "id": 6245,
+                                                        "name": "k",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 6236,
+                                                        "src": "1169:1:28",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_string_memory_ptr",
+                                                            "typeString": "string memory"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
+                                                            "typeString": "literal_string \"MOC_ORACLE\\1\\\""
+                                                        },
+                                                        {
+                                                            "typeIdentifier": "t_string_memory_ptr",
+                                                            "typeString": "string memory"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 6242,
+                                                        "name": "abi",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": -1,
+                                                        "src": "1133:3:28",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_magic_abi",
+                                                            "typeString": "abi"
+                                                        }
+                                                    },
+                                                    "id": 6243,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "lValueRequested": false,
+                                                    "memberName": "encodePacked",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": null,
+                                                    "src": "1133:16:28",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
+                                                        "typeString": "function () pure returns (bytes memory)"
+                                                    }
+                                                },
+                                                "id": 6246,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "1133:38:28",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bytes_memory_ptr",
+                                                    "typeString": "bytes memory"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bytes_memory_ptr",
+                                                    "typeString": "bytes memory"
+                                                }
+                                            ],
+                                            "id": 6241,
+                                            "name": "keccak256",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": -8,
+                                            "src": "1123:9:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                                                "typeString": "function (bytes memory) pure returns (bytes32)"
+                                            }
+                                        },
+                                        "id": 6247,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1123:49:28",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "functionReturnParameters": 6240,
+                                    "id": 6248,
+                                    "nodeType": "Return",
+                                    "src": "1116:56:28"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 6250,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getKeccak",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 6237,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6236,
+                                    "mutability": "mutable",
+                                    "name": "k",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6250,
+                                    "src": "1057:15:28",
+                                    "stateVariable": false,
+                                    "storageLocation": "memory",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_string_memory_ptr",
+                                        "typeString": "string"
+                                    },
+                                    "typeName": {
+                                        "id": 6235,
+                                        "name": "string",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1057:6:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_storage_ptr",
+                                            "typeString": "string"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1056:17:28"
+                        },
+                        "returnParameters": {
+                            "id": 6240,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6239,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6250,
+                                    "src": "1097:7:28",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 6238,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1097:7:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1096:9:28"
+                        },
+                        "scope": 6251,
+                        "src": "1038:141:28",
+                        "stateMutability": "pure",
+                        "virtual": false,
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 6252,
+                "src": "368:813:28"
+            }
+        ],
+        "src": "39:1143:28"
     },
-    {
-      "inputs": [],
-      "name": "execute",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
+    "legacyAST": {
+        "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol",
+        "exportedSymbols": {
+            "MocRegistrySchedulerDelayChange": [6251]
+        },
+        "id": 6252,
+        "license": "UNLICENSED",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 6186,
+                "literals": ["solidity", "0.6", ".12"],
+                "nodeType": "PragmaDirective",
+                "src": "39:23:28"
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
+                "id": 6188,
+                "nodeType": "ImportDirective",
+                "scope": 6252,
+                "sourceUnit": 11373,
+                "src": "64:98:28",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6187,
+                            "name": "ChangeContract",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "72:14:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "@moc/shared/contracts/IRegistry.sol",
+                "file": "@moc/shared/contracts/IRegistry.sol",
+                "id": 6190,
+                "nodeType": "ImportDirective",
+                "scope": 6252,
+                "sourceUnit": 11117,
+                "src": "163:62:28",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "argumentTypes": null,
+                            "id": 6189,
+                            "name": "IRegistry",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": null,
+                            "src": "171:9:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": null,
+                                "typeString": null
+                            }
+                        },
+                        "local": null
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 6192,
+                            "name": "ChangeContract",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11372,
+                            "src": "412:14:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ChangeContract_$11372",
+                                "typeString": "contract ChangeContract"
+                            }
+                        },
+                        "id": 6193,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "412:14:28"
+                    }
+                ],
+                "contractDependencies": [11372],
+                "contractKind": "contract",
+                "documentation": {
+                    "id": 6191,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "227:140:28",
+                    "text": "@title MocRegistrySchedulerDelayChange\n@notice This contract is a ChangeContract intended to change some MOC registry values"
+                },
+                "fullyImplemented": true,
+                "id": 6251,
+                "linearizedBaseContracts": [6251, 11372],
+                "name": "MocRegistrySchedulerDelayChange",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "functionSelector": "7b103999",
+                        "id": 6195,
+                        "mutability": "mutable",
+                        "name": "registry",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 6251,
+                        "src": "433:25:28",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_IRegistry_$11116",
+                            "typeString": "contract IRegistry"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 6194,
+                            "name": "IRegistry",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 11116,
+                            "src": "433:9:28",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                "typeString": "contract IRegistry"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 6205,
+                            "nodeType": "Block",
+                            "src": "546:37:28",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 6203,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6201,
+                                            "name": "registry",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6195,
+                                            "src": "556:8:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                "typeString": "contract IRegistry"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 6202,
+                                            "name": "_registry",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6198,
+                                            "src": "567:9:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                "typeString": "contract IRegistry"
+                                            }
+                                        },
+                                        "src": "556:20:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                            "typeString": "contract IRegistry"
+                                        }
+                                    },
+                                    "id": 6204,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "556:20:28"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6196,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "465:36:28",
+                            "text": "@notice Constructor"
+                        },
+                        "id": 6206,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 6199,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6198,
+                                    "mutability": "mutable",
+                                    "name": "_registry",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6206,
+                                    "src": "518:19:28",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                        "typeString": "contract IRegistry"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 6197,
+                                        "name": "IRegistry",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 11116,
+                                        "src": "518:9:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                            "typeString": "contract IRegistry"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "517:21:28"
+                        },
+                        "returnParameters": {
+                            "id": 6200,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "546:0:28"
+                        },
+                        "scope": 6251,
+                        "src": "506:77:28",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "baseFunctions": [11371],
+                        "body": {
+                            "id": 6233,
+                            "nodeType": "Block",
+                            "src": "842:190:28",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "hexValue": "5343484544554c45525f504f4f4c5f44454c4159",
+                                                        "id": 6215,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "kind": "string",
+                                                        "lValueRequested": false,
+                                                        "nodeType": "Literal",
+                                                        "src": "879:22:28",
+                                                        "subdenomination": null,
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
+                                                            "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
+                                                        },
+                                                        "value": "SCHEDULER_POOL_DELAY"
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
+                                                            "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
+                                                        }
+                                                    ],
+                                                    "id": 6214,
+                                                    "name": "getKeccak",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 6250,
+                                                    "src": "869:9:28",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
+                                                        "typeString": "function (string memory) pure returns (bytes32)"
+                                                    }
+                                                },
+                                                "id": 6216,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "869:33:28",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_rational_60_by_1",
+                                                    "typeString": "int_const 60"
+                                                },
+                                                "id": 6219,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "31",
+                                                    "id": 6217,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "904:1:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_1_by_1",
+                                                        "typeString": "int_const 1"
+                                                    },
+                                                    "value": "1"
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "*",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "3630",
+                                                    "id": 6218,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "908:2:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_60_by_1",
+                                                        "typeString": "int_const 60"
+                                                    },
+                                                    "value": "60"
+                                                },
+                                                "src": "904:6:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_60_by_1",
+                                                    "typeString": "int_const 60"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_rational_60_by_1",
+                                                    "typeString": "int_const 60"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 6211,
+                                                "name": "registry",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6195,
+                                                "src": "852:8:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                    "typeString": "contract IRegistry"
+                                                }
+                                            },
+                                            "id": 6213,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "setUint",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 11045,
+                                            "src": "852:16:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
+                                                "typeString": "function (bytes32,uint248) external"
+                                            }
+                                        },
+                                        "id": 6220,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "852:59:28",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 6221,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "852:59:28"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "hexValue": "5343484544554c45525f524f554e445f44454c4159",
+                                                        "id": 6226,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "kind": "string",
+                                                        "lValueRequested": false,
+                                                        "nodeType": "Literal",
+                                                        "src": "948:23:28",
+                                                        "subdenomination": null,
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
+                                                            "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
+                                                        },
+                                                        "value": "SCHEDULER_ROUND_DELAY"
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
+                                                            "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
+                                                        }
+                                                    ],
+                                                    "id": 6225,
+                                                    "name": "getKeccak",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 6250,
+                                                    "src": "938:9:28",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
+                                                        "typeString": "function (string memory) pure returns (bytes32)"
+                                                    }
+                                                },
+                                                "id": 6227,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "938:34:28",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_rational_1800_by_1",
+                                                    "typeString": "int_const 1800"
+                                                },
+                                                "id": 6230,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "3330",
+                                                    "id": 6228,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "974:2:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_30_by_1",
+                                                        "typeString": "int_const 30"
+                                                    },
+                                                    "value": "30"
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "*",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "hexValue": "3630",
+                                                    "id": 6229,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "979:2:28",
+                                                    "subdenomination": null,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_60_by_1",
+                                                        "typeString": "int_const 60"
+                                                    },
+                                                    "value": "60"
+                                                },
+                                                "src": "974:7:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1800_by_1",
+                                                    "typeString": "int_const 1800"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bytes32",
+                                                    "typeString": "bytes32"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_rational_1800_by_1",
+                                                    "typeString": "int_const 1800"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 6222,
+                                                "name": "registry",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 6195,
+                                                "src": "921:8:28",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_IRegistry_$11116",
+                                                    "typeString": "contract IRegistry"
+                                                }
+                                            },
+                                            "id": 6224,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "setUint",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 11045,
+                                            "src": "921:16:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
+                                                "typeString": "function (bytes32,uint248) external"
+                                            }
+                                        },
+                                        "id": 6231,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "921:61:28",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 6232,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "921:61:28"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 6207,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "589:211:28",
+                            "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because it is\nnot its responsability in the current architecture"
+                        },
+                        "functionSelector": "61461954",
+                        "id": 6234,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "execute",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": {
+                            "id": 6209,
+                            "nodeType": "OverrideSpecifier",
+                            "overrides": [],
+                            "src": "833:8:28"
+                        },
+                        "parameters": {
+                            "id": 6208,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "821:2:28"
+                        },
+                        "returnParameters": {
+                            "id": 6210,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "842:0:28"
+                        },
+                        "scope": 6251,
+                        "src": "805:227:28",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": {
+                            "id": 6249,
+                            "nodeType": "Block",
+                            "src": "1106:73:28",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "hexValue": "4d4f435f4f5241434c455c315c",
+                                                        "id": 6244,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "kind": "string",
+                                                        "lValueRequested": false,
+                                                        "nodeType": "Literal",
+                                                        "src": "1150:17:28",
+                                                        "subdenomination": null,
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
+                                                            "typeString": "literal_string \"MOC_ORACLE\\1\\\""
+                                                        },
+                                                        "value": "MOC_ORACLE\\1\\"
+                                                    },
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "id": 6245,
+                                                        "name": "k",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 6236,
+                                                        "src": "1169:1:28",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_string_memory_ptr",
+                                                            "typeString": "string memory"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
+                                                            "typeString": "literal_string \"MOC_ORACLE\\1\\\""
+                                                        },
+                                                        {
+                                                            "typeIdentifier": "t_string_memory_ptr",
+                                                            "typeString": "string memory"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 6242,
+                                                        "name": "abi",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": -1,
+                                                        "src": "1133:3:28",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_magic_abi",
+                                                            "typeString": "abi"
+                                                        }
+                                                    },
+                                                    "id": 6243,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "lValueRequested": false,
+                                                    "memberName": "encodePacked",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": null,
+                                                    "src": "1133:16:28",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
+                                                        "typeString": "function () pure returns (bytes memory)"
+                                                    }
+                                                },
+                                                "id": 6246,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "1133:38:28",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bytes_memory_ptr",
+                                                    "typeString": "bytes memory"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bytes_memory_ptr",
+                                                    "typeString": "bytes memory"
+                                                }
+                                            ],
+                                            "id": 6241,
+                                            "name": "keccak256",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": -8,
+                                            "src": "1123:9:28",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                                                "typeString": "function (bytes memory) pure returns (bytes32)"
+                                            }
+                                        },
+                                        "id": 6247,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1123:49:28",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "functionReturnParameters": 6240,
+                                    "id": 6248,
+                                    "nodeType": "Return",
+                                    "src": "1116:56:28"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 6250,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getKeccak",
+                        "nodeType": "FunctionDefinition",
+                        "overrides": null,
+                        "parameters": {
+                            "id": 6237,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6236,
+                                    "mutability": "mutable",
+                                    "name": "k",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6250,
+                                    "src": "1057:15:28",
+                                    "stateVariable": false,
+                                    "storageLocation": "memory",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_string_memory_ptr",
+                                        "typeString": "string"
+                                    },
+                                    "typeName": {
+                                        "id": 6235,
+                                        "name": "string",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1057:6:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_storage_ptr",
+                                            "typeString": "string"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1056:17:28"
+                        },
+                        "returnParameters": {
+                            "id": 6240,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6239,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "overrides": null,
+                                    "scope": 6250,
+                                    "src": "1097:7:28",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 6238,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1097:7:28",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1096:9:28"
+                        },
+                        "scope": 6251,
+                        "src": "1038:141:28",
+                        "stateMutability": "pure",
+                        "virtual": false,
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 6252,
+                "src": "368:813:28"
+            }
+        ],
+        "src": "39:1143:28"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.2.4",
+    "updatedAt": "2020-09-14T20:07:21.967Z",
+    "devdoc": {
+        "kind": "dev",
+        "methods": {
+            "execute()": {
+                "details": "Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture"
+            }
+        },
+        "title": "MocRegistrySchedulerDelayChange",
+        "version": 1
+    },
+    "userdoc": {
+        "kind": "user",
+        "methods": {
+            "constructor": "Constructor",
+            "execute()": {
+                "notice": "Execute the changes."
+            }
+        },
+        "notice": "This contract is a ChangeContract intended to change some MOC registry values",
+        "version": 1
     }
-  ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"_registry\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"registry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"execute()\":{\"details\":\"Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture\"}},\"title\":\"MocRegistrySchedulerDelayChange\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":\"Constructor\",\"execute()\":{\"notice\":\"Execute the changes.\"}},\"notice\":\"This contract is a ChangeContract intended to change some MOC registry values\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol\":\"MocRegistrySchedulerDelayChange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol\":{\"keccak256\":\"0x90bcb666440b96ca74a75fcbf3ceb13fa211b10a46081cc777252cb76157c381\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://46f5e4e0a396bc68bc3fe6e5bcacc9e69fff034efd05c8d193e8fcd8c9a535a4\",\"dweb:/ipfs/QmVFNZ1EcaSJRPALAiwUR9o8PUd8TAyRBm9h5LF5V8A7gc\"]},\"@moc/shared/contracts/IRegistry.sol\":{\"keccak256\":\"0x1e42a096b195737ccad2117179b6d5899c0cf7a627019f5d81239998caf07ab6\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://f0ba0767e85b8cb329367ef438010b74324f6f935ea1ecc0bbc8055941008b1f\",\"dweb:/ipfs/QmWQEid2V3nkkV4avEBMCrUWv1AeDmEZvW7tbh3zJZjPuw\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506040516103af3803806103af8339818101604052602081101561003357600080fd5b8101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505061031b806100946000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063614619541461003b5780637b10399914610045575b600080fd5b610043610079565b005b61004d61021e565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16639ed440226100f36040518060400160405280601481526020017f5343484544554c45525f504f4f4c5f44454c4159000000000000000000000000815250610242565b603c6040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b15801561013257600080fd5b505af1158015610146573d6000803e3d6000fd5b5050505060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16639ed440226101c46040518060400160405280601581526020017f5343484544554c45525f524f554e445f44454c41590000000000000000000000815250610242565b6107086040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b15801561020457600080fd5b505af1158015610218573d6000803e3d6000fd5b50505050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008160405160200180807f4d4f435f4f5241434c455c315c00000000000000000000000000000000000000815250600d0182805190602001908083835b602083106102a35780518252602082019150602081019050602083039250610280565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405160208183030381529060405280519060200120905091905056fea26469706673582212206f4b931560c40c38be4187e5846e43485890603e1718b466d9285a77b7939e1264736f6c634300060c0033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c8063614619541461003b5780637b10399914610045575b600080fd5b610043610079565b005b61004d61021e565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16639ed440226100f36040518060400160405280601481526020017f5343484544554c45525f504f4f4c5f44454c4159000000000000000000000000815250610242565b603c6040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b15801561013257600080fd5b505af1158015610146573d6000803e3d6000fd5b5050505060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16639ed440226101c46040518060400160405280601581526020017f5343484544554c45525f524f554e445f44454c41590000000000000000000000815250610242565b6107086040518363ffffffff1660e01b81526004018083815260200182815260200192505050600060405180830381600087803b15801561020457600080fd5b505af1158015610218573d6000803e3d6000fd5b50505050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008160405160200180807f4d4f435f4f5241434c455c315c00000000000000000000000000000000000000815250600d0182805190602001908083835b602083106102a35780518252602082019150602081019050602083039250610280565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405160208183030381529060405280519060200120905091905056fea26469706673582212206f4b931560c40c38be4187e5846e43485890603e1718b466d9285a77b7939e1264736f6c634300060c0033",
-  "immutableReferences": {},
-  "sourceMap": "368:816:28:-:0;;;506:77;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;567:9;556:8;;:20;;;;;;;;;;;;;;;;;;506:77;368:816;;;;;;",
-  "deployedSourceMap": "368:816:28:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;805:229;;;:::i;:::-;;433:25;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;805:229;852:8;;;;;;;;;;:16;;;869:34;;;;;;;;;;;;;;;;;;:10;:34::i;:::-;905:6;852:60;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;922:8;;;;;;;;;;:16;;;939:35;;;;;;;;;;;;;;;;;;:10;:35::i;:::-;976:7;922:62;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;805:229::o;433:25::-;;;;;;;;;;;;:::o;1040:142::-;1100:7;1172:1;1136:38;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1126:49;;;;;;1119:56;;1040:142;;;:::o",
-  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {ChangeContract} from \"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\";\nimport {IRegistry} from \"@moc/shared/contracts/IRegistry.sol\";\n\n/**\n    @title MocRegistrySchedulerDelayChange\n    @notice This contract is a ChangeContract intended to change some MOC registry values\n */\ncontract MocRegistrySchedulerDelayChange is ChangeContract {\n    IRegistry public registry;\n\n    /**\n      @notice Constructor\n    */\n    constructor(IRegistry _registry) public {\n        registry = _registry;\n    }\n\n    /**\n      @notice Execute the changes.\n      @dev Should be called by the governor, but this contract does not check that explicitly because it is\n      not its responsability in the current architecture\n     */\n    function execute() external override {\n        registry.setUint(get_keccak(\"SCHEDULER_POOL_DELAY\"), 1 * 60);\n        registry.setUint(get_keccak(\"SCHEDULER_ROUND_DELAY\"), 30 * 60);\n        // TODO: Make it usable just once.\n    }\n\n    function get_keccak(string memory k) internal pure returns (bytes32) {\n        return keccak256(abi.encodePacked(\"MOC_ORACLE\\\\1\\\\\", k));\n    }\n}\n",
-  "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol",
-  "ast": {
-    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol",
-    "exportedSymbols": {
-      "MocRegistrySchedulerDelayChange": [
-        6294
-      ]
-    },
-    "id": 6295,
-    "license": "UNLICENSED",
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 6229,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "39:23:28"
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "id": 6231,
-        "nodeType": "ImportDirective",
-        "scope": 6295,
-        "sourceUnit": 11431,
-        "src": "64:98:28",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6230,
-              "name": "ChangeContract",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "72:14:28",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/IRegistry.sol",
-        "file": "@moc/shared/contracts/IRegistry.sol",
-        "id": 6233,
-        "nodeType": "ImportDirective",
-        "scope": 6295,
-        "sourceUnit": 11160,
-        "src": "163:62:28",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6232,
-              "name": "IRegistry",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "171:9:28",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "abstract": false,
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 6235,
-              "name": "ChangeContract",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11430,
-              "src": "412:14:28",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ChangeContract_$11430",
-                "typeString": "contract ChangeContract"
-              }
-            },
-            "id": 6236,
-            "nodeType": "InheritanceSpecifier",
-            "src": "412:14:28"
-          }
-        ],
-        "contractDependencies": [
-          11430
-        ],
-        "contractKind": "contract",
-        "documentation": {
-          "id": 6234,
-          "nodeType": "StructuredDocumentation",
-          "src": "227:140:28",
-          "text": "@title MocRegistrySchedulerDelayChange\n@notice This contract is a ChangeContract intended to change some MOC registry values"
-        },
-        "fullyImplemented": true,
-        "id": 6294,
-        "linearizedBaseContracts": [
-          6294,
-          11430
-        ],
-        "name": "MocRegistrySchedulerDelayChange",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "functionSelector": "7b103999",
-            "id": 6238,
-            "mutability": "mutable",
-            "name": "registry",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 6294,
-            "src": "433:25:28",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IRegistry_$11159",
-              "typeString": "contract IRegistry"
-            },
-            "typeName": {
-              "contractScope": null,
-              "id": 6237,
-              "name": "IRegistry",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11159,
-              "src": "433:9:28",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IRegistry_$11159",
-                "typeString": "contract IRegistry"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 6248,
-              "nodeType": "Block",
-              "src": "546:37:28",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6246,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6244,
-                      "name": "registry",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6238,
-                      "src": "556:8:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$11159",
-                        "typeString": "contract IRegistry"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 6245,
-                      "name": "_registry",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6241,
-                      "src": "567:9:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$11159",
-                        "typeString": "contract IRegistry"
-                      }
-                    },
-                    "src": "556:20:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$11159",
-                      "typeString": "contract IRegistry"
-                    }
-                  },
-                  "id": 6247,
-                  "nodeType": "ExpressionStatement",
-                  "src": "556:20:28"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6239,
-              "nodeType": "StructuredDocumentation",
-              "src": "465:36:28",
-              "text": "@notice Constructor"
-            },
-            "id": 6249,
-            "implemented": true,
-            "kind": "constructor",
-            "modifiers": [],
-            "name": "",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 6242,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6241,
-                  "mutability": "mutable",
-                  "name": "_registry",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6249,
-                  "src": "518:19:28",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IRegistry_$11159",
-                    "typeString": "contract IRegistry"
-                  },
-                  "typeName": {
-                    "contractScope": null,
-                    "id": 6240,
-                    "name": "IRegistry",
-                    "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 11159,
-                    "src": "518:9:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$11159",
-                      "typeString": "contract IRegistry"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "517:21:28"
-            },
-            "returnParameters": {
-              "id": 6243,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "546:0:28"
-            },
-            "scope": 6294,
-            "src": "506:77:28",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "public"
-          },
-          {
-            "baseFunctions": [
-              11429
-            ],
-            "body": {
-              "id": 6276,
-              "nodeType": "Block",
-              "src": "842:192:28",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "hexValue": "5343484544554c45525f504f4f4c5f44454c4159",
-                            "id": 6258,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "string",
-                            "lValueRequested": false,
-                            "nodeType": "Literal",
-                            "src": "880:22:28",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
-                              "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
-                            },
-                            "value": "SCHEDULER_POOL_DELAY"
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
-                              "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
-                            }
-                          ],
-                          "id": 6257,
-                          "name": "get_keccak",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 6293,
-                          "src": "869:10:28",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
-                            "typeString": "function (string memory) pure returns (bytes32)"
-                          }
-                        },
-                        "id": 6259,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "functionCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "869:34:28",
-                        "tryCall": false,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "commonType": {
-                          "typeIdentifier": "t_rational_60_by_1",
-                          "typeString": "int_const 60"
-                        },
-                        "id": 6262,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": true,
-                        "lValueRequested": false,
-                        "leftExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "31",
-                          "id": 6260,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "905:1:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_1_by_1",
-                            "typeString": "int_const 1"
-                          },
-                          "value": "1"
-                        },
-                        "nodeType": "BinaryOperation",
-                        "operator": "*",
-                        "rightExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "3630",
-                          "id": 6261,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "909:2:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_60_by_1",
-                            "typeString": "int_const 60"
-                          },
-                          "value": "60"
-                        },
-                        "src": "905:6:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_rational_60_by_1",
-                          "typeString": "int_const 60"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        },
-                        {
-                          "typeIdentifier": "t_rational_60_by_1",
-                          "typeString": "int_const 60"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 6254,
-                        "name": "registry",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6238,
-                        "src": "852:8:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IRegistry_$11159",
-                          "typeString": "contract IRegistry"
-                        }
-                      },
-                      "id": 6256,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "setUint",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11088,
-                      "src": "852:16:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
-                        "typeString": "function (bytes32,uint248) external"
-                      }
-                    },
-                    "id": 6263,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "852:60:28",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 6264,
-                  "nodeType": "ExpressionStatement",
-                  "src": "852:60:28"
-                },
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "hexValue": "5343484544554c45525f524f554e445f44454c4159",
-                            "id": 6269,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "string",
-                            "lValueRequested": false,
-                            "nodeType": "Literal",
-                            "src": "950:23:28",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
-                              "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
-                            },
-                            "value": "SCHEDULER_ROUND_DELAY"
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
-                              "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
-                            }
-                          ],
-                          "id": 6268,
-                          "name": "get_keccak",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 6293,
-                          "src": "939:10:28",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
-                            "typeString": "function (string memory) pure returns (bytes32)"
-                          }
-                        },
-                        "id": 6270,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "functionCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "939:35:28",
-                        "tryCall": false,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "commonType": {
-                          "typeIdentifier": "t_rational_1800_by_1",
-                          "typeString": "int_const 1800"
-                        },
-                        "id": 6273,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": true,
-                        "lValueRequested": false,
-                        "leftExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "3330",
-                          "id": 6271,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "976:2:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_30_by_1",
-                            "typeString": "int_const 30"
-                          },
-                          "value": "30"
-                        },
-                        "nodeType": "BinaryOperation",
-                        "operator": "*",
-                        "rightExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "3630",
-                          "id": 6272,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "981:2:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_60_by_1",
-                            "typeString": "int_const 60"
-                          },
-                          "value": "60"
-                        },
-                        "src": "976:7:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_rational_1800_by_1",
-                          "typeString": "int_const 1800"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        },
-                        {
-                          "typeIdentifier": "t_rational_1800_by_1",
-                          "typeString": "int_const 1800"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 6265,
-                        "name": "registry",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6238,
-                        "src": "922:8:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IRegistry_$11159",
-                          "typeString": "contract IRegistry"
-                        }
-                      },
-                      "id": 6267,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "setUint",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11088,
-                      "src": "922:16:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
-                        "typeString": "function (bytes32,uint248) external"
-                      }
-                    },
-                    "id": 6274,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "922:62:28",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 6275,
-                  "nodeType": "ExpressionStatement",
-                  "src": "922:62:28"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6250,
-              "nodeType": "StructuredDocumentation",
-              "src": "589:211:28",
-              "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because it is\nnot its responsability in the current architecture"
-            },
-            "functionSelector": "61461954",
-            "id": 6277,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "execute",
-            "nodeType": "FunctionDefinition",
-            "overrides": {
-              "id": 6252,
-              "nodeType": "OverrideSpecifier",
-              "overrides": [],
-              "src": "833:8:28"
-            },
-            "parameters": {
-              "id": 6251,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "821:2:28"
-            },
-            "returnParameters": {
-              "id": 6253,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "842:0:28"
-            },
-            "scope": 6294,
-            "src": "805:229:28",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "external"
-          },
-          {
-            "body": {
-              "id": 6292,
-              "nodeType": "Block",
-              "src": "1109:73:28",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "hexValue": "4d4f435f4f5241434c455c315c",
-                            "id": 6287,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "string",
-                            "lValueRequested": false,
-                            "nodeType": "Literal",
-                            "src": "1153:17:28",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
-                              "typeString": "literal_string \"MOC_ORACLE\\1\\\""
-                            },
-                            "value": "MOC_ORACLE\\1\\"
-                          },
-                          {
-                            "argumentTypes": null,
-                            "id": 6288,
-                            "name": "k",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 6279,
-                            "src": "1172:1:28",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_string_memory_ptr",
-                              "typeString": "string memory"
-                            }
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
-                              "typeString": "literal_string \"MOC_ORACLE\\1\\\""
-                            },
-                            {
-                              "typeIdentifier": "t_string_memory_ptr",
-                              "typeString": "string memory"
-                            }
-                          ],
-                          "expression": {
-                            "argumentTypes": null,
-                            "id": 6285,
-                            "name": "abi",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": -1,
-                            "src": "1136:3:28",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_magic_abi",
-                              "typeString": "abi"
-                            }
-                          },
-                          "id": 6286,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "lValueRequested": false,
-                          "memberName": "encodePacked",
-                          "nodeType": "MemberAccess",
-                          "referencedDeclaration": null,
-                          "src": "1136:16:28",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
-                            "typeString": "function () pure returns (bytes memory)"
-                          }
-                        },
-                        "id": 6289,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "functionCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "1136:38:28",
-                        "tryCall": false,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bytes_memory_ptr",
-                          "typeString": "bytes memory"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bytes_memory_ptr",
-                          "typeString": "bytes memory"
-                        }
-                      ],
-                      "id": 6284,
-                      "name": "keccak256",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": -8,
-                      "src": "1126:9:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
-                        "typeString": "function (bytes memory) pure returns (bytes32)"
-                      }
-                    },
-                    "id": 6290,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "1126:49:28",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes32",
-                      "typeString": "bytes32"
-                    }
-                  },
-                  "functionReturnParameters": 6283,
-                  "id": 6291,
-                  "nodeType": "Return",
-                  "src": "1119:56:28"
-                }
-              ]
-            },
-            "documentation": null,
-            "id": 6293,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "get_keccak",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 6280,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6279,
-                  "mutability": "mutable",
-                  "name": "k",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6293,
-                  "src": "1060:15:28",
-                  "stateVariable": false,
-                  "storageLocation": "memory",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 6278,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1060:6:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1059:17:28"
-            },
-            "returnParameters": {
-              "id": 6283,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6282,
-                  "mutability": "mutable",
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6293,
-                  "src": "1100:7:28",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bytes32",
-                    "typeString": "bytes32"
-                  },
-                  "typeName": {
-                    "id": 6281,
-                    "name": "bytes32",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1100:7:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes32",
-                      "typeString": "bytes32"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1099:9:28"
-            },
-            "scope": 6294,
-            "src": "1040:142:28",
-            "stateMutability": "pure",
-            "virtual": false,
-            "visibility": "internal"
-          }
-        ],
-        "scope": 6295,
-        "src": "368:816:28"
-      }
-    ],
-    "src": "39:1146:28"
-  },
-  "legacyAST": {
-    "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/MocRegistrySchedulerDelayChange.sol",
-    "exportedSymbols": {
-      "MocRegistrySchedulerDelayChange": [
-        6294
-      ]
-    },
-    "id": 6295,
-    "license": "UNLICENSED",
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 6229,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "39:23:28"
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-        "id": 6231,
-        "nodeType": "ImportDirective",
-        "scope": 6295,
-        "sourceUnit": 11431,
-        "src": "64:98:28",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6230,
-              "name": "ChangeContract",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "72:14:28",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "@moc/shared/contracts/IRegistry.sol",
-        "file": "@moc/shared/contracts/IRegistry.sol",
-        "id": 6233,
-        "nodeType": "ImportDirective",
-        "scope": 6295,
-        "sourceUnit": 11160,
-        "src": "163:62:28",
-        "symbolAliases": [
-          {
-            "foreign": {
-              "argumentTypes": null,
-              "id": 6232,
-              "name": "IRegistry",
-              "nodeType": "Identifier",
-              "overloadedDeclarations": [],
-              "referencedDeclaration": null,
-              "src": "171:9:28",
-              "typeDescriptions": {
-                "typeIdentifier": null,
-                "typeString": null
-              }
-            },
-            "local": null
-          }
-        ],
-        "unitAlias": ""
-      },
-      {
-        "abstract": false,
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 6235,
-              "name": "ChangeContract",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11430,
-              "src": "412:14:28",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ChangeContract_$11430",
-                "typeString": "contract ChangeContract"
-              }
-            },
-            "id": 6236,
-            "nodeType": "InheritanceSpecifier",
-            "src": "412:14:28"
-          }
-        ],
-        "contractDependencies": [
-          11430
-        ],
-        "contractKind": "contract",
-        "documentation": {
-          "id": 6234,
-          "nodeType": "StructuredDocumentation",
-          "src": "227:140:28",
-          "text": "@title MocRegistrySchedulerDelayChange\n@notice This contract is a ChangeContract intended to change some MOC registry values"
-        },
-        "fullyImplemented": true,
-        "id": 6294,
-        "linearizedBaseContracts": [
-          6294,
-          11430
-        ],
-        "name": "MocRegistrySchedulerDelayChange",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "functionSelector": "7b103999",
-            "id": 6238,
-            "mutability": "mutable",
-            "name": "registry",
-            "nodeType": "VariableDeclaration",
-            "overrides": null,
-            "scope": 6294,
-            "src": "433:25:28",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IRegistry_$11159",
-              "typeString": "contract IRegistry"
-            },
-            "typeName": {
-              "contractScope": null,
-              "id": 6237,
-              "name": "IRegistry",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11159,
-              "src": "433:9:28",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IRegistry_$11159",
-                "typeString": "contract IRegistry"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 6248,
-              "nodeType": "Block",
-              "src": "546:37:28",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 6246,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 6244,
-                      "name": "registry",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6238,
-                      "src": "556:8:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$11159",
-                        "typeString": "contract IRegistry"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 6245,
-                      "name": "_registry",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 6241,
-                      "src": "567:9:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$11159",
-                        "typeString": "contract IRegistry"
-                      }
-                    },
-                    "src": "556:20:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$11159",
-                      "typeString": "contract IRegistry"
-                    }
-                  },
-                  "id": 6247,
-                  "nodeType": "ExpressionStatement",
-                  "src": "556:20:28"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6239,
-              "nodeType": "StructuredDocumentation",
-              "src": "465:36:28",
-              "text": "@notice Constructor"
-            },
-            "id": 6249,
-            "implemented": true,
-            "kind": "constructor",
-            "modifiers": [],
-            "name": "",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 6242,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6241,
-                  "mutability": "mutable",
-                  "name": "_registry",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6249,
-                  "src": "518:19:28",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IRegistry_$11159",
-                    "typeString": "contract IRegistry"
-                  },
-                  "typeName": {
-                    "contractScope": null,
-                    "id": 6240,
-                    "name": "IRegistry",
-                    "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 11159,
-                    "src": "518:9:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$11159",
-                      "typeString": "contract IRegistry"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "517:21:28"
-            },
-            "returnParameters": {
-              "id": 6243,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "546:0:28"
-            },
-            "scope": 6294,
-            "src": "506:77:28",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "public"
-          },
-          {
-            "baseFunctions": [
-              11429
-            ],
-            "body": {
-              "id": 6276,
-              "nodeType": "Block",
-              "src": "842:192:28",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "hexValue": "5343484544554c45525f504f4f4c5f44454c4159",
-                            "id": 6258,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "string",
-                            "lValueRequested": false,
-                            "nodeType": "Literal",
-                            "src": "880:22:28",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
-                              "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
-                            },
-                            "value": "SCHEDULER_POOL_DELAY"
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_stringliteral_fc9ff35f0b3a376f64174826233afd75d609f6198f754a1da7cdc13e65d3f8c5",
-                              "typeString": "literal_string \"SCHEDULER_POOL_DELAY\""
-                            }
-                          ],
-                          "id": 6257,
-                          "name": "get_keccak",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 6293,
-                          "src": "869:10:28",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
-                            "typeString": "function (string memory) pure returns (bytes32)"
-                          }
-                        },
-                        "id": 6259,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "functionCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "869:34:28",
-                        "tryCall": false,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "commonType": {
-                          "typeIdentifier": "t_rational_60_by_1",
-                          "typeString": "int_const 60"
-                        },
-                        "id": 6262,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": true,
-                        "lValueRequested": false,
-                        "leftExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "31",
-                          "id": 6260,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "905:1:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_1_by_1",
-                            "typeString": "int_const 1"
-                          },
-                          "value": "1"
-                        },
-                        "nodeType": "BinaryOperation",
-                        "operator": "*",
-                        "rightExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "3630",
-                          "id": 6261,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "909:2:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_60_by_1",
-                            "typeString": "int_const 60"
-                          },
-                          "value": "60"
-                        },
-                        "src": "905:6:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_rational_60_by_1",
-                          "typeString": "int_const 60"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        },
-                        {
-                          "typeIdentifier": "t_rational_60_by_1",
-                          "typeString": "int_const 60"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 6254,
-                        "name": "registry",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6238,
-                        "src": "852:8:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IRegistry_$11159",
-                          "typeString": "contract IRegistry"
-                        }
-                      },
-                      "id": 6256,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "setUint",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11088,
-                      "src": "852:16:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
-                        "typeString": "function (bytes32,uint248) external"
-                      }
-                    },
-                    "id": 6263,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "852:60:28",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 6264,
-                  "nodeType": "ExpressionStatement",
-                  "src": "852:60:28"
-                },
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "hexValue": "5343484544554c45525f524f554e445f44454c4159",
-                            "id": 6269,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "string",
-                            "lValueRequested": false,
-                            "nodeType": "Literal",
-                            "src": "950:23:28",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
-                              "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
-                            },
-                            "value": "SCHEDULER_ROUND_DELAY"
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_stringliteral_02dcb50312333f447bed6b70eafdaa5bb78ff4fd997b231424cffff3ba5f2e52",
-                              "typeString": "literal_string \"SCHEDULER_ROUND_DELAY\""
-                            }
-                          ],
-                          "id": 6268,
-                          "name": "get_keccak",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 6293,
-                          "src": "939:10:28",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_pure$_t_string_memory_ptr_$returns$_t_bytes32_$",
-                            "typeString": "function (string memory) pure returns (bytes32)"
-                          }
-                        },
-                        "id": 6270,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "functionCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "939:35:28",
-                        "tryCall": false,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "commonType": {
-                          "typeIdentifier": "t_rational_1800_by_1",
-                          "typeString": "int_const 1800"
-                        },
-                        "id": 6273,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": true,
-                        "lValueRequested": false,
-                        "leftExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "3330",
-                          "id": 6271,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "976:2:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_30_by_1",
-                            "typeString": "int_const 30"
-                          },
-                          "value": "30"
-                        },
-                        "nodeType": "BinaryOperation",
-                        "operator": "*",
-                        "rightExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "3630",
-                          "id": 6272,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "981:2:28",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_rational_60_by_1",
-                            "typeString": "int_const 60"
-                          },
-                          "value": "60"
-                        },
-                        "src": "976:7:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_rational_1800_by_1",
-                          "typeString": "int_const 1800"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bytes32",
-                          "typeString": "bytes32"
-                        },
-                        {
-                          "typeIdentifier": "t_rational_1800_by_1",
-                          "typeString": "int_const 1800"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 6265,
-                        "name": "registry",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 6238,
-                        "src": "922:8:28",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IRegistry_$11159",
-                          "typeString": "contract IRegistry"
-                        }
-                      },
-                      "id": 6267,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "setUint",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11088,
-                      "src": "922:16:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_uint248_$returns$__$",
-                        "typeString": "function (bytes32,uint248) external"
-                      }
-                    },
-                    "id": 6274,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "922:62:28",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 6275,
-                  "nodeType": "ExpressionStatement",
-                  "src": "922:62:28"
-                }
-              ]
-            },
-            "documentation": {
-              "id": 6250,
-              "nodeType": "StructuredDocumentation",
-              "src": "589:211:28",
-              "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because it is\nnot its responsability in the current architecture"
-            },
-            "functionSelector": "61461954",
-            "id": 6277,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "execute",
-            "nodeType": "FunctionDefinition",
-            "overrides": {
-              "id": 6252,
-              "nodeType": "OverrideSpecifier",
-              "overrides": [],
-              "src": "833:8:28"
-            },
-            "parameters": {
-              "id": 6251,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "821:2:28"
-            },
-            "returnParameters": {
-              "id": 6253,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "842:0:28"
-            },
-            "scope": 6294,
-            "src": "805:229:28",
-            "stateMutability": "nonpayable",
-            "virtual": false,
-            "visibility": "external"
-          },
-          {
-            "body": {
-              "id": 6292,
-              "nodeType": "Block",
-              "src": "1109:73:28",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "hexValue": "4d4f435f4f5241434c455c315c",
-                            "id": 6287,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "string",
-                            "lValueRequested": false,
-                            "nodeType": "Literal",
-                            "src": "1153:17:28",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
-                              "typeString": "literal_string \"MOC_ORACLE\\1\\\""
-                            },
-                            "value": "MOC_ORACLE\\1\\"
-                          },
-                          {
-                            "argumentTypes": null,
-                            "id": 6288,
-                            "name": "k",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 6279,
-                            "src": "1172:1:28",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_string_memory_ptr",
-                              "typeString": "string memory"
-                            }
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_stringliteral_7c804fcc82bf9ad15486d1b2633cdad7ee6f2bda7ff8bf03f48c3e65807530bc",
-                              "typeString": "literal_string \"MOC_ORACLE\\1\\\""
-                            },
-                            {
-                              "typeIdentifier": "t_string_memory_ptr",
-                              "typeString": "string memory"
-                            }
-                          ],
-                          "expression": {
-                            "argumentTypes": null,
-                            "id": 6285,
-                            "name": "abi",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": -1,
-                            "src": "1136:3:28",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_magic_abi",
-                              "typeString": "abi"
-                            }
-                          },
-                          "id": 6286,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "lValueRequested": false,
-                          "memberName": "encodePacked",
-                          "nodeType": "MemberAccess",
-                          "referencedDeclaration": null,
-                          "src": "1136:16:28",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
-                            "typeString": "function () pure returns (bytes memory)"
-                          }
-                        },
-                        "id": 6289,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "functionCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "1136:38:28",
-                        "tryCall": false,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bytes_memory_ptr",
-                          "typeString": "bytes memory"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bytes_memory_ptr",
-                          "typeString": "bytes memory"
-                        }
-                      ],
-                      "id": 6284,
-                      "name": "keccak256",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": -8,
-                      "src": "1126:9:28",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
-                        "typeString": "function (bytes memory) pure returns (bytes32)"
-                      }
-                    },
-                    "id": 6290,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "1126:49:28",
-                    "tryCall": false,
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes32",
-                      "typeString": "bytes32"
-                    }
-                  },
-                  "functionReturnParameters": 6283,
-                  "id": 6291,
-                  "nodeType": "Return",
-                  "src": "1119:56:28"
-                }
-              ]
-            },
-            "documentation": null,
-            "id": 6293,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [],
-            "name": "get_keccak",
-            "nodeType": "FunctionDefinition",
-            "overrides": null,
-            "parameters": {
-              "id": 6280,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6279,
-                  "mutability": "mutable",
-                  "name": "k",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6293,
-                  "src": "1060:15:28",
-                  "stateVariable": false,
-                  "storageLocation": "memory",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 6278,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1060:6:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1059:17:28"
-            },
-            "returnParameters": {
-              "id": 6283,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6282,
-                  "mutability": "mutable",
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "overrides": null,
-                  "scope": 6293,
-                  "src": "1100:7:28",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bytes32",
-                    "typeString": "bytes32"
-                  },
-                  "typeName": {
-                    "id": 6281,
-                    "name": "bytes32",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1100:7:28",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes32",
-                      "typeString": "bytes32"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1099:9:28"
-            },
-            "scope": 6294,
-            "src": "1040:142:28",
-            "stateMutability": "pure",
-            "virtual": false,
-            "visibility": "internal"
-          }
-        ],
-        "scope": 6295,
-        "src": "368:816:28"
-      }
-    ],
-    "src": "39:1146:28"
-  },
-  "compiler": {
-    "name": "solc",
-    "version": "0.6.12+commit.27d51765.Emscripten.clang"
-  },
-  "networks": {},
-  "schemaVersion": "3.2.4",
-  "updatedAt": "2020-09-11T20:34:45.484Z",
-  "devdoc": {
-    "kind": "dev",
-    "methods": {
-      "execute()": {
-        "details": "Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture"
-      }
-    },
-    "title": "MocRegistrySchedulerDelayChange",
-    "version": 1
-  },
-  "userdoc": {
-    "kind": "user",
-    "methods": {
-      "constructor": "Constructor",
-      "execute()": {
-        "notice": "Execute the changes."
-      }
-    },
-    "notice": "This contract is a ChangeContract intended to change some MOC registry values",
-    "version": 1
-  }
 }
