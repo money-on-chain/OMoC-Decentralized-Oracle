@@ -126,7 +126,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
 
     /// @notice Returns the amount of owners registered.
     /// Delegates to the Oracle Manager smart contract.
-    function getRegisteredOraclesLen() external view returns (uint256) {
+    function getRegisteredOraclesLen() external override view returns (uint256) {
         return oracleManager.getRegisteredOraclesLen();
     }
 
@@ -135,6 +135,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param idx index to query.
     function getRegisteredOracleAtIndex(uint256 idx)
         external
+        override
         view
         returns (
             address ownerAddr,

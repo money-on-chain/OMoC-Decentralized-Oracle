@@ -5,6 +5,7 @@ import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {ICoinPairPrice} from "@moc/shared/contracts/ICoinPairPrice.sol";
 import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
 import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
@@ -17,7 +18,12 @@ import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRegisterEntry {
+contract CoinPairPrice is
+    CoinPairPriceStorage,
+    IPriceProvider,
+    IPriceProviderRegisterEntry,
+    ICoinPairPrice
+{
     using SubscribedOraclesLib for SubscribedOraclesLib.SubscribedOracles;
     using SafeMath for uint256;
 
@@ -108,7 +114,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice subscribe an oracle to this coin pair , allowing it to be selected in rounds.
     /// @param oracleOwnerAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function subscribe(address oracleOwnerAddr) external onlyOracleManager {
+    function subscribe(address oracleOwnerAddr) external override onlyOracleManager {
         require(
             !subscribedOracles.contains(oracleOwnerAddr),
             "Oracle is already subscribed to this coin pair"
@@ -126,7 +132,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice Unsubscribe an oracle from this coin pair , disallowing it to be selected in rounds.
     /// @param oracleOwnerAddr the oracle address to subscribe to this coin pair.
     /// @dev This is designed to be called from OracleManager.
-    function unsubscribe(address oracleOwnerAddr) external onlyOracleManager {
+    function unsubscribe(address oracleOwnerAddr) external override onlyOracleManager {
         require(
             subscribedOracles.contains(oracleOwnerAddr),
             "Oracle is not subscribed to this coin pair"
@@ -139,7 +145,12 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// Must check if the oracle is part of current round and if he lost his place with the
     /// new stake value (the stake is global and is saved in the supporters contract).
     /// @param oracleOwnerAddr the oracle owner that is trying to withdraw
-    function onWithdraw(address oracleOwnerAddr) external onlyOracleManager returns (uint256) {
+    function onWithdraw(address oracleOwnerAddr)
+        external
+        override
+        onlyOracleManager
+        returns (uint256)
+    {
         require(subscribedOracles.contains(oracleOwnerAddr), "Not subscribed to this coin");
 
         if (!roundInfo.isSelected(oracleOwnerAddr)) {
@@ -165,7 +176,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice Switch contract context to a new round. With the objective of
     /// being a decentralized solution, this can be called by *anyone* if current
     /// round lock period is expired.
-    function switchRound() external {
+    function switchRound() external override {
         if (roundInfo.number > 0) {
             // Not before the first round
             require(roundInfo.isReadyToSwitch(), "The current round lock period is active");
@@ -211,7 +222,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         uint8[] calldata _sigV,
         bytes32[] calldata _sigR,
         bytes32[] calldata _sigS
-    ) external {
+    ) external override {
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
         require(roundInfo.number > 0, "Round not open");
         // require(subscribedOracles.contains(ownerAddr), "Sender oracle not subscribed");
@@ -271,6 +282,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @param _price Price to report.
     function emergencyPublish(uint256 _price)
         external
+        override
         whitelistedOrExternal(emergencyPublishWhitelistData)
     {
         require(_price > 0, "Price must be positive and non-zero");
@@ -287,7 +299,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice Return the current price, compatible with old MOC Oracle
     function peek()
         external
-        override
+        override(IPriceProvider, ICoinPairPrice)
         view
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (bytes32, bool)
@@ -303,6 +315,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice Return the current price
     function getPrice()
         external
+        override
         view
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (uint256)
@@ -311,12 +324,12 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     }
 
     // The maximum count of oracles selected to participate each round
-    function maxOraclesPerRound() external view returns (uint256) {
+    function maxOraclesPerRound() external override view returns (uint256) {
         return roundInfo.maxOraclesPerRound;
     }
 
     // The maximum count of oracles selected to participate each round
-    function roundLockPeriodSecs() external view returns (uint256) {
+    function roundLockPeriodSecs() external override view returns (uint256) {
         return roundInfo.roundLockPeriodSecs;
     }
 
@@ -324,26 +337,27 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
         return roundInfo.isFull();
     }
 
-    function isOracleInCurrentRound(address oracleOwnerAddr) external view returns (bool) {
+    function isOracleInCurrentRound(address oracleOwnerAddr) external override view returns (bool) {
         return roundInfo.isSelected(oracleOwnerAddr);
     }
 
     /// @notice Returns true if an oracle is subscribed to this contract' coin pair
     /// @param oracleOwnerAddr the oracle address to lookup.
     /// @dev This is designed to be called from OracleManager.
-    function isSubscribed(address oracleOwnerAddr) external view returns (bool) {
+    function isSubscribed(address oracleOwnerAddr) external override view returns (bool) {
         return subscribedOracles.contains(oracleOwnerAddr);
     }
 
     /// @notice Return the available reward fees
     ///
-    function getAvailableRewardFees() external view returns (uint256) {
+    function getAvailableRewardFees() external override view returns (uint256) {
         return token.balanceOf(address(this));
     }
 
     /// @notice Return current round information
     function getRoundInfo()
         external
+        override
         view
         returns (
             uint256 round,
@@ -365,6 +379,7 @@ contract CoinPairPrice is CoinPairPriceStorage, IPriceProvider, IPriceProviderRe
     /// @notice Return round information for specific oracle
     function getOracleRoundInfo(address oracleOwner)
         external
+        override
         view
         returns (uint256 points, bool selectedInCurrentRound)
     {
