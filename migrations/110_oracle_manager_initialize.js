@@ -11,7 +11,7 @@ async function deploy({config, ozParams, governor}) {
         .at(oracleManagerAddr);
     await oracleManager.initialize(
         governor.address,
-        Web3.utils.toBN(config.stakingMachine.minCPSubscriptionStake),
+        Web3.utils.toBN(config.stakingMachine.minCPSubscriptionStake).toString(),
         staking,
         [staking],
     );

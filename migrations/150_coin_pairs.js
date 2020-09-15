@@ -20,18 +20,17 @@ async function deploy({config, ozParams, governor}) {
             ...ozParams,
         });
         console.log('coinPairPriceFree: ', coinPairPriceFree.address, 'for coin', coin);
-
         const coinPairPrice = await helpers.ozAdd('@moc/oracles/CoinPairPrice', {
             methodArgs: [
                 governor.address,
                 [coinPairPriceFree.address, infoGetterAddr],
                 coinPair,
                 testMOCAddr,
-                Web3.utils.toBN(coinData.maxOraclesPerRound),
-                Web3.utils.toBN(coinData.maxSubscribedOraclesPerRound),
-                Web3.utils.toBN(coinData.roundLockPeriodInSecs),
-                Web3.utils.toBN(coinData.validPricePeriodInBlocks),
-                Web3.utils.toBN(coinData.emergencyPublishingPeriodInBlocks),
+                Web3.utils.toBN(coinData.maxOraclesPerRound).toString(),
+                Web3.utils.toBN(coinData.maxSubscribedOraclesPerRound).toString(),
+                Web3.utils.toBN(coinData.roundLockPeriodInSecs).toString(),
+                Web3.utils.toBN(coinData.validPricePeriodInBlocks).toString(),
+                Web3.utils.toBN(coinData.emergencyPublishingPeriodInBlocks).toString(),
                 coinData.bootstrapPrice,
                 oracleManagerAddr,
             ],

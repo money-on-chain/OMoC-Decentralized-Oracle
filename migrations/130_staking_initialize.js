@@ -17,7 +17,7 @@ async function deploy({config, ozParams, governor}) {
         oracleManagerAddr,
         delayMachineAddr,
         iterableWhitelistDataLock,
-        Web3.utils.toBN(config.stakingMachine.withdrawLockTime),
+        Web3.utils.toBN(config.stakingMachine.withdrawLockTime).toString(),
     );
 }
 
