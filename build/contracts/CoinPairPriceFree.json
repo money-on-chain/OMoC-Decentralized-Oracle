@@ -12,7 +12,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -43,7 +44,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         }
     ],
     "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"coinPairPrice\",\"outputs\":[{\"internalType\":\"contract IPriceProvider\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IPriceProvider\",\"name\":\"_coinPairPrice\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"peek\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"title\":\"This contract provides an interface for feeding prices from oracles, and        get the current price. One contract must be instanced per supported coin pair,        and registered through OracleManager global contract.\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"peek()\":{\"notice\":\"Return the current price, compatible with old MOC Oracle\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol\":\"CoinPairPriceFree\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceFree.sol\":{\"keccak256\":\"0x729d246bf4aa03d9b37ceee78b2b4cbea6672813a790d2e04bdc8839ea481722\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6379dfd47a72fd8344fca4312f31c856c6ca67725ac621bee3c7a54441e13e44\",\"dweb:/ipfs/QmW1u46VWkBcPGnxj4JSmJr917539UH5qKT5hDGLbZckvs\"]},\"@moc/shared/contracts/IPriceProvider.sol\":{\"keccak256\":\"0xe23c45a9401a30709263ca8a1c4c81c7fcabbbdce4124058c46859b017be748b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://43bf5597963c3f7c9e258ae09a12d26a32b171163e847c0ea22255552a835605\",\"dweb:/ipfs/QmUetpLBWhBCQugHS2JFkERKurP67hQUcunuG48ZHKid3z\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]}},\"version\":1}",
@@ -962,7 +964,8 @@
     },
     "networks": {},
     "schemaVersion": "3.2.4",
-    "updatedAt": "2020-09-15T18:51:47.093Z",
+    "updatedAt": "2020-09-15T19:47:10.311Z",
+    "networkType": "ethereum",
     "devdoc": {
         "kind": "dev",
         "methods": {},

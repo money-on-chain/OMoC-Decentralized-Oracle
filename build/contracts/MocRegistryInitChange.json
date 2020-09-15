@@ -43,7 +43,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -56,7 +57,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -69,7 +71,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -82,7 +85,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -95,7 +99,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -108,7 +113,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -121,7 +127,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -134,7 +141,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -147,7 +155,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -160,7 +169,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -173,7 +183,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -186,7 +197,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -199,7 +211,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -212,7 +225,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -225,7 +239,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -238,7 +253,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -251,7 +267,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -264,7 +281,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -277,7 +295,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -290,7 +309,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -303,7 +323,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -316,7 +337,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -329,7 +351,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -342,7 +365,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -355,7 +379,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -368,7 +393,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -381,7 +407,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -394,7 +421,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -407,7 +435,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -420,7 +449,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -433,7 +463,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -446,7 +477,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -459,7 +491,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -472,7 +505,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -485,7 +519,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -498,7 +533,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -511,7 +547,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -524,7 +561,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -537,7 +575,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -550,7 +589,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -563,7 +603,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -7049,7 +7090,8 @@
     },
     "networks": {},
     "schemaVersion": "3.2.4",
-    "updatedAt": "2020-09-15T18:51:47.141Z",
+    "updatedAt": "2020-09-15T19:49:48.552Z",
+    "networkType": "ethereum",
     "devdoc": {
         "kind": "dev",
         "methods": {
