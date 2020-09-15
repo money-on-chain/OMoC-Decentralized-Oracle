@@ -38,8 +38,7 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [
@@ -125,8 +124,7 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [],
@@ -139,8 +137,7 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [
@@ -159,8 +156,7 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [
@@ -184,8 +180,7 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         }
     ],
     "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"newIGovernor\",\"type\":\"address\"}],\"name\":\"changeIGovernor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"delegateCallToChanger\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"}],\"name\":\"getCoinPairAtIndex\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getCoinPairCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"coinPair\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"hint\",\"type\":\"uint256\"}],\"name\":\"getCoinPairIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"coinpair\",\"type\":\"bytes32\"}],\"name\":\"getContractAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"governor\",\"outputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"_governor\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"coinPair\",\"type\":\"bytes32\"},{\"internalType\":\"contract IPriceProviderRegisterEntry\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"registerCoinPair\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"coinPair\",\"type\":\"bytes32\"},{\"internalType\":\"contract IPriceProviderRegisterEntry\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"setCoinPair\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"coinPair\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"hint\",\"type\":\"uint256\"}],\"name\":\"unRegisterCoinPair\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"changeIGovernor(address)\":{\"params\":{\"newIGovernor\":\"New governor address\"}},\"delegateCallToChanger(bytes)\":{\"params\":{\"data\":\"the serialized function arguments\"}},\"getCoinPairAtIndex(uint256)\":{\"params\":{\"i\":\"index to query.\"}},\"getCoinPairIndex(bytes32,uint256)\":{\"params\":{\"coinPair\":\"The bytes32-encoded coinpair string (e.g. BTCUSD)\",\"hint\":\"Optional hint to start traversing the coinPairList array, zero is to search all the array.\"}},\"getContractAddress(bytes32)\":{\"params\":{\"coinpair\":\"Coin-pair string to lookup (e.g: BTCUSD)\"},\"returns\":{\"_0\":\"address Address of contract or zero if does not exist or was deleted.\"}},\"initialize(address)\":{\"details\":\"This initialize replaces the constructor but it is not called automatically. It is necessary because of the upgradeability of the contracts\",\"params\":{\"_governor\":\"Governor address\"}},\"registerCoinPair(bytes32,address)\":{\"params\":{\"addr\":\"The contract address associated to the coinpair.\",\"coinPair\":\"The bytes32-encoded coinpair string (e.g. BTCUSD)\"}},\"setCoinPair(bytes32,address)\":{\"params\":{\"addr\":\"The contract address associated to the coinpair.\",\"coinPair\":\"The bytes32-encoded coinpair string (e.g. BTCUSD)\"}},\"unRegisterCoinPair(bytes32,uint256)\":{\"params\":{\"coinPair\":\"The bytes32-encoded coinpair string (e.g. BTCUSD)\",\"hint\":\"Optional hint to start traversing the coinPairList array.\"}}},\"title\":\"A registry for the coin pair prices, this is more general than OracleManager that stores only the coin pairs that are published by oracles.\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"changeIGovernor(address)\":{\"notice\":\"Change the contract's governor. Should be called through the old governance system\"},\"delegateCallToChanger(bytes)\":{\"notice\":\"This method is used by a change contract to access the storage freely even without a setter.\"},\"getCoinPairAtIndex(uint256)\":{\"notice\":\"Returns the coin pair at index.\"},\"getCoinPairCount()\":{\"notice\":\"Returns the count of registered coin pairs. Keep in mind that Deleted coin-pairs will contain zeroed addresses.\"},\"getCoinPairIndex(bytes32,uint256)\":{\"notice\":\"Searches a coinpair in coinPairList\"},\"getContractAddress(bytes32)\":{\"notice\":\"Return the contract address for a specified registered coin pair.\"},\"governor()\":{\"notice\":\"The address of the contract which governs this one\"},\"initialize(address)\":{\"notice\":\"Initialize the contract with the basic settings\"},\"registerCoinPair(bytes32,address)\":{\"notice\":\"Register a new coin pair contract.\"},\"setCoinPair(bytes32,address)\":{\"notice\":\"Set the address for a coinpair (the old one is lost!!!!)\"},\"unRegisterCoinPair(bytes32,uint256)\":{\"notice\":\"Unregister a coin pair contract.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/PriceProviderRegister.sol\":\"PriceProviderRegister\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/PriceProviderRegister.sol\":{\"keccak256\":\"0x770bec82b11be8f4495981787a091ff6d63d40576a66cc538f5bc38de06a43be\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://be609e4b58ef30f093c7fda5722d2ee876cd8bfb77c049719e404268d5b6cfad\",\"dweb:/ipfs/Qme2k42U2tuE57Rn2zEeok1Dy1ETc1iBMPgqToL4HBxS93\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/PriceProviderRegisterStorage.sol\":{\"keccak256\":\"0x023f81166d61186f454ba9de89ebc52d9ead15b5a83f37aa4cb628b518150b98\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://083c3d82d9b5e1bf17deabc1b1730f2794994971bb293a6ee5376479a98ac0f2\",\"dweb:/ipfs/QmWYRb2aXso5c3YiiadAg1jRDWyJv2KmXSmqF5k8xmNK5t\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/CoinPairRegisterLib.sol\":{\"keccak256\":\"0x5e5add9d7b0afc8c9d4cfaa84cf69e704994cf496199821361169b719ed6861b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c1412e11b85604b88b92e38f0e7c127d6ec41ed086c3ae320fa253e9a9526a76\",\"dweb:/ipfs/QmcyeqFmWgVDxzBbr912u4crkmKhSFFVE2KtmfQYiEdmid\"]},\"@moc/shared/contracts/IPriceProviderRegisterEntry.sol\":{\"keccak256\":\"0x224dc253c7d3dcd60e27617780cd9c656203e8632d67699f4cda4dc51c7f5e14\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7e91997efaf82d34c4df20fcfbaae754a8c45f875a71767c3a1b5f6b3881b142\",\"dweb:/ipfs/Qme6rjQN9RAXYoWr52QERnTtGHPfB25qu6K4KaBQzNKog5\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]},\"@moc/shared/contracts/moc-governance/Governance/Governed.sol\":{\"keccak256\":\"0xf948f3ef0d990c9b5199cb96ed42a7b4b96b1dce0abfc168289f9de8576286e2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5b770c1391989e9db75789bb15cc4413d520eecb327fed0c114a66407a3f4404\",\"dweb:/ipfs/QmPqRtG3cfB3tc5fFs9Q8yMNkxHB4oxMSY27jDXYhB754c\"]},\"@moc/shared/contracts/moc-governance/Governance/IGovernor.sol\":{\"keccak256\":\"0xed68469a6e1759efc5dece43aaf7fdf25e39163626df454bd9f9662ca8e9df61\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://a615e8209f9f332ed8d16452fd83c412f44162bd6fb8af6a1556bdc033a36735\",\"dweb:/ipfs/Qmda7FzLXHG9WZSTVBXwGCjLT7xU5Ugh287jQ4qafAr5WX\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]},\"@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]}},\"version\":1}",
@@ -3762,8 +3757,7 @@
     },
     "networks": {},
     "schemaVersion": "3.2.4",
-    "updatedAt": "2020-09-15T15:03:21.202Z",
-    "networkType": "ethereum",
+    "updatedAt": "2020-09-15T18:21:40.653Z",
     "devdoc": {
         "kind": "dev",
         "methods": {
