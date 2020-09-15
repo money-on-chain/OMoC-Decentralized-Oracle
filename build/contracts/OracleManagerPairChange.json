@@ -72,25 +72,25 @@
             "type": "function"
         }
     ],
-    "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"_oracleManager\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_coinPair\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"_contractAddr\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"coinPair\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"contractAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oracleManager\",\"outputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"_coinPair\":\"The coinpair to register\",\"_contractAddr\":\"The coinpair contract implementation address\",\"_oracleManager\":\"Address of oracle manager used to register the coin pair\"}},\"execute()\":{\"details\":\"Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture IMPORTANT: This function should not be overriden, you should only redefine the _beforeUpgrade and _afterUpgrade to use this template\"}},\"title\":\"UpgraderTemplate\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":\"Constructor\",\"execute()\":{\"notice\":\"Execute the changes.\"}},\"notice\":\"This contract is a ChangeContract intended to be used when upgrading any contract upgradeable through the zos-lib upgradeability system. This doesn't initialize the upgraded contract, that should be done extending this one or taking it as a guide\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerPairChange.sol\":\"OracleManagerPairChange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPrice.sol\":{\"keccak256\":\"0x6aa9082c94222886b48681e6d8c6c3c6f490ce2486ad61a808936f4f54234691\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://64f4f828e395677d37b13545b064ce7d67aa19f0fd0c5e19218c51a259e30ef0\",\"dweb:/ipfs/QmegiUZuVHxXVsoN26FAjwZmpFWCRF72ekZCyehbxX4jMf\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceStorage.sol\":{\"keccak256\":\"0xfcdf96be7b5a27cad4546ad99ab997ed70d3ea89e092da96bf1ab1422744571f\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://60b0ee0bf253db442588c2d9223e66d7e665752c18940c63bee54257072e8c6a\",\"dweb:/ipfs/QmNQWwWrBRMSVB36GBnqziXbU8oUTixAxwk1pYa5n24Ptz\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol\":{\"keccak256\":\"0x14d30d0a1704bce00b278b9e3a3f0dab24199712a35f0a0823913cdf5f936dbc\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://ae3faa74a8259997c0757d402c0df1a2ecb6575f183047c5d4efb73879c955f6\",\"dweb:/ipfs/QmTFso7AFx8pDWEu6imfzDF7VseRPjBhsxeLLnR1tSxf4d\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManagerStorage.sol\":{\"keccak256\":\"0x3fc4061da2b3d68e6fe768fec430d87a247ea91c32eda2770cd6c6b7a1af04f3\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://08a75cb1ed72f09bcb76fed63b16040b196b2a511eadffa28d1d1381db4ec53d\",\"dweb:/ipfs/QmYSr8yRNkfmNDk5SwM4mdukukxKzxvWx5124J5rrHK2KM\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Staking.sol\":{\"keccak256\":\"0x4b874e64829c7e0489c6554eacf74f8e89b7f5cd7674de2559c355643edddd96\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://12702183a0bc5ce9f1563156eab8b295cb42c4e2e88b3609ade7f4a4230cd2e2\",\"dweb:/ipfs/QmTsRZErg4to53ThzZsiieDwqNnvAgi3ZCwzbyxmFjhuLB\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/StakingStorage.sol\":{\"keccak256\":\"0x17766038b0532101749ff36ff8d282faea246363fa4a6c18bc47beae1a002bb1\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://0a9e37ad5bf3a061f0fc4a45985b71602573b7e48e169dea32c30476b5dec3a6\",\"dweb:/ipfs/QmYdL7q4YWN5joaifD3C5AP8LEFsrqnyw962eHaJiMWXCU\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Supporters.sol\":{\"keccak256\":\"0xbb6ff7c3d33441dd3eb3b66bac10be374c36e262fe791f732a0ff1d1b769a784\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://acc546e5e045fa37bd73d058ec99b71c7b123010763267c8d06681db4cb223a3\",\"dweb:/ipfs/QmYqMd5JKxAJaVQ2h4hHVdwBRNjXjDkE3oaBVWPvthYC3i\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol\":{\"keccak256\":\"0xd9ae212fa5c55c4499a9f14d7cc65a0507a28afe2b59525975e62bbefa474f7c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c6c4e003a0cb609fa8f9ac9548f4afb3c1befd6e7169c82172dfb420f9fa4bc3\",\"dweb:/ipfs/Qmc6dzBLV7vuGx2Px5pCDvEUh7JB9USDTv9M7b2QAMFHMZ\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerPairChange.sol\":{\"keccak256\":\"0x69843dbff21acf39061c40701554aa58e4152ded26fcd674c65855d117035e77\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://edf55bb331588f676eabe494b8115fc84aaef3255f1c5581f2b14050028fc8ad\",\"dweb:/ipfs/QmTwQxx3QNGUNWGSL2uKwopghY4yJwe4DMCzP5LsdzMjq8\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/AddressSetLib.sol\":{\"keccak256\":\"0x164a53571663eed760ad55e9e580e757bee459f73485337d2d6edbb4a15d11d7\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://01b4a24867c85179f07dd19d962b89fdf5d4e9a452221536d2f9430fcf235ad4\",\"dweb:/ipfs/QmU4sWw2EZCVR6HEccoLaRNDXUq6T4PXwKyWg2axukGQFH\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/CoinPairRegisterLib.sol\":{\"keccak256\":\"0x5e5add9d7b0afc8c9d4cfaa84cf69e704994cf496199821361169b719ed6861b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c1412e11b85604b88b92e38f0e7c127d6ec41ed086c3ae320fa253e9a9526a76\",\"dweb:/ipfs/QmcyeqFmWgVDxzBbr912u4crkmKhSFFVE2KtmfQYiEdmid\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableOraclesLib.sol\":{\"keccak256\":\"0xd447415cc8821c7a686852719487d9b650cabd9de96e807e2672a4c89622fa0c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://13d22ef00fa84a1c85f297d7595b999d7ecd0028ab84d3c84a0db82f4a45e632\",\"dweb:/ipfs/QmVWryR9rwn9W2pZCZMQ3NZr7F6CALcQbrD4x4quVGDECB\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableWhitelistLib.sol\":{\"keccak256\":\"0x2319e0dfd6ac0478c5a8bc1501b6f9111eacd91e9aa88de2c96480b8b87c9f0b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://670b33cba543b9408cb7b4ca40d3ca1e562637191f12cd06d955cb97b4a95e2e\",\"dweb:/ipfs/QmQF6eVwg7mFozevyyYamLJWqaFKpuZqgrUFcPVkdNE3XG\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/RoundInfoLib.sol\":{\"keccak256\":\"0x0a890ce2f07ac5f53555b447ea4dc60c890aa60317329217a3aebd3c4a323e06\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://240e0f16f22a7304f2bed2c6760c4b711a12b345138fba9b36e3971255455879\",\"dweb:/ipfs/QmViKyKz6scQrNUQZoQbnfFFxrBdRsmFWGzNiM7mKCJiuS\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SubscribedOraclesLib.sol\":{\"keccak256\":\"0xff0cacfd5779d8aac2840650c78ee98961f29aaf48c894ce255aac90f9d213ec\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://e2b1b2e11dbd5a84802c9fa8488d48f8cbaa84e9fee67417fc27f1e82a289f81\",\"dweb:/ipfs/QmX5ufFKwojzAQnpW4St7xb7HmqGZhsMzBbaUAcfmyA7G2\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SupportersLib.sol\":{\"keccak256\":\"0xa80f2b92a59e78b256fa6e7799f2f6b271d044b72eda3909547dded83d9f7252\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://de9a6e237bc9c10dcc4149ba6bb4948dbb6031a6ea485d9c7dad27b1e617c4d8\",\"dweb:/ipfs/QmS5x4RpZXqB3bEGqcYW5siJDeYedbf93TrHwcqQ1o25FX\"]},\"@moc/shared/contracts/IDelayMachine.sol\":{\"keccak256\":\"0x23337ca0b602e0b41b6da21f44ab567f1bd5c970f8735109f34d7cff9ff894ef\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c5ca4656aa5776c58e9ff13603459232ab6fde49bff3ebeecff5dfda20db5fdb\",\"dweb:/ipfs/QmciATUjQHgwNNpVgxrG9pMx8jJhF9h2cnvRfw1u8rMoER\"]},\"@moc/shared/contracts/IPriceProvider.sol\":{\"keccak256\":\"0xe23c45a9401a30709263ca8a1c4c81c7fcabbbdce4124058c46859b017be748b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://43bf5597963c3f7c9e258ae09a12d26a32b171163e847c0ea22255552a835605\",\"dweb:/ipfs/QmUetpLBWhBCQugHS2JFkERKurP67hQUcunuG48ZHKid3z\"]},\"@moc/shared/contracts/IPriceProviderRegisterEntry.sol\":{\"keccak256\":\"0x224dc253c7d3dcd60e27617780cd9c656203e8632d67699f4cda4dc51c7f5e14\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7e91997efaf82d34c4df20fcfbaae754a8c45f875a71767c3a1b5f6b3881b142\",\"dweb:/ipfs/Qme6rjQN9RAXYoWr52QERnTtGHPfB25qu6K4KaBQzNKog5\"]},\"@moc/shared/contracts/IStakingMachine.sol\":{\"keccak256\":\"0x90634c47af7e040cd475e726a92fb37a19dfe3cc4c40f66798de39575054736a\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6f7af0b7a2fa9d639efacdb61079739633397732ff0d03b8eba15ad5e81c38ff\",\"dweb:/ipfs/QmPYDJ99QTgsJDJJA4CNV3wJgbuWmGzrj9AB7mr1m6KWA4\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]},\"@moc/shared/contracts/moc-governance/Governance/Governed.sol\":{\"keccak256\":\"0xf948f3ef0d990c9b5199cb96ed42a7b4b96b1dce0abfc168289f9de8576286e2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5b770c1391989e9db75789bb15cc4413d520eecb327fed0c114a66407a3f4404\",\"dweb:/ipfs/QmPqRtG3cfB3tc5fFs9Q8yMNkxHB4oxMSY27jDXYhB754c\"]},\"@moc/shared/contracts/moc-governance/Governance/IGovernor.sol\":{\"keccak256\":\"0xed68469a6e1759efc5dece43aaf7fdf25e39163626df454bd9f9662ca8e9df61\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://a615e8209f9f332ed8d16452fd83c412f44162bd6fb8af6a1556bdc033a36735\",\"dweb:/ipfs/Qmda7FzLXHG9WZSTVBXwGCjLT7xU5Ugh287jQ4qafAr5WX\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]},\"@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
-    "bytecode": "0x608060405234801561001057600080fd5b506040516101ee3803806101ee8339818101604052606081101561003357600080fd5b5080516020820151604090920151600080546001600160a01b039384166001600160a01b03199182161790915560019390935560028054929091169190921617905561016a806100846000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806315a5d9d81461005157806334c1e5b514610075578063565d878c1461008f5780636146195414610097575b600080fd5b6100596100a1565b604080516001600160a01b039092168252519081900360200190f35b61007d6100b0565b60408051918252519081900360200190f35b6100596100b6565b61009f6100c5565b005b6002546001600160a01b031681565b60015481565b6000546001600160a01b031681565b60008054600154600254604080516347020c8f60e11b815260048101939093526001600160a01b03918216602484015251921692638e04191e9260448084019382900301818387803b15801561011a57600080fd5b505af115801561012e573d6000803e3d6000fd5b5050505056fea264697066735822122000d5159535d65270c7442f21dd4b9b211d005c2b8752b248ad2b0458390491c364736f6c634300060c0033",
-    "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c806315a5d9d81461005157806334c1e5b514610075578063565d878c1461008f5780636146195414610097575b600080fd5b6100596100a1565b604080516001600160a01b039092168252519081900360200190f35b61007d6100b0565b60408051918252519081900360200190f35b6100596100b6565b61009f6100c5565b005b6002546001600160a01b031681565b60015481565b6000546001600160a01b031681565b60008054600154600254604080516347020c8f60e11b815260048101939093526001600160a01b03918216602484015251921692638e04191e9260448084019382900301818387803b15801561011a57600080fd5b505af115801561012e573d6000803e3d6000fd5b5050505056fea264697066735822122000d5159535d65270c7442f21dd4b9b211d005c2b8752b248ad2b0458390491c364736f6c634300060c0033",
+    "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"_oracleManager\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_coinPair\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"_contractAddr\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"coinPair\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"contractAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oracleManager\",\"outputs\":[{\"internalType\":\"contract OracleManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"_coinPair\":\"The coinpair to register\",\"_contractAddr\":\"The coinpair contract implementation address\",\"_oracleManager\":\"Address of oracle manager used to register the coin pair\"}},\"execute()\":{\"details\":\"Should be called by the governor, but this contract does not check that explicitly because it is not its responsability in the current architecture IMPORTANT: This function should not be overriden, you should only redefine the _beforeUpgrade and _afterUpgrade to use this template\"}},\"title\":\"UpgraderTemplate\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":\"Constructor\",\"execute()\":{\"notice\":\"Execute the changes.\"}},\"notice\":\"This contract is a ChangeContract intended to be used when upgrading any contract upgradeable through the zos-lib upgradeability system. This doesn't initialize the upgraded contract, that should be done extending this one or taking it as a guide\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerPairChange.sol\":\"OracleManagerPairChange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPrice.sol\":{\"keccak256\":\"0x6aa9082c94222886b48681e6d8c6c3c6f490ce2486ad61a808936f4f54234691\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://64f4f828e395677d37b13545b064ce7d67aa19f0fd0c5e19218c51a259e30ef0\",\"dweb:/ipfs/QmegiUZuVHxXVsoN26FAjwZmpFWCRF72ekZCyehbxX4jMf\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/CoinPairPriceStorage.sol\":{\"keccak256\":\"0xfcdf96be7b5a27cad4546ad99ab997ed70d3ea89e092da96bf1ab1422744571f\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://60b0ee0bf253db442588c2d9223e66d7e665752c18940c63bee54257072e8c6a\",\"dweb:/ipfs/QmNQWwWrBRMSVB36GBnqziXbU8oUTixAxwk1pYa5n24Ptz\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol\":{\"keccak256\":\"0x35937365cdd3c57aeb2769bc5b244179384a7fafce0c29914c7872e37cd4478b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://0038dbb1e2a2b9645998dcbef525e5883635382ac9740072f17309a5355dfb1f\",\"dweb:/ipfs/QmUGwa2RPCfkf4otXuoFdzNJWgk1aq1YA7XNCH2ANybwcx\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManagerStorage.sol\":{\"keccak256\":\"0x3fc4061da2b3d68e6fe768fec430d87a247ea91c32eda2770cd6c6b7a1af04f3\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://08a75cb1ed72f09bcb76fed63b16040b196b2a511eadffa28d1d1381db4ec53d\",\"dweb:/ipfs/QmYSr8yRNkfmNDk5SwM4mdukukxKzxvWx5124J5rrHK2KM\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Staking.sol\":{\"keccak256\":\"0x7f472433484a8d504100c206e32e87e6d5045c09403fb617a98687b58dbeb32c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6f3831a88e512e2958884a59bb12ff11c0ea7e2823398f5239f3f57e36db0056\",\"dweb:/ipfs/QmS1fiwvDLZkTg8LN2sSa6MA3MVKbG9v2RajZTs9KsX4WA\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/StakingStorage.sol\":{\"keccak256\":\"0xecae4d43aa50c4f8808122dce8246a92474b1a6c495cdbd3765ac00c80099830\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://1efad1348feb97a63049874979d65f8bd0a784472133d787dca2d711a1bbc3b4\",\"dweb:/ipfs/QmWQLUMoydaP3KAZLeJUhYerfjD4X9yN2Mwx6VCQbDhMww\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Supporters.sol\":{\"keccak256\":\"0xbb6ff7c3d33441dd3eb3b66bac10be374c36e262fe791f732a0ff1d1b769a784\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://acc546e5e045fa37bd73d058ec99b71c7b123010763267c8d06681db4cb223a3\",\"dweb:/ipfs/QmYqMd5JKxAJaVQ2h4hHVdwBRNjXjDkE3oaBVWPvthYC3i\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol\":{\"keccak256\":\"0xd9ae212fa5c55c4499a9f14d7cc65a0507a28afe2b59525975e62bbefa474f7c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c6c4e003a0cb609fa8f9ac9548f4afb3c1befd6e7169c82172dfb420f9fa4bc3\",\"dweb:/ipfs/Qmc6dzBLV7vuGx2Px5pCDvEUh7JB9USDTv9M7b2QAMFHMZ\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerPairChange.sol\":{\"keccak256\":\"0x69843dbff21acf39061c40701554aa58e4152ded26fcd674c65855d117035e77\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://edf55bb331588f676eabe494b8115fc84aaef3255f1c5581f2b14050028fc8ad\",\"dweb:/ipfs/QmTwQxx3QNGUNWGSL2uKwopghY4yJwe4DMCzP5LsdzMjq8\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/AddressSetLib.sol\":{\"keccak256\":\"0x164a53571663eed760ad55e9e580e757bee459f73485337d2d6edbb4a15d11d7\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://01b4a24867c85179f07dd19d962b89fdf5d4e9a452221536d2f9430fcf235ad4\",\"dweb:/ipfs/QmU4sWw2EZCVR6HEccoLaRNDXUq6T4PXwKyWg2axukGQFH\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/CoinPairRegisterLib.sol\":{\"keccak256\":\"0x5e5add9d7b0afc8c9d4cfaa84cf69e704994cf496199821361169b719ed6861b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c1412e11b85604b88b92e38f0e7c127d6ec41ed086c3ae320fa253e9a9526a76\",\"dweb:/ipfs/QmcyeqFmWgVDxzBbr912u4crkmKhSFFVE2KtmfQYiEdmid\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableOraclesLib.sol\":{\"keccak256\":\"0xd447415cc8821c7a686852719487d9b650cabd9de96e807e2672a4c89622fa0c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://13d22ef00fa84a1c85f297d7595b999d7ecd0028ab84d3c84a0db82f4a45e632\",\"dweb:/ipfs/QmVWryR9rwn9W2pZCZMQ3NZr7F6CALcQbrD4x4quVGDECB\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableWhitelistLib.sol\":{\"keccak256\":\"0x2319e0dfd6ac0478c5a8bc1501b6f9111eacd91e9aa88de2c96480b8b87c9f0b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://670b33cba543b9408cb7b4ca40d3ca1e562637191f12cd06d955cb97b4a95e2e\",\"dweb:/ipfs/QmQF6eVwg7mFozevyyYamLJWqaFKpuZqgrUFcPVkdNE3XG\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/RoundInfoLib.sol\":{\"keccak256\":\"0x0a890ce2f07ac5f53555b447ea4dc60c890aa60317329217a3aebd3c4a323e06\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://240e0f16f22a7304f2bed2c6760c4b711a12b345138fba9b36e3971255455879\",\"dweb:/ipfs/QmViKyKz6scQrNUQZoQbnfFFxrBdRsmFWGzNiM7mKCJiuS\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SubscribedOraclesLib.sol\":{\"keccak256\":\"0xff0cacfd5779d8aac2840650c78ee98961f29aaf48c894ce255aac90f9d213ec\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://e2b1b2e11dbd5a84802c9fa8488d48f8cbaa84e9fee67417fc27f1e82a289f81\",\"dweb:/ipfs/QmX5ufFKwojzAQnpW4St7xb7HmqGZhsMzBbaUAcfmyA7G2\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SupportersLib.sol\":{\"keccak256\":\"0xa80f2b92a59e78b256fa6e7799f2f6b271d044b72eda3909547dded83d9f7252\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://de9a6e237bc9c10dcc4149ba6bb4948dbb6031a6ea485d9c7dad27b1e617c4d8\",\"dweb:/ipfs/QmS5x4RpZXqB3bEGqcYW5siJDeYedbf93TrHwcqQ1o25FX\"]},\"@moc/shared/contracts/IDelayMachine.sol\":{\"keccak256\":\"0x23337ca0b602e0b41b6da21f44ab567f1bd5c970f8735109f34d7cff9ff894ef\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c5ca4656aa5776c58e9ff13603459232ab6fde49bff3ebeecff5dfda20db5fdb\",\"dweb:/ipfs/QmciATUjQHgwNNpVgxrG9pMx8jJhF9h2cnvRfw1u8rMoER\"]},\"@moc/shared/contracts/IPriceProvider.sol\":{\"keccak256\":\"0xe23c45a9401a30709263ca8a1c4c81c7fcabbbdce4124058c46859b017be748b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://43bf5597963c3f7c9e258ae09a12d26a32b171163e847c0ea22255552a835605\",\"dweb:/ipfs/QmUetpLBWhBCQugHS2JFkERKurP67hQUcunuG48ZHKid3z\"]},\"@moc/shared/contracts/IPriceProviderRegisterEntry.sol\":{\"keccak256\":\"0x224dc253c7d3dcd60e27617780cd9c656203e8632d67699f4cda4dc51c7f5e14\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7e91997efaf82d34c4df20fcfbaae754a8c45f875a71767c3a1b5f6b3881b142\",\"dweb:/ipfs/Qme6rjQN9RAXYoWr52QERnTtGHPfB25qu6K4KaBQzNKog5\"]},\"@moc/shared/contracts/IStakingMachine.sol\":{\"keccak256\":\"0x90634c47af7e040cd475e726a92fb37a19dfe3cc4c40f66798de39575054736a\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://6f7af0b7a2fa9d639efacdb61079739633397732ff0d03b8eba15ad5e81c38ff\",\"dweb:/ipfs/QmPYDJ99QTgsJDJJA4CNV3wJgbuWmGzrj9AB7mr1m6KWA4\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]},\"@moc/shared/contracts/moc-governance/Governance/Governed.sol\":{\"keccak256\":\"0xf948f3ef0d990c9b5199cb96ed42a7b4b96b1dce0abfc168289f9de8576286e2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5b770c1391989e9db75789bb15cc4413d520eecb327fed0c114a66407a3f4404\",\"dweb:/ipfs/QmPqRtG3cfB3tc5fFs9Q8yMNkxHB4oxMSY27jDXYhB754c\"]},\"@moc/shared/contracts/moc-governance/Governance/IGovernor.sol\":{\"keccak256\":\"0xed68469a6e1759efc5dece43aaf7fdf25e39163626df454bd9f9662ca8e9df61\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://a615e8209f9f332ed8d16452fd83c412f44162bd6fb8af6a1556bdc033a36735\",\"dweb:/ipfs/Qmda7FzLXHG9WZSTVBXwGCjLT7xU5Ugh287jQ4qafAr5WX\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]},\"@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
+    "bytecode": "0x608060405234801561001057600080fd5b506040516103283803806103288339818101604052606081101561003357600080fd5b81019080805190602001909291908051906020019092919080519060200190929190505050826000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508160018190555080600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505050610236806100f26000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806315a5d9d81461005157806334c1e5b514610085578063565d878c146100a357806361461954146100d7575b600080fd5b6100596100e1565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b61008d610107565b6040518082815260200191505060405180910390f35b6100ab61010d565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100df610131565b005b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16638e04191e600154600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166040518363ffffffff1660e01b8152600401808381526020018273ffffffffffffffffffffffffffffffffffffffff16815260200192505050600060405180830381600087803b1580156101e657600080fd5b505af11580156101fa573d6000803e3d6000fd5b5050505056fea26469706673582212203f8545d3e65875421448ea30dbd0a33187408af8dc2a7473f287648a7a3de47a64736f6c634300060c0033",
+    "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c806315a5d9d81461005157806334c1e5b514610085578063565d878c146100a357806361461954146100d7575b600080fd5b6100596100e1565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b61008d610107565b6040518082815260200191505060405180910390f35b6100ab61010d565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100df610131565b005b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16638e04191e600154600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166040518363ffffffff1660e01b8152600401808381526020018273ffffffffffffffffffffffffffffffffffffffff16815260200192505050600060405180830381600087803b1580156101e657600080fd5b505af11580156101fa573d6000803e3d6000fd5b5050505056fea26469706673582212203f8545d3e65875421448ea30dbd0a33187408af8dc2a7473f287648a7a3de47a64736f6c634300060c0033",
     "immutableReferences": {},
-    "sourceMap": "513:1162:29:-:0;;;919:236;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;919:236:29;;;;;;;;;;;1050:13;:30;;-1:-1:-1;;;;;1050:30:29;;;-1:-1:-1;;;;;;1050:30:29;;;;;;;;1090:20;;;;1120:12;:28;;;;;;;;;;;;;513:1162;;;;;;",
-    "deployedSourceMap": "513:1162:29:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;639:27;;;:::i;:::-;;;;-1:-1:-1;;;;;639:27:29;;;;;;;;;;;;;;610:23;;;:::i;:::-;;;;;;;;;;;;;;;;570:34;;;:::i;1522:151::-;;;:::i;:::-;;639:27;;;-1:-1:-1;;;;;639:27:29;;:::o;610:23::-;;;;:::o;570:34::-;;;-1:-1:-1;;;;;570:34:29;;:::o;1522:151::-;1569:13;;;;1600:8;1610:12;;1569:54;;;-1:-1:-1;;;1569:54:29;;;;;;;;;-1:-1:-1;;;;;1610:12:29;;;1569:54;;;;;:13;;;:30;;:54;;;;;;;;;;:13;;:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1522:151::o",
+    "sourceMap": "513:1162:29:-:0;;;919:236;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1066:14;1050:13;;:30;;;;;;;;;;;;;;;;;;1101:9;1090:8;:20;;;;1135:13;1120:12;;:28;;;;;;;;;;;;;;;;;;919:236;;;513:1162;;;;;;",
+    "deployedSourceMap": "513:1162:29:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;639:27;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;610:23;;;:::i;:::-;;;;;;;;;;;;;;;;;;;570:34;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;1522:151;;;:::i;:::-;;639:27;;;;;;;;;;;;;:::o;610:23::-;;;;:::o;570:34::-;;;;;;;;;;;;:::o;1522:151::-;1569:13;;;;;;;;;;:30;;;1600:8;;1610:12;;;;;;;;;;;1569:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1522:151::o",
     "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.6.12;\n\nimport {ChangeContract} from \"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\";\nimport {OracleManager} from \"../OracleManager.sol\";\n\n/**\n  @title UpgraderTemplate\n  @notice This contract is a ChangeContract intended to be used when\n  upgrading any contract upgradeable through the zos-lib upgradeability\n  system. This doesn't initialize the upgraded contract, that should be done extending\n  this one or taking it as a guide\n */\ncontract OracleManagerPairChange is ChangeContract {\n    OracleManager public oracleManager;\n    bytes32 public coinPair;\n    address public contractAddr;\n\n    /**\n      @notice Constructor\n      @param _oracleManager Address of oracle manager used to register the coin pair\n      @param _coinPair The coinpair to register\n      @param _contractAddr The coinpair contract implementation address\n    */\n    constructor(\n        OracleManager _oracleManager,\n        bytes32 _coinPair,\n        address _contractAddr\n    ) public {\n        oracleManager = _oracleManager;\n        coinPair = _coinPair;\n        contractAddr = _contractAddr;\n    }\n\n    /**\n      @notice Execute the changes.\n      @dev Should be called by the governor, but this contract does not check that explicitly because\n      it is not its responsability in the current architecture\n      IMPORTANT: This function should not be overriden, you should only\n      redefine the _beforeUpgrade and _afterUpgrade to use this template\n     */\n    function execute() external override {\n        oracleManager.registerCoinPair(coinPair, contractAddr);\n        // TODO: Make it usable just once.\n    }\n}\n",
     "sourcePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerPairChange.sol",
     "ast": {
         "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerPairChange.sol",
         "exportedSymbols": {
-            "OracleManagerPairChange": [6303]
+            "OracleManagerPairChange": [6314]
         },
-        "id": 6304,
+        "id": 6315,
         "license": "UNLICENSED",
         "nodeType": "SourceUnit",
         "nodes": [
             {
-                "id": 6253,
+                "id": 6264,
                 "literals": ["solidity", "0.6", ".12"],
                 "nodeType": "PragmaDirective",
                 "src": "39:23:29"
@@ -98,16 +98,16 @@
             {
                 "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
                 "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-                "id": 6255,
+                "id": 6266,
                 "nodeType": "ImportDirective",
-                "scope": 6304,
-                "sourceUnit": 11373,
+                "scope": 6315,
+                "sourceUnit": 11387,
                 "src": "64:98:29",
                 "symbolAliases": [
                     {
                         "foreign": {
                             "argumentTypes": null,
-                            "id": 6254,
+                            "id": 6265,
                             "name": "ChangeContract",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -126,16 +126,16 @@
             {
                 "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol",
                 "file": "../OracleManager.sol",
-                "id": 6257,
+                "id": 6268,
                 "nodeType": "ImportDirective",
-                "scope": 6304,
+                "scope": 6315,
                 "sourceUnit": 3798,
                 "src": "163:51:29",
                 "symbolAliases": [
                     {
                         "foreign": {
                             "argumentTypes": null,
-                            "id": 6256,
+                            "id": 6267,
                             "name": "OracleManager",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -158,44 +158,44 @@
                         "arguments": null,
                         "baseName": {
                             "contractScope": null,
-                            "id": 6259,
+                            "id": 6270,
                             "name": "ChangeContract",
                             "nodeType": "UserDefinedTypeName",
-                            "referencedDeclaration": 11372,
+                            "referencedDeclaration": 11386,
                             "src": "549:14:29",
                             "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_ChangeContract_$11372",
+                                "typeIdentifier": "t_contract$_ChangeContract_$11386",
                                 "typeString": "contract ChangeContract"
                             }
                         },
-                        "id": 6260,
+                        "id": 6271,
                         "nodeType": "InheritanceSpecifier",
                         "src": "549:14:29"
                     }
                 ],
-                "contractDependencies": [11372],
+                "contractDependencies": [11386],
                 "contractKind": "contract",
                 "documentation": {
-                    "id": 6258,
+                    "id": 6269,
                     "nodeType": "StructuredDocumentation",
                     "src": "216:296:29",
                     "text": "@title UpgraderTemplate\n@notice This contract is a ChangeContract intended to be used when\nupgrading any contract upgradeable through the zos-lib upgradeability\nsystem. This doesn't initialize the upgraded contract, that should be done extending\nthis one or taking it as a guide"
                 },
                 "fullyImplemented": true,
-                "id": 6303,
-                "linearizedBaseContracts": [6303, 11372],
+                "id": 6314,
+                "linearizedBaseContracts": [6314, 11386],
                 "name": "OracleManagerPairChange",
                 "nodeType": "ContractDefinition",
                 "nodes": [
                     {
                         "constant": false,
                         "functionSelector": "565d878c",
-                        "id": 6262,
+                        "id": 6273,
                         "mutability": "mutable",
                         "name": "oracleManager",
                         "nodeType": "VariableDeclaration",
                         "overrides": null,
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "570:34:29",
                         "stateVariable": true,
                         "storageLocation": "default",
@@ -205,7 +205,7 @@
                         },
                         "typeName": {
                             "contractScope": null,
-                            "id": 6261,
+                            "id": 6272,
                             "name": "OracleManager",
                             "nodeType": "UserDefinedTypeName",
                             "referencedDeclaration": 3797,
@@ -221,12 +221,12 @@
                     {
                         "constant": false,
                         "functionSelector": "34c1e5b5",
-                        "id": 6264,
+                        "id": 6275,
                         "mutability": "mutable",
                         "name": "coinPair",
                         "nodeType": "VariableDeclaration",
                         "overrides": null,
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "610:23:29",
                         "stateVariable": true,
                         "storageLocation": "default",
@@ -235,7 +235,7 @@
                             "typeString": "bytes32"
                         },
                         "typeName": {
-                            "id": 6263,
+                            "id": 6274,
                             "name": "bytes32",
                             "nodeType": "ElementaryTypeName",
                             "src": "610:7:29",
@@ -250,12 +250,12 @@
                     {
                         "constant": false,
                         "functionSelector": "15a5d9d8",
-                        "id": 6266,
+                        "id": 6277,
                         "mutability": "mutable",
                         "name": "contractAddr",
                         "nodeType": "VariableDeclaration",
                         "overrides": null,
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "639:27:29",
                         "stateVariable": true,
                         "storageLocation": "default",
@@ -264,7 +264,7 @@
                             "typeString": "address"
                         },
                         "typeName": {
-                            "id": 6265,
+                            "id": 6276,
                             "name": "address",
                             "nodeType": "ElementaryTypeName",
                             "src": "639:7:29",
@@ -279,25 +279,25 @@
                     },
                     {
                         "body": {
-                            "id": 6288,
+                            "id": 6299,
                             "nodeType": "Block",
                             "src": "1040:115:29",
                             "statements": [
                                 {
                                     "expression": {
                                         "argumentTypes": null,
-                                        "id": 6278,
+                                        "id": 6289,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6276,
+                                            "id": 6287,
                                             "name": "oracleManager",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6262,
+                                            "referencedDeclaration": 6273,
                                             "src": "1050:13:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_contract$_OracleManager_$3797",
@@ -308,11 +308,11 @@
                                         "operator": "=",
                                         "rightHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6277,
+                                            "id": 6288,
                                             "name": "_oracleManager",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6269,
+                                            "referencedDeclaration": 6280,
                                             "src": "1066:14:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_contract$_OracleManager_$3797",
@@ -325,25 +325,25 @@
                                             "typeString": "contract OracleManager"
                                         }
                                     },
-                                    "id": 6279,
+                                    "id": 6290,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1050:30:29"
                                 },
                                 {
                                     "expression": {
                                         "argumentTypes": null,
-                                        "id": 6282,
+                                        "id": 6293,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6280,
+                                            "id": 6291,
                                             "name": "coinPair",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6264,
+                                            "referencedDeclaration": 6275,
                                             "src": "1090:8:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_bytes32",
@@ -354,11 +354,11 @@
                                         "operator": "=",
                                         "rightHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6281,
+                                            "id": 6292,
                                             "name": "_coinPair",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6271,
+                                            "referencedDeclaration": 6282,
                                             "src": "1101:9:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_bytes32",
@@ -371,25 +371,25 @@
                                             "typeString": "bytes32"
                                         }
                                     },
-                                    "id": 6283,
+                                    "id": 6294,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1090:20:29"
                                 },
                                 {
                                     "expression": {
                                         "argumentTypes": null,
-                                        "id": 6286,
+                                        "id": 6297,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6284,
+                                            "id": 6295,
                                             "name": "contractAddr",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6266,
+                                            "referencedDeclaration": 6277,
                                             "src": "1120:12:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_address",
@@ -400,11 +400,11 @@
                                         "operator": "=",
                                         "rightHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6285,
+                                            "id": 6296,
                                             "name": "_contractAddr",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6273,
+                                            "referencedDeclaration": 6284,
                                             "src": "1135:13:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_address",
@@ -417,19 +417,19 @@
                                             "typeString": "address"
                                         }
                                     },
-                                    "id": 6287,
+                                    "id": 6298,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1120:28:29"
                                 }
                             ]
                         },
                         "documentation": {
-                            "id": 6267,
+                            "id": 6278,
                             "nodeType": "StructuredDocumentation",
                             "src": "673:241:29",
                             "text": "@notice Constructor\n@param _oracleManager Address of oracle manager used to register the coin pair\n@param _coinPair The coinpair to register\n@param _contractAddr The coinpair contract implementation address"
                         },
-                        "id": 6289,
+                        "id": 6300,
                         "implemented": true,
                         "kind": "constructor",
                         "modifiers": [],
@@ -437,17 +437,17 @@
                         "nodeType": "FunctionDefinition",
                         "overrides": null,
                         "parameters": {
-                            "id": 6274,
+                            "id": 6285,
                             "nodeType": "ParameterList",
                             "parameters": [
                                 {
                                     "constant": false,
-                                    "id": 6269,
+                                    "id": 6280,
                                     "mutability": "mutable",
                                     "name": "_oracleManager",
                                     "nodeType": "VariableDeclaration",
                                     "overrides": null,
-                                    "scope": 6289,
+                                    "scope": 6300,
                                     "src": "940:28:29",
                                     "stateVariable": false,
                                     "storageLocation": "default",
@@ -457,7 +457,7 @@
                                     },
                                     "typeName": {
                                         "contractScope": null,
-                                        "id": 6268,
+                                        "id": 6279,
                                         "name": "OracleManager",
                                         "nodeType": "UserDefinedTypeName",
                                         "referencedDeclaration": 3797,
@@ -472,12 +472,12 @@
                                 },
                                 {
                                     "constant": false,
-                                    "id": 6271,
+                                    "id": 6282,
                                     "mutability": "mutable",
                                     "name": "_coinPair",
                                     "nodeType": "VariableDeclaration",
                                     "overrides": null,
-                                    "scope": 6289,
+                                    "scope": 6300,
                                     "src": "978:17:29",
                                     "stateVariable": false,
                                     "storageLocation": "default",
@@ -486,7 +486,7 @@
                                         "typeString": "bytes32"
                                     },
                                     "typeName": {
-                                        "id": 6270,
+                                        "id": 6281,
                                         "name": "bytes32",
                                         "nodeType": "ElementaryTypeName",
                                         "src": "978:7:29",
@@ -500,12 +500,12 @@
                                 },
                                 {
                                     "constant": false,
-                                    "id": 6273,
+                                    "id": 6284,
                                     "mutability": "mutable",
                                     "name": "_contractAddr",
                                     "nodeType": "VariableDeclaration",
                                     "overrides": null,
-                                    "scope": 6289,
+                                    "scope": 6300,
                                     "src": "1005:21:29",
                                     "stateVariable": false,
                                     "storageLocation": "default",
@@ -514,7 +514,7 @@
                                         "typeString": "address"
                                     },
                                     "typeName": {
-                                        "id": 6272,
+                                        "id": 6283,
                                         "name": "address",
                                         "nodeType": "ElementaryTypeName",
                                         "src": "1005:7:29",
@@ -531,21 +531,21 @@
                             "src": "930:102:29"
                         },
                         "returnParameters": {
-                            "id": 6275,
+                            "id": 6286,
                             "nodeType": "ParameterList",
                             "parameters": [],
                             "src": "1040:0:29"
                         },
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "919:236:29",
                         "stateMutability": "nonpayable",
                         "virtual": false,
                         "visibility": "public"
                     },
                     {
-                        "baseFunctions": [11371],
+                        "baseFunctions": [11385],
                         "body": {
-                            "id": 6301,
+                            "id": 6312,
                             "nodeType": "Block",
                             "src": "1559:114:29",
                             "statements": [
@@ -555,11 +555,11 @@
                                         "arguments": [
                                             {
                                                 "argumentTypes": null,
-                                                "id": 6297,
+                                                "id": 6308,
                                                 "name": "coinPair",
                                                 "nodeType": "Identifier",
                                                 "overloadedDeclarations": [],
-                                                "referencedDeclaration": 6264,
+                                                "referencedDeclaration": 6275,
                                                 "src": "1600:8:29",
                                                 "typeDescriptions": {
                                                     "typeIdentifier": "t_bytes32",
@@ -568,11 +568,11 @@
                                             },
                                             {
                                                 "argumentTypes": null,
-                                                "id": 6298,
+                                                "id": 6309,
                                                 "name": "contractAddr",
                                                 "nodeType": "Identifier",
                                                 "overloadedDeclarations": [],
-                                                "referencedDeclaration": 6266,
+                                                "referencedDeclaration": 6277,
                                                 "src": "1610:12:29",
                                                 "typeDescriptions": {
                                                     "typeIdentifier": "t_address",
@@ -593,18 +593,18 @@
                                             ],
                                             "expression": {
                                                 "argumentTypes": null,
-                                                "id": 6294,
+                                                "id": 6305,
                                                 "name": "oracleManager",
                                                 "nodeType": "Identifier",
                                                 "overloadedDeclarations": [],
-                                                "referencedDeclaration": 6262,
+                                                "referencedDeclaration": 6273,
                                                 "src": "1569:13:29",
                                                 "typeDescriptions": {
                                                     "typeIdentifier": "t_contract$_OracleManager_$3797",
                                                     "typeString": "contract OracleManager"
                                                 }
                                             },
-                                            "id": 6296,
+                                            "id": 6307,
                                             "isConstant": false,
                                             "isLValue": false,
                                             "isPure": false,
@@ -618,7 +618,7 @@
                                                 "typeString": "function (bytes32,address) external"
                                             }
                                         },
-                                        "id": 6299,
+                                        "id": 6310,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
@@ -633,51 +633,51 @@
                                             "typeString": "tuple()"
                                         }
                                     },
-                                    "id": 6300,
+                                    "id": 6311,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1569:54:29"
                                 }
                             ]
                         },
                         "documentation": {
-                            "id": 6290,
+                            "id": 6301,
                             "nodeType": "StructuredDocumentation",
                             "src": "1161:356:29",
                             "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because\nit is not its responsability in the current architecture\nIMPORTANT: This function should not be overriden, you should only\nredefine the _beforeUpgrade and _afterUpgrade to use this template"
                         },
                         "functionSelector": "61461954",
-                        "id": 6302,
+                        "id": 6313,
                         "implemented": true,
                         "kind": "function",
                         "modifiers": [],
                         "name": "execute",
                         "nodeType": "FunctionDefinition",
                         "overrides": {
-                            "id": 6292,
+                            "id": 6303,
                             "nodeType": "OverrideSpecifier",
                             "overrides": [],
                             "src": "1550:8:29"
                         },
                         "parameters": {
-                            "id": 6291,
+                            "id": 6302,
                             "nodeType": "ParameterList",
                             "parameters": [],
                             "src": "1538:2:29"
                         },
                         "returnParameters": {
-                            "id": 6293,
+                            "id": 6304,
                             "nodeType": "ParameterList",
                             "parameters": [],
                             "src": "1559:0:29"
                         },
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "1522:151:29",
                         "stateMutability": "nonpayable",
                         "virtual": false,
                         "visibility": "external"
                     }
                 ],
-                "scope": 6304,
+                "scope": 6315,
                 "src": "513:1162:29"
             }
         ],
@@ -686,14 +686,14 @@
     "legacyAST": {
         "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/change/OracleManagerPairChange.sol",
         "exportedSymbols": {
-            "OracleManagerPairChange": [6303]
+            "OracleManagerPairChange": [6314]
         },
-        "id": 6304,
+        "id": 6315,
         "license": "UNLICENSED",
         "nodeType": "SourceUnit",
         "nodes": [
             {
-                "id": 6253,
+                "id": 6264,
                 "literals": ["solidity", "0.6", ".12"],
                 "nodeType": "PragmaDirective",
                 "src": "39:23:29"
@@ -701,16 +701,16 @@
             {
                 "absolutePath": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
                 "file": "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol",
-                "id": 6255,
+                "id": 6266,
                 "nodeType": "ImportDirective",
-                "scope": 6304,
-                "sourceUnit": 11373,
+                "scope": 6315,
+                "sourceUnit": 11387,
                 "src": "64:98:29",
                 "symbolAliases": [
                     {
                         "foreign": {
                             "argumentTypes": null,
-                            "id": 6254,
+                            "id": 6265,
                             "name": "ChangeContract",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -729,16 +729,16 @@
             {
                 "absolutePath": "/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/OracleManager.sol",
                 "file": "../OracleManager.sol",
-                "id": 6257,
+                "id": 6268,
                 "nodeType": "ImportDirective",
-                "scope": 6304,
+                "scope": 6315,
                 "sourceUnit": 3798,
                 "src": "163:51:29",
                 "symbolAliases": [
                     {
                         "foreign": {
                             "argumentTypes": null,
-                            "id": 6256,
+                            "id": 6267,
                             "name": "OracleManager",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -761,44 +761,44 @@
                         "arguments": null,
                         "baseName": {
                             "contractScope": null,
-                            "id": 6259,
+                            "id": 6270,
                             "name": "ChangeContract",
                             "nodeType": "UserDefinedTypeName",
-                            "referencedDeclaration": 11372,
+                            "referencedDeclaration": 11386,
                             "src": "549:14:29",
                             "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_ChangeContract_$11372",
+                                "typeIdentifier": "t_contract$_ChangeContract_$11386",
                                 "typeString": "contract ChangeContract"
                             }
                         },
-                        "id": 6260,
+                        "id": 6271,
                         "nodeType": "InheritanceSpecifier",
                         "src": "549:14:29"
                     }
                 ],
-                "contractDependencies": [11372],
+                "contractDependencies": [11386],
                 "contractKind": "contract",
                 "documentation": {
-                    "id": 6258,
+                    "id": 6269,
                     "nodeType": "StructuredDocumentation",
                     "src": "216:296:29",
                     "text": "@title UpgraderTemplate\n@notice This contract is a ChangeContract intended to be used when\nupgrading any contract upgradeable through the zos-lib upgradeability\nsystem. This doesn't initialize the upgraded contract, that should be done extending\nthis one or taking it as a guide"
                 },
                 "fullyImplemented": true,
-                "id": 6303,
-                "linearizedBaseContracts": [6303, 11372],
+                "id": 6314,
+                "linearizedBaseContracts": [6314, 11386],
                 "name": "OracleManagerPairChange",
                 "nodeType": "ContractDefinition",
                 "nodes": [
                     {
                         "constant": false,
                         "functionSelector": "565d878c",
-                        "id": 6262,
+                        "id": 6273,
                         "mutability": "mutable",
                         "name": "oracleManager",
                         "nodeType": "VariableDeclaration",
                         "overrides": null,
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "570:34:29",
                         "stateVariable": true,
                         "storageLocation": "default",
@@ -808,7 +808,7 @@
                         },
                         "typeName": {
                             "contractScope": null,
-                            "id": 6261,
+                            "id": 6272,
                             "name": "OracleManager",
                             "nodeType": "UserDefinedTypeName",
                             "referencedDeclaration": 3797,
@@ -824,12 +824,12 @@
                     {
                         "constant": false,
                         "functionSelector": "34c1e5b5",
-                        "id": 6264,
+                        "id": 6275,
                         "mutability": "mutable",
                         "name": "coinPair",
                         "nodeType": "VariableDeclaration",
                         "overrides": null,
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "610:23:29",
                         "stateVariable": true,
                         "storageLocation": "default",
@@ -838,7 +838,7 @@
                             "typeString": "bytes32"
                         },
                         "typeName": {
-                            "id": 6263,
+                            "id": 6274,
                             "name": "bytes32",
                             "nodeType": "ElementaryTypeName",
                             "src": "610:7:29",
@@ -853,12 +853,12 @@
                     {
                         "constant": false,
                         "functionSelector": "15a5d9d8",
-                        "id": 6266,
+                        "id": 6277,
                         "mutability": "mutable",
                         "name": "contractAddr",
                         "nodeType": "VariableDeclaration",
                         "overrides": null,
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "639:27:29",
                         "stateVariable": true,
                         "storageLocation": "default",
@@ -867,7 +867,7 @@
                             "typeString": "address"
                         },
                         "typeName": {
-                            "id": 6265,
+                            "id": 6276,
                             "name": "address",
                             "nodeType": "ElementaryTypeName",
                             "src": "639:7:29",
@@ -882,25 +882,25 @@
                     },
                     {
                         "body": {
-                            "id": 6288,
+                            "id": 6299,
                             "nodeType": "Block",
                             "src": "1040:115:29",
                             "statements": [
                                 {
                                     "expression": {
                                         "argumentTypes": null,
-                                        "id": 6278,
+                                        "id": 6289,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6276,
+                                            "id": 6287,
                                             "name": "oracleManager",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6262,
+                                            "referencedDeclaration": 6273,
                                             "src": "1050:13:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_contract$_OracleManager_$3797",
@@ -911,11 +911,11 @@
                                         "operator": "=",
                                         "rightHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6277,
+                                            "id": 6288,
                                             "name": "_oracleManager",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6269,
+                                            "referencedDeclaration": 6280,
                                             "src": "1066:14:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_contract$_OracleManager_$3797",
@@ -928,25 +928,25 @@
                                             "typeString": "contract OracleManager"
                                         }
                                     },
-                                    "id": 6279,
+                                    "id": 6290,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1050:30:29"
                                 },
                                 {
                                     "expression": {
                                         "argumentTypes": null,
-                                        "id": 6282,
+                                        "id": 6293,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6280,
+                                            "id": 6291,
                                             "name": "coinPair",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6264,
+                                            "referencedDeclaration": 6275,
                                             "src": "1090:8:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_bytes32",
@@ -957,11 +957,11 @@
                                         "operator": "=",
                                         "rightHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6281,
+                                            "id": 6292,
                                             "name": "_coinPair",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6271,
+                                            "referencedDeclaration": 6282,
                                             "src": "1101:9:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_bytes32",
@@ -974,25 +974,25 @@
                                             "typeString": "bytes32"
                                         }
                                     },
-                                    "id": 6283,
+                                    "id": 6294,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1090:20:29"
                                 },
                                 {
                                     "expression": {
                                         "argumentTypes": null,
-                                        "id": 6286,
+                                        "id": 6297,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6284,
+                                            "id": 6295,
                                             "name": "contractAddr",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6266,
+                                            "referencedDeclaration": 6277,
                                             "src": "1120:12:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_address",
@@ -1003,11 +1003,11 @@
                                         "operator": "=",
                                         "rightHandSide": {
                                             "argumentTypes": null,
-                                            "id": 6285,
+                                            "id": 6296,
                                             "name": "_contractAddr",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 6273,
+                                            "referencedDeclaration": 6284,
                                             "src": "1135:13:29",
                                             "typeDescriptions": {
                                                 "typeIdentifier": "t_address",
@@ -1020,19 +1020,19 @@
                                             "typeString": "address"
                                         }
                                     },
-                                    "id": 6287,
+                                    "id": 6298,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1120:28:29"
                                 }
                             ]
                         },
                         "documentation": {
-                            "id": 6267,
+                            "id": 6278,
                             "nodeType": "StructuredDocumentation",
                             "src": "673:241:29",
                             "text": "@notice Constructor\n@param _oracleManager Address of oracle manager used to register the coin pair\n@param _coinPair The coinpair to register\n@param _contractAddr The coinpair contract implementation address"
                         },
-                        "id": 6289,
+                        "id": 6300,
                         "implemented": true,
                         "kind": "constructor",
                         "modifiers": [],
@@ -1040,17 +1040,17 @@
                         "nodeType": "FunctionDefinition",
                         "overrides": null,
                         "parameters": {
-                            "id": 6274,
+                            "id": 6285,
                             "nodeType": "ParameterList",
                             "parameters": [
                                 {
                                     "constant": false,
-                                    "id": 6269,
+                                    "id": 6280,
                                     "mutability": "mutable",
                                     "name": "_oracleManager",
                                     "nodeType": "VariableDeclaration",
                                     "overrides": null,
-                                    "scope": 6289,
+                                    "scope": 6300,
                                     "src": "940:28:29",
                                     "stateVariable": false,
                                     "storageLocation": "default",
@@ -1060,7 +1060,7 @@
                                     },
                                     "typeName": {
                                         "contractScope": null,
-                                        "id": 6268,
+                                        "id": 6279,
                                         "name": "OracleManager",
                                         "nodeType": "UserDefinedTypeName",
                                         "referencedDeclaration": 3797,
@@ -1075,12 +1075,12 @@
                                 },
                                 {
                                     "constant": false,
-                                    "id": 6271,
+                                    "id": 6282,
                                     "mutability": "mutable",
                                     "name": "_coinPair",
                                     "nodeType": "VariableDeclaration",
                                     "overrides": null,
-                                    "scope": 6289,
+                                    "scope": 6300,
                                     "src": "978:17:29",
                                     "stateVariable": false,
                                     "storageLocation": "default",
@@ -1089,7 +1089,7 @@
                                         "typeString": "bytes32"
                                     },
                                     "typeName": {
-                                        "id": 6270,
+                                        "id": 6281,
                                         "name": "bytes32",
                                         "nodeType": "ElementaryTypeName",
                                         "src": "978:7:29",
@@ -1103,12 +1103,12 @@
                                 },
                                 {
                                     "constant": false,
-                                    "id": 6273,
+                                    "id": 6284,
                                     "mutability": "mutable",
                                     "name": "_contractAddr",
                                     "nodeType": "VariableDeclaration",
                                     "overrides": null,
-                                    "scope": 6289,
+                                    "scope": 6300,
                                     "src": "1005:21:29",
                                     "stateVariable": false,
                                     "storageLocation": "default",
@@ -1117,7 +1117,7 @@
                                         "typeString": "address"
                                     },
                                     "typeName": {
-                                        "id": 6272,
+                                        "id": 6283,
                                         "name": "address",
                                         "nodeType": "ElementaryTypeName",
                                         "src": "1005:7:29",
@@ -1134,21 +1134,21 @@
                             "src": "930:102:29"
                         },
                         "returnParameters": {
-                            "id": 6275,
+                            "id": 6286,
                             "nodeType": "ParameterList",
                             "parameters": [],
                             "src": "1040:0:29"
                         },
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "919:236:29",
                         "stateMutability": "nonpayable",
                         "virtual": false,
                         "visibility": "public"
                     },
                     {
-                        "baseFunctions": [11371],
+                        "baseFunctions": [11385],
                         "body": {
-                            "id": 6301,
+                            "id": 6312,
                             "nodeType": "Block",
                             "src": "1559:114:29",
                             "statements": [
@@ -1158,11 +1158,11 @@
                                         "arguments": [
                                             {
                                                 "argumentTypes": null,
-                                                "id": 6297,
+                                                "id": 6308,
                                                 "name": "coinPair",
                                                 "nodeType": "Identifier",
                                                 "overloadedDeclarations": [],
-                                                "referencedDeclaration": 6264,
+                                                "referencedDeclaration": 6275,
                                                 "src": "1600:8:29",
                                                 "typeDescriptions": {
                                                     "typeIdentifier": "t_bytes32",
@@ -1171,11 +1171,11 @@
                                             },
                                             {
                                                 "argumentTypes": null,
-                                                "id": 6298,
+                                                "id": 6309,
                                                 "name": "contractAddr",
                                                 "nodeType": "Identifier",
                                                 "overloadedDeclarations": [],
-                                                "referencedDeclaration": 6266,
+                                                "referencedDeclaration": 6277,
                                                 "src": "1610:12:29",
                                                 "typeDescriptions": {
                                                     "typeIdentifier": "t_address",
@@ -1196,18 +1196,18 @@
                                             ],
                                             "expression": {
                                                 "argumentTypes": null,
-                                                "id": 6294,
+                                                "id": 6305,
                                                 "name": "oracleManager",
                                                 "nodeType": "Identifier",
                                                 "overloadedDeclarations": [],
-                                                "referencedDeclaration": 6262,
+                                                "referencedDeclaration": 6273,
                                                 "src": "1569:13:29",
                                                 "typeDescriptions": {
                                                     "typeIdentifier": "t_contract$_OracleManager_$3797",
                                                     "typeString": "contract OracleManager"
                                                 }
                                             },
-                                            "id": 6296,
+                                            "id": 6307,
                                             "isConstant": false,
                                             "isLValue": false,
                                             "isPure": false,
@@ -1221,7 +1221,7 @@
                                                 "typeString": "function (bytes32,address) external"
                                             }
                                         },
-                                        "id": 6299,
+                                        "id": 6310,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
@@ -1236,51 +1236,51 @@
                                             "typeString": "tuple()"
                                         }
                                     },
-                                    "id": 6300,
+                                    "id": 6311,
                                     "nodeType": "ExpressionStatement",
                                     "src": "1569:54:29"
                                 }
                             ]
                         },
                         "documentation": {
-                            "id": 6290,
+                            "id": 6301,
                             "nodeType": "StructuredDocumentation",
                             "src": "1161:356:29",
                             "text": "@notice Execute the changes.\n@dev Should be called by the governor, but this contract does not check that explicitly because\nit is not its responsability in the current architecture\nIMPORTANT: This function should not be overriden, you should only\nredefine the _beforeUpgrade and _afterUpgrade to use this template"
                         },
                         "functionSelector": "61461954",
-                        "id": 6302,
+                        "id": 6313,
                         "implemented": true,
                         "kind": "function",
                         "modifiers": [],
                         "name": "execute",
                         "nodeType": "FunctionDefinition",
                         "overrides": {
-                            "id": 6292,
+                            "id": 6303,
                             "nodeType": "OverrideSpecifier",
                             "overrides": [],
                             "src": "1550:8:29"
                         },
                         "parameters": {
-                            "id": 6291,
+                            "id": 6302,
                             "nodeType": "ParameterList",
                             "parameters": [],
                             "src": "1538:2:29"
                         },
                         "returnParameters": {
-                            "id": 6293,
+                            "id": 6304,
                             "nodeType": "ParameterList",
                             "parameters": [],
                             "src": "1559:0:29"
                         },
-                        "scope": 6303,
+                        "scope": 6314,
                         "src": "1522:151:29",
                         "stateMutability": "nonpayable",
                         "virtual": false,
                         "visibility": "external"
                     }
                 ],
-                "scope": 6304,
+                "scope": 6315,
                 "src": "513:1162:29"
             }
         ],
@@ -1292,7 +1292,7 @@
     },
     "networks": {},
     "schemaVersion": "3.2.4",
-    "updatedAt": "2020-09-14T21:39:40.819Z",
+    "updatedAt": "2020-09-15T15:03:12.442Z",
     "networkType": "ethereum",
     "devdoc": {
         "kind": "dev",
