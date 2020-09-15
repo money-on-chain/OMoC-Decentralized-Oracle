@@ -21,3 +21,12 @@ yarn.lock
 coverage
 coverage.json
 
+# openzeppeling deploy
+.openzeppelin/
+.openzeppelin/.session
+
+# Don't add contracts source code to npm
+contracts/
+*.sol
+test/
+scripts/
