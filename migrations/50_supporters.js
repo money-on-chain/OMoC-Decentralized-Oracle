@@ -9,7 +9,7 @@ async function deploy({config, ozParams, governor}) {
         network: ozParams.network,
         txParams: {...ozParams.txParams, gas: 3500000},
     });
-    console.log('Supporters: ', supporters.address, 'Initialization still missing!!!');
+    console.log('Supporters: ', supporters.address);
 }
 
 // FOR TRUFFLE

@@ -80,7 +80,16 @@ async function deploy({config, ozParams, governor}) {
     );
     await governor.executeChange(change1.address);
 
-    console.log('Register coin', coin, 'via governor', config.governorAddr);
+    console.log(
+        'Register coin',
+        coin,
+        'via governor',
+        governor.address,
+        'params',
+        priceProviderRegisterAddr,
+        coinPair,
+        calculatedPriceProvider.address,
+    );
     const PriceProviderRegisterPairChange = artifacts.require(
         '@moc/oracles/PriceProviderRegisterPairChange',
     );
@@ -88,6 +97,7 @@ async function deploy({config, ozParams, governor}) {
         priceProviderRegisterAddr,
         coinPair,
         calculatedPriceProvider.address,
+        {gas: 3000000},
     );
     console.log(
         'Register coin via governor',
