@@ -58,7 +58,7 @@ contract('OracleManager by gobernanza', async (accounts) => {
 
     it('Should fail to unsubscribe oracle if not called by owner', async () => {
         await expectRevert(
-            this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].owner, this.coinPair),
+            this.oracleMgr.unSubscribeFromCoinPair(oracleData[0].owner, this.coinPair),
             'Address is not whitelisted',
         );
     });

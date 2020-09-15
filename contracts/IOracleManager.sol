@@ -56,7 +56,7 @@ interface IOracleManager {
     /// @notice Unsubscribe a registered oracle from participating in rounds of a registered coin-pair.
     /// The oracle is flagged so it is not selected in the next round.
     /// @param oracleOwnerAddr Address of oracle owner
-    function unsubscribeFromCoinPair(address oracleOwnerAddr, bytes32 coinPair) external;
+    function unSubscribeFromCoinPair(address oracleOwnerAddr, bytes32 coinPair) external;
 
     /// @notice The oracle owner did a partial withdrawal of funds
     /// 1. The oracle address is searched by the owner address.

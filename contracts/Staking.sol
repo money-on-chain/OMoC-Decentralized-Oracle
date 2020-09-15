@@ -35,13 +35,15 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         Supporters _supporters,
         OracleManager _oracleManager,
         IDelayMachine _delayMachine,
-        address[] calldata _wlistlock
+        address[] calldata _wlistlock,
+        uint256 _withdrawLockTime
     ) external {
         Governed._initialize(_governor);
         oracleManager = _oracleManager;
         supporters = _supporters;
         mocToken = _supporters.mocToken();
         delayMachine = _delayMachine;
+        withdrawLockTime = _withdrawLockTime;
         for (uint256 i = 0; i < _wlistlock.length; i++) {
             iterableWhitelistDataLock._addToWhitelist(_wlistlock[i]);
         }
@@ -92,7 +94,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         // Approve stake transfer for Delay Machine contract
         require(mocToken.approve(address(delayMachine), mocs), "error in approve");
         uint256 expiration = oracleManager.onWithdraw(msg.sender);
-        delayMachine.deposit(mocs, msg.sender, expiration);
+        delayMachine.deposit(mocs, msg.sender, expiration.add(withdrawLockTime));
     }
 
     /// @notice Get the value of the token, withdraw and deposit can be done only in multiples of the token value.
@@ -217,7 +219,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// Delegates to the Oracle Manager smart contract.
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
     function unSubscribeFromCoinPair(bytes32 coinPair) external override {
-        oracleManager.unsubscribeFromCoinPair(msg.sender, coinPair);
+        oracleManager.unSubscribeFromCoinPair(msg.sender, coinPair);
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair

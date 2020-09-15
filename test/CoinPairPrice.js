@@ -987,7 +987,7 @@ contract('CoinPairPrice', async (accounts) => {
         const roundInfo2 = await this.coinPairPrice.getRoundInfo();
         assert.isTrue(roundInfo2.selectedOracles.includes(oracleData[0].account));
 
-        await this.staking.unsubscribeFromCoinPair(thisCoinPair, {
+        await this.staking.unSubscribeFromCoinPair(thisCoinPair, {
             from: oracleData[0].owner,
         });
 

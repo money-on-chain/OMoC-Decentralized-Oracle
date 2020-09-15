@@ -4,7 +4,7 @@ const NEEDED = [
     'coinPairs',
     'minCPSubscriptionStake',
     'supportersEarnPeriodInBlocks',
-    'supportersEarnPeriodInBlocks',
+    'withdrawLockTime',
 ];
 
 async function deploy({config}) {

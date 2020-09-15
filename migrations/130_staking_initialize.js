@@ -1,5 +1,6 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
+const Web3 = require('web3');
 
 async function deploy({config, ozParams, governor}) {
     console.log('Initialize staking machine');
@@ -16,6 +17,7 @@ async function deploy({config, ozParams, governor}) {
         oracleManagerAddr,
         delayMachineAddr,
         iterableWhitelistDataLock,
+        Web3.utils.toBN(config.stakingMachine.withdrawLockTime),
     );
 }
 

@@ -165,6 +165,7 @@ async function initContracts({
     period = 20,
     minSubscriptionStake = (10 ** 18).toString(),
     oracleManagerWhitelisted = [],
+    withdrawLockTime = (60 * 60).toString(),
 }) {
     const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
     const OracleManager = artifacts.require('OracleManager');
@@ -200,6 +201,7 @@ async function initContracts({
         oracleMgr.address,
         delayMachine.address,
         [votingMachine.address],
+        withdrawLockTime,
     );
     await stakingMock.initialize(staking.address, supporters.address);
     await votingMachine.initialize(staking.address);

@@ -162,7 +162,7 @@ contract('OracleManager', async (accounts) => {
 
     it('Should fail to unsubscribe oracle if not called by owner', async () => {
         await expectRevert(
-            this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].account, this.coinPair, {
+            this.oracleMgr.unSubscribeFromCoinPair(oracleData[0].account, this.coinPair, {
                 from: WHITELISTED_CALLER,
             }),
             'Oracle not registered',
@@ -192,7 +192,7 @@ contract('OracleManager', async (accounts) => {
     });
 
     it('Should unsubscribe oracle A from coin-pair USDBTC', async () => {
-        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].owner, this.coinPair, {
+        await this.oracleMgr.unSubscribeFromCoinPair(oracleData[0].owner, this.coinPair, {
             from: WHITELISTED_CALLER,
         });
         assert.isFalse(await this.coinPairPrice_btcusd.isSubscribed(oracleData[0].account));
@@ -200,7 +200,7 @@ contract('OracleManager', async (accounts) => {
 
     it('Should fail to unsubscribe oracle if not subscribed', async () => {
         await expectRevert(
-            this.oracleMgr.unsubscribeFromCoinPair(oracleData[0].owner, this.coinPair, {
+            this.oracleMgr.unSubscribeFromCoinPair(oracleData[0].owner, this.coinPair, {
                 from: WHITELISTED_CALLER,
             }),
             'Oracle is not subscribed to this coin pair',
@@ -299,7 +299,7 @@ contract('OracleManager', async (accounts) => {
 
         // Set to Idle and pass minimum required rounds ...
 
-        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[1].owner, this.coinPair, {
+        await this.oracleMgr.unSubscribeFromCoinPair(oracleData[1].owner, this.coinPair, {
             from: WHITELISTED_CALLER,
         });
 
@@ -320,13 +320,13 @@ contract('OracleManager', async (accounts) => {
         // Unsubscribe from all coinpairs to remove
         assert.isFalse(await this.oracleMgr.canRemoveOracle(oracleData[1].owner));
 
-        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[1].owner, this.coinPair, {
+        await this.oracleMgr.unSubscribeFromCoinPair(oracleData[1].owner, this.coinPair, {
             from: WHITELISTED_CALLER,
         });
 
         assert.isFalse(await this.oracleMgr.canRemoveOracle(oracleData[1].owner));
 
-        await this.oracleMgr.unsubscribeFromCoinPair(oracleData[1].owner, this.coinPair2, {
+        await this.oracleMgr.unSubscribeFromCoinPair(oracleData[1].owner, this.coinPair2, {
             from: WHITELISTED_CALLER,
         });
 

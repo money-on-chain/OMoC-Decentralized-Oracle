@@ -143,7 +143,7 @@ contract OracleManager is OracleManagerStorage {
     /// @notice Unsubscribe a registered oracle from participating in rounds of a registered coin-pair
     /// @param ownerAddr Address of message sender
     /// @param coinPair Name of coin pair
-    function unsubscribeFromCoinPair(address ownerAddr, bytes32 coinPair)
+    function unSubscribeFromCoinPair(address ownerAddr, bytes32 coinPair)
         external
         authorizedChangerOrWhitelisted
     {

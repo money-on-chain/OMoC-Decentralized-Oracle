@@ -1,5 +1,6 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
+const Web3 = require('web3');
 
 async function deploy({config, ozParams, governor}) {
     console.log('Initialize OracleManager');
@@ -10,7 +11,7 @@ async function deploy({config, ozParams, governor}) {
         .at(oracleManagerAddr);
     await oracleManager.initialize(
         governor.address,
-        parseInt(config.stakingMachine.minCPSubscriptionStake),
+        Web3.utils.toBN(config.stakingMachine.minCPSubscriptionStake),
         staking,
         [staking],
     );

@@ -145,7 +145,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
         it('It is ok to unsubscribes and subscribes again in the same round', async () => {
             const {ownerAddr, oracleAddr} = ORACLE_WITH_SMALL_STAKE;
 
-            await this.staking.unsubscribeFromCoinPair(COINPAIR, {from: ownerAddr});
+            await this.staking.unSubscribeFromCoinPair(COINPAIR, {from: ownerAddr});
             assert.isFalse(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             // Even after unsubscribe we are still in the round, is just a stop signal
             assert.isTrue(
@@ -196,7 +196,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracleAddr) >= 0,
             );
 
-            await this.staking.unsubscribeFromCoinPair(COINPAIR, {from: ownerAddr});
+            await this.staking.unSubscribeFromCoinPair(COINPAIR, {from: ownerAddr});
             assert.isFalse(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             assert.equal(
                 maxOraclesPerRound,

@@ -19,6 +19,9 @@ contract StakingStorage is Initializable, Governed, IIterableWhitelist {
     IERC20 public mocToken;
     IDelayMachine public delayMachine;
 
+    // A fixed amount of lock time that is added to withdraws.
+    uint256 withdrawLockTime;
+
     // Whitelisted contracts that can lock stake.
     IterableWhitelistLib.IterableWhitelistData internal iterableWhitelistDataLock;
 

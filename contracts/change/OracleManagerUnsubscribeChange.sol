@@ -36,7 +36,7 @@ contract OracleManagerUnsubscribeChange is ChangeContract {
       @notice Execute the changes.
       */
     function execute() external override {
-        oracleManager.unsubscribeFromCoinPair(oracleOwner, coinPair);
+        oracleManager.unSubscribeFromCoinPair(oracleOwner, coinPair);
         oracleManager = OracleManager(0);
     }
 }

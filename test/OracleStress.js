@@ -363,7 +363,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
 
     it('Should remove all oracles', async () => {
         for (let i = 0; i < oracleList.length; i++) {
-            await this.oracleMgr.unsubscribeFromCoinPair(oracleList[i].account, COINPAIR, {
+            await this.oracleMgr.unSubscribeFromCoinPair(oracleList[i].account, COINPAIR, {
                 from: oracleList[i].owner_account,
             });
             const subscribed = await this.oracleMgr.isSubscribed(oracleList[i].account, COINPAIR);
