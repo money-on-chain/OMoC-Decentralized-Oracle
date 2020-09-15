@@ -199,7 +199,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -223,7 +224,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -288,7 +290,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -334,7 +337,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -452,7 +456,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -476,7 +481,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -489,7 +495,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -502,7 +509,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -521,7 +529,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -540,7 +549,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -563,7 +573,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -576,7 +587,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -589,7 +601,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -602,7 +615,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -621,7 +635,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -640,7 +655,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -659,7 +675,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -678,7 +695,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -691,7 +709,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [],
@@ -704,7 +723,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         },
         {
             "inputs": [
@@ -733,7 +753,8 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
+            "type": "function",
+            "constant": true
         }
     ],
     "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"subaccount\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"mocs\",\"type\":\"uint256\"}],\"name\":\"AddStake\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"earnings\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"end\",\"type\":\"uint256\"}],\"name\":\"CancelEarnings\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"earnings\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"end\",\"type\":\"uint256\"}],\"name\":\"PayEarnings\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"msgSender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"subacount\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"mocs\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"blockNum\",\"type\":\"uint256\"}],\"name\":\"Withdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"subaccount\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"destination\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"mocs\",\"type\":\"uint256\"}],\"name\":\"WithdrawStake\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_whitelisted\",\"type\":\"address\"}],\"name\":\"addToWhitelist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"newIGovernor\",\"type\":\"address\"}],\"name\":\"changeIGovernor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"delegateCallToChanger\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"distribute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAvailableMOC\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_subaccount\",\"type\":\"address\"}],\"name\":\"getBalanceAt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_block\",\"type\":\"uint256\"}],\"name\":\"getEarningsAt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getEarningsInfo\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_block\",\"type\":\"uint256\"}],\"name\":\"getLockedAt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"getLockedBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_subaccount\",\"type\":\"address\"}],\"name\":\"getMOCBalanceAt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"addresses\",\"type\":\"address[]\"}],\"name\":\"getMaxMOCBalance\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"selected\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"maxBalance\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTokens\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_idx\",\"type\":\"uint256\"}],\"name\":\"getWhiteListAtIndex\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getWhiteListLen\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"governor\",\"outputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IGovernor\",\"name\":\"_governor\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"_wlist\",\"type\":\"address[]\"},{\"internalType\":\"contract IERC20\",\"name\":\"_mocToken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_period\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isReadyToDistribute\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isWhitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"mocHolder\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"untilTimestamp\",\"type\":\"uint256\"}],\"name\":\"lockMocs\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"lockedMocs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"untilTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_mocs\",\"type\":\"uint256\"}],\"name\":\"mocToToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"mocToken\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"period\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_whitelisted\",\"type\":\"address\"}],\"name\":\"removeFromWhitelist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_mocs\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_subaccount\",\"type\":\"address\"}],\"name\":\"stakeAt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_mocs\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_subaccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"stakeAtFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_token\",\"type\":\"uint256\"}],\"name\":\"tokenToMoc\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalMoc\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokens\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_subaccount\",\"type\":\"address\"}],\"name\":\"withdrawFrom\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokens\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_subaccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_receiver\",\"type\":\"address\"}],\"name\":\"withdrawFromTo\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addToWhitelist(address)\":{\"params\":{\"_whitelisted\":\"- the override coinPair\"}},\"changeIGovernor(address)\":{\"params\":{\"newIGovernor\":\"New governor address\"}},\"delegateCallToChanger(bytes)\":{\"params\":{\"data\":\"the serialized function arguments\"}},\"distribute()\":{\"details\":\"Earnings will be credited periodically through several blocks.\"},\"getAvailableMOC()\":{\"returns\":{\"_0\":\"total amount of MOC\"}},\"getBalanceAt(address,address)\":{\"params\":{\"_subaccount\":\"subaccount to get balance\",\"_user\":\"User address\"},\"returns\":{\"_0\":\"tokens for _user at _subaccount\"}},\"getEarningsAt(uint256)\":{\"params\":{\"_block\":\"Block used to calculate\"},\"returns\":{\"_0\":\"Earnings to be paid\"}},\"getEarningsInfo()\":{\"returns\":{\"_0\":\"Information about earnings\"}},\"getLockedAt(uint256)\":{\"params\":{\"_block\":\"Block used for calculations\"},\"returns\":{\"_0\":\"Locked amount of earnings in MOC\"}},\"getLockedBalance(address)\":{\"params\":{\"user\":\"user address\"}},\"getMOCBalanceAt(address,address)\":{\"params\":{\"_subaccount\":\"subaccount to get MOC balance\",\"_user\":\"User address\"},\"returns\":{\"_0\":\"MOC for _user\"}},\"getTokens()\":{\"returns\":{\"_0\":\"total amount of tokens\"}},\"getWhiteListAtIndex(uint256)\":{\"params\":{\"_idx\":\"index to query.\"}},\"initialize(address,address[],address,uint256)\":{\"params\":{\"_governor\":\"The address of the contract which governs this one\",\"_mocToken\":\"The address of the contract which governs this one\",\"_period\":\"The address of the contract which governs this one\",\"_wlist\":\"Initial whitelist addresses\"}},\"isReadyToDistribute()\":{\"returns\":{\"_0\":\"true if ready\"}},\"isWhitelisted(address)\":{\"params\":{\"_account\":\"The account to check\"}},\"lockMocs(address,uint256)\":{\"params\":{\"mocHolder\":\"the moc holder whose mocs will be locked.\",\"untilTimestamp\":\"timestamp until which the mocs will be locked.\"}},\"mocToToken(uint256)\":{\"params\":{\"_mocs\":\"Amount of MOC\"},\"returns\":{\"_0\":\"Equivalent amount of tokens\"}},\"period()\":{\"details\":\"During each round rewards are collected and distributed during next round.\",\"returns\":{\"_0\":\"Number of blocks to distribute earnings\"}},\"removeFromWhitelist(address)\":{\"params\":{\"_whitelisted\":\"- the override coinPair\"}},\"stakeAt(uint256,address)\":{\"params\":{\"_mocs\":\"amount of MOC to stake\",\"_subaccount\":\"sub-account used to identify the stake\"}},\"stakeAtFrom(uint256,address,address)\":{\"params\":{\"_mocs\":\"amount of MOC to stake\",\"_sender\":\"sender account that must approve and from which the funds are taken\",\"_subaccount\":\"sub-account used to identify the stake\"}},\"tokenToMoc(uint256)\":{\"params\":{\"_token\":\"Amount of tokens\"},\"returns\":{\"_0\":\"Equivalent amount of tokens\"}},\"withdrawFrom(uint256,address)\":{\"params\":{\"_subaccount\":\"subaccount used to withdraw MOC\",\"_tokens\":\"amount of tokens to convert to MOC\"},\"returns\":{\"_0\":\"Amount of MOC transfered\"}},\"withdrawFromTo(uint256,address,address)\":{\"params\":{\"_receiver\":\"destination address that gets the MOC\",\"_subaccount\":\"subaccount used to withdraw MOC\",\"_tokens\":\"amount of tokens to convert to MOC\"},\"returns\":{\"_0\":\"Amount of MOC transfered\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"addToWhitelist(address)\":{\"notice\":\"Add to the list of contracts that can stake in this contract\"},\"changeIGovernor(address)\":{\"notice\":\"Change the contract's governor. Should be called through the old governance system\"},\"delegateCallToChanger(bytes)\":{\"notice\":\"This method is used by a change contract to access the storage freely even without a setter.\"},\"distribute()\":{\"notice\":\"Deposit earnings that will be credited to supporters.\"},\"getAvailableMOC()\":{\"notice\":\"MOC available for withdrawal.\"},\"getBalanceAt(address,address)\":{\"notice\":\"Amount of tokens for _user in a _subaccount.\"},\"getEarningsAt(uint256)\":{\"notice\":\"Calculate earnings to be paid at a block\"},\"getEarningsInfo()\":{\"notice\":\"Return information about earnings\"},\"getLockedAt(uint256)\":{\"notice\":\"Calculate locked earnings at a block\"},\"getLockedBalance(address)\":{\"notice\":\"Reports the balance of locked MOCs for a specific user. Delegates to the Supporters smart contract.\"},\"getMOCBalanceAt(address,address)\":{\"notice\":\"MOC available for withdrawal by _user.\"},\"getTokens()\":{\"notice\":\"Total tokens created.\"},\"getWhiteListAtIndex(uint256)\":{\"notice\":\"Returns the address at index.\"},\"getWhiteListLen()\":{\"notice\":\"Returns the count of whitelisted addresses.\"},\"governor()\":{\"notice\":\"The address of the contract which governs this one\"},\"initialize(address,address[],address,uint256)\":{\"notice\":\"Contract creation\"},\"isReadyToDistribute()\":{\"notice\":\"Return true if is ready to do a distribute call\"},\"isWhitelisted(address)\":{\"notice\":\"Check if an account is whitelisted\"},\"lockMocs(address,uint256)\":{\"notice\":\"Used by the voting machine to lock an amount of MOCs.\"},\"mocToToken(uint256)\":{\"notice\":\"Convert amount MOC to equivalent in token\"},\"mocToken()\":{\"notice\":\"The moc token address\"},\"period()\":{\"notice\":\"Return the round length in blocks .\"},\"removeFromWhitelist(address)\":{\"notice\":\"Remove from the list of contracts that can stake in this contract\"},\"stakeAt(uint256,address)\":{\"notice\":\"Stake MOC to receive earnings on a subaccount.\"},\"stakeAtFrom(uint256,address,address)\":{\"notice\":\"Stake MOC to receive earnings on a subaccount.\"},\"tokenToMoc(uint256)\":{\"notice\":\"Convert amount tokens to equivalent in MOCS\"},\"withdrawFrom(uint256,address)\":{\"notice\":\"Withdraw MOC for tokens for a subaccount.\"},\"withdrawFromTo(uint256,address,address)\":{\"notice\":\"Withdraw MOC for tokens for a subaccount.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Supporters.sol\":\"Supporters\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/Supporters.sol\":{\"keccak256\":\"0xbb6ff7c3d33441dd3eb3b66bac10be374c36e262fe791f732a0ff1d1b769a784\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://acc546e5e045fa37bd73d058ec99b71c7b123010763267c8d06681db4cb223a3\",\"dweb:/ipfs/QmYqMd5JKxAJaVQ2h4hHVdwBRNjXjDkE3oaBVWPvthYC3i\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/SupportersStorage.sol\":{\"keccak256\":\"0xd9ae212fa5c55c4499a9f14d7cc65a0507a28afe2b59525975e62bbefa474f7c\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c6c4e003a0cb609fa8f9ac9548f4afb3c1befd6e7169c82172dfb420f9fa4bc3\",\"dweb:/ipfs/Qmc6dzBLV7vuGx2Px5pCDvEUh7JB9USDTv9M7b2QAMFHMZ\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/AddressSetLib.sol\":{\"keccak256\":\"0x164a53571663eed760ad55e9e580e757bee459f73485337d2d6edbb4a15d11d7\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://01b4a24867c85179f07dd19d962b89fdf5d4e9a452221536d2f9430fcf235ad4\",\"dweb:/ipfs/QmU4sWw2EZCVR6HEccoLaRNDXUq6T4PXwKyWg2axukGQFH\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/IterableWhitelistLib.sol\":{\"keccak256\":\"0x2319e0dfd6ac0478c5a8bc1501b6f9111eacd91e9aa88de2c96480b8b87c9f0b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://670b33cba543b9408cb7b4ca40d3ca1e562637191f12cd06d955cb97b4a95e2e\",\"dweb:/ipfs/QmQF6eVwg7mFozevyyYamLJWqaFKpuZqgrUFcPVkdNE3XG\"]},\"/home/adji/Desktop/work/coinfabrik/moc-oraculos/contracts/libs/SupportersLib.sol\":{\"keccak256\":\"0xa80f2b92a59e78b256fa6e7799f2f6b271d044b72eda3909547dded83d9f7252\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://de9a6e237bc9c10dcc4149ba6bb4948dbb6031a6ea485d9c7dad27b1e617c4d8\",\"dweb:/ipfs/QmS5x4RpZXqB3bEGqcYW5siJDeYedbf93TrHwcqQ1o25FX\"]},\"@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol\":{\"keccak256\":\"0x6c786977acab4c076087e4569b2fd423e2c3a7e45150353c18de328b7e114843\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cbdaaed4b97fc67586f6f20f185d6227dd4a1d0896bd6db20ee06744cca2eaa6\",\"dweb:/ipfs/QmbZrRtxMdebQa1dHfTdC1pPA48ZvzSopcc2pLmmJ7XJ9X\"]},\"@moc/shared/contracts/moc-governance/Governance/Governed.sol\":{\"keccak256\":\"0xf948f3ef0d990c9b5199cb96ed42a7b4b96b1dce0abfc168289f9de8576286e2\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5b770c1391989e9db75789bb15cc4413d520eecb327fed0c114a66407a3f4404\",\"dweb:/ipfs/QmPqRtG3cfB3tc5fFs9Q8yMNkxHB4oxMSY27jDXYhB754c\"]},\"@moc/shared/contracts/moc-governance/Governance/IGovernor.sol\":{\"keccak256\":\"0xed68469a6e1759efc5dece43aaf7fdf25e39163626df454bd9f9662ca8e9df61\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://a615e8209f9f332ed8d16452fd83c412f44162bd6fb8af6a1556bdc033a36735\",\"dweb:/ipfs/Qmda7FzLXHG9WZSTVBXwGCjLT7xU5Ugh287jQ4qafAr5WX\"]},\"@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol\":{\"keccak256\":\"0x9bfec92e36234ecc99b5d37230acb6cd1f99560233753162204104a4897e8721\",\"urls\":[\"bzz-raw://5cf7c208583d4d046d75bd99f5507412ab01cce9dd9f802ce9768a416d93ea2f\",\"dweb:/ipfs/QmcQS1BBMPpVEkXP3qzwSjxHNrqDek8YeR7xbVWDC9ApC7\"]},\"@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
@@ -17888,7 +17909,8 @@
     },
     "networks": {},
     "schemaVersion": "3.2.4",
-    "updatedAt": "2020-09-15T18:38:01.929Z",
+    "updatedAt": "2020-09-15T19:21:40.084Z",
+    "networkType": "ethereum",
     "devdoc": {
         "kind": "dev",
         "methods": {
