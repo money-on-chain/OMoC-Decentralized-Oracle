@@ -37,8 +37,8 @@ contract('Staking_rounding', async (accounts) => {
                 otherUserMocBalanceAfterSecondDeposit: '0', // Moc balance after other user's deposit
                 otherUserTokenBalanceAfterSecondDeposit: '0', // Token balance after other user's deposit
                 otherDelayBalanceAfterSecondWithdrawal: '0', // Delay machine balance after other user's withdrawal
-                mocBalanceAfterReset: '0',
-                tokenBalanceAfterReset: '0',
+                mocBalanceAfterReset: '0', // Moc balance after resetting it to 0 with a withdrawal
+                tokenBalanceAfterReset: '0', // Token balance after resetting it to 0 with a withdrawal
             },
             {
                 testNumber: '2',
@@ -333,7 +333,7 @@ contract('Staking_rounding', async (accounts) => {
         for (let i = 0; i < testValues.length; i++) {
             it(testValues[i].testNumber + ': ' + testValues[i].description, async () => {
                 console.log('Test number:', testValues[i].testNumber);
-                // Previous approve for deposit in StakingMock
+                // Previous approve for deposit in Staking
                 await this.token.approve(this.staking.address, testValues[i].amount, {
                     from: ALICE,
                 });
@@ -342,7 +342,7 @@ contract('Staking_rounding', async (accounts) => {
                     testValues[i].amount,
                     'mocs by ALICE<---------------',
                 );
-                // Deposit mocs in StakingMock
+                // Deposit mocs in Staking
                 await this.staking.deposit(testValues[i].amount, ALICE, {
                     from: ALICE,
                 });
