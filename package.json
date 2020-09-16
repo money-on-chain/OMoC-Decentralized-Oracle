@@ -115,8 +115,8 @@
         "url": "https://github.com/money-on-chain/MoC-Gobernanza/issues"
     },
     "homepage": "https://github.com/money-on-chain/MoC-Gobernanza#readme",
-    "directories": {
-        "test": "test"
-    },
-    "keywords": []
+    "files": [
+        "/build",
+        "/migrations"
+    ]
 }
