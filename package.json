@@ -4,7 +4,7 @@
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
-        "@moc/shared": "http://omoc-do.coinfabrik.com/npm/moc-shared-0.1.0.tgz"
+        "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#master"
     },
     "devDependencies": {
         "@commitlint/cli": "^9.1.1",
@@ -43,7 +43,7 @@
         "rsk_regtest": "truffle migrate --network rsk_regtest",
         "test_rsk": "truffle test --network rsk_testnet",
         "test": "truffle test",
-        "coverage": "rimraf .openzeppelin ./build/contracts ./coverage && truffle run coverage",
+        "coverage": "rimraf ./coverage && truffle run coverage",
         "prettier": "prettier --write *.{json,js} migrations/**/*.js test/**/*.js contracts/**/*.sol contracts/*.sol",
         "lint:solidity": "solhint -f table  contracts/**/*.sol contracts/*.sol",
         "lint:js": "eslint *.js migrations/**/*.js test/**/*.js",
