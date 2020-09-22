@@ -7,9 +7,9 @@ import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovern
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {ICoinPairPrice} from "@moc/shared/contracts/ICoinPairPrice.sol";
 import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
+import {AddressSetLib} from "@moc/shared/contracts/lib/AddressSetLib.sol";
 import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
-import {AddressSetLib} from "./libs/AddressSetLib.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
