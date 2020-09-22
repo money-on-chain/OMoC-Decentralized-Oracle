@@ -1645,6 +1645,201 @@ contract('Staking_rounding', async (accounts) => {
                                     },
                                 ],
                             },
+                            {
+                                testNumber: '48',
+                                description:
+                                    'Alice deposits 1 moc, Bob 1, Charlie 1, has 4 reward, Alice moc balance after is 1, Bob 1, Charlie 1',
+                                reward: '4',
+                                users: [
+                                    {
+                                        name: 'ALICE',
+                                        depositAmount: '1',
+                                        mocBalanceAfterDeposit: '1',
+                                        tokenBalanceAfterDeposit: '1',
+                                        mocBalanceAfterReward: '1',
+                                        tokenBalanceAfterReward: '1',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '2', tokenBalance: '1'},
+                                            {mocBalance: '2', tokenBalance: '1'},
+                                        ],
+                                    },
+                                    {
+                                        name: 'BOB',
+                                        depositAmount: '1',
+                                        mocBalanceAfterDeposit: '1',
+                                        tokenBalanceAfterDeposit: '1',
+                                        mocBalanceAfterReward: '1',
+                                        tokenBalanceAfterReward: '1',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '2', tokenBalance: '1'},
+                                            {mocBalance: '2', tokenBalance: '1'},
+                                        ],
+                                    },
+                                    {
+                                        name: 'CHARLIE',
+                                        depositAmount: '1',
+                                        mocBalanceAfterDeposit: '1',
+                                        tokenBalanceAfterDeposit: '1',
+                                        mocBalanceAfterReward: '1',
+                                        tokenBalanceAfterReward: '1',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '1', tokenBalance: '1'},
+                                            {mocBalance: '2', tokenBalance: '1'},
+                                            {mocBalance: '2', tokenBalance: '1'},
+                                        ],
+                                    },
+                                ],
+                            },
+                            {
+                                testNumber: '49',
+                                description:
+                                    'Alice deposits 2 moc, Bob 2, Charlie 2, has 4 reward, Alice moc balance after is 2, Bob 2, Charlie 2',
+                                reward: '4',
+                                users: [
+                                    {
+                                        name: 'ALICE',
+                                        depositAmount: '2',
+                                        mocBalanceAfterDeposit: '2',
+                                        tokenBalanceAfterDeposit: '2',
+                                        mocBalanceAfterReward: '2',
+                                        tokenBalanceAfterReward: '2',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '3', tokenBalance: '2'},
+                                            {mocBalance: '3', tokenBalance: '2'},
+                                        ],
+                                    },
+                                    {
+                                        name: 'BOB',
+                                        depositAmount: '2',
+                                        mocBalanceAfterDeposit: '2',
+                                        tokenBalanceAfterDeposit: '2',
+                                        mocBalanceAfterReward: '2',
+                                        tokenBalanceAfterReward: '2',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '3', tokenBalance: '2'},
+                                            {mocBalance: '3', tokenBalance: '2'},
+                                        ],
+                                    },
+                                    {
+                                        name: 'CHARLIE',
+                                        depositAmount: '2',
+                                        mocBalanceAfterDeposit: '2',
+                                        tokenBalanceAfterDeposit: '2',
+                                        mocBalanceAfterReward: '2',
+                                        tokenBalanceAfterReward: '2',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '2', tokenBalance: '2'},
+                                            {mocBalance: '3', tokenBalance: '2'},
+                                            {mocBalance: '3', tokenBalance: '2'},
+                                        ],
+                                    },
+                                ],
+                            },
+                            {
+                                testNumber: '50',
+                                description:
+                                    'Alice deposits 3 moc, Bob 3, Charlie 3, has 4 reward, Alice moc balance after is 3, Bob 3, Charlie 3',
+                                reward: '4',
+                                users: [
+                                    {
+                                        name: 'ALICE',
+                                        depositAmount: '3',
+                                        mocBalanceAfterDeposit: '3',
+                                        tokenBalanceAfterDeposit: '3',
+                                        mocBalanceAfterReward: '3',
+                                        tokenBalanceAfterReward: '3',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '4', tokenBalance: '3'},
+                                            {mocBalance: '4', tokenBalance: '3'},
+                                        ],
+                                    },
+                                    {
+                                        name: 'BOB',
+                                        depositAmount: '3',
+                                        mocBalanceAfterDeposit: '3',
+                                        tokenBalanceAfterDeposit: '3',
+                                        mocBalanceAfterReward: '3',
+                                        tokenBalanceAfterReward: '3',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '4', tokenBalance: '3'},
+                                            {mocBalance: '4', tokenBalance: '3'},
+                                        ],
+                                    },
+                                    {
+                                        name: 'CHARLIE',
+                                        depositAmount: '3',
+                                        mocBalanceAfterDeposit: '3',
+                                        tokenBalanceAfterDeposit: '3',
+                                        mocBalanceAfterReward: '3',
+                                        tokenBalanceAfterReward: '3',
+                                        periodValues: [
+                                            {},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '3', tokenBalance: '3'},
+                                            {mocBalance: '4', tokenBalance: '3'},
+                                            {mocBalance: '4', tokenBalance: '3'},
+                                        ],
+                                    },
+                                ],
+                            },
                         ],
                     },
                 ],
@@ -2063,6 +2258,42 @@ contract('Staking_rounding', async (accounts) => {
             async () => {
                 await checkRewardDistribution(
                     periodValues.byUserAmount[2].cases[5],
+                    period,
+                    contractSet,
+                );
+            },
+        );
+        it(
+            periodValues.byUserAmount[2].cases[6].testNumber +
+                ': ' +
+                periodValues.byUserAmount[2].cases[6].description,
+            async () => {
+                await checkRewardDistribution(
+                    periodValues.byUserAmount[2].cases[6],
+                    period,
+                    contractSet,
+                );
+            },
+        );
+        it(
+            periodValues.byUserAmount[2].cases[7].testNumber +
+                ': ' +
+                periodValues.byUserAmount[2].cases[7].description,
+            async () => {
+                await checkRewardDistribution(
+                    periodValues.byUserAmount[2].cases[7],
+                    period,
+                    contractSet,
+                );
+            },
+        );
+        it(
+            periodValues.byUserAmount[2].cases[8].testNumber +
+                ': ' +
+                periodValues.byUserAmount[2].cases[8].description,
+            async () => {
+                await checkRewardDistribution(
+                    periodValues.byUserAmount[2].cases[8],
                     period,
                     contractSet,
                 );
