@@ -123,16 +123,35 @@ library SupportersLib {
         address _sender
     ) internal {
         uint256 tokens = _mocToToken(self, _mocs);
+        _stakeAtFromInternal(self, tokens, _mocs, _subaccount, _sender);
+    }
 
+    /**
+      Stake MOC to receive earnings on a subaccount.
+
+      @param _tokens amount of tokens to stake
+      @param _mocs amount of MOC to stake
+      @param _subaccount sub-account used to identify the stake
+      @param _sender sender account that must approve and from which the funds are taken
+    */
+    function _stakeAtFromInternal(
+        SupportersData storage self,
+        uint256 _tokens,
+        uint256 _mocs,
+        address _subaccount,
+        address _sender
+    ) internal {
+        // Done outside this contract so we can get the value of
+        // uint256 tokens = _mocToToken(self, _mocs);
         self.mocBalance = self.mocBalance.add(_mocs);
         require(
             self.mocToken.transferFrom(_sender, address(this), _mocs),
             "error in transfer from"
         );
 
-        __mintToken(self, msg.sender, tokens, _subaccount);
+        __mintToken(self, msg.sender, _tokens, _subaccount);
 
-        emit AddStake(msg.sender, _subaccount, _sender, tokens, _mocs);
+        emit AddStake(msg.sender, _subaccount, _sender, _tokens, _mocs);
     }
 
     /**
@@ -249,6 +268,25 @@ library SupportersLib {
             return 0;
         }
         return _tokens.mul(totalMocs).div(totalTokens);
+    }
+
+    /**
+      Convert tokens to equivalente in MOC ceiling up
+
+      @param _tokens Amount of tokens
+      @return Equivalent amount of MOC
+    */
+    function _tokenToMocUP(SupportersData storage self, uint256 _tokens)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 totalTokens = _getTokens(self);
+        uint256 totalMocs = _getAvailableMOC(self);
+        if (totalMocs == 0) {
+            return 0;
+        }
+        return _tokens.mul(totalMocs).add(totalTokens).sub(1).div(totalTokens);
     }
 
     /**

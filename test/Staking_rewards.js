@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
 const {BN} = require('@openzeppelin/test-helpers');
-
+const log = () => {};
 contract('Staking_rounding', async (accounts) => {
     const REWARDS = accounts[1];
     const ALICE = accounts[2];
@@ -1853,7 +1853,7 @@ contract('Staking_rounding', async (accounts) => {
         let period;
         periodValues = testCasesValuesStructure.byBlockAmountInPeriods[0];
         period = periodValues.blocks;
-        console.log('PERIOD', period);
+        log('PERIOD', period);
         beforeEach(async () => {
             const contracts = await helpers.initContracts({
                 governorOwner: accounts[8],
@@ -2025,7 +2025,7 @@ contract('Staking_rounding', async (accounts) => {
         let period;
         periodValues = testCasesValuesStructure.byBlockAmountInPeriods[7];
         period = periodValues.blocks;
-        console.log('PERIOD', period);
+        log('PERIOD', period);
         beforeEach(async () => {
             const contracts = await helpers.initContracts({
                 governorOwner: accounts[8],
@@ -2302,7 +2302,7 @@ contract('Staking_rounding', async (accounts) => {
     });
 
     async function checkRewardDistribution(testValues, period, contracts) {
-        console.log('Test number:', testValues.testNumber);
+        log('Test number:', testValues.testNumber);
 
         //////////////////////////////////////////
         /////       DEPOSIT IN STAKING       /////
@@ -2319,7 +2319,7 @@ contract('Staking_rounding', async (accounts) => {
                     from: users[userIndex1],
                 },
             );
-            console.log(
+            log(
                 'Making deposit of',
                 testValues.users[userIndex1].depositAmount,
                 'mocs by ' + testValues.users[userIndex1].name + '<---------------',
@@ -2337,13 +2337,13 @@ contract('Staking_rounding', async (accounts) => {
             tokenBalanceAfterFirstDeposit = await contracts.stakingMock.getBalanceInTokens(
                 users[userIndex1],
             );
-            console.log(
+            log(
                 testValues.users[userIndex1].name + "'s moc balance after first deposit",
                 mocBalanceAfterFirstDeposit.toString(),
                 'Expected:',
                 testValues.users[userIndex1].mocBalanceAfterDeposit,
             );
-            console.log(
+            log(
                 testValues.users[userIndex1].name + "'s internal token balance after first deposit",
                 tokenBalanceAfterFirstDeposit.toString(),
                 'Expected:',
@@ -2371,12 +2371,12 @@ contract('Staking_rounding', async (accounts) => {
         const supportersBalanceBeforeTransfer = await contracts.token.balanceOf(
             contracts.supporters.address,
         );
-        console.log('Transfering', testValues.reward, 'mocs to Supporters <---------------');
+        log('Transfering', testValues.reward, 'mocs to Supporters <---------------');
         // Transfer rewards to Supporters contract to increase moc balance in it
         await contracts.token.transfer(contracts.supporters.address, testValues.reward, {
             from: REWARDS,
         });
-        console.log('Calling distribute() in Supporters <---------------');
+        log('Calling distribute() in Supporters <---------------');
         // Call distribute to update Supporters' total moc balance
         await contracts.supporters.distribute({
             from: REWARDS,
@@ -2399,13 +2399,13 @@ contract('Staking_rounding', async (accounts) => {
             tokenBalanceAfterReward = await contracts.stakingMock.getBalanceInTokens(
                 users[userIndex2],
             );
-            console.log(
+            log(
                 testValues.users[userIndex2].name + "'s moc balance after reward transfer",
                 mocBalanceAfterReward.toString(),
                 'Expected:',
                 testValues.users[userIndex2].mocBalanceAfterReward,
             );
-            console.log(
+            log(
                 testValues.users[userIndex2].name +
                     "'s internal token balance after reward transfer",
                 tokenBalanceAfterReward.toString(),
@@ -2435,7 +2435,7 @@ contract('Staking_rounding', async (accounts) => {
             for (let k = 0; k < testValues.users.length; k++) {
                 mocBalance = await contracts.staking.getBalance(users[k]);
                 tokenBalance = await contracts.stakingMock.getBalanceInTokens(users[k]);
-                console.log(
+                log(
                     testValues.users[k].name +
                         "'s moc balance after " +
                         j.toString() +
@@ -2444,7 +2444,7 @@ contract('Staking_rounding', async (accounts) => {
                     'Expected:',
                     testValues.users[k].periodValues[j].mocBalance,
                 );
-                console.log(
+                log(
                     testValues.users[k].name +
                         "'s internal token balance after " +
                         j.toString() +
@@ -2464,6 +2464,6 @@ contract('Staking_rounding', async (accounts) => {
             }
             await helpers.mineBlocks(1);
         }
-        console.log('///////////////////////////////////////////////////////////');
+        log('///////////////////////////////////////////////////////////');
     }
 });

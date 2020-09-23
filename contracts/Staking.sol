@@ -79,17 +79,39 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         address destination,
         address source
     ) public override {
+        // Floor(mocs * totalTokens /  totalMocs)
+        uint256 _tokens = supporters.mocToToken(mocs);
+        // require(_tokens > 0, "Not enough mocs");
+        if (_tokens == 0) {
+            // Not enough mocs, just return
+            return;
+        }
+
+        // Ceil(_tokens * totalMocs / totalTokens)
+        uint256 _mocs = supporters.tokenToMocUP(_tokens);
+        // This is a special case that happen when there are no mocs in the
+        // system (in this case the moc/token relation is 1/1).
+        if (_mocs == 0) {
+            _mocs = _tokens;
+        }
+
         // Transfer stake [should be approved by owner first]
-        require(mocToken.transferFrom(source, address(this), mocs), "error in transferFrom");
+        require(mocToken.transferFrom(source, address(this), _mocs), "error in transferFrom");
         // Stake at Supporters contract
-        require(mocToken.approve(address(supporters), mocs), "error in approve");
-        supporters.stakeAtFrom(mocs, destination, address(this));
+        require(mocToken.approve(address(supporters), _mocs), "error in approve");
+        supporters.stakeAtFromInternal(_tokens, _mocs, destination, address(this));
     }
 
     /// @notice Withdraw stake, send it to the delay machine.
     /// @param _mocs token quantity
     function withdraw(uint256 _mocs) external override {
         uint256 tokens = supporters.mocToToken(_mocs);
+        withdrawTokens(tokens);
+    }
+
+    /// @notice Withdraw stake, send it to the delay machine.
+    /// @param tokens token quantity
+    function withdrawTokens(uint256 tokens) public {
         uint256 mocs = supporters.withdrawFromTo(tokens, msg.sender, address(this));
         // Approve stake transfer for Delay Machine contract
         require(mocToken.approve(address(delayMachine), mocs), "error in approve");

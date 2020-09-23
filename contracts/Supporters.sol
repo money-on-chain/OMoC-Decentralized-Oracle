@@ -156,6 +156,25 @@ contract Supporters is SupportersStorage {
     }
 
     /**
+     This function is for internal use, it doesn't force a price for the internal token.
+     The idea is to let the code in the staking machine calculate the price relationship and take only the
+     needed amount of mocs from the user.
+
+     @param _tokens amount of tokens to stake
+     @param _mocs amount of MOC to stake
+     @param _subaccount sub-account used to identify the stake
+     @param _sender sender account that must approve and from which the funds are taken
+    */
+    function stakeAtFromInternal(
+        uint256 _tokens,
+        uint256 _mocs,
+        address _subaccount,
+        address _sender
+    ) external onlyWhitelisted(iterableWhitelistData) {
+        supportersData._stakeAtFromInternal(_tokens, _mocs, _subaccount, _sender);
+    }
+
+    /**
       Withdraw MOC for tokens for a subaccount.
 
       @param _tokens amount of tokens to convert to MOC
@@ -325,6 +344,16 @@ contract Supporters is SupportersStorage {
     */
     function tokenToMoc(uint256 _token) external view returns (uint256) {
         return supportersData._tokenToMoc(_token);
+    }
+
+    /**
+       Convert amount tokens to equivalent in MOCS ceiling up
+
+       @param _token Amount of tokens
+       @return Equivalent amount of tokens
+     */
+    function tokenToMocUP(uint256 _token) external view returns (uint256) {
+        return supportersData._tokenToMocUP(_token);
     }
 
     // @notice total amount of mocs inside the supporters contract
