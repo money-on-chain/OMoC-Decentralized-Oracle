@@ -1,5 +1,5 @@
 /* global artifacts, beforeEach, contract, it */
-const {BN, expectRevert} = require('@openzeppelin/test-helpers');
+const {BN, expectRevert, constants} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const {toChecksumAddress, randomHex, toBN, padLeft, numberToHex} = require('web3-utils');
 const {ADDRESS_ZERO, ADDRESS_ONE} = require('./helpers');
@@ -7,7 +7,7 @@ const {ADDRESS_ZERO, ADDRESS_ONE} = require('./helpers');
 const IterableOracles = artifacts.require('IterableOraclesMock');
 
 contract('IterableOracles', (accounts) => {
-    const [dummy] = accounts;
+    const [dummy, invalid] = accounts;
 
     const ORACLES_DATA = [
         {
@@ -148,6 +148,12 @@ contract('IterableOracles', (accounts) => {
         expect(updatedAddress).to.equal(newAddress);
 
         oracle.address = newAddress;
+    });
+
+    it('fail to get an invalid owner', async () => {
+        expect(await iterableOracles.getOracleAddress(invalid)).to.equal(constants.ZERO_ADDRESS);
+        const {found} = await iterableOracles.getInternetName(invalid);
+        expect(found).to.be.false;
     });
 
     it('remove failure', async () => {

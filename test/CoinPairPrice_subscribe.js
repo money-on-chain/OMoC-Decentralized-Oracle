@@ -1,10 +1,10 @@
-const {BN} = require('@openzeppelin/test-helpers');
+const {BN, expectRevert} = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 
-const ORACLE_QUANTITY = 21;
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const maxOraclesPerRound = 10;
-const maxSubscribedOraclesPerRound = 30;
+const maxSubscribedOraclesPerRound = 20;
+const ORACLE_QUANTITY = maxSubscribedOraclesPerRound + 1;
 
 contract('CoinPairPrice Subscribe', async (accounts) => {
     async function register(token, staking, oracleManager, ownerAddr, stake, name, oracleAddr) {
@@ -120,6 +120,32 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                     assert.equal(maxOraclesPerRound, cantPost);
                 }
             }
+            // The last oracle expulse the first one
+            assert.isFalse(await this.oracleMgr.isSubscribed(oracleList[0].ownerAddr, COINPAIR));
+            // The first has less stake, it fails to subscribe
+            await expectRevert(
+                this.staking.subscribeToCoinPair(COINPAIR, {from: oracleList[0].ownerAddr}),
+                'Not enough stake to add',
+            );
+            // Can withdraw freely.
+            assert.equal(
+                (await this.staking.getBalance(oracleList[0].ownerAddr)).toString(),
+                oracleList[0].stake.toString(),
+            );
+            await this.staking.withdraw(oracleList[0].stake, {from: oracleList[0].ownerAddr});
+            assert.equal((await this.staking.getBalance(oracleList[0].ownerAddr)).toString(), '0');
+            // If subscribed but not selected in current round can withdraw too.
+            const idx = ORACLE_QUANTITY - maxOraclesPerRound - 1;
+            assert.isTrue(await this.oracleMgr.isSubscribed(oracleList[idx].ownerAddr, COINPAIR));
+            assert.equal(
+                (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
+                oracleList[idx].stake.toString(),
+            );
+            await this.staking.withdraw(oracleList[idx].stake, {from: oracleList[idx].ownerAddr});
+            assert.equal(
+                (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
+                '0',
+            );
         });
 
         it('The oracles are added right away when we saturate the selected list the new ones even if have more stake must wait to next round', async () => {

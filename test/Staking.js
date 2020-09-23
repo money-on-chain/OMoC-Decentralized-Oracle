@@ -83,6 +83,15 @@ contract('Staking', async (accounts) => {
         assert.isTrue(await this.staking.isOracleRegistered(oracleData[0].owner));
         assert.isTrue(await this.staking.isOracleRegistered(oracleData[1].owner));
         assert.isTrue(await this.staking.isOracleRegistered(oracleData[2].owner));
+
+        const cant = await this.staking.getRegisteredOraclesLen();
+        const oracles = [];
+        for (let idx = 0; idx < cant; idx++) {
+            oracles.push(await this.staking.getRegisteredOracleAtIndex(idx));
+        }
+        expect(oracles.map((x) => x.ownerAddr)).to.have.same.members(
+            oracleData.slice(0, 3).map((x) => x.owner),
+        );
     });
 
     it('Should deposit stake for Oracle A, B', async () => {

@@ -1291,7 +1291,7 @@ contract('CoinPairPrice', async (accounts) => {
             expect(roundLockPeriod).to.be.bignumber.equal(new BN(60));
         });
 
-        it.only("Owner is replaced in round for another one and doesn't receive the points", async () => {
+        it("Owner is replaced in round for another one and doesn't receive the points", async () => {
             // REGISTER ORACLES A, B, C AND D AND DEPOSIT STAKE
             await this.token.approve(this.staking.address, oracleData[0].stake, {
                 from: oracleData[0].owner,
