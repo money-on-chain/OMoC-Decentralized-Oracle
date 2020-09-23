@@ -136,7 +136,6 @@ contract('CoinPairPrice', async (accounts) => {
 
         // Add up points submitting several prices from Oracles A,B,C and D
         let roundInfo = await this.coinPairPrice.getRoundInfo();
-        console.log('roundInfo', roundInfo);
         // Oracle A    publications.
         {
             const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
@@ -1260,12 +1259,7 @@ contract('CoinPairPrice', async (accounts) => {
             BN(sourceBalance).sub(expectedTotalReward).toString(),
         );
     });
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
+
     describe('Test with maxOraclesPerRound equal to 3', async () => {
         beforeEach(async () => {
             this.validPricePeriodInBlocks = 3;
@@ -1349,15 +1343,6 @@ contract('CoinPairPrice', async (accounts) => {
                 from: oracleData[3].owner,
             });
 
-            console.log('OWNER 1:', oracleData[0].owner);
-            console.log('ORACLE 1:', oracleData[0].account);
-            console.log('OWNER 2:', oracleData[1].owner);
-            console.log('ORACLE 2:', oracleData[1].account);
-            console.log('OWNER 3:', oracleData[2].owner);
-            console.log('ORACLE 3:', oracleData[2].account);
-            console.log('OWNER 4:', oracleData[3].owner);
-            console.log('ORACLE 4:', oracleData[3].account);
-
             // FEES TRANSFER
             const FEES = new BN((0.33 * 10 ** 18).toString());
 
@@ -1375,7 +1360,6 @@ contract('CoinPairPrice', async (accounts) => {
 
             // Add up points submitting several prices from Oracles A,B and C
             let roundInfo = await this.coinPairPrice.getRoundInfo();
-            console.log('Selected oracles:', roundInfo.selectedOracles);
             // Oracle A    publications.
             {
                 const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
@@ -1663,23 +1647,20 @@ contract('CoinPairPrice', async (accounts) => {
                 );
             }
 
-            console.log(
-                'ORACLE C ROUND INFO BEFORE WITHDRAW',
-                await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner),
-            );
-            console.log('Selected oracles BEFORE WITHDRAW:', roundInfo.selectedOracles);
-
             await helpers.mineBlocks(1);
-            const withdrawAmount = Math.round(parseInt(oracleData[2].stake, 10) / 6).toString();
+
+            const ownerPoints3BeforeLeavingRound = (
+                await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner)
+            ).points;
+
+            const withdrawAmount = Math.round(
+                (parseInt(oracleData[2].stake, 10) * 5) / 6,
+            ).toString();
             await this.staking.withdraw(withdrawAmount, {from: oracleData[2].owner});
+            await helpers.mineBlocks(1);
 
             // Verify proper distribution according to total fee balance and
             // points of oracles.
-
-            console.log(
-                'ORACLE C ROUND INFO AFTER WITHDRAW',
-                await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner),
-            );
 
             const sourceBalance = await this.coinPairPrice.getAvailableRewardFees();
 
@@ -1690,13 +1671,16 @@ contract('CoinPairPrice', async (accounts) => {
                 .points;
             const ownerPoints2 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[1].owner))
                 .points;
-            const ownerPoints3 = (await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner))
-                .points;
-            const totalPoints = ownerPoints1.add(ownerPoints2).add(ownerPoints3);
+            const ownerPoints3AfterLeavingRound = (
+                await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner)
+            ).points;
+            const totalPoints = ownerPoints1.add(ownerPoints2).add(ownerPoints3BeforeLeavingRound);
 
             const expectedReward1 = ownerPoints1.mul(sourceBalance).div(totalPoints);
             const expectedReward2 = ownerPoints2.mul(sourceBalance).div(totalPoints);
-            const expectedReward3 = ownerPoints3.mul(sourceBalance).div(totalPoints);
+            const expectedReward3 = ownerPoints3AfterLeavingRound
+                .mul(sourceBalance)
+                .div(totalPoints);
             const expectedTotalReward = expectedReward1.add(expectedReward2).add(expectedReward3);
 
             const selOracles = (await this.coinPairPrice.getRoundInfo()).selectedOracles;
