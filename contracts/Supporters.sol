@@ -43,13 +43,6 @@ contract Supporters is SupportersStorage {
         uint256 blockNum
     );
 
-    struct LockingInfo {
-        uint256 untilTimestamp;
-        uint256 amount;
-    }
-
-    mapping(address => LockingInfo) public lockedMocs;
-
     /**
      @notice Contract creation
 
@@ -408,7 +401,7 @@ contract Supporters is SupportersStorage {
         if (block.timestamp < lockedMocsInfo.untilTimestamp) {
             lockedAmount = lockedMocsInfo.amount;
         }
-        uint256 surplus = mocBalance - lockedAmount;
+        uint256 surplus = mocBalance.sub(lockedAmount);
         require(mocs <= surplus, "Stake not available for withdrawal.");
         _;
     }

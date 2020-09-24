@@ -19,6 +19,13 @@ contract SupportersStorage is Initializable, Governed, IIterableWhitelist {
     using SupportersLib for SupportersLib.SupportersData;
     using IterableWhitelistLib for IterableWhitelistLib.IterableWhitelistData;
 
+    struct LockingInfo {
+        uint256 untilTimestamp;
+        uint256 amount;
+    }
+
+    mapping(address => LockingInfo) public lockedMocs;
+
     // Whitelisted contracts that can add/remove stake in this one.
     IterableWhitelistLib.IterableWhitelistData internal iterableWhitelistData;
 
