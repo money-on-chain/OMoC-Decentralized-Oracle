@@ -386,6 +386,22 @@ contract CoinPairPrice is
         return roundInfo.getOracleRoundInfo(oracleOwner);
     }
 
+    /// @notice Returns the amount of oracles subscribed to this coin pair.
+    function getSubscribedOraclesLen() external override view returns (uint256) {
+        return subscribedOracles.length();
+    }
+
+    /// @notice Returns the oracle owner address that is subscribed to this coin pair
+    /// @param idx index to query.
+    function getSubscribedOracleAtIndex(uint256 idx)
+        external
+        override
+        view
+        returns (address ownerAddr)
+    {
+        return subscribedOracles.at(idx);
+    }
+
     // ----------------------------------------------------------------------------------------------------------------
     // Internal functions
     // ----------------------------------------------------------------------------------------------------------------

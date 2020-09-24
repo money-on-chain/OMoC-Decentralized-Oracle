@@ -182,6 +182,12 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         oracleManager.setOracleName(msg.sender, url);
     }
 
+    /// @notice Change the oracle address
+    /// @param oracleAddr The new oracle address
+    function setOracleAddress(address oracleAddr) external override {
+        oracleManager.setOracleAddress(msg.sender, oracleAddr);
+    }
+
     /// @notice Return true if the oracle is registered.
     /// @param ownerAddr The address of the owner of the Oracle to check for.
     function isOracleRegistered(address ownerAddr) external override view returns (bool) {

@@ -193,9 +193,9 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         registeredOracles._setName(ownerAddr, name);
     }
 
-    /// @notice Change the oracle "internet" name (URI)
+    /// @notice Change the oracle address
     /// @param ownerAddr Address of message sender
-    /// @param oracleAddr The new oracle address.s
+    /// @param oracleAddr The new oracle address
     function setOracleAddress(address ownerAddr, address oracleAddr)
         external
         override
