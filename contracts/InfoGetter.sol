@@ -3,8 +3,9 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
-import {CoinPairPrice} from "./CoinPairPrice.sol";
-import {OracleManager} from "./OracleManager.sol";
+import {IOracleInfoGetter} from "@moc/shared/contracts/IOracleInfoGetter.sol";
+import {ICoinPairPrice} from "@moc/shared/contracts/ICoinPairPrice.sol";
+import {IOracleManager} from "@moc/shared/contracts/IOracleManager.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
@@ -12,61 +13,7 @@ import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
-contract InfoGetter is Initializable, Governed {
-    struct FullOracleRoundInfo {
-        uint256 stake;
-        uint256 points;
-        address addr;
-        address owner;
-        string name;
-    }
-
-    struct OracleServerInfo {
-        uint256 round;
-        uint256 startBlock;
-        uint256 lockPeriodTimestamp;
-        uint256 totalPoints;
-        FullOracleRoundInfo[] info;
-        uint256 price;
-        uint256 currentBlock;
-        uint256 lastPubBlock;
-        bytes32 lastPubBlockHash;
-        uint256 validPricePeriodInBlocks;
-    }
-
-    struct ManagerUIOracleInfo {
-        uint256 stake;
-        uint256 mocsBalance;
-        uint256 basecoinBalance;
-        address addr;
-        address owner;
-        string name;
-    }
-
-    struct ManagerUICoinPairInfo {
-        address addr;
-        bytes32 coinPair;
-    }
-
-    struct CoinPairUIOracleRoundInfo {
-        uint256 points;
-        bool selectedInRound;
-        address addr;
-    }
-
-    struct CoinPairPriceUIInfo {
-        uint256 round;
-        uint256 startBlock;
-        uint256 lockPeriodTimestamp;
-        uint256 totalPoints;
-        CoinPairUIOracleRoundInfo[] info;
-        uint256 currentBlock;
-        uint256 lastPubBlock;
-        bytes32 lastPubBlockHash;
-        uint256 validPricePeriodInBlocks;
-        uint256 availableRewards;
-    }
-
+contract InfoGetter is Initializable, Governed, IOracleInfoGetter {
     /**
       @notice Initialize the contract with the basic settings
       @dev This initialize replaces the constructor but it is not called automatically.
@@ -82,8 +29,9 @@ contract InfoGetter is Initializable, Governed {
 
         @param _coinPairPrice coinPairPrice contract
     */
-    function getCoinPairUIInfo(CoinPairPrice _coinPairPrice)
+    function getCoinPairUIInfo(ICoinPairPrice _coinPairPrice)
         external
+        override
         view
         returns (CoinPairPriceUIInfo memory coinPairPriceUIInfo)
     {
@@ -102,7 +50,7 @@ contract InfoGetter is Initializable, Governed {
             (uint256 points, bool selectedInRound) = _coinPairPrice.getOracleRoundInfo(addr);
             info[i] = CoinPairUIOracleRoundInfo(points, selectedInRound, addr);
         }
-        uint256 lastPublicationBlock = _coinPairPrice.lastPublicationBlock();
+        uint256 lastPublicationBlock = _coinPairPrice.getLastPublicationBlock();
         return
             CoinPairPriceUIInfo(
                 round,
@@ -113,7 +61,7 @@ contract InfoGetter is Initializable, Governed {
                 block.number,
                 lastPublicationBlock,
                 blockhash(lastPublicationBlock),
-                _coinPairPrice.validPricePeriodInBlocks(),
+                _coinPairPrice.getValidPricePeriodInBlocks(),
                 _coinPairPrice.getAvailableRewardFees()
             );
     }
@@ -126,10 +74,10 @@ contract InfoGetter is Initializable, Governed {
         @param _limit take to this limit, limit == 0 => take all
     */
     function getManagerUICoinPairInfo(
-        OracleManager _oracleManager,
+        IOracleManager _oracleManager,
         uint256 _offset,
         uint256 _limit
-    ) external view returns (ManagerUICoinPairInfo[] memory info) {
+    ) external override view returns (ManagerUICoinPairInfo[] memory info) {
         uint256 total = _oracleManager.getCoinPairCount();
         if (_limit > total || _limit == 0) {
             _limit = total;
@@ -153,10 +101,10 @@ contract InfoGetter is Initializable, Governed {
         @param _cant Number of items to return.
     */
     function getManagerUIOracleInfo(
-        OracleManager _oracleManager,
+        IOracleManager _oracleManager,
         uint256 _from,
         uint256 _cant
-    ) external view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
+    ) external override view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
         uint256 len = _oracleManager.getRegisteredOraclesLen();
         if (_from >= len) {
             return (info, nextEntry);
@@ -171,7 +119,9 @@ contract InfoGetter is Initializable, Governed {
             uint256 stake = _oracleManager.getStake(ownerAddr);
             info[i] = ManagerUIOracleInfo({
                 stake: stake,
-                mocsBalance: _oracleManager.stakingContract().mocToken().balanceOf(oracleAddr),
+                mocsBalance: _oracleManager.getStakingContract().getMocToken().balanceOf(
+                    oracleAddr
+                ),
                 basecoinBalance: oracleAddr.balance,
                 addr: oracleAddr,
                 owner: ownerAddr,
@@ -187,12 +137,13 @@ contract InfoGetter is Initializable, Governed {
         @param _oracleManager oracleManager contract
         @param _coinPairPrice coinPairPrice contract
     */
-    function getOracleServerInfo(OracleManager _oracleManager, CoinPairPrice _coinPairPrice)
+    function getOracleServerInfo(IOracleManager _oracleManager, ICoinPairPrice _coinPairPrice)
         external
+        override
         view
         returns (OracleServerInfo memory oracleServerInfo)
     {
-        uint256 lastPubBlock = _coinPairPrice.lastPublicationBlock();
+        uint256 lastPubBlock = _coinPairPrice.getLastPublicationBlock();
         (bytes32 currentPrice, ) = _coinPairPrice.peek();
 
         (
@@ -215,7 +166,7 @@ contract InfoGetter is Initializable, Governed {
                 block.number,
                 lastPubBlock,
                 blockhash(lastPubBlock),
-                _coinPairPrice.validPricePeriodInBlocks()
+                _coinPairPrice.getValidPricePeriodInBlocks()
             );
     }
 
@@ -226,8 +177,8 @@ contract InfoGetter is Initializable, Governed {
         @param _selectedOracles selected oracles addresses
     */
     function _createFullRoundInfo(
-        OracleManager _oracleManager,
-        CoinPairPrice _coinPairPrice,
+        IOracleManager _oracleManager,
+        ICoinPairPrice _coinPairPrice,
         address[] memory _selectedOracles
     ) private view returns (FullOracleRoundInfo[] memory info) {
         uint256 len = _selectedOracles.length;

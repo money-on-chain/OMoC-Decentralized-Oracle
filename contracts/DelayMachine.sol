@@ -122,4 +122,19 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
         }
         return balance;
     }
+
+    // Public variable
+    function getToken() external override view returns (IERC20) {
+        return _token;
+    }
+
+    // Public variable
+    function getLastId() external override view returns (uint256) {
+        return _id;
+    }
+
+    // Public variable
+    function getSource() external override view returns (address) {
+        return _source;
+    }
 }

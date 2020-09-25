@@ -5,6 +5,7 @@ import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {IOracleManager} from "@moc/shared/contracts/IOracleManager.sol";
+import {IStakingMachine} from "@moc/shared/contracts/IStakingMachine.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
 import {Staking} from "./Staking.sol";
@@ -265,18 +266,18 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
     /// @notice Returns true if oracle is registered.
     /// @param ownerAddr The address of the oracle's owner.
-    function isRegistered(address ownerAddr) external view returns (bool) {
+    function isRegistered(address ownerAddr) external override view returns (bool) {
         return _isOwnerRegistered(ownerAddr);
     }
 
     /// @notice Used by CoinPair
     /// @param oracleAddr The oracle address not the owner address.
-    function getOracleOwner(address oracleAddr) external view returns (address) {
+    function getOracleOwner(address oracleAddr) external override view returns (address) {
         return registeredOracles._getOwner(oracleAddr);
     }
 
     /// @notice Returns the amount of owners registered.
-    function getRegisteredOraclesLen() external view returns (uint256) {
+    function getRegisteredOraclesLen() external override view returns (uint256) {
         return registeredOracles._getLen();
     }
 
@@ -284,6 +285,7 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @param idx index to query.
     function getRegisteredOracleAtIndex(uint256 idx)
         external
+        override
         view
         returns (
             address ownerAddr,
@@ -332,6 +334,16 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         returns (uint256)
     {
         return coinPairRegisterData._getCoinPairIndex(coinPair, hint);
+    }
+
+    // Public variable
+    function getStakingContract() external override view returns (IStakingMachine) {
+        return stakingContract;
+    }
+
+    // Public variable
+    function getMinCPSubscriptionStake() external override view returns (uint256) {
+        return minCPSubscriptionStake;
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.

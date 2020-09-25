@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {ICoinPairPrice} from "@moc/shared/contracts/ICoinPairPrice.sol";
+import {IOracleManager} from "@moc/shared/contracts/ICoinPairPrice.sol";
 import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
 import {AddressSetLib} from "@moc/shared/contracts/lib/AddressSetLib.sol";
 import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
@@ -400,6 +401,41 @@ contract CoinPairPrice is
         returns (address ownerAddr)
     {
         return subscribedOracles.at(idx);
+    }
+
+    // Public variable
+    function getMaxSubscribedOraclesPerRound() external override view returns (uint256) {
+        return maxSubscribedOraclesPerRound;
+    }
+
+    // Public variable
+    function getCoinPair() external override view returns (bytes32) {
+        return coinPair;
+    }
+
+    // Public variable
+    function getLastPublicationBlock() external override view returns (uint256) {
+        return lastPublicationBlock;
+    }
+
+    // Public variable
+    function getValidPricePeriodInBlocks() external override view returns (uint256) {
+        return validPricePeriodInBlocks;
+    }
+
+    // Public variable
+    function getEmergencyPublishingPeriodInBlocks() external override view returns (uint256) {
+        return emergencyPublishingPeriodInBlocks;
+    }
+
+    // Public variable
+    function getOracleManager() external override view returns (IOracleManager) {
+        return IOracleManager(oracleManager);
+    }
+
+    // Public variable
+    function getToken() external override view returns (IERC20) {
+        return token;
     }
 
     // ----------------------------------------------------------------------------------------------------------------

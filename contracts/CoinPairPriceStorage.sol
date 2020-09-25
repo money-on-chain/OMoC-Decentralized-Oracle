@@ -22,7 +22,7 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     uint256 public constant PUBLISH_MESSAGE_VERSION = 3;
 
     // Maximum number of subscribed oracles.
-    uint256 public maxSubscribedOraclesPerRound;
+    uint256 internal maxSubscribedOraclesPerRound;
 
     // Round information.
     RoundInfoLib.RoundInfo internal roundInfo;
@@ -40,20 +40,20 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     uint256 internal currentPrice;
 
     // The coin-pair for which prices are reported in this contract.
-    bytes32 public coinPair;
+    bytes32 internal coinPair;
 
     // The block where the last price publication occurred.
-    uint256 public lastPublicationBlock;
+    uint256 internal lastPublicationBlock;
 
     // The amount of block during which a price is considered valid
-    uint256 public validPricePeriodInBlocks;
+    uint256 internal validPricePeriodInBlocks;
 
     // After emergencyPublishingPeriodInBlocks from last publication the emergency whitelisted oracles can publish
-    uint256 public emergencyPublishingPeriodInBlocks;
+    uint256 internal emergencyPublishingPeriodInBlocks;
 
-    OracleManager public oracleManager;
+    OracleManager internal oracleManager;
 
-    IERC20 public token;
+    IERC20 internal token;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.

@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
+import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IStakingMachine, IStakingMachineOracles} from "@moc/shared/contracts/IStakingMachine.sol";
 import {IDelayMachine} from "@moc/shared/contracts/IDelayMachine.sol";
+import {IOracleManager} from "@moc/shared/contracts/IOracleManager.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {Supporters} from "./Supporters.sol";
-import {OracleManager} from "./OracleManager.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {StakingStorage} from "./StakingStorage.sol";
 
@@ -33,7 +34,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     function initialize(
         IGovernor _governor,
         Supporters _supporters,
-        OracleManager _oracleManager,
+        IOracleManager _oracleManager,
         IDelayMachine _delayMachine,
         address[] calldata _wlistlock,
         uint256 _withdrawLockTime
@@ -265,5 +266,30 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
 
     function getMaxBalance(address[] calldata addresses) external view returns (address, uint256) {
         return supporters.getMaxMOCBalance(address(this), addresses);
+    }
+
+    // Public variable
+    function getSupporters() external override view returns (address) {
+        return address(supporters);
+    }
+
+    // Public variable
+    function getOracleManager() external override view returns (IOracleManager) {
+        return oracleManager;
+    }
+
+    // Public variable
+    function getMocToken() external override view returns (IERC20) {
+        return mocToken;
+    }
+
+    // Public variable
+    function getDelayMachine() external override view returns (IDelayMachine) {
+        return delayMachine;
+    }
+
+    // Public variable
+    function getWithdrawLockTime() external override view returns (uint256) {
+        return withdrawLockTime;
     }
 }

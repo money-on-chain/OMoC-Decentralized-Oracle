@@ -23,9 +23,9 @@ contract DelayMachineStorage is Initializable, Governed {
         EnumerableSet.UintSet ids;
     }
 
-    uint256 public _id;
-    IERC20 public _token;
-    address public _source;
+    uint256 internal _id;
+    IERC20 internal _token;
+    address internal _source;
     mapping(address => Owner) internal owners;
     mapping(uint256 => Payment) internal payments;
 
