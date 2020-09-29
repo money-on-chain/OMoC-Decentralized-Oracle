@@ -3,6 +3,7 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {ISupporters} from "@moc/shared/contracts/ISupporters.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {SupportersStorage} from "./SupportersStorage.sol";
@@ -14,7 +15,7 @@ import {SupportersStorage} from "./SupportersStorage.sol";
     This can be split in the future in two smart-contracts if we want to add a specific set
     of vesting rules (that doesn't do what SupportersVestedAbstract does).
 */
-contract Supporters is SupportersStorage {
+contract Supporters is SupportersStorage, ISupporters {
     using SafeMath for uint256;
 
     // Emitted by SupportersLib
@@ -107,7 +108,7 @@ contract Supporters is SupportersStorage {
       @notice Deposit earnings that will be credited to supporters.
       @dev Earnings will be credited periodically through several blocks.
     */
-    function distribute() external {
+    function distribute() external override {
         supportersData._distribute();
     }
 
@@ -116,7 +117,7 @@ contract Supporters is SupportersStorage {
 
       @return true if ready
     */
-    function isReadyToDistribute() external view returns (bool) {
+    function isReadyToDistribute() external override view returns (bool) {
         return supportersData._isReadyToDistribute();
     }
 
@@ -227,24 +228,6 @@ contract Supporters is SupportersStorage {
     }
 
     /**
-      @notice Total tokens created.
-
-      @return total amount of tokens
-    */
-    function getTokens() external view returns (uint256) {
-        return supportersData._getTokens();
-    }
-
-    /**
-      @notice MOC available for withdrawal.
-
-      @return total amount of MOC
-    */
-    function getAvailableMOC() external view returns (uint256) {
-        return supportersData._getAvailableMOC();
-    }
-
-    /**
       @notice Calculate earnings to be paid at a block
 
       @param _block Block used to calculate
@@ -282,7 +265,7 @@ contract Supporters is SupportersStorage {
     }
 
     /// @notice The moc token address
-    function mocToken() external view returns (IERC20) {
+    function mocToken() external override view returns (IERC20) {
         return supportersData.mocToken;
     }
 
@@ -292,7 +275,7 @@ contract Supporters is SupportersStorage {
 
      @return Number of blocks to distribute earnings
     */
-    function period() external view returns (uint256) {
+    function period() external override view returns (uint256) {
         return supportersData.period;
     }
 
@@ -350,12 +333,12 @@ contract Supporters is SupportersStorage {
     }
 
     // @notice total amount of mocs inside the supporters contract
-    function totalMoc() external view returns (uint256) {
+    function totalMoc() external override view returns (uint256) {
         return supportersData._getAvailableMOC();
     }
 
     // @notice total amount of tokens inside the supporters contect.
-    function totalToken() external view returns (uint256) {
+    function totalToken() external override view returns (uint256) {
         return supportersData._getTokens();
     }
 
