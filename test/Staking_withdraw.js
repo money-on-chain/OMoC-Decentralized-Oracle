@@ -52,7 +52,7 @@ contract('Staking-withdraw', async (accounts) => {
     });
 
     it('subscription', async () => {
-        const COINPAIR_ID = await this.coinPairPrice.coinPair();
+        const COINPAIR_ID = await this.coinPairPrice.getCoinPair();
         for (let i = 0; i < NUM_ORACLES; i += 1) {
             const oracleOwner = Object.keys(this.oracles)[i];
             const oracleName = 'oracle-' + i;

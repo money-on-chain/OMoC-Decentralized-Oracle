@@ -24,7 +24,7 @@ contract('CoinPairPriceFree', async (accounts) => {
             validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
 
-        const COINPAIR_ID = await this.coinPairPrice.coinPair();
+        const COINPAIR_ID = await this.coinPairPrice.getCoinPair();
 
         await this.coinPairPriceFree.initialize(this.coinPairPrice.address);
 

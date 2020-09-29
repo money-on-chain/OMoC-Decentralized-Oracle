@@ -59,7 +59,7 @@ contract('Staking-subscriptions', async (accounts) => {
             });
         }
 
-        const COINPAIR_ID = await this.coinPairPrice.coinPair();
+        const COINPAIR_ID = await this.coinPairPrice.getCoinPair();
 
         let roundFull = await this.coinPairPrice.isRoundFull();
         expect(roundFull).to.be.false;
@@ -76,7 +76,7 @@ contract('Staking-subscriptions', async (accounts) => {
     });
 
     it('subscription - replacing low stakes', async () => {
-        const COINPAIR_ID = await this.coinPairPrice.coinPair();
+        const COINPAIR_ID = await this.coinPairPrice.getCoinPair();
 
         for (let i = MAX_SUBSCRIBED_ORACLES; i < NUM_ORACLES; i += 1) {
             const oracleOwner = Object.keys(this.oracles)[i];

@@ -132,7 +132,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should subscribe oracles A,B,C to this coin pair', async () => {
-        const thisCoinPair = await this.coinPairPrice.coinPair();
+        const thisCoinPair = await this.coinPairPrice.getCoinPair();
         await this.staking.subscribeToCoinPair(thisCoinPair, {
             from: oracleData[0].owner,
         });
@@ -167,7 +167,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -179,7 +179,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -215,7 +215,7 @@ contract('CoinPairPrice', async (accounts) => {
             'ARSBTC',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -227,7 +227,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex(msg.coinpair),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -243,7 +243,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             0 * (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -255,7 +255,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -271,7 +271,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -283,7 +283,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -299,7 +299,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -311,7 +311,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r],
                 [s3.s, s2.s, s1.s],
@@ -327,7 +327,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -339,7 +339,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -355,7 +355,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -369,7 +369,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -385,7 +385,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -396,7 +396,7 @@ contract('CoinPairPrice', async (accounts) => {
             web3.utils.asciiToHex('BTCUSD'),
             msg.price,
             msg.votedOracle,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -439,7 +439,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
 
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
@@ -452,7 +452,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s3.r],
                 [s1.s, s2.s, s3.s],
@@ -468,7 +468,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
 
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
@@ -481,7 +481,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s3.r],
                 [s1.s, s2.s, s3.s],
@@ -528,7 +528,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
 
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
@@ -539,7 +539,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s1.v],
                 [s1.r],
                 [s1.s],
@@ -555,7 +555,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -567,7 +567,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s1.v, s1.v, s1.v],
                 [s1.r, s1.r, s1.r],
                 [s1.s, s1.s, s1.s],
@@ -583,7 +583,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -594,7 +594,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s3.r],
                 [s1.s, s2.s, s3.s],
@@ -605,7 +605,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should register and subscribe oracle D while round is running', async () => {
-        const thisCoinPair = await this.coinPairPrice.coinPair();
+        const thisCoinPair = await this.coinPairPrice.getCoinPair();
         const initialBalance1 = await this.token.balanceOf(oracleData[3].owner);
         await this.token.approve(this.staking.address, oracleData[3].stake, {
             from: oracleData[3].owner,
@@ -632,7 +632,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[3].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -644,7 +644,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s2.r],
                 [s1.s, s2.s, s3.s],
@@ -660,7 +660,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[3].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -672,7 +672,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s2.r],
                 [s1.s, s2.s, s3.s],
@@ -692,7 +692,7 @@ contract('CoinPairPrice', async (accounts) => {
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
                 oracleData[0].account,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             );
             const s1 = ethers.utils.splitSignature(
                 await web3.eth.sign(encMsg, oracleData[0].account),
@@ -708,7 +708,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -724,7 +724,7 @@ contract('CoinPairPrice', async (accounts) => {
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
                 oracleData[0].account,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             );
             const s1 = ethers.utils.splitSignature(
                 await web3.eth.sign(encMsg, oracleData[0].account),
@@ -740,7 +740,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -756,7 +756,7 @@ contract('CoinPairPrice', async (accounts) => {
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
                 oracleData[0].account,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             );
             const s1 = ethers.utils.splitSignature(
                 await web3.eth.sign(encMsg, oracleData[0].account),
@@ -772,7 +772,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -790,7 +790,7 @@ contract('CoinPairPrice', async (accounts) => {
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
                 oracleData[1].account,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             );
             const s1 = ethers.utils.splitSignature(
                 await web3.eth.sign(encMsg, oracleData[0].account),
@@ -806,7 +806,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -822,7 +822,7 @@ contract('CoinPairPrice', async (accounts) => {
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
                 oracleData[1].account,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             );
             const s1 = ethers.utils.splitSignature(
                 await web3.eth.sign(encMsg, oracleData[0].account),
@@ -838,7 +838,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -854,7 +854,7 @@ contract('CoinPairPrice', async (accounts) => {
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
                 oracleData[2].account,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             );
             const s1 = ethers.utils.splitSignature(
                 await web3.eth.sign(encMsg, oracleData[0].account),
@@ -870,7 +870,7 @@ contract('CoinPairPrice', async (accounts) => {
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
-                (await this.coinPairPrice.lastPublicationBlock()).toString(),
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
@@ -890,7 +890,7 @@ contract('CoinPairPrice', async (accounts) => {
             'BTCUSD',
             (10 ** 18).toString(),
             oracleData[0].account,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
@@ -901,7 +901,7 @@ contract('CoinPairPrice', async (accounts) => {
             web3.utils.asciiToHex('BTCUSD'),
             msg.price,
             msg.votedOracle,
-            (await this.coinPairPrice.lastPublicationBlock()).toString(),
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
@@ -975,7 +975,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should exclude from round unsubscribed oracles and let remove after that', async () => {
-        const thisCoinPair = await this.coinPairPrice.coinPair();
+        const thisCoinPair = await this.coinPairPrice.getCoinPair();
 
         const roundInfo1 = await this.coinPairPrice.getRoundInfo();
         assert.isTrue(roundInfo1.selectedOracles.includes(oracleData[0].account));

@@ -226,7 +226,7 @@ async function newUnlockedAccount() {
 }
 
 async function publishPrice({coinPairPrice, coinPairName, price, oracle, signers}) {
-    const lastPublicationBlock = await coinPairPrice.lastPublicationBlock();
+    const lastPublicationBlock = await coinPairPrice.getLastPublicationBlock();
 
     const {msg, encMsg} = await getDefaultEncodedMessage(
         3,

@@ -87,7 +87,7 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
             });
             await this.staking.deposit(oracleStake, oracleOwner, {from: oracleOwner});
             for (const coinPair of this.coinPairs) {
-                const COINPAIR_ID = await coinPair.coinPair();
+                const COINPAIR_ID = await coinPair.getCoinPair();
                 await this.staking.subscribeToCoinPair(COINPAIR_ID, {from: oracleOwner});
             }
         }

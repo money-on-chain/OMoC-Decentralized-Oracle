@@ -303,7 +303,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
         for (let k = 0; k < 10; k++) {
             for (let i = 0; i < selOracles.length; i++) {
                 const o = selOracles[i];
-                const lastPub = (await this.coinPairPrice.lastPublicationBlock()).toString();
+                const lastPub = (await this.coinPairPrice.getLastPublicationBlock()).toString();
                 const price = Math.floor(Math.random() * 1000000);
                 const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
                     3,

@@ -23,7 +23,7 @@ contract('InfoGetter', async (accounts) => {
             validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
 
-        const COINPAIR_ID = await this.coinPairPrice.coinPair();
+        const COINPAIR_ID = await this.coinPairPrice.getCoinPair();
 
         await this.infoGetter.initialize(this.governor.address);
 

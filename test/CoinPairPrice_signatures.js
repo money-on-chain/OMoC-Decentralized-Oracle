@@ -98,7 +98,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
             await this.token.approve(this.staking.address, o.stake, {from: o.owner});
             await this.staking.registerOracle(o.account, o.name, {from: o.owner});
             await this.staking.deposit(o.stake, o.owner, {from: o.owner});
-            const thisCoinPair = await this.coinPairPrice.coinPair();
+            const thisCoinPair = await this.coinPairPrice.getCoinPair();
             await this.staking.subscribeToCoinPair(thisCoinPair, {from: o.owner});
         }
         const FEES = new BN((0.33 * 10 ** 18).toString());
@@ -114,8 +114,8 @@ contract('CoinPairPrice Signature', async (accounts) => {
     async function signWithOwner(oracleData, cantSignatures) {
         // sender signature is assumed
         const sender = oracleData[0].account;
-        const thisCoinPair = await this.coinPairPrice.coinPair();
-        const lastPubBlock = (await this.coinPairPrice.lastPublicationBlock()).toString();
+        const thisCoinPair = await this.coinPairPrice.getCoinPair();
+        const lastPubBlock = (await this.coinPairPrice.getLastPublicationBlock()).toString();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             helpers.coinPairStr(thisCoinPair),

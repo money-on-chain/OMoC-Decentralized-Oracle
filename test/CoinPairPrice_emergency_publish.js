@@ -77,8 +77,8 @@ contract('CoinPairPrice Emergency Publish', async (accounts) => {
         await this.coinPairPrice.switchRound();
 
         // Publish a price
-        const thisCoinPair = await this.coinPairPrice.coinPair();
-        const lastPubBlock = (await this.coinPairPrice.lastPublicationBlock()).toString();
+        const thisCoinPair = await this.coinPairPrice.getCoinPair();
+        const lastPubBlock = (await this.coinPairPrice.getLastPublicationBlock()).toString();
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             helpers.coinPairStr(thisCoinPair),

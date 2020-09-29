@@ -36,10 +36,10 @@ contract('SupportersWhitelisted', (accounts) => {
         });
 
         it('check initialization', async () => {
-            const mocs = await supporters.getAvailableMOC();
+            const mocs = await supporters.totalMoc();
             expect(mocs, 'Available MOC').to.be.bignumber.equal(new BN(0));
 
-            const tokens = await supporters.getTokens();
+            const tokens = await supporters.totalToken();
             expect(tokens, 'Available tokens').to.be.bignumber.equal(new BN(0));
         });
 
