@@ -86,6 +86,20 @@ contract Supporters is SupportersStorage, ISupporters {
         return lockedMocsInfo.amount;
     }
 
+    /// @notice Reports the balance of locked MOCs for a specific user.
+    /// Delegates to the Supporters smart contract.
+    /// @param user user address
+    /// @return amount the amount of mocs locked
+    /// @return untilTimestamp the timestamp that corresponds to the locking date.
+    function getLockingInfo(address user)
+        external
+        view
+        returns (uint256 amount, uint256 untilTimestamp)
+    {
+        LockingInfo storage lockedMocsInfo = lockedMocs[user];
+        return (lockedMocsInfo.amount, lockedMocsInfo.untilTimestamp);
+    }
+
     /**
      @notice Add to the list of contracts that can stake in this contract
 

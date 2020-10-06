@@ -143,6 +143,20 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         return supporters.getLockedBalance(user);
     }
 
+    /// @notice Reports the balance of locked MOCs for a specific user.
+    /// Delegates to the Supporters smart contract.
+    /// @param user user address
+    /// @return amount the amount of mocs locked
+    /// @return untilTimestamp the timestamp that corresponds to the locking date.
+    function getLockingInfo(address user)
+        external
+        override
+        view
+        returns (uint256 amount, uint256 untilTimestamp)
+    {
+        (amount, untilTimestamp) = supporters.getLockingInfo(user);
+    }
+
     // -----------------------------------------------------------------------
     //   Oracles
     // -----------------------------------------------------------------------
