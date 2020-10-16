@@ -4,7 +4,7 @@
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
-        "@moc/shared": "http://omoc-do.coinfabrik.com/npm/moc-shared-0.1.0.tgz"
+        "@moc/shared": "http://omoc-do.coinfabrik.com/npm/moc-shared-1.0.0.tgz"
     },
     "devDependencies": {
         "@commitlint/cli": "^9.1.1",
