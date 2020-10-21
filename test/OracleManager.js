@@ -5,7 +5,7 @@ const ethers = require('ethers');
 contract('OracleManager', async (accounts) => {
     const WHITELISTED_CALLER = accounts[9];
     const GOVERNOR_OWNER = accounts[10];
-
+    const MIN_ORACLE_STAKE = (10 ** 18).toString();
     /* Account is the simulated oracle server address. The stake 
        will come from the owner's address. */
 
@@ -13,6 +13,7 @@ contract('OracleManager', async (accounts) => {
         const contracts = await helpers.initContracts({
             governorOwner: GOVERNOR_OWNER,
             oracleManagerWhitelisted: [WHITELISTED_CALLER],
+            minSubscriptionStake: MIN_ORACLE_STAKE,
         });
         Object.assign(this, contracts);
         this.coinPair = web3.utils.asciiToHex('BTCUSD');
@@ -145,6 +146,12 @@ contract('OracleManager', async (accounts) => {
     });
 
     it('Should subscribe oracle A to coin-pair USDBTC', async () => {
+        await this.token.approve(this.staking.address, oracleData[0].stake, {
+            from: oracleData[0].owner,
+        });
+        await this.staking.deposit(oracleData[0].stake, oracleData[0].owner, {
+            from: oracleData[0].owner,
+        });
         await this.oracleMgr.subscribeToCoinPair(oracleData[0].owner, this.coinPair, {
             from: WHITELISTED_CALLER,
         });
@@ -179,6 +186,12 @@ contract('OracleManager', async (accounts) => {
     });
 
     it('Should subscribe oracle B to both coin-pairs', async () => {
+        await this.token.approve(this.staking.address, oracleData[1].stake, {
+            from: oracleData[1].owner,
+        });
+        await this.staking.deposit(oracleData[1].stake, oracleData[1].owner, {
+            from: oracleData[1].owner,
+        });
         await this.oracleMgr.subscribeToCoinPair(oracleData[1].owner, this.coinPair, {
             from: WHITELISTED_CALLER,
         });
@@ -248,72 +261,10 @@ contract('OracleManager', async (accounts) => {
         );
     });
 
-    it('Should remove an oracle A if it did not participate yet ', async () => {
-        const ownerBalance = await this.token.balanceOf(oracleData[0].owner);
-        const originalStake = (await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner))
-            .stake;
-
+    it('Should remove an oracle A', async () => {
         assert.isTrue(await this.oracleMgr.canRemoveOracle(oracleData[0].owner));
-
         await this.oracleMgr.removeOracle(oracleData[0].owner, {from: WHITELISTED_CALLER});
-        assert.isTrue(
-            (await this.token.balanceOf(oracleData[0].owner)).eq(
-                ownerBalance.add(new BN(originalStake)),
-            ),
-        );
-    });
-
-    it.skip('Should fail to remove an oracle with all coinpairs with # minimum idle rounds not passed, NO MORE IDLE ROUNDS', async () => {
-        assert.isTrue(await this.coinPairPrice_btcusd.isSubscribed(oracleData[1].owner));
-        await this.coinPairPrice_btcusd.switchRound(); // One round
-        await helpers.mineUntilNextRound(this.coinPairPrice_btcusd);
-
-        await this.coinPairPrice_RIFBTC.switchRound(); // One round
-        await helpers.mineUntilNextRound(this.coinPairPrice_btcusd);
-
-        await expectRevert(
-            this.oracleMgr.removeOracle(oracleData[1].owner, {from: WHITELISTED_CALLER}),
-            'Oracle cannot be removed at this time',
-        );
-    });
-
-    it.skip('Should fail to remove an oracle with one coinpair passing # of idle rounds and the other not, NO MORE IDLE ROUNDS', async () => {
-        // subscribe another oracle to keep rounds running first
-
-        await this.oracleMgr.subscribeToCoinPair(oracleData[2].owner, this.coinPair, {
-            from: WHITELISTED_CALLER,
-        });
-        await this.oracleMgr.subscribeToCoinPair(oracleData[2].owner, this.coinPair2, {
-            from: WHITELISTED_CALLER,
-        });
-        assert.isTrue(await this.coinPairPrice_btcusd.isSubscribed(oracleData[2].owner));
-        assert.isTrue(await this.coinPairPrice_RIFBTC.isSubscribed(oracleData[2].owner));
-
-        // ---
-
-        assert.isTrue(await this.coinPairPrice_btcusd.isSubscribed(oracleData[1].owner));
-        assert.isTrue(await this.coinPairPrice_RIFBTC.isSubscribed(oracleData[1].owner));
-
-        await helpers.mineUntilNextRound(this.coinPairPrice_btcusd);
-        await this.coinPairPrice_btcusd.switchRound(); // One round selected
-
-        // Set to Idle and pass minimum required rounds ...
-
-        await this.oracleMgr.unSubscribeFromCoinPair(oracleData[1].owner, this.coinPair, {
-            from: WHITELISTED_CALLER,
-        });
-
-        await helpers.mineUntilNextRound(this.coinPairPrice_btcusd);
-        await this.coinPairPrice_btcusd.switchRound(); // One round
-        await helpers.mineUntilNextRound(this.coinPairPrice_btcusd);
-        await this.coinPairPrice_btcusd.switchRound(); // One round
-
-        assert.isTrue(await this.oracleMgr.canRemoveOracle(oracleData[1].owner));
-
-        await expectRevert(
-            this.oracleMgr.removeOracle(oracleData[1].owner, {from: WHITELISTED_CALLER}),
-            'Oracle cannot be removed at this time',
-        );
+        assert.isFalse(await this.oracleMgr.isRegistered(oracleData[0].owner));
     });
 
     it('Should be able to remove an oracle', async () => {

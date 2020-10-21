@@ -166,6 +166,8 @@ async function initContracts({
     minSubscriptionStake = (10 ** 18).toString(),
     oracleManagerWhitelisted = [],
     withdrawLockTime = (60 * 60).toString(),
+    governor = null,
+    wList = [],
 }) {
     const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
     const OracleManager = artifacts.require('OracleManager');
@@ -176,7 +178,9 @@ async function initContracts({
     const StakingMock = artifacts.require('StakingMock');
     const MockVotingMachine = artifacts.require('MockVotingMachine');
 
-    const governor = await createGovernor(governorOwner);
+    if (governor === null) {
+        governor = await createGovernor(governorOwner);
+    }
     const token = await TestMOC.new();
     await token.initialize(governor.address);
     const oracleMgr = await OracleManager.new();
@@ -193,7 +197,9 @@ async function initContracts({
         token.address,
         period,
     );
-    const wList = [staking.address, ...oracleManagerWhitelisted];
+    if (wList.length === 0) {
+        wList = [staking.address, ...oracleManagerWhitelisted];
+    }
     await oracleMgr.initialize(governor.address, minSubscriptionStake, staking.address, wList);
     await staking.initialize(
         governor.address,

@@ -1,3 +1,4 @@
+const helpers = require('./helpers');
 const {ADDRESS_ONE, ADDRESS_ZERO} = require('./helpers');
 const {expectRevert} = require('@openzeppelin/test-helpers');
 const {toHex, padLeft, toChecksumAddress, toBN} = require('web3-utils');
@@ -17,16 +18,15 @@ contract('OracleManager operations', async (accounts) => {
     before(async () => {
         const wList = [GOVERNOR_OWNER];
         this.governor = await MockGovernor.new(GOVERNOR_OWNER);
-        this.staking = await Staking.new(GOVERNOR_OWNER);
-        this.oracleMgr = await OracleManager.new(GOVERNOR_OWNER);
-
-        await this.oracleMgr.initialize(
-            this.governor.address,
-            MIN_ORACLE_STAKE,
-            this.staking.address,
+        const contracts = await helpers.initContracts({
+            governor: this.governor,
+            minSubscriptionStake: MIN_ORACLE_STAKE,
             wList,
-            {from: GOVERNOR_OWNER},
-        );
+        });
+        Object.assign(this, contracts);
+        await this.token.mint(ORACLE_OWNER, MIN_ORACLE_STAKE, {from: GOVERNOR_OWNER});
+        await this.token.approve(this.staking.address, MIN_ORACLE_STAKE, {from: ORACLE_OWNER});
+        await this.staking.deposit(MIN_ORACLE_STAKE, ORACLE_OWNER, {from: ORACLE_OWNER});
 
         this.coinPairPrice = await CoinPairPrice.new(GOVERNOR_OWNER);
         await this.coinPairPrice.initialize(

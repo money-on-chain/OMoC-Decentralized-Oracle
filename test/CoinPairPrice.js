@@ -161,7 +161,7 @@ contract('CoinPairPrice', async (accounts) => {
         );
     });
 
-    it('Should fail to publish price before the first switch-round call', async () => {
+    it.skip('Should fail to publish price before the first switch-round call (NO MORE ROUND ZERO)', async () => {
         const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -191,7 +191,7 @@ contract('CoinPairPrice', async (accounts) => {
 
     it('Should start the first round with ordered oracles by stake', async () => {
         let roundInfo = await this.coinPairPrice.getRoundInfo();
-        assert.equal(roundInfo.round, 0);
+        assert.equal(roundInfo.round, 1);
         await this.coinPairPrice.switchRound();
         roundInfo = await this.coinPairPrice.getRoundInfo();
         let info0 = await this.coinPairPrice.getOracleRoundInfo(oracleData[0].owner);
@@ -201,7 +201,7 @@ contract('CoinPairPrice', async (accounts) => {
         assert.equal(info1.points, 0);
         assert.equal(info2.points, 0);
         roundInfo = await this.coinPairPrice.getRoundInfo();
-        assert.equal(roundInfo.round, '1');
+        assert.equal(roundInfo.round, '2');
         info0 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[0]);
         info1 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[1]);
         info2 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[2]);

@@ -2,14 +2,14 @@ const helpers = require('./helpers');
 const {expectRevert} = require('@openzeppelin/test-helpers');
 
 contract('OracleManager by gobernanza', async (accounts) => {
-    const minOracleOwnerStake = (10 ** 18).toString();
+    const minOracleOwnerStake = 10 ** 18;
     const period = 20;
     const GOBERNOR = accounts[8];
     const WHITELISTED_CALLER = accounts[9];
     const oracleData = [
         {
             name: 'oracle-a.io',
-            stake: (4 * 10 ** 18).toString(),
+            stake: (minOracleOwnerStake + 4 * 10 ** 18).toString(),
             account: accounts[1],
             owner: accounts[2],
         },
@@ -19,7 +19,7 @@ contract('OracleManager by gobernanza', async (accounts) => {
         const contracts = await helpers.initContracts({
             governorOwner: GOBERNOR,
             period,
-            minSubscriptionStake: minOracleOwnerStake,
+            minSubscriptionStake: minOracleOwnerStake.toString(),
             oracleManagerWhitelisted: [WHITELISTED_CALLER],
         });
         Object.assign(this, contracts);
@@ -34,9 +34,13 @@ contract('OracleManager by gobernanza', async (accounts) => {
     });
 
     it('Registration and subscription', async () => {
-        await this.token.approve(this.oracleMgr.address, oracleData[0].stake, {
+        await this.token.approve(this.staking.address, oracleData[0].stake, {
             from: oracleData[0].owner,
         });
+        await this.staking.deposit(oracleData[0].stake, oracleData[0].owner, {
+            from: oracleData[0].owner,
+        });
+
         await this.oracleMgr.registerOracle(
             oracleData[0].owner,
             oracleData[0].account,

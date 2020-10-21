@@ -120,6 +120,8 @@ contract CoinPairPrice is
             !subscribedOracles.contains(oracleOwnerAddr),
             "Oracle is already subscribed to this coin pair"
         );
+        uint256 ownerStake = oracleManager.getStake(oracleOwnerAddr);
+        require(ownerStake >= oracleManager.getMinCPSubscriptionStake(), "Not enough stake");
 
         bool added = _addOrReplaceSubscribedOracle(oracleOwnerAddr);
         require(added, "Not enough stake to add");
@@ -158,17 +160,24 @@ contract CoinPairPrice is
             // not participating in current round, its ok to withdraw.
             return 0;
         }
-
         // If the current balance is lower than the unselected address that has the maximum stake
-        // Then the oracle is replaces
-        (address addr, uint256 stake) = subscribedOracles.getMaxUnselectedStake(
+        // or it has less than the needed minimum, then the oracle is replaced.
+        (address addr, uint256 otherStake) = subscribedOracles.getMaxUnselectedStake(
             oracleManager.getMaxStake,
             roundInfo.selectedOracles
         );
-        if (stake > oracleManager.getStake(oracleOwnerAddr)) {
+        uint256 minCPSubscriptionStake = oracleManager.getMinCPSubscriptionStake();
+        uint256 ownerStake = oracleManager.getStake(oracleOwnerAddr);
+        if (ownerStake < minCPSubscriptionStake || otherStake > ownerStake) {
             // The oracleOwnerAddr has lost his place in current round
             roundInfo.removeOracleFromRound(oracleOwnerAddr);
-            roundInfo.addOracleToRound(addr);
+            if (addr != address(0)) {
+                roundInfo.addOracleToRound(addr);
+            }
+        }
+        // if not enough stake Unsubscribe directly
+        if (ownerStake < minCPSubscriptionStake) {
+            subscribedOracles.remove(oracleOwnerAddr);
         }
         return roundInfo.lockPeriodTimestamp;
     }

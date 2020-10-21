@@ -95,38 +95,25 @@ contract('Staking', async (accounts) => {
     });
 
     it('Should deposit stake for Oracle A, B', async () => {
-        const prevBalance0 = await this.token.balanceOf(oracleData[0].owner);
-        const prevBalance1 = await this.token.balanceOf(oracleData[1].owner);
-
-        await this.token.approve(this.staking.address, oracleData[0].stake, {
-            from: oracleData[0].owner,
-        });
-        await this.token.approve(this.staking.address, oracleData[1].stake, {
-            from: oracleData[1].owner,
-        });
-        await this.staking.deposit(oracleData[0].stake, oracleData[0].owner, {
-            from: oracleData[0].owner,
-        });
-        await this.staking.deposit(oracleData[1].stake, oracleData[1].owner, {
-            from: oracleData[1].owner,
-        });
-
-        assert.isTrue(
-            (await this.token.balanceOf(oracleData[0].owner)).eq(
-                prevBalance0.sub(new BN(oracleData[0].stake)),
-            ),
-        );
-        assert.isTrue(
-            (await this.token.balanceOf(oracleData[1].owner)).eq(
-                prevBalance1.sub(new BN(oracleData[1].stake)),
-            ),
-        );
-        assert.isTrue(
-            (await this.staking.getBalance(oracleData[0].owner)).eq(new BN(oracleData[0].stake)),
-        );
-        assert.isTrue(
-            (await this.staking.getBalance(oracleData[1].owner)).eq(new BN(oracleData[1].stake)),
-        );
+        for (let i = 0; i < 3; i++) {
+            const prevBalance = await this.token.balanceOf(oracleData[i].owner);
+            await this.token.approve(this.staking.address, oracleData[i].stake, {
+                from: oracleData[i].owner,
+            });
+            await this.staking.deposit(oracleData[i].stake, oracleData[i].owner, {
+                from: oracleData[i].owner,
+            });
+            assert.isTrue(
+                (await this.token.balanceOf(oracleData[i].owner)).eq(
+                    prevBalance.sub(new BN(oracleData[i].stake)),
+                ),
+            );
+            assert.isTrue(
+                (await this.staking.getBalance(oracleData[i].owner)).eq(
+                    new BN(oracleData[i].stake),
+                ),
+            );
+        }
     });
 
     it('Should subscribe Oracles A, B, C to coin pair BTCUSD', async () => {

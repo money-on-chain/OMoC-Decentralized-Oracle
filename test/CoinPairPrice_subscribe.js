@@ -22,7 +22,9 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
     }
 
     async function initContracts(testobj) {
+        const minSubscriptionStake = 10000000000;
         const contracts = await helpers.initContracts({
+            minSubscriptionStake,
             governorOwner: accounts[8],
             period: new BN(10),
         });
@@ -38,7 +40,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             (await testobj.coinPairPrice.maxOraclesPerRound()).toNumber(),
         );
         assert.equal((await testobj.coinPairPrice.getRoundInfo()).selectedOracles.length, 0);
-        assert.equal((await testobj.coinPairPrice.getRoundInfo()).round, 0);
+        assert.equal((await testobj.coinPairPrice.getRoundInfo()).round, 1);
         const oracleList = [];
         for (let i = 0; i < ORACLE_QUANTITY; i++) {
             const oracleAddr = await helpers.newUnlockedAccount();
@@ -51,7 +53,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             });
             await testobj.governor.mint(testobj.token.address, ownerAccount, '8' + '0'.repeat(20));
 
-            const stake = 10000000000 + i * 100000;
+            const stake = minSubscriptionStake + i * 100000;
             const name = 'ORACLE-' + i;
             await register(
                 testobj.token,

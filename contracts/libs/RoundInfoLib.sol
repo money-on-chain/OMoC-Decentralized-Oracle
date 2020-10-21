@@ -41,7 +41,16 @@ library RoundInfoLib {
     {
         require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
         require(_roundLockPeriod > 0, "The round lock period must be positive and non zero");
-        return RoundInfo(0, 0, 0, 0, _maxOraclesPerRound, _roundLockPeriod, AddressSetLib.init());
+        return
+            RoundInfo({
+                number: 1,
+                totalPoints: 0,
+                startBlock: 0,
+                lockPeriodTimestamp: 0,
+                maxOraclesPerRound: _maxOraclesPerRound,
+                roundLockPeriodSecs: _roundLockPeriod,
+                selectedOracles: AddressSetLib.init()
+            });
     }
 
     function isFull(RoundInfo storage _self) internal view returns (bool) {

@@ -1,3 +1,4 @@
+/* global describe,it, beforeEach */
 const {BN, expectEvent, expectRevert} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const helpers = require('./helpers');
@@ -466,6 +467,95 @@ contract('Supporters', (accounts) => {
 
             mocs = await token.balanceOf(user1);
             expect(mocs, 'Final user MOC balance').to.be.bignumber.equal(INITIAL_BALANCE);
+        });
+    });
+
+    describe.skip('Stake HUGE amount', () => {
+        // There is a limit to the token total supply.....
+        const USER1_BALANCE = new BN(2).pow(new BN(129));
+        const USER2_BALANCE = new BN(2).pow(new BN(129));
+        const USER3_BALANCE = new BN(2).pow(new BN(126));
+        const PAYER_BALANCE = new BN(2).pow(new BN(129)).sub(new BN(1));
+
+        beforeEach(async () => {
+            const governor = await helpers.createGovernor(accounts[8]);
+            token = await TestMOC.new();
+            await token.initialize(governor.address);
+            supporters = await SupportersMock.new();
+            await supporters.initialize(token.address, new BN(10));
+
+            await governor.mint(token.address, user1, USER1_BALANCE);
+            await governor.mint(token.address, user2, USER2_BALANCE);
+            await governor.mint(token.address, user3, USER3_BALANCE);
+            await governor.mint(token.address, payer, PAYER_BALANCE);
+        });
+
+        async function print() {
+            const mocsBin = await supporters.getAvailableMOC();
+            console.log(
+                'Total Mocs',
+                mocsBin.toString(16),
+                mocsBin.toString(2),
+                mocsBin.toString(2).length,
+            );
+            const tokenBin = await supporters.getTokens();
+            console.log(
+                'Total tokens',
+                tokenBin.toString(16),
+                tokenBin.toString(2),
+                tokenBin.toString(2).length,
+            );
+        }
+
+        it('stake a lot', async () => {
+            await token.approve(supporters.address, USER1_BALANCE, {from: user1});
+            await supporters.stake(USER1_BALANCE, {from: user1});
+            // Here we do: _tokens.mul(totalMocs).div(totalTokens) aka token ** 2 == mocs ** 2
+            await expectRevert(
+                supporters.getMOCBalance(user1),
+                'SafeMath: multiplication overflow',
+            );
+
+            await print();
+
+            await token.approve(supporters.address, USER2_BALANCE, {from: user2});
+            // Here we do: _mocs.mul(totalTokens).div(totalMocs); PROBLEM: totalTokens == 2 ** 128
+            // 129+126 == 255
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            await supporters.stake(USER2_BALANCE.div(new BN(8)), {from: user2});
+            expect(await supporters.getMOCBalance(user2)).to.be.bignumber.equal(USER2_BALANCE);
+            await print();
+
+            await token.approve(supporters.address, USER3_BALANCE, {from: user3});
+            await supporters.stake(USER3_BALANCE, {from: user3});
+            expect(await supporters.getMOCBalance(user3)).to.be.bignumber.equal(USER3_BALANCE);
+            // 129+129-3 == 255
+            await print();
+
+            await token.transfer(supporters.address, PAYER_BALANCE, {from: payer});
+            await print();
+            // await supporters.distribute({ from: payer });
+            // await helpers.mineBlocks(10);
+            // await supporters.distribute({ from: payer });
+
+            // await expectRevert(supporters.withdraw(new BN(10), { from: user1 }), 'SafeMath: multiplication overflow');
+
+            // expect(await supporters.getMOCBalance(user1), 'user1 token balance').to.be.bignumber.equal(BIGNUMBER);
+            // expect(await supporters.getBalance(user1), 'user1 token balance').to.be.bignumber.equal(BIGNUMBER);
+            // expect(await supporters.getAvailableMOC(), 'total mocs').to.be.bignumber.equal(BIGNUMBER);
+            // expect(await supporters.getTokens(), ' total token').to.be.bignumber.equal(BIGNUMBER);
+            // expect(await supporters.getBalance(user2), 'user2 token balance').to.be.bignumber.equal(BIGNUMBER);
+
+            //
+            // expect(await supporters.getBalance(user1), 'user1 token balance after').to.be.bignumber.equal(BIGNUMBER);
+            // expect(await supporters.getAvailableMOC(), 'Final total mocs').to.be.bignumber.equal(BIGNUMBER);
+            // expect(await supporters.getTokens(), 'Final total token').to.be.bignumber.equal(BIGNUMBER);
         });
     });
 });
