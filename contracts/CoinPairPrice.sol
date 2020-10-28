@@ -293,7 +293,7 @@ contract CoinPairPrice is
     function emergencyPublish(uint256 _price)
         external
         override
-        whitelistedOrExternal(emergencyPublishWhitelistData)
+        onlyWhitelisted(emergencyPublishWhitelistData)
     {
         require(_price > 0, "Price must be positive and non-zero");
         require(
