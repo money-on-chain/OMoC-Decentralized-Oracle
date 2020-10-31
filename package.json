@@ -115,6 +115,7 @@
     },
     "homepage": "https://github.com/money-on-chain/MoC-Gobernanza#readme",
     "files": [
+        "/build/contracts/*Change.json",
         "/build/contracts/CalculatedPriceProvider.json",
         "/build/contracts/CoinPairPrice.json",
         "/build/contracts/CoinPairPriceFree.json",
