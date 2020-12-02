@@ -306,7 +306,9 @@ contract CoinPairPrice is
         emit EmergencyPricePublished(msg.sender, _price, msg.sender, lastPublicationBlock);
     }
 
-    /// @notice Return the current price, compatible with old MOC Oracle
+    // Legacy function compatible with old MOC Oracle.
+    // returns a tuple (uint256, bool) that corresponds
+    // to the price and if it is not expired.
     function peek()
         external
         override(IPriceProvider, ICoinPairPrice)
@@ -315,22 +317,37 @@ contract CoinPairPrice is
         returns (bytes32, bool)
     {
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
-
-        return (
-            bytes32(currentPrice),
-            (block.number - lastPublicationBlock) < validPricePeriodInBlocks
-        );
+        return (bytes32(currentPrice), _isValid());
     }
 
     /// @notice Return the current price
     function getPrice()
         external
-        override
+        override(IPriceProvider, ICoinPairPrice)
         view
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (uint256)
     {
         return currentPrice;
+    }
+
+    // Return if the price is not expired.
+    function getIsValid() external override view returns (bool) {
+        return _isValid();
+    }
+
+    // Return the result of getPrice, getIsValid and getLastPublicationBlock at once.
+    function getPriceInfo()
+        external
+        override
+        view
+        returns (
+            uint256 price,
+            bool isValid,
+            uint256 lastPubBlock
+        )
+    {
+        return (currentPrice, _isValid(), lastPubBlock);
     }
 
     // The maximum count of oracles selected to participate each round
@@ -423,7 +440,12 @@ contract CoinPairPrice is
     }
 
     // Public variable
-    function getLastPublicationBlock() external override view returns (uint256) {
+    function getLastPublicationBlock()
+        external
+        override(IPriceProvider, ICoinPairPrice)
+        view
+        returns (uint256)
+    {
         return lastPublicationBlock;
     }
 
@@ -450,6 +472,11 @@ contract CoinPairPrice is
     // ----------------------------------------------------------------------------------------------------------------
     // Internal functions
     // ----------------------------------------------------------------------------------------------------------------
+
+    /// @notice return true if the price is valid
+    function _isValid() private view returns (bool) {
+        return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
+    }
 
     /// @notice add or replace and oracle from the subscribed list of oracles.
     function _addOrReplaceSubscribedOracle(address oracleOwnerAddr) internal returns (bool) {

@@ -73,10 +73,7 @@ contract CalculatedPriceProvider is
         return IPriceProviderType.Calculated;
     }
 
-    /**
-    Get the calculated price
-
-    */
+    /// @notice Return the current price, compatible with old MOC Oracle
     function peek()
         external
         override
@@ -84,7 +81,39 @@ contract CalculatedPriceProvider is
         whitelistedOrExternal(iterableWhitelistData)
         returns (bytes32, bool)
     {
-        (uint256 price, bool valid) = calculatedPriceProviderData._peek();
+        (uint256 price, bool valid, ) = calculatedPriceProviderData._getPriceInfo();
         return (bytes32(price), valid);
+    }
+
+    // Return the current price.
+    function getPrice() external override view returns (uint256) {
+        (uint256 price, , ) = calculatedPriceProviderData._getPriceInfo();
+        return uint256(price);
+    }
+
+    // Return if the price is not expired.
+    function getIsValid() external override view returns (bool) {
+        (, bool valid, ) = calculatedPriceProviderData._getPriceInfo();
+        return valid;
+    }
+
+    // Returns the block number of the last publication.
+    function getLastPublicationBlock() external override view returns (uint256) {
+        (, , uint256 lastPubBlock) = calculatedPriceProviderData._getPriceInfo();
+        return lastPubBlock;
+    }
+
+    // Return the result of getPrice, getIsValid and getLastPublicationBlock at once.
+    function getPriceInfo()
+        external
+        override
+        view
+        returns (
+            uint256 price,
+            bool isValid,
+            uint256 lastPubBlock
+        )
+    {
+        return calculatedPriceProviderData._getPriceInfo();
     }
 }
