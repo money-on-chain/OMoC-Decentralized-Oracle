@@ -59,7 +59,7 @@ contract MocRegistryInitChange is ChangeContract, RegistryConstants {
         registry.setUint(ORACLE_PRICE_DIGITS, 18);
         registry.setUint(ORACLE_QUEUE_LEN, 30);
         registry.setUint(MESSAGE_VERSION, 3);
-        registry.setUint(ORACLE_STAKE_LIMIT_MULTIPLICATOR, 2);
+        //registry.setUint(ORACLE_STAKE_LIMIT_MULTIPLICATOR, 2);
         registry.setDecimal(ORACLE_PRICE_DELTA_PCT, 5, -2);
         registry.setUint(ORACLE_PRICE_PUBLISH_BLOCKS, 0);
         registry.setBytes(ORACLE_ENTERING_FALLBACKS_AMOUNTS, hex"020406080a");
