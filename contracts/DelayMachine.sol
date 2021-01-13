@@ -50,7 +50,7 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
         bool done = _token.transferFrom(_source, address(this), mocs);
         require(done, "Token transfer failed.");
         _id = _id + 1;
-        payments[_id].expiration = block.timestamp + expiration;
+        payments[_id].expiration = (block.timestamp).add(expiration);
         // solhint-disable-previous-line not-rely-on-time
         payments[_id].amount = mocs;
         owners[destination].ids.add(_id);
@@ -92,8 +92,8 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     /// @return expirations expiration dates
     function getTransactions(address account)
         external
-        override
         view
+        override
         returns (
             uint256[] memory ids,
             uint256[] memory amounts,
@@ -114,7 +114,7 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     /// @notice Returns the total balance in MOCs for an account
     /// @param account destination address
     /// @return balance token quantity
-    function getBalance(address account) external override view returns (uint256) {
+    function getBalance(address account) external view override returns (uint256) {
         uint256 len = owners[account].ids.length();
         uint256 balance;
         for (uint256 i = 0; i < len; i++) {
@@ -124,17 +124,17 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     }
 
     // Public variable
-    function getToken() external override view returns (IERC20) {
+    function getToken() external view override returns (IERC20) {
         return _token;
     }
 
     // Public variable
-    function getLastId() external override view returns (uint256) {
+    function getLastId() external view override returns (uint256) {
         return _id;
     }
 
     // Public variable
-    function getSource() external override view returns (address) {
+    function getSource() external view override returns (address) {
         return _source;
     }
 }
