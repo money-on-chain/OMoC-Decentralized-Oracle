@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
-const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
-const {expect} = require('chai');
+const { expectRevert, BN, time, expectEvent } = require('@openzeppelin/test-helpers');
+const { expect } = require('chai');
 
 contract('Staking', async (accounts) => {
     const minCPSubscriptionStake = (10 ** 18).toString();
@@ -59,8 +59,13 @@ contract('Staking', async (accounts) => {
     ];
 
     it('Should register Oracles A, B, C', async () => {
-        await this.staking.registerOracle(oracleData[0].account, oracleData[0].name, {
+        let receipt = await this.staking.registerOracle(oracleData[0].account, oracleData[0].name, {
             from: oracleData[0].owner,
+        });
+        expectEvent.inTransaction(receipt.tx, this.oracleMgr, 'OracleRegistered', {
+            caller: oracleData[0].owner,
+            addr: oracleData[0].account,
+            internetName: oracleData[0].name,
         });
         await this.staking.registerOracle(oracleData[1].account, oracleData[1].name, {
             from: oracleData[1].owner,
@@ -117,10 +122,15 @@ contract('Staking', async (accounts) => {
     });
 
     it('Should subscribe Oracles A, B, C to coin pair BTCUSD', async () => {
-        await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
+        let receipt = await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
             from: oracleData[0].owner,
         });
         assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[0].owner));
+        let coinPair = await this.staking.getCoinPairAtIndex(0);
+        expectEvent.inTransaction(receipt.tx, this.oracleMgr, 'OracleSubscribed', {
+            caller: oracleData[0].owner,
+            coinpair: coinPair,
+        });
 
         await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
             from: oracleData[1].owner,
@@ -158,29 +168,30 @@ contract('Staking', async (accounts) => {
         let currentTimestamp = await time.latest();
         while (currentTimestamp < untilTimestampLock) {
             await expectRevert(
-                this.staking.withdraw(oracleData[1].stake, {from: oracleData[1].owner}),
+                this.staking.withdraw(oracleData[1].stake, { from: oracleData[1].owner }),
                 'Stake not available for withdrawal.',
             );
             await helpers.mineBlocks(1);
             currentTimestamp = await time.latest();
         }
-        await this.staking.withdraw(oracleData[1].stake, {from: oracleData[1].owner});
+        await this.staking.withdraw(oracleData[1].stake, { from: oracleData[1].owner });
     });
 
     it('Should not be able to withdraw stake of oracle D because it has none', async () => {
         await expectRevert(
-            this.staking.withdraw(oracleData[3].stake, {from: oracleData[3].owner}),
+            this.staking.withdraw(oracleData[3].stake, { from: oracleData[3].owner }),
             'Stake not available for withdrawal.',
         );
     });
 
     it('Should withdraw stake of oracle A', async () => {
-        await this.staking.withdraw(oracleData[0].stake, {from: oracleData[0].owner});
+        await this.staking.withdraw(oracleData[0].stake, { from: oracleData[0].owner });
     });
 
     it('Should withdraw stake of oracle D w/o leaving tokens stuck in contract', async () => {
+        // Reset token and moc balances in contract to 0.
+        await this.staking.withdraw(oracleData[2].stake, { from: oracleData[2].owner });
         const withdrawAmounts = [
-            (parseInt(oracleData[3].stake, 10) / 2).toString(),
             (parseInt(oracleData[3].stake, 10) / 3).toString(),
             (parseInt(oracleData[3].stake, 10) / 4).toString(),
             (parseInt(oracleData[3].stake, 10) / 5).toString(),
@@ -194,10 +205,19 @@ contract('Staking', async (accounts) => {
             await this.token.approve(this.staking.address, oracleData[3].stake, {
                 from: oracleData[3].owner,
             });
-            // Deposit mocs in StakingMock
-            await this.staking.deposit(oracleData[3].stake, oracleData[3].owner, {
+            // Deposit mocs in Staking
+            let receipt = await this.staking.deposit(oracleData[3].stake, oracleData[3].owner, {
                 from: oracleData[3].owner,
             });
+
+            expectEvent.inTransaction(receipt.tx, this.supporters, 'AddStake', {
+                user: this.staking.address,
+                subaccount: oracleData[3].owner,
+                sender: this.staking.address,
+                amount: oracleData[3].stake,
+                mocs: oracleData[3].stake,
+            });
+
             // Check the owner's stake in mocs was deposited
             assert.isTrue(
                 (await this.staking.getBalance(oracleData[3].owner)).eq(
@@ -205,7 +225,7 @@ contract('Staking', async (accounts) => {
                 ),
             );
             // Withdraw an amount of stake taken from the list
-            await this.staking.withdraw(withdrawAmounts[i], {from: oracleData[3].owner});
+            await this.staking.withdraw(withdrawAmounts[i], { from: oracleData[3].owner });
             // Check the owner's stake balance in mocs was reduced accordingly
             const balanceAfterWithdraw = new BN(oracleData[3].stake).sub(
                 new BN(withdrawAmounts[i]),
@@ -214,7 +234,22 @@ contract('Staking', async (accounts) => {
                 (await this.staking.getBalance(oracleData[3].owner)).eq(balanceAfterWithdraw),
             );
             // Withdraw the rest of the stake to reset it
-            await this.staking.withdraw(balanceAfterWithdraw, {from: oracleData[3].owner});
+            receipt = await this.staking.withdraw(balanceAfterWithdraw, {
+                from: oracleData[3].owner,
+            });
+            expectEvent.inTransaction(receipt.tx, this.supporters, 'WithdrawStake', {
+                user: this.staking.address,
+                subaccount: oracleData[3].owner,
+                destination: this.staking.address,
+                amount: balanceAfterWithdraw,
+                mocs: balanceAfterWithdraw,
+            });
+            expectEvent.inTransaction(receipt.tx, this.supporters, 'CancelEarnings', {
+                earnings: new BN(0),
+                start: new BN(0),
+                end: new BN(0),
+            });
+
             // Check the owner's moc and internal token balances are 0.
             assert.isTrue((await this.staking.getBalance(oracleData[3].owner)).eq(new BN(0)));
             assert.isTrue(
