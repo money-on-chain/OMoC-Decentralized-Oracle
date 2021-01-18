@@ -19,6 +19,7 @@ contract('CoinPairPrice', async (accounts) => {
         this.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
             ...contracts,
             whitelist: [accounts[0]],
+            minOraclesPerRound: 3,
             maxOraclesPerRound: 3,
             validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
@@ -68,19 +69,15 @@ contract('CoinPairPrice', async (accounts) => {
         );
     });
 
-    it('Should register Oracles A, B, C', async () => {
+    it('Should register Oracles A, B', async () => {
         const initialBalance1 = await this.token.balanceOf(oracleData[0].owner);
         const initialBalance2 = await this.token.balanceOf(oracleData[1].owner);
-        const initialBalance3 = await this.token.balanceOf(oracleData[2].owner);
 
         await this.token.approve(this.staking.address, oracleData[0].stake, {
             from: oracleData[0].owner,
         });
         await this.token.approve(this.staking.address, oracleData[1].stake, {
             from: oracleData[1].owner,
-        });
-        await this.token.approve(this.staking.address, oracleData[2].stake, {
-            from: oracleData[2].owner,
         });
 
         await this.staking.registerOracle(oracleData[0].account, oracleData[0].name, {
@@ -95,12 +92,6 @@ contract('CoinPairPrice', async (accounts) => {
         await this.staking.deposit(oracleData[1].stake, oracleData[1].owner, {
             from: oracleData[1].owner,
         });
-        await this.staking.registerOracle(oracleData[2].account, oracleData[2].name, {
-            from: oracleData[2].owner,
-        });
-        await this.staking.deposit(oracleData[2].stake, oracleData[2].owner, {
-            from: oracleData[2].owner,
-        });
 
         const info0 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner);
         assert.equal(info0.internetName, oracleData[0].name);
@@ -109,10 +100,6 @@ contract('CoinPairPrice', async (accounts) => {
         const info1 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[1].owner);
         assert.equal(info1.internetName, oracleData[1].name);
         assert.equal(info1.stake, oracleData[1].stake);
-
-        const info2 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[2].owner);
-        assert.equal(info2.internetName, oracleData[2].name);
-        assert.equal(info2.stake, oracleData[2].stake);
 
         assert.isTrue(
             (await this.token.balanceOf(oracleData[0].owner)).eq(
@@ -124,23 +111,15 @@ contract('CoinPairPrice', async (accounts) => {
                 initialBalance2.sub(new BN(oracleData[1].stake)),
             ),
         );
-        assert.isTrue(
-            (await this.token.balanceOf(oracleData[2].owner)).eq(
-                initialBalance3.sub(new BN(oracleData[2].stake)),
-            ),
-        );
     });
 
-    it('Should subscribe oracles A,B,C to this coin pair', async () => {
+    it('Should subscribe oracles A,B to this coin pair', async () => {
         const thisCoinPair = await this.coinPairPrice.getCoinPair();
         await this.staking.subscribeToCoinPair(thisCoinPair, {
             from: oracleData[0].owner,
         });
         await this.staking.subscribeToCoinPair(thisCoinPair, {
             from: oracleData[1].owner,
-        });
-        await this.staking.subscribeToCoinPair(thisCoinPair, {
-            from: oracleData[2].owner,
         });
     });
 
@@ -196,17 +175,66 @@ contract('CoinPairPrice', async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
         let info0 = await this.coinPairPrice.getOracleRoundInfo(oracleData[0].owner);
         let info1 = await this.coinPairPrice.getOracleRoundInfo(oracleData[1].owner);
-        let info2 = await this.coinPairPrice.getOracleRoundInfo(oracleData[2].owner);
         assert.equal(info0.points, 0);
         assert.equal(info1.points, 0);
-        assert.equal(info2.points, 0);
         roundInfo = await this.coinPairPrice.getRoundInfo();
         assert.equal(roundInfo.round, '2');
         info0 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[0]);
         info1 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[1]);
-        info2 = await this.oracleMgr.getOracleRegistrationInfo(roundInfo.selectedOracles[2]);
         // assert.isTrue(info0.stake > info1.stake);
         // assert.isTrue(info1.stake > info2.stake);
+    });
+
+    it('Should fail to publish price if minimum amount of oracles per round is not reached', async () => {
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
+            3,
+            'BTCUSD',
+            (10 ** 18).toString(),
+            oracleData[0].account,
+            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+        );
+        const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
+        const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
+
+        await expectRevert(
+            this.coinPairPrice.publishPrice(
+                msg.version,
+                web3.utils.asciiToHex('BTCUSD'),
+                msg.price,
+                msg.votedOracle,
+                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
+                [s2.v, s1.v],
+                [s2.r, s1.r],
+                [s2.s, s1.s],
+                { from: oracleData[0].account },
+            ),
+            'Minimum selected oracles required not reached',
+        );
+    });
+
+    it('Should add the last oracle, C, to the round', async () => {
+        const initialBalance3 = await this.token.balanceOf(oracleData[2].owner);
+        await this.token.approve(this.staking.address, oracleData[2].stake, {
+            from: oracleData[2].owner,
+        });
+        await this.staking.registerOracle(oracleData[2].account, oracleData[2].name, {
+            from: oracleData[2].owner,
+        });
+        await this.staking.deposit(oracleData[2].stake, oracleData[2].owner, {
+            from: oracleData[2].owner,
+        });
+        const info2 = await this.oracleMgr.getOracleRegistrationInfo(oracleData[2].owner);
+        assert.equal(info2.internetName, oracleData[2].name);
+        assert.equal(info2.stake, oracleData[2].stake);
+        assert.isTrue(
+            (await this.token.balanceOf(oracleData[2].owner)).eq(
+                initialBalance3.sub(new BN(oracleData[2].stake)),
+            ),
+        );
+        const thisCoinPair = await this.coinPairPrice.getCoinPair();
+        await this.staking.subscribeToCoinPair(thisCoinPair, {
+            from: oracleData[2].owner,
+        });
     });
 
     it('Should fail to publish with mismatching coinpair', async () => {

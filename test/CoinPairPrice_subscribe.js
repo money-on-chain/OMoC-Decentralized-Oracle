@@ -1,7 +1,8 @@
-const {BN, expectRevert} = require('@openzeppelin/test-helpers');
+const { BN, expectRevert } = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
+const minOraclesPerRound = 3;
 const maxOraclesPerRound = 10;
 const maxSubscribedOraclesPerRound = 20;
 const ORACLE_QUANTITY = maxSubscribedOraclesPerRound + 1;
@@ -9,9 +10,9 @@ const ORACLE_QUANTITY = maxSubscribedOraclesPerRound + 1;
 contract('CoinPairPrice Subscribe', async (accounts) => {
     async function register(token, staking, oracleManager, ownerAddr, stake, name, oracleAddr) {
         const initialBalance = await token.balanceOf(ownerAddr);
-        await token.approve(staking.address, stake, {from: ownerAddr});
-        await staking.registerOracle(oracleAddr, name, {from: ownerAddr});
-        await staking.deposit(stake, ownerAddr, {from: ownerAddr});
+        await token.approve(staking.address, stake, { from: ownerAddr });
+        await staking.registerOracle(oracleAddr, name, { from: ownerAddr });
+        await staking.deposit(stake, ownerAddr, { from: ownerAddr });
         const info = await oracleManager.getOracleRegistrationInfo(ownerAddr);
         assert.equal(info.internetName, name);
         assert.equal(info.stake, stake);
@@ -32,9 +33,14 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
         testobj.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
             ...contracts,
             whitelist: [accounts[0]],
+            minOraclesPerRound,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
         });
+        assert.equal(
+            minOraclesPerRound,
+            (await testobj.coinPairPrice.minOraclesPerRound()).toNumber(),
+        );
         assert.equal(
             maxOraclesPerRound,
             (await testobj.coinPairPrice.maxOraclesPerRound()).toNumber(),
@@ -64,7 +70,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                 name,
                 oracleAddr,
             );
-            oracleList.push({oracleAddr: oracleAddr, ownerAddr: ownerAccount, stake});
+            oracleList.push({ oracleAddr: oracleAddr, ownerAddr: ownerAccount, stake });
         }
         return oracleList;
     }
@@ -78,8 +84,8 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
 
         it('Should subscribe oracleCant oracles and none goes to current round', async () => {
             assert.equal(0, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length);
-            for (const {ownerAddr} of oracleList) {
-                await this.staking.subscribeToCoinPair(COINPAIR, {from: ownerAddr});
+            for (const { ownerAddr } of oracleList) {
+                await this.staking.subscribeToCoinPair(COINPAIR, { from: ownerAddr });
                 const subscribed = await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR);
                 assert.isTrue(subscribed);
                 assert.equal(0, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length);
@@ -109,10 +115,10 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
 
         it('Should subscribe oracleCant oracles and the first maxOraclesPerRound goes to current round', async () => {
             assert.equal(0, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length);
-            for (const {ownerAddr} of oracleList) {
+            for (const { ownerAddr } of oracleList) {
                 const cantPrev = (await this.coinPairPrice.getRoundInfo()).selectedOracles.length;
 
-                await this.staking.subscribeToCoinPair(COINPAIR, {from: ownerAddr});
+                await this.staking.subscribeToCoinPair(COINPAIR, { from: ownerAddr });
                 assert.isTrue(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
 
                 const cantPost = (await this.coinPairPrice.getRoundInfo()).selectedOracles.length;
@@ -126,7 +132,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             assert.isFalse(await this.oracleMgr.isSubscribed(oracleList[0].ownerAddr, COINPAIR));
             // The first has less stake, it fails to subscribe
             await expectRevert(
-                this.staking.subscribeToCoinPair(COINPAIR, {from: oracleList[0].ownerAddr}),
+                this.staking.subscribeToCoinPair(COINPAIR, { from: oracleList[0].ownerAddr }),
                 'Not enough stake to add',
             );
             // Can withdraw freely.
@@ -134,7 +140,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                 (await this.staking.getBalance(oracleList[0].ownerAddr)).toString(),
                 oracleList[0].stake.toString(),
             );
-            await this.staking.withdraw(oracleList[0].stake, {from: oracleList[0].ownerAddr});
+            await this.staking.withdraw(oracleList[0].stake, { from: oracleList[0].ownerAddr });
             assert.equal((await this.staking.getBalance(oracleList[0].ownerAddr)).toString(), '0');
             // If subscribed but not selected in current round can withdraw too.
             const idx = ORACLE_QUANTITY - maxOraclesPerRound - 1;
@@ -143,7 +149,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                 (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
                 oracleList[idx].stake.toString(),
             );
-            await this.staking.withdraw(oracleList[idx].stake, {from: oracleList[idx].ownerAddr});
+            await this.staking.withdraw(oracleList[idx].stake, { from: oracleList[idx].ownerAddr });
             assert.equal(
                 (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
                 '0',
@@ -171,9 +177,9 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
         });
 
         it('It is ok to unsubscribes and subscribes again in the same round', async () => {
-            const {ownerAddr, oracleAddr} = ORACLE_WITH_SMALL_STAKE;
+            const { ownerAddr, oracleAddr } = ORACLE_WITH_SMALL_STAKE;
 
-            await this.staking.unSubscribeFromCoinPair(COINPAIR, {from: ownerAddr});
+            await this.staking.unSubscribeFromCoinPair(COINPAIR, { from: ownerAddr });
             assert.isFalse(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             // Even after unsubscribe we are still in the round, is just a stop signal
             assert.isTrue(
@@ -184,7 +190,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.length,
             );
 
-            await this.staking.subscribeToCoinPair(COINPAIR, {from: ownerAddr});
+            await this.staking.subscribeToCoinPair(COINPAIR, { from: ownerAddr });
             assert.isTrue(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             assert.isTrue(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracleAddr) >= 0,
@@ -218,13 +224,13 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
         });
 
         it('If ORACLE_WITH_A_LOT_OF_STAKE unsubscribes then he looses its place in next round', async () => {
-            const {oracleAddr, ownerAddr} = ORACLE_WITH_A_LOT_OF_STAKE;
+            const { oracleAddr, ownerAddr } = ORACLE_WITH_A_LOT_OF_STAKE;
             assert.isTrue(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             assert.isTrue(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracleAddr) >= 0,
             );
 
-            await this.staking.unSubscribeFromCoinPair(COINPAIR, {from: ownerAddr});
+            await this.staking.unSubscribeFromCoinPair(COINPAIR, { from: ownerAddr });
             assert.isFalse(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             assert.equal(
                 maxOraclesPerRound,
@@ -240,7 +246,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             );
 
             // Even if we subscribe we don't get in the new round
-            await this.staking.subscribeToCoinPair(COINPAIR, {from: ownerAddr});
+            await this.staking.subscribeToCoinPair(COINPAIR, { from: ownerAddr });
             assert.isTrue(await this.oracleMgr.isSubscribed(ownerAddr, COINPAIR));
             assert.isFalse(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(oracleAddr) >= 0,

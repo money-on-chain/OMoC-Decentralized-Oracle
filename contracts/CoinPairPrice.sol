@@ -55,6 +55,7 @@ contract CoinPairPrice is
     /// @param _wlist List of whitelisted contracts (those that can get the price).
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
+    /// @param _minOraclesPerRound The minimum count of oracles selected to participate each round
     /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
     /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
     /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
@@ -68,6 +69,7 @@ contract CoinPairPrice is
         address[] calldata _wlist,
         bytes32 _coinPair,
         address _tokenAddress,
+        uint256 _minOraclesPerRound,
         uint256 _maxOraclesPerRound,
         uint256 _maxSubscribedOraclesPerRound,
         uint256 _roundLockPeriod,
@@ -101,7 +103,11 @@ contract CoinPairPrice is
         token = IERC20(_tokenAddress);
         coinPair = _coinPair;
         oracleManager = _oracleManager;
-        roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriod);
+        roundInfo = RoundInfoLib.initRoundInfo(
+            _minOraclesPerRound,
+            _maxOraclesPerRound,
+            _roundLockPeriod
+        );
         maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
         subscribedOracles = SubscribedOraclesLib.init();
         _publish(_bootstrapPrice);
@@ -236,6 +242,10 @@ contract CoinPairPrice is
         require(roundInfo.number > 0, "Round not open");
         // require(subscribedOracles.contains(ownerAddr), "Sender oracle not subscribed");
         require(roundInfo.isSelected(ownerAddr), "Voter oracle is not part of this round");
+        require(
+            roundInfo.length() >= roundInfo.minOraclesPerRound,
+            "Minimum selected oracles required not reached"
+        );
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
         require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
         require(_price > 0, "Price must be positive and non-zero");
