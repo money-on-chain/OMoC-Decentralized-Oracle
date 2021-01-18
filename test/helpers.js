@@ -1,4 +1,4 @@
-const {constants, BN, time} = require('@openzeppelin/test-helpers');
+const { constants, BN, time } = require('@openzeppelin/test-helpers');
 const crypto = require('crypto');
 const ethers = require('ethers');
 
@@ -50,7 +50,7 @@ async function getDefaultEncodedMessage(version, coinpair, price, votedOracle, b
     // console.log(encMsg);
     // console.log("Length:" , encMsg.length);
 
-    return {msg, encMsg};
+    return { msg, encMsg };
 }
 
 async function mineUntilNextRound(coinpairPrice) {
@@ -97,14 +97,14 @@ async function createGovernor(owner) {
                 coinPair,
                 address,
             );
-            await governor.executeChange(change.address, {from: owner});
+            await governor.executeChange(change.address, { from: owner });
         },
         mint: async (tokenAddr, addr, quantity) => {
             const change = await TestMOCMintChange.new(tokenAddr, addr, quantity);
-            await governor.executeChange(change.address, {from: owner});
+            await governor.executeChange(change.address, { from: owner });
         },
         execute: async (change) => {
-            await governor.executeChange(change.address, {from: owner});
+            await governor.executeChange(change.address, { from: owner });
         },
     };
 }
@@ -133,6 +133,7 @@ async function initCoinpair(
         token,
         oracleMgr,
         whitelist,
+        minOraclesPerRound = 3,
         maxOraclesPerRound = 10,
         maxSubscribedOraclesPerRound = 30,
         roundLockPeriodInSecs = 60,
@@ -148,6 +149,7 @@ async function initCoinpair(
         whitelist,
         web3.utils.asciiToHex(name),
         token.address,
+        minOraclesPerRound,
         maxOraclesPerRound,
         maxSubscribedOraclesPerRound,
         roundLockPeriodInSecs,
@@ -231,10 +233,10 @@ async function newUnlockedAccount() {
     return account;
 }
 
-async function publishPrice({coinPairPrice, coinPairName, price, oracle, signers}) {
+async function publishPrice({ coinPairPrice, coinPairName, price, oracle, signers }) {
     const lastPublicationBlock = await coinPairPrice.getLastPublicationBlock();
 
-    const {msg, encMsg} = await getDefaultEncodedMessage(
+    const { msg, encMsg } = await getDefaultEncodedMessage(
         3,
         coinPairName,
         price,
@@ -243,7 +245,7 @@ async function publishPrice({coinPairPrice, coinPairName, price, oracle, signers
     );
 
     const sortedSigners = signers.slice(0);
-    sortedSigners.sort((x, y) => x.localeCompare(y, 'en', {sensitivity: 'base'}));
+    sortedSigners.sort((x, y) => x.localeCompare(y, 'en', { sensitivity: 'base' }));
 
     const sv = [];
     const sr = [];
@@ -265,7 +267,7 @@ async function publishPrice({coinPairPrice, coinPairName, price, oracle, signers
         sv,
         sr,
         ss,
-        {from: oracle},
+        { from: oracle },
     );
 }
 

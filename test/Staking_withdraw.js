@@ -1,8 +1,8 @@
 /* global artifacts, beforeEach, contract, it */
 const helpers = require('./helpers');
-const {BN} = require('@openzeppelin/test-helpers');
-const {expect} = require('chai');
-const {toWei, toBN} = require('web3-utils');
+const { BN } = require('@openzeppelin/test-helpers');
+const { expect } = require('chai');
+const { toWei, toBN } = require('web3-utils');
 
 contract('Staking-withdraw', async (accounts) => {
     const feesAccount = accounts[1];
@@ -11,6 +11,7 @@ contract('Staking-withdraw', async (accounts) => {
     const COINPAIR_NAME = 'BTCUSD';
     const ORACLE_STAKE = toBN(toWei('1', 'ether'));
     const ORACLE_FEES = toBN(toWei('1', 'ether'));
+    const MIN_SELECTED_ORACLES = 3;
     const MAX_SELECTED_ORACLES = 10;
     const MAX_SUBSCRIBED_ORACLES = 30;
     const NUM_ORACLES = 30;
@@ -24,6 +25,7 @@ contract('Staking-withdraw', async (accounts) => {
 
         this.coinPairPrice = await helpers.initCoinpair(COINPAIR_NAME, {
             ...contracts,
+            minOraclesPerRound: MIN_SELECTED_ORACLES,
             maxOraclesPerRound: MAX_SELECTED_ORACLES,
             maxSubscribedOraclesPerRound: MAX_SUBSCRIBED_ORACLES,
             whitelist: [governorOwner],
@@ -57,15 +59,15 @@ contract('Staking-withdraw', async (accounts) => {
             const oracleOwner = Object.keys(this.oracles)[i];
             const oracleName = 'oracle-' + i;
             const oracleStake = ORACLE_STAKE.add(toBN(NUM_ORACLES - i));
-            await this.token.approve(this.staking.address, oracleStake, {from: oracleOwner});
+            await this.token.approve(this.staking.address, oracleStake, { from: oracleOwner });
             await this.staking.registerOracle(this.oracles[oracleOwner], oracleName, {
                 from: oracleOwner,
             });
-            await this.staking.deposit(oracleStake, oracleOwner, {from: oracleOwner});
-            await this.staking.subscribeToCoinPair(COINPAIR_ID, {from: oracleOwner});
+            await this.staking.deposit(oracleStake, oracleOwner, { from: oracleOwner });
+            await this.staking.subscribeToCoinPair(COINPAIR_ID, { from: oracleOwner });
         }
 
-        const {selectedOracles} = await this.coinPairPrice.getRoundInfo();
+        const { selectedOracles } = await this.coinPairPrice.getRoundInfo();
         expect(selectedOracles.length).to.equal(MAX_SELECTED_ORACLES);
 
         for (let i = 0; i < MAX_SELECTED_ORACLES; i += 1) {
@@ -89,7 +91,7 @@ contract('Staking-withdraw', async (accounts) => {
         const oracleOwner = Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1];
         let selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.true;
-        await this.staking.withdraw(1, {from: oracleOwner});
+        await this.staking.withdraw(1, { from: oracleOwner });
         selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.true;
     });
@@ -114,18 +116,18 @@ contract('Staking-withdraw', async (accounts) => {
             signers,
         });
 
-        const {points} = await this.coinPairPrice.getOracleRoundInfo(oracleOwner);
+        const { points } = await this.coinPairPrice.getOracleRoundInfo(oracleOwner);
         expect(points).to.be.bignumber.equal(new BN(1));
     });
 
     it('withdraw and drop from round', async () => {
         const oracleOwner = Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1];
 
-        await this.staking.withdraw(1, {from: oracleOwner});
+        await this.staking.withdraw(1, { from: oracleOwner });
         const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.false;
 
-        const {points} = await this.coinPairPrice.getOracleRoundInfo(oracleOwner);
+        const { points } = await this.coinPairPrice.getOracleRoundInfo(oracleOwner);
         expect(points).to.be.bignumber.equal(new BN(0));
     });
 
@@ -148,7 +150,7 @@ contract('Staking-withdraw', async (accounts) => {
             signers,
         });
 
-        const {points} = await this.coinPairPrice.getOracleRoundInfo(newOracleOwner);
+        const { points } = await this.coinPairPrice.getOracleRoundInfo(newOracleOwner);
         expect(points).to.be.bignumber.equal(new BN(1));
     });
 });

@@ -1,6 +1,6 @@
 const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
-const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
+const { constants, expectRevert, BN } = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 const ethers = require('ethers');
 const crypto = require('crypto');
@@ -12,6 +12,7 @@ const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const minOracleOwnerStake = 10000000000;
 const period = 20;
 const minStayBlocks = 10;
+const minOraclesPerRound = 3;
 const maxOraclesPerRound = 10;
 const maxSubscribedOraclesPerRound = 30;
 
@@ -30,6 +31,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             [accounts[0]],
             COINPAIR,
             this.token.address,
+            minOraclesPerRound,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
             5, // roundLockPeriodInSecs,
@@ -72,7 +74,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
         prevEntry,
     ) {
         const initialBalance = await token.balanceOf(ownerAddr);
-        await token.approve(oracleManager.address, stake, {from: ownerAddr});
+        await token.approve(oracleManager.address, stake, { from: ownerAddr });
         await oracleManager.registerOracleWithHint(oracleAddr, name, stake, prevEntry, {
             from: ownerAddr,
         });
@@ -84,7 +86,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             initialBalance.sub(new BN(stake)).toString(),
         );
         const cant_prev = (await coinPairPrice.getRoundInfo()).selectedOracles.length;
-        await oracleManager.subscribeToCoinPair(oracleAddr, COINPAIR, {from: ownerAddr});
+        await oracleManager.subscribeToCoinPair(oracleAddr, COINPAIR, { from: ownerAddr });
         const subscribed = await oracleManager.isSubscribed(oracleAddr, COINPAIR);
         assert.isTrue(subscribed);
 
@@ -103,6 +105,10 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
     }
 
     it('creation', async () => {
+        assert.equal(
+            minOraclesPerRound,
+            (await this.coinPairPrice.minOraclesPerRound()).toNumber(),
+        );
         assert.equal(
             maxOraclesPerRound,
             (await this.coinPairPrice.maxOraclesPerRound()).toNumber(),
@@ -208,7 +214,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
                 oracleList[i].delta_stake,
                 removePrevEntry,
                 addPrevEntry,
-                {from: oracleList[i].owner_account},
+                { from: oracleList[i].owner_account },
             );
         }
         const maxOraclesPerRound = (await this.coinPairPrice.maxOraclesPerRound()).toNumber();
@@ -305,7 +311,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
                 const o = selOracles[i];
                 const lastPub = (await this.coinPairPrice.getLastPublicationBlock()).toString();
                 const price = Math.floor(Math.random() * 1000000);
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     price.toString(),
@@ -321,7 +327,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
                     const signed = ethers.utils.splitSignature(
                         await web3.eth.sign(encMsg, account),
                     );
-                    signatures.push({account, signed});
+                    signatures.push({ account, signed });
                 }
                 const sortedData = signatures
                     .concat()
@@ -338,7 +344,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
                     sortedData.map((x) => x.v),
                     sortedData.map((x) => x.r),
                     sortedData.map((x) => x.s),
-                    {from: o.account},
+                    { from: o.account },
                 );
             }
         }
@@ -390,7 +396,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
                 }),
                 'Must be stopped',
             );
-            await this.oracleMgr.stop(ol[idx].account, {from: ol[idx].owner_account});
+            await this.oracleMgr.stop(ol[idx].account, { from: ol[idx].owner_account });
             await helpers.mineBlocks(minStayBlocks);
 
             await this.oracleMgr.removeOracleWithHint(ol[idx].account, prevEntries[idx], {

@@ -1,8 +1,8 @@
 /* global artifacts, beforeEach, contract, it */
 const helpers = require('./helpers');
-const {BN} = require('@openzeppelin/test-helpers');
-const {expect} = require('chai');
-const {toWei, toBN, padRight, toHex} = require('web3-utils');
+const { BN } = require('@openzeppelin/test-helpers');
+const { expect } = require('chai');
+const { toWei, toBN, padRight, toHex } = require('web3-utils');
 
 function makeRange(num) {
     const r = [];
@@ -19,6 +19,7 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
     const COINPAIR_NAME = 'BTCUSD';
     const ORACLE_STAKE = toBN(toWei('1', 'ether'));
     const ORACLE_FEES = toBN(toWei('1', 'ether'));
+    const MIN_SELECTED_ORACLES = 3;
     const MAX_SELECTED_ORACLES = 10;
     const NUM_SUBSCRIBED_ORACLES = 30;
     const NUM_ORACLES = 30;
@@ -38,6 +39,7 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
         for (const i of r) {
             const coinPair = await helpers.initCoinpair(COINPAIR_NAME + i, {
                 ...contracts,
+                minOraclesPerRound: MIN_SELECTED_ORACLES,
                 maxOraclesPerRound: MAX_SELECTED_ORACLES,
                 maxSubscribedOraclesPerRound: NUM_SUBSCRIBED_ORACLES,
                 whitelist: [governorOwner],
@@ -81,19 +83,19 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
             const oracleOwner = Object.keys(this.oracles)[i];
             const oracleName = 'oracle-' + i;
             const oracleStake = ORACLE_STAKE.add(toBN(i));
-            await this.token.approve(this.staking.address, oracleStake, {from: oracleOwner});
+            await this.token.approve(this.staking.address, oracleStake, { from: oracleOwner });
             await this.staking.registerOracle(this.oracles[oracleOwner], oracleName, {
                 from: oracleOwner,
             });
-            await this.staking.deposit(oracleStake, oracleOwner, {from: oracleOwner});
+            await this.staking.deposit(oracleStake, oracleOwner, { from: oracleOwner });
             for (const coinPair of this.coinPairs) {
                 const COINPAIR_ID = await coinPair.getCoinPair();
-                await this.staking.subscribeToCoinPair(COINPAIR_ID, {from: oracleOwner});
+                await this.staking.subscribeToCoinPair(COINPAIR_ID, { from: oracleOwner });
             }
         }
 
         const coinPair = this.coinPairs[0];
-        const {selectedOracles} = await coinPair.getRoundInfo();
+        const { selectedOracles } = await coinPair.getRoundInfo();
         expect(selectedOracles.length).to.equal(MAX_SELECTED_ORACLES);
     });
 
@@ -102,7 +104,7 @@ contract('Staking-withdraw with many coin pairs', async (accounts) => {
         const oracleOwner = Object.keys(this.oracles)[0];
         let selected = await coinPair.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.true;
-        await this.staking.withdraw(1, {from: oracleOwner});
+        await this.staking.withdraw(1, { from: oracleOwner });
         selected = await coinPair.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.false;
         const newSelectedOwner = Object.keys(this.oracles)[NUM_ORACLES - 1];

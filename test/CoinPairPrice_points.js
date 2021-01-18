@@ -1,8 +1,8 @@
 const helpers = require('./helpers');
-const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
+const { expectRevert, BN, time } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
-const {ZERO_ADDRESS} = require('@openzeppelin/test-helpers/src/constants');
-const {expect} = require('chai');
+const { ZERO_ADDRESS } = require('@openzeppelin/test-helpers/src/constants');
+const { expect } = require('chai');
 
 contract('CoinPairPrice', async (accounts) => {
     const feeSourceAccount = accounts[0];
@@ -13,12 +13,13 @@ contract('CoinPairPrice', async (accounts) => {
     beforeEach(async () => {
         this.validPricePeriodInBlocks = 3;
 
-        const contracts = await helpers.initContracts({governorOwner: accounts[8]});
+        const contracts = await helpers.initContracts({ governorOwner: accounts[8] });
         Object.assign(this, contracts);
 
         this.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
             ...contracts,
             whitelist: [accounts[0]],
+            minOraclesPerRound: 3,
             maxOraclesPerRound: 4,
             validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
@@ -138,7 +139,7 @@ contract('CoinPairPrice', async (accounts) => {
         let roundInfo = await this.coinPairPrice.getRoundInfo();
         // Oracle A    publications.
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -166,14 +167,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -201,14 +202,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -236,14 +237,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -271,7 +272,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
@@ -280,7 +281,7 @@ contract('CoinPairPrice', async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -308,14 +309,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -343,14 +344,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -378,14 +379,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         // Oracle C  publications.
         roundInfo = await this.coinPairPrice.getRoundInfo();
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -413,12 +414,12 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[2].account},
+                { from: oracleData[2].account },
             );
         }
         roundInfo = await this.coinPairPrice.getRoundInfo();
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -446,13 +447,13 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[2].account},
+                { from: oracleData[2].account },
             );
         }
         // Oracle D  publications.
         roundInfo = await this.coinPairPrice.getRoundInfo();
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -480,7 +481,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s4.v, s3.v, s2.v, s1.v],
                 [s4.r, s3.r, s2.r, s1.r],
                 [s4.s, s3.s, s2.s, s1.s],
-                {from: oracleData[3].account},
+                { from: oracleData[3].account },
             );
         }
 
@@ -617,7 +618,7 @@ contract('CoinPairPrice', async (accounts) => {
         let roundInfo = await this.coinPairPrice.getRoundInfo();
         // Oracle A    publications.
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -642,14 +643,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -674,14 +675,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -706,14 +707,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -738,7 +739,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
@@ -747,7 +748,7 @@ contract('CoinPairPrice', async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -772,14 +773,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -804,14 +805,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -836,14 +837,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         // Oracle C  publications.
         roundInfo = await this.coinPairPrice.getRoundInfo();
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -868,12 +869,12 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[2].account},
+                { from: oracleData[2].account },
             );
         }
         roundInfo = await this.coinPairPrice.getRoundInfo();
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -898,7 +899,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[2].account},
+                { from: oracleData[2].account },
             );
         }
 
@@ -1010,7 +1011,7 @@ contract('CoinPairPrice', async (accounts) => {
         let roundInfo = await this.coinPairPrice.getRoundInfo();
         // Oracle A    publications.
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -1032,14 +1033,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -1061,14 +1062,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -1090,14 +1091,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -1119,7 +1120,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
@@ -1128,7 +1129,7 @@ contract('CoinPairPrice', async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -1150,14 +1151,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -1179,14 +1180,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -1208,7 +1209,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
@@ -1264,12 +1265,13 @@ contract('CoinPairPrice', async (accounts) => {
         beforeEach(async () => {
             this.validPricePeriodInBlocks = 3;
 
-            const contracts = await helpers.initContracts({governorOwner: accounts[8]});
+            const contracts = await helpers.initContracts({ governorOwner: accounts[8] });
             Object.assign(this, contracts);
 
             this.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
                 ...contracts,
                 whitelist: [accounts[0]],
+                minOraclesPerRound: 3,
                 maxOraclesPerRound: 3,
                 validPricePeriodInBlocks: this.validPricePeriodInBlocks,
             });
@@ -1362,7 +1364,7 @@ contract('CoinPairPrice', async (accounts) => {
             let roundInfo = await this.coinPairPrice.getRoundInfo();
             // Oracle A    publications.
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1387,14 +1389,14 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[0].account},
+                    { from: oracleData[0].account },
                 );
             }
 
             roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1419,14 +1421,14 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[0].account},
+                    { from: oracleData[0].account },
                 );
             }
 
             roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1451,14 +1453,14 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[0].account},
+                    { from: oracleData[0].account },
                 );
             }
 
             roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1483,7 +1485,7 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[0].account},
+                    { from: oracleData[0].account },
                 );
             }
 
@@ -1492,7 +1494,7 @@ contract('CoinPairPrice', async (accounts) => {
             roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1517,14 +1519,14 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[1].account},
+                    { from: oracleData[1].account },
                 );
             }
 
             roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1549,14 +1551,14 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[1].account},
+                    { from: oracleData[1].account },
                 );
             }
 
             roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1581,14 +1583,14 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[1].account},
+                    { from: oracleData[1].account },
                 );
             }
 
             // Oracle C  publications.
             roundInfo = await this.coinPairPrice.getRoundInfo();
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1613,12 +1615,12 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[2].account},
+                    { from: oracleData[2].account },
                 );
             }
             roundInfo = await this.coinPairPrice.getRoundInfo();
             {
-                const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+                const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
                     'BTCUSD',
                     (0.3 * 10 ** 18).toString(),
@@ -1643,7 +1645,7 @@ contract('CoinPairPrice', async (accounts) => {
                     [s3.v, s2.v, s1.v],
                     [s3.r, s2.r, s1.r],
                     [s3.s, s2.s, s1.s],
-                    {from: oracleData[2].account},
+                    { from: oracleData[2].account },
                 );
             }
 
@@ -1656,7 +1658,7 @@ contract('CoinPairPrice', async (accounts) => {
             const withdrawAmount = Math.round(
                 (parseInt(oracleData[2].stake, 10) * 5) / 6,
             ).toString();
-            await this.staking.withdraw(withdrawAmount, {from: oracleData[2].owner});
+            await this.staking.withdraw(withdrawAmount, { from: oracleData[2].owner });
             await helpers.mineBlocks(1);
 
             // Verify proper distribution according to total fee balance and

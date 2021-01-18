@@ -3,6 +3,7 @@ export PRIVATE_KEY=94b9259bc456cba42b9cc7dc3982f94492645a925dbcceeb94b9e49878c7c
 
 export DEFAULT_VALIDPRICEPERIODINBLOCKS=180
 export DEFAULT_EMERGENCYPUBLISHPERIODINBLOCKS=1
+export DEFAULT_MINORACLESPERROUND=3
 export DEFAULT_MAXORACLESPERROUND=10
 export DEFAULT_MAXSUBSCRIBEDORACLESPERROUND=30
 export DEFAULT_BOOTSTRAPPRICE='1000000000000000'
@@ -14,6 +15,7 @@ roundLockPeriodInSecs+="1800;"
 validPricePeriodInBlocks+="$DEFAULT_VALIDPRICEPERIODINBLOCKS;"
 emergencyPublishingPeriodInBlocks+="$DEFAULT_EMERGENCYPUBLISHPERIODINBLOCKS;"
 minOracleOwnerStake+="$DEFAULT_MINORACLEOWNERSTAKE;"
+minOraclesPerRound+="$DEFAULT_MINORACLESPERROUND;"
 maxOraclesPerRound+="$DEFAULT_MAXORACLESPERROUND;"
 maxSubscribedOraclesPerRound+="$DEFAULT_MAXSUBSCRIBEDORACLESPERROUND;"
 bootstrapPrice+="$DEFAULT_BOOTSTRAPPRICE;"
@@ -24,6 +26,7 @@ roundLockPeriodInSecs+="2000;"
 validPricePeriodInBlocks+="$DEFAULT_VALIDPRICEPERIODINBLOCKS;"
 emergencyPublishingPeriodInBlocks+="$DEFAULT_EMERGENCYPUBLISHPERIODINBLOCKS;"
 minOracleOwnerStake+="$DEFAULT_MINORACLEOWNERSTAKE;"
+minOraclesPerRound+="$DEFAULT_MINORACLESPERROUND;"
 maxOraclesPerRound+="$DEFAULT_MAXORACLESPERROUND;"
 maxSubscribedOraclesPerRound+="$DEFAULT_MAXSUBSCRIBEDORACLESPERROUND;"
 bootstrapPrice+="$DEFAULT_BOOTSTRAPPRICE;"
@@ -38,6 +41,7 @@ export roundLockPeriodInSecs
 export validPricePeriodInBlocks
 export emergencyPublishingPeriodInBlocks
 export minOracleOwnerStake
+export minOraclesPerRound
 export maxOraclesPerRound
 export maxSubscribedOraclesPerRound
 export bootstrapPrice

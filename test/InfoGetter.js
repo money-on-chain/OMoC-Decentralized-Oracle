@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
-const {expect} = require('chai');
-const {toBN, toWei} = require('web3-utils');
+const { expect } = require('chai');
+const { toBN, toWei } = require('web3-utils');
 const InfoGetter = artifacts.require('InfoGetter');
 
 contract('InfoGetter', async (accounts) => {
@@ -11,7 +11,7 @@ contract('InfoGetter', async (accounts) => {
     const ORACLE_NAME = 'ORACLE-A';
 
     before(async () => {
-        const contracts = await helpers.initContracts({governorOwner: accounts[8]});
+        const contracts = await helpers.initContracts({ governorOwner: accounts[8] });
         Object.assign(this, contracts);
 
         this.infoGetter = await InfoGetter.new();
@@ -19,6 +19,7 @@ contract('InfoGetter', async (accounts) => {
         this.coinPairPrice = await helpers.initCoinpair(COINPAIR_NAME, {
             ...contracts,
             whitelist: [accounts[0], this.infoGetter.address],
+            minOraclesPerRound: 3,
             maxOraclesPerRound: 3,
             validPricePeriodInBlocks: this.validPricePeriodInBlocks,
         });
@@ -42,12 +43,12 @@ contract('InfoGetter', async (accounts) => {
             value: ORACLE_FEES,
         });
 
-        await this.token.approve(this.staking.address, ORACLE_STAKE, {from: oracleOwner});
+        await this.token.approve(this.staking.address, ORACLE_STAKE, { from: oracleOwner });
         await this.staking.registerOracle(oracle, ORACLE_NAME, {
             from: oracleOwner,
         });
-        await this.staking.deposit(ORACLE_STAKE, oracleOwner, {from: oracleOwner});
-        await this.staking.subscribeToCoinPair(COINPAIR_ID, {from: oracleOwner});
+        await this.staking.deposit(ORACLE_STAKE, oracleOwner, { from: oracleOwner });
+        await this.staking.subscribeToCoinPair(COINPAIR_ID, { from: oracleOwner });
 
         await this.coinPairPrice.switchRound();
 

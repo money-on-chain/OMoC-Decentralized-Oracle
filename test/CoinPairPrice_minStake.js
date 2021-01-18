@@ -1,9 +1,10 @@
-const {BN, expectRevert} = require('@openzeppelin/test-helpers');
+const { BN, expectRevert } = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
-const {expect} = require('chai');
+const { expect } = require('chai');
 const ethers = require('ethers');
 
 const COINPAIR = web3.utils.asciiToHex('BTCUSD');
+const minOraclesPerRound = 3;
 const maxOraclesPerRound = 10;
 const maxSubscribedOraclesPerRound = 20;
 const minSubscriptionStake = 10000000000;
@@ -11,8 +12,8 @@ const minSubscriptionStake = 10000000000;
 contract('CoinPairPrice Min Stake', async (accounts) => {
     async function deposit(token, staking, oracleManager, ownerAddr, stake) {
         const initialBalance = await token.balanceOf(ownerAddr);
-        await token.approve(staking.address, stake, {from: ownerAddr});
-        await staking.deposit(stake, ownerAddr, {from: ownerAddr});
+        await token.approve(staking.address, stake, { from: ownerAddr });
+        await staking.deposit(stake, ownerAddr, { from: ownerAddr });
         const info = await oracleManager.getOracleRegistrationInfo(ownerAddr);
         assert.equal(info.stake, stake);
         assert.equal(
@@ -31,9 +32,14 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
         testobj.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
             ...contracts,
             whitelist: [accounts[0]],
+            minOraclesPerRound,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
         });
+        assert.equal(
+            minOraclesPerRound,
+            (await testobj.coinPairPrice.minOraclesPerRound()).toNumber(),
+        );
         assert.equal(
             maxOraclesPerRound,
             (await testobj.coinPairPrice.maxOraclesPerRound()).toNumber(),
@@ -52,10 +58,12 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
 
         it('Should fail to subscribe with less than minSubscriptionStake', async () => {
             const stake = minSubscriptionStake - 1;
-            await this.staking.registerOracle(oracleAddr, 'not enough stake', {from: ownerAccount});
+            await this.staking.registerOracle(oracleAddr, 'not enough stake', {
+                from: ownerAccount,
+            });
             await deposit(this.token, this.staking, this.oracleMgr, ownerAccount, stake);
             await expectRevert(
-                this.staking.subscribeToCoinPair(COINPAIR, {from: ownerAccount}),
+                this.staking.subscribeToCoinPair(COINPAIR, { from: ownerAccount }),
                 'Not enough stake',
             );
         });
@@ -73,7 +81,7 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
 
         it('subscribe other', async () => {
             await this.governor.mint(this.token.address, otherOwner, '8' + '0'.repeat(20));
-            await this.staking.registerOracle(otherAddr, 'not enough stake', {from: otherOwner});
+            await this.staking.registerOracle(otherAddr, 'not enough stake', { from: otherOwner });
             await deposit(
                 this.token,
                 this.staking,
@@ -81,7 +89,7 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
                 otherOwner,
                 minSubscriptionStake,
             );
-            await this.staking.subscribeToCoinPair(COINPAIR, {from: otherOwner});
+            await this.staking.subscribeToCoinPair(COINPAIR, { from: otherOwner });
 
             assert.isTrue(await this.oracleMgr.isSubscribed(otherOwner, COINPAIR));
             assert.equal(1, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length);
@@ -93,9 +101,11 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
 
         it('subscribe', async () => {
             const stake = minSubscriptionStake;
-            await this.staking.registerOracle(oracleAddr, 'not enough stake', {from: ownerAccount});
+            await this.staking.registerOracle(oracleAddr, 'not enough stake', {
+                from: ownerAccount,
+            });
             await deposit(this.token, this.staking, this.oracleMgr, ownerAccount, stake);
-            await this.staking.subscribeToCoinPair(COINPAIR, {from: ownerAccount});
+            await this.staking.subscribeToCoinPair(COINPAIR, { from: ownerAccount });
 
             assert.isTrue(await this.oracleMgr.isSubscribed(ownerAccount, COINPAIR));
             expect((await this.coinPairPrice.getRoundInfo()).selectedOracles).to.contain(
@@ -107,7 +117,7 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
         });
 
         it('publish', async () => {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -125,7 +135,7 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
                 [s2.v, s1.v],
                 [s2.r, s1.r],
                 [s2.s, s1.s],
-                {from: oracleAddr},
+                { from: oracleAddr },
             );
             expect(
                 (await this.coinPairPrice.getOracleRoundInfo(ownerAccount)).points,
@@ -133,7 +143,7 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
         });
 
         it('withdraw', async () => {
-            await this.staking.withdraw(1, {from: ownerAccount});
+            await this.staking.withdraw(1, { from: ownerAccount });
             expect(await this.staking.getBalance(ownerAccount)).to.be.bignumber.equal(
                 new BN(minSubscriptionStake - 1),
             );

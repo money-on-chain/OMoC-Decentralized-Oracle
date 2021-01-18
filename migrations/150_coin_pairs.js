@@ -2,7 +2,7 @@
 const helpers = require('@moc/shared/lib/helpers');
 const Web3 = require('web3');
 
-async function deploy({config, ozParams, governor, token}) {
+async function deploy({ config, ozParams, governor, token }) {
     const CoinPairPriceFree = artifacts.require('@moc/oracles/CoinPairPriceFree');
     const OracleManagerPairChange = artifacts.require('@moc/oracles/OracleManagerPairChange');
     const infoGetterAddr = helpers.ozGetAddr('@moc/oracles/InfoGetter', ozParams);
@@ -25,6 +25,7 @@ async function deploy({config, ozParams, governor, token}) {
                 [coinPairPriceFree.address, infoGetterAddr],
                 coinPair,
                 token.address,
+                Web3.utils.toBN(coinData.minOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.maxOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.maxSubscribedOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.roundLockPeriodInSecs).toString(),
@@ -36,7 +37,7 @@ async function deploy({config, ozParams, governor, token}) {
             contractAlias: 'CoinPairPrice_' + coin,
             admin: proxyAdmin,
             network: ozParams.network,
-            txParams: {...ozParams.txParams, gas: 6000000},
+            txParams: { ...ozParams.txParams, gas: 6000000 },
             force: true,
         });
         console.log('coinPairPrice address: ' + coinPairPrice.address);

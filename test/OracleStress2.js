@@ -1,6 +1,6 @@
 const OracleManager = artifacts.require('OracleManager');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
-const {constants} = require('@openzeppelin/test-helpers');
+const { constants } = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 const crypto = require('crypto');
 const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
@@ -10,6 +10,7 @@ const COINPAIR = web3.utils.asciiToHex('BTCUSD');
 const COINPAIR2 = web3.utils.asciiToHex('BTCRIF');
 const minOracleOwnerStake = 10000;
 const period = 20;
+const minOraclesPerRound = 3;
 const maxOraclesPerRound = 10;
 const maxSubscribedOraclesPerRound = 30;
 
@@ -28,6 +29,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             [accounts[0]],
             COINPAIR,
             this.token.address,
+            minOraclesPerRound,
             maxOraclesPerRound,
             maxSubscribedOraclesPerRound,
             5, // roundLockPeriodInSecs,
@@ -43,6 +45,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             [accounts[0]],
             COINPAIR2,
             this.token.address,
+            minOraclesPerRound,
             maxOraclesPerRound,
             5, // roundLockPeriodInSecs,
             3, // validPricePeriodInBlocks
@@ -119,11 +122,13 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             inserted.push(oracle_list[i]);
             const prevEntry = getPrevEntries(inserted);
             const o = oracle_list[i];
-            await this.token.approve(this.oracleMgr.address, o.stake, {from: o.owner_account});
+            await this.token.approve(this.oracleMgr.address, o.stake, { from: o.owner_account });
             await this.oracleMgr.registerOracleWithHint(o.account, o.name, o.stake, prevEntry[i], {
                 from: o.owner_account,
             });
-            await this.oracleMgr.subscribeToCoinPair(o.account, COINPAIR, {from: o.owner_account});
+            await this.oracleMgr.subscribeToCoinPair(o.account, COINPAIR, {
+                from: o.owner_account,
+            });
         }
     });
 
@@ -150,7 +155,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             oracle.name,
             oracle.stake,
             prevEntry[inserted.length - 1],
-            {from: oracle.owner_account},
+            { from: oracle.owner_account },
         );
         await this.oracleMgr.subscribeToCoinPair(oracle.account, COINPAIR2, {
             from: oracle.owner_account,
