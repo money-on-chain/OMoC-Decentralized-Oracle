@@ -260,10 +260,6 @@ contract CoinPairPrice is
             _sigS.length == _sigR.length && _sigR.length == _sigV.length,
             "Inconsistent signature count"
         );
-        require(
-            _sigS.length > roundInfo.length() / 2,
-            "Signature count must exceed 50% of active oracles"
-        );
 
         //
         // NOTE: Message Size is 148 = sizeof(uint256) +
@@ -281,15 +277,20 @@ contract CoinPairPrice is
             );
         bytes32 messageHash = keccak256(hData);
 
+        uint256 validSigs = 0;
         address lastAddr = address(0);
         for (uint256 i = 0; i < _sigS.length; i++) {
             address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], messageHash);
             address ownerRec = oracleManager.getOracleOwner(rec);
-            // require(subscribedOracles.contains(ownerRec), "Signing oracle not subscribed");
-            require(roundInfo.isSelected(ownerRec), "Address of signer not part of this round");
+            if (roundInfo.isSelected(ownerRec)) validSigs += 1;
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
             lastAddr = rec;
         }
+
+        require(
+            validSigs > roundInfo.length() / 2,
+            "Valid signatures count must exceed 50% of active oracles"
+        );
 
         roundInfo.addPoints(ownerAddr, 1);
         _publish(_price);

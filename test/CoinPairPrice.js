@@ -557,7 +557,7 @@ contract('CoinPairPrice', async (accounts) => {
         );
     });
 
-    it('Should fail to publish price if signature count is  less than 50% of participating oracles', async () => {
+    it('Should fail to publish price if signature count is less than 50% of participating oracles', async () => {
         const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -580,7 +580,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.s],
                 { from: oracleData[0].account },
             ),
-            'Signature count must exceed 50% of active oracles',
+            'Valid signatures count must exceed 50% of active oracles',
         );
     });
 
@@ -686,34 +686,6 @@ contract('CoinPairPrice', async (accounts) => {
                 { from: oracleData[3].account },
             ),
             'Voter oracle is not part of this round',
-        );
-    });
-
-    it('Should fail to publish if any signer is not part of round', async () => {
-        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
-            3,
-            'BTCUSD',
-            (10 ** 18).toString(),
-            oracleData[0].account,
-            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
-        );
-        const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[3].account));
-        const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
-        const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-
-        await expectRevert(
-            this.coinPairPrice.publishPrice(
-                msg.version,
-                web3.utils.asciiToHex('BTCUSD'),
-                msg.price,
-                msg.votedOracle,
-                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
-                [s1.v, s2.v, s3.v],
-                [s1.r, s2.r, s2.r],
-                [s1.s, s2.s, s3.s],
-                { from: oracleData[0].account },
-            ),
-            'Address of signer not part of this round',
         );
     });
 
