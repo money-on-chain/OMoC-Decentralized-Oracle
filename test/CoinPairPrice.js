@@ -1,8 +1,8 @@
 const helpers = require('./helpers');
-const {expectRevert, BN, time} = require('@openzeppelin/test-helpers');
+const { expectRevert, BN, time } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
-const {ZERO_ADDRESS} = require('@openzeppelin/test-helpers/src/constants');
-const {expect} = require('chai');
+const { ZERO_ADDRESS } = require('@openzeppelin/test-helpers/src/constants');
+const { expect } = require('chai');
 
 contract('CoinPairPrice', async (accounts) => {
     const feeSourceAccount = accounts[0];
@@ -13,7 +13,7 @@ contract('CoinPairPrice', async (accounts) => {
     before(async () => {
         this.validPricePeriodInBlocks = 3;
 
-        const contracts = await helpers.initContracts({governorOwner: accounts[8]});
+        const contracts = await helpers.initContracts({ governorOwner: accounts[8] });
         Object.assign(this, contracts);
 
         this.coinPairPrice = await helpers.initCoinpair('BTCUSD', {
@@ -63,7 +63,7 @@ contract('CoinPairPrice', async (accounts) => {
 
     it('Only Oracle manager can call subscribe', async () => {
         await expectRevert(
-            this.coinPairPrice.subscribe(oracleData[0].account, {from: accounts[3]}),
+            this.coinPairPrice.subscribe(oracleData[0].account, { from: accounts[3] }),
             'Oracle manager only',
         );
     });
@@ -162,7 +162,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it.skip('Should fail to publish price before the first switch-round call (NO MORE ROUND ZERO)', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -183,7 +183,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Round not open',
         );
@@ -210,7 +210,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish with mismatching coinpair', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'ARSBTC',
             (10 ** 18).toString(),
@@ -231,14 +231,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Coin pair - contract mismatch',
         );
     });
 
     it('Should fail to publish with zero price', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             0 * (10 ** 18).toString(),
@@ -259,14 +259,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Price must be positive and non-zero',
         );
     });
 
     it('Should fail to publish with non-V3 format', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             1,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -287,14 +287,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'This contract accepts only V3 format',
         );
     });
 
     it('Should fail to publish with inconsistent signature count', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -315,14 +315,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Inconsistent signature count',
         );
     });
 
     it.skip('Should fail to publish price if some signer is not subscribed. NOT TRUE ANYMORE', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -343,14 +343,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Signing oracle not subscribed',
         );
     });
 
     it('Should fail to publish price if signature vf1component is invalid', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -373,14 +373,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Cannot recover signature',
         );
     });
 
     it('Oracle A should publish a valid price message signed by A,B and C', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -400,33 +400,33 @@ contract('CoinPairPrice', async (accounts) => {
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
-            {from: oracleData[0].account},
+            { from: oracleData[0].account },
         );
     });
 
     it('Should retrieve the last price published from address 1', async () => {
-        const p = await this.coinPairPrice.getPrice({from: helpers.ADDRESS_ONE});
+        const p = await this.coinPairPrice.getPrice({ from: helpers.ADDRESS_ONE });
         assert.equal(p.toString(), (10 ** 18).toString());
     });
 
     it('Should retrieve the last price published from whitelisted address', async () => {
-        const p = await this.coinPairPrice.getPrice({from: helpers.ADDRESS_ONE});
+        const p = await this.coinPairPrice.getPrice({ from: helpers.ADDRESS_ONE });
         assert.equal(p.toString(), (10 ** 18).toString());
     });
 
     it('Should fail to retrieve the last price from any non-WL address', async () => {
         await expectRevert(
-            this.coinPairPrice.getPrice({from: web3.utils.randomHex(20)}),
+            this.coinPairPrice.getPrice({ from: web3.utils.randomHex(20) }),
             'Address is not whitelisted',
         );
     });
 
     it('Price should be valid for validPricePeriodInBlocks blocks', async () => {
-        const {0: price, 1: valid} = await this.coinPairPrice.peek({from: helpers.ADDRESS_ONE});
+        const { 0: price, 1: valid } = await this.coinPairPrice.peek({ from: helpers.ADDRESS_ONE });
         assert.equal(helpers.bytes32toBN(price).toString(), (10 ** 18).toString());
         assert.isTrue(valid);
         await helpers.mineBlocks(this.validPricePeriodInBlocks);
-        const {0: price_after, 1: not_valid} = await this.coinPairPrice.peek({
+        const { 0: price_after, 1: not_valid } = await this.coinPairPrice.peek({
             from: helpers.ADDRESS_ONE,
         });
         assert.equal(helpers.bytes32toBN(price_after).toString(), (10 ** 18).toString());
@@ -434,7 +434,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it.skip('Should fail to publish price from unsubscribed address. NOT TRUE ANYMORE', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -456,14 +456,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s3.r],
                 [s1.s, s2.s, s3.s],
-                {from: accounts[7]},
+                { from: accounts[7] },
             ),
             'Sender oracle not subscribed',
         );
     });
 
     it('Should fail to publish price if sender is not a voted oracle', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -485,7 +485,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s3.r],
                 [s1.s, s2.s, s3.s],
-                {from: oracleData[2].account},
+                { from: oracleData[2].account },
             ),
             'Your address does not match the voted oracle',
         );
@@ -494,7 +494,7 @@ contract('CoinPairPrice', async (accounts) => {
     it('Should fail to publish price if block does not match where the last publication occurred', async () => {
         const thisBlock = 0;
 
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -516,14 +516,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s3.r],
                 [s1.s, s2.s, s3.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Blocknumber does not match the last publication block',
         );
     });
 
-    it('Should fail to publish price if signature count is  less than 50% of participating oracles', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+    it('Should fail to publish price if signature count is less than 50% of participating oracles', async () => {
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -543,14 +543,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.v],
                 [s1.r],
                 [s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
-            'Signature count must exceed 50% of active oracles',
+            'Valid signatures count must exceed 50% of active oracles',
         );
     });
 
     it('Should fail to publish if signatures are not unique', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -571,14 +571,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.v, s1.v, s1.v],
                 [s1.r, s1.r, s1.r],
                 [s1.s, s1.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Signatures are not unique or not ordered by address',
         );
     });
 
     it('Should fail to publish if signatures are in the wrong order', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -598,7 +598,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s3.r],
                 [s1.s, s2.s, s3.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             ),
             'Signatures are not unique or not ordered by address',
         );
@@ -627,7 +627,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish if voter/sender is D (not a selected-in-round oracle)', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -648,37 +648,9 @@ contract('CoinPairPrice', async (accounts) => {
                 [s1.v, s2.v, s3.v],
                 [s1.r, s2.r, s2.r],
                 [s1.s, s2.s, s3.s],
-                {from: oracleData[3].account},
+                { from: oracleData[3].account },
             ),
             'Voter oracle is not part of this round',
-        );
-    });
-
-    it('Should fail to publish if any signer is not part of round', async () => {
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
-            3,
-            'BTCUSD',
-            (10 ** 18).toString(),
-            oracleData[0].account,
-            (await this.coinPairPrice.getLastPublicationBlock()).toString(),
-        );
-        const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[3].account));
-        const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
-        const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-
-        await expectRevert(
-            this.coinPairPrice.publishPrice(
-                msg.version,
-                web3.utils.asciiToHex('BTCUSD'),
-                msg.price,
-                msg.votedOracle,
-                (await this.coinPairPrice.getLastPublicationBlock()).toString(),
-                [s1.v, s2.v, s3.v],
-                [s1.r, s2.r, s2.r],
-                [s1.s, s2.s, s3.s],
-                {from: oracleData[0].account},
-            ),
-            'Address of signer not part of this round',
         );
     });
 
@@ -687,7 +659,7 @@ contract('CoinPairPrice', async (accounts) => {
         // Addup points submitting several prices from Oracles A,B and C
         // Oracle A    publications.
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -712,14 +684,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -744,14 +716,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -776,7 +748,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[0].account},
+                { from: oracleData[0].account },
             );
         }
 
@@ -785,7 +757,7 @@ contract('CoinPairPrice', async (accounts) => {
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -810,14 +782,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -842,14 +814,14 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[1].account},
+                { from: oracleData[1].account },
             );
         }
 
         // Oracle C  publications.
         roundInfo = await this.coinPairPrice.getRoundInfo();
         {
-            const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+            const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
@@ -874,7 +846,7 @@ contract('CoinPairPrice', async (accounts) => {
                 [s3.v, s2.v, s1.v],
                 [s3.r, s2.r, s1.r],
                 [s3.s, s2.s, s1.s],
-                {from: oracleData[2].account},
+                { from: oracleData[2].account },
             );
         }
     });
@@ -885,7 +857,7 @@ contract('CoinPairPrice', async (accounts) => {
 
     it('Should be possible for Oracle A to publish a valid price message after the lock period ', async () => {
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
             (10 ** 18).toString(),
@@ -905,7 +877,7 @@ contract('CoinPairPrice', async (accounts) => {
             [s3.v, s2.v, s1.v],
             [s3.r, s2.r, s1.r],
             [s3.s, s2.s, s1.s],
-            {from: oracleData[0].account},
+            { from: oracleData[0].account },
         );
     });
 
@@ -1005,7 +977,7 @@ contract('CoinPairPrice', async (accounts) => {
         const info = await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner);
         assert.equal(info.internetName, 'oracle-a.io');
 
-        await this.staking.removeOracle({from: oracleData[0].owner});
+        await this.staking.removeOracle({ from: oracleData[0].owner });
         assert.equal(
             (await this.oracleMgr.getOracleRegistrationInfo(oracleData[0].owner)).oracleAddr,
             ZERO_ADDRESS,

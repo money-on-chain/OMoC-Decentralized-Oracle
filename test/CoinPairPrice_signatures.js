@@ -1,6 +1,6 @@
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
-const {expectRevert, BN} = require('@openzeppelin/test-helpers');
+const { expectRevert, BN } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
 // Maybe this test suite is a little bit exaggerated, but it shows current behaviour so we can change it in the future
@@ -9,70 +9,74 @@ const ethers = require('ethers');
 const TESTS_TO_RUN = [
     {
         oracles: 1,
-        tests: [{signatures: 0, success: true}],
+        tests: [{ signatures: 0, success: true }],
     },
     {
         oracles: 2,
-        tests: [{signatures: 0}, {signatures: 1, success: true}],
+        tests: [{ signatures: 0 }, { signatures: 1, success: true }],
     },
     {
         oracles: 3,
-        tests: [{signatures: 0}, {signatures: 1, success: true}, {signatures: 2, success: true}],
+        tests: [
+            { signatures: 0 },
+            { signatures: 1, success: true },
+            { signatures: 2, success: true },
+        ],
     },
     {
         oracles: 4,
         tests: [
-            {signatures: 0},
-            {signatures: 1},
-            {signatures: 2, success: true},
-            {signatures: 3, success: true},
+            { signatures: 0 },
+            { signatures: 1 },
+            { signatures: 2, success: true },
+            { signatures: 3, success: true },
         ],
     },
     {
         oracles: 5,
         tests: [
-            {signatures: 0},
-            {signatures: 1},
-            {signatures: 2, success: true},
-            {signatures: 3, success: true},
-            {signatures: 4, success: true},
+            { signatures: 0 },
+            { signatures: 1 },
+            { signatures: 2, success: true },
+            { signatures: 3, success: true },
+            { signatures: 4, success: true },
         ],
     },
     {
         oracles: 6,
         tests: [
-            {signatures: 0},
-            {signatures: 1},
-            {signatures: 2},
-            {signatures: 3, success: true},
-            {signatures: 4, success: true},
-            {signatures: 5, success: true},
+            { signatures: 0 },
+            { signatures: 1 },
+            { signatures: 2 },
+            { signatures: 3, success: true },
+            { signatures: 4, success: true },
+            { signatures: 5, success: true },
         ],
     },
     {
         oracles: 7,
         tests: [
-            {signatures: 0},
-            {signatures: 1},
-            {signatures: 2},
-            {signatures: 3, success: true},
-            {signatures: 4, success: true},
-            {signatures: 5, success: true},
-            {signatures: 6, success: true},
+            { signatures: 0 },
+            { signatures: 1 },
+            { signatures: 2 },
+            { signatures: 3, success: true },
+            { signatures: 4, success: true },
+            { signatures: 5, success: true },
+            { signatures: 6, success: true },
         ],
     },
 
     {
         oracles: 8,
         tests: [
-            {signatures: 0},
-            {signatures: 1},
-            {signatures: 2},
-            {signatures: 3},
-            {signatures: 4, success: true},
-            {signatures: 5, success: true},
-            {signatures: 6, success: true},
-            {signatures: 7, success: true},
+            { signatures: 0 },
+            { signatures: 1 },
+            { signatures: 2 },
+            { signatures: 3 },
+            { signatures: 4, success: true },
+            { signatures: 5, success: true },
+            { signatures: 6, success: true },
+            { signatures: 7, success: true },
         ],
     },
 ];
@@ -95,11 +99,11 @@ contract('CoinPairPrice Signature', async (accounts) => {
         // [0] owner, [1] sender
         for (const o of oracleData.slice(0, cantOracles)) {
             await this.governor.mint(this.token.address, o.owner, '800000000000000000000');
-            await this.token.approve(this.staking.address, o.stake, {from: o.owner});
-            await this.staking.registerOracle(o.account, o.name, {from: o.owner});
-            await this.staking.deposit(o.stake, o.owner, {from: o.owner});
+            await this.token.approve(this.staking.address, o.stake, { from: o.owner });
+            await this.staking.registerOracle(o.account, o.name, { from: o.owner });
+            await this.staking.deposit(o.stake, o.owner, { from: o.owner });
             const thisCoinPair = await this.coinPairPrice.getCoinPair();
-            await this.staking.subscribeToCoinPair(thisCoinPair, {from: o.owner});
+            await this.staking.subscribeToCoinPair(thisCoinPair, { from: o.owner });
         }
         const FEES = new BN((0.33 * 10 ** 18).toString());
         await this.token.transfer(this.coinPairPrice.address, FEES.toString(), {
@@ -116,7 +120,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
         const sender = oracleData[0].account;
         const thisCoinPair = await this.coinPairPrice.getCoinPair();
         const lastPubBlock = (await this.coinPairPrice.getLastPublicationBlock()).toString();
-        const {msg, encMsg} = await helpers.getDefaultEncodedMessage(
+        const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             helpers.coinPairStr(thisCoinPair),
             (10 ** 18).toString(),
@@ -145,7 +149,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
             v,
             r,
             s,
-            {from: sender},
+            { from: sender },
         );
     }
 
@@ -188,7 +192,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
                         async () => {
                             expectRevert(
                                 signWithOwner.call(this, ORACLE_DATA, test.signatures),
-                                'Signature count must exceed 50% of active oracles',
+                                'Valid signatures count must exceed 50% of active oracles',
                             );
                         },
                     );
