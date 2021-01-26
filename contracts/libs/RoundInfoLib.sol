@@ -42,7 +42,10 @@ library RoundInfoLib {
         uint256 _roundLockPeriod
     ) internal pure returns (RoundInfo memory) {
         require(_minOraclesPerRound > 0, "The minimum oracles per round must be >0");
-        require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
+        require(
+            _maxOraclesPerRound >= _minOraclesPerRound,
+            "The max oracles per round must be >= min oracles per round"
+        );
         require(_roundLockPeriod > 0, "The round lock period must be positive and non zero");
         return
             RoundInfo({
