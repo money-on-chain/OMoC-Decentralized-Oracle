@@ -106,11 +106,12 @@ contract('CoinPairPriceFree', async (accounts) => {
         });
         expect(res3).to.be.bignumber.equal(lastPublicationBlock);
 
-        const res4 = await this.coinPairPriceFree.peek({
+        const res4 = await this.coinPairPriceFree.getPriceInfo({
             from: accounts[9],
         });
 
         expect(toBN(res4[0])).to.be.bignumber.equal(toBN(price));
         expect(res4[1]).to.be.true;
+        expect(res4[2]).to.be.bignumber.equal(lastPublicationBlock);
     });
 });
