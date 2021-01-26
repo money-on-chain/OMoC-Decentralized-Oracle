@@ -1,10 +1,12 @@
 const helpers = require('./helpers');
-const { expectEvent } = require('@openzeppelin/test-helpers');
+const { BN } = require('@openzeppelin/test-helpers');
+const CoinPairEmergencyWhitelistChange = artifacts.require('CoinPairEmergencyWhitelistChange');
 const CoinPairEmergencyWhitelistListChange = artifacts.require(
     'CoinPairEmergencyWhitelistListChange',
 );
 
 contract('CoinPairEmergencyWhitelistListChange', async (accounts) => {
+    const emergencyPublisher = accounts[7];
     const minCPSubscriptionStake = (10 ** 18).toString();
     const period = 3;
     const governorOwner = accounts[8];
@@ -26,18 +28,31 @@ contract('CoinPairEmergencyWhitelistListChange', async (accounts) => {
             whitelist: [accounts[0]],
         });
 
+        this.coinPairEmergencyWhitelistChange = await CoinPairEmergencyWhitelistChange.new(
+            this.coinPairPrice_BTCUSD.address,
+            emergencyPublisher,
+        );
+
+        await this.governor.execute(this.coinPairEmergencyWhitelistChange);
+
         this.coinPairEmergencyWhitelistListChange = await CoinPairEmergencyWhitelistListChange.new(
             this.coinPairPrice_BTCUSD.address,
         );
     });
 
     it('Should succeed execute call', async () => {
-        let receipt = await this.governor.execute(this.coinPairEmergencyWhitelistListChange);
-        expectEvent.inTransaction(
-            receipt.tx,
-            this.coinPairEmergencyWhitelistListChange,
-            'Result',
-            {},
+        const receipt = await this.governor.execute(this.coinPairEmergencyWhitelistListChange);
+    });
+
+    it('Should get whitelist length', async () => {
+        const whitelistLen = await this.coinPairEmergencyWhitelistListChange.getWhiteListLen();
+        assert.equal(whitelistLen, '1');
+    });
+
+    it('Should get whitelisted at index', async () => {
+        const whitelistedAtIndex = await this.coinPairEmergencyWhitelistListChange.getWhiteListAtIndex(
+            new BN(0),
         );
+        assert.equal(whitelistedAtIndex, emergencyPublisher);
     });
 });

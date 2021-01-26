@@ -5,7 +5,7 @@ const { expectRevert, BN, expectEvent } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
 contract('CoinPairPrice Emergency Publish', async (accounts) => {
-    const EMERGENCY_PUBLISHER = accounts[2];
+    const EMERGENCY_PUBLISHER = accounts[7];
     const emergencyPublishingPeriodInBlocks = 20;
     const minSubscriptionStake = (10 ** 18).toString();
     const coinPair = web3.utils.asciiToHex('BTCUSD');
@@ -75,16 +75,37 @@ contract('CoinPairPrice Emergency Publish', async (accounts) => {
     });
 
     it('Should success to emergency publish after a regular publication and emergencyPublishingPeriodInBlocks blocks', async () => {
-        // Register Oracle
-        const ORACLE_OWNER = accounts[0];
-        const ORACLE_ADDR = accounts[1];
-        await this.governor.mint(this.token.address, ORACLE_OWNER, '800000000000000000000');
-        await this.token.approve(this.staking.address, minSubscriptionStake, {
-            from: ORACLE_OWNER,
-        });
-        await this.staking.deposit(minSubscriptionStake, ORACLE_OWNER, { from: ORACLE_OWNER });
-        await this.staking.registerOracle(ORACLE_ADDR, 'SOME_NAME', { from: ORACLE_OWNER });
-        await this.staking.subscribeToCoinPair(coinPair, { from: ORACLE_OWNER });
+        // Register Oracles
+        const oracles = [
+            {
+                owner: accounts[0],
+                address: accounts[1],
+                name: 'oracle1',
+            },
+            {
+                owner: accounts[2],
+                address: accounts[3],
+                name: 'oracle2',
+            },
+            {
+                owner: accounts[4],
+                address: accounts[5],
+                name: 'oracle3',
+            },
+        ];
+        for (let i = 0; i < oracles.length; i++) {
+            await this.governor.mint(this.token.address, oracles[i].owner, '800000000000000000000');
+            await this.token.approve(this.staking.address, minSubscriptionStake, {
+                from: oracles[i].owner,
+            });
+            await this.staking.deposit(minSubscriptionStake, oracles[i].owner, {
+                from: oracles[i].owner,
+            });
+            await this.staking.registerOracle(oracles[i].address, oracles[i].name, {
+                from: oracles[i].owner,
+            });
+            await this.staking.subscribeToCoinPair(coinPair, { from: oracles[i].owner });
+        }
         await this.coinPairPrice.switchRound();
 
         // Publish a price
@@ -94,20 +115,23 @@ contract('CoinPairPrice Emergency Publish', async (accounts) => {
             3,
             helpers.coinPairStr(thisCoinPair),
             '1233547895',
-            ORACLE_ADDR,
+            oracles[0].address,
             lastPubBlock,
         );
-        const signature = ethers.utils.splitSignature(await web3.eth.sign(encMsg, ORACLE_ADDR));
+        const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[0].address));
+        const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[1].address));
+        const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[2].address));
+
         await this.coinPairPrice.publishPrice(
             msg.version,
             thisCoinPair,
             msg.price,
             msg.votedOracle,
             msg.blockNumber,
-            [signature.v],
-            [signature.r],
-            [signature.s],
-            { from: ORACLE_ADDR },
+            [s3.v, s2.v, s1.v],
+            [s3.r, s2.r, s1.r],
+            [s3.s, s2.s, s1.s],
+            { from: oracles[0].address },
         );
 
         // fail

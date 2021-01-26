@@ -38,10 +38,6 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             maxSubscribedOraclesPerRound,
         });
         assert.equal(
-            minOraclesPerRound,
-            (await testobj.coinPairPrice.minOraclesPerRound()).toNumber(),
-        );
-        assert.equal(
             maxOraclesPerRound,
             (await testobj.coinPairPrice.maxOraclesPerRound()).toNumber(),
         );

@@ -8,7 +8,6 @@ contract('InfoGetter', async (accounts) => {
     const ORACLE_FEES = toBN(toWei('1', 'ether'));
     const ORACLE_STAKE = toBN(toWei('1', 'ether'));
     const COINPAIR_NAME = 'BTCUSD';
-    const ORACLE_NAME = 'ORACLE-A';
 
     before(async () => {
         const contracts = await helpers.initContracts({ governorOwner: accounts[8] });
@@ -28,27 +27,45 @@ contract('InfoGetter', async (accounts) => {
 
         await this.infoGetter.initialize(this.governor.address);
 
-        const oracleOwner = await helpers.newUnlockedAccount();
-        const oracle = await helpers.newUnlockedAccount();
+        const oracles = [
+            {
+                owner: accounts[2],
+                address: accounts[3],
+                name: 'oracle1',
+            },
+            {
+                owner: accounts[4],
+                address: accounts[5],
+                name: 'oracle2',
+            },
+            {
+                owner: accounts[6],
+                address: accounts[7],
+                name: 'oracle3',
+            },
+        ];
 
-        await this.governor.mint(this.token.address, oracleOwner, ORACLE_STAKE);
-        await web3.eth.sendTransaction({
-            from: feesAccount,
-            to: oracleOwner,
-            value: ORACLE_FEES,
-        });
-        await web3.eth.sendTransaction({
-            from: feesAccount,
-            to: oracle,
-            value: ORACLE_FEES,
-        });
-
-        await this.token.approve(this.staking.address, ORACLE_STAKE, { from: oracleOwner });
-        await this.staking.registerOracle(oracle, ORACLE_NAME, {
-            from: oracleOwner,
-        });
-        await this.staking.deposit(ORACLE_STAKE, oracleOwner, { from: oracleOwner });
-        await this.staking.subscribeToCoinPair(COINPAIR_ID, { from: oracleOwner });
+        for (let i = 0; i < oracles.length; i++) {
+            await this.governor.mint(this.token.address, oracles[i].owner, ORACLE_STAKE);
+            await web3.eth.sendTransaction({
+                from: feesAccount,
+                to: oracles[i].owner,
+                value: ORACLE_FEES,
+            });
+            await web3.eth.sendTransaction({
+                from: feesAccount,
+                to: oracles[i].address,
+                value: ORACLE_FEES,
+            });
+            await this.token.approve(this.staking.address, ORACLE_STAKE, {
+                from: oracles[i].owner,
+            });
+            await this.staking.registerOracle(oracles[i].address, oracles[i].name, {
+                from: oracles[i].owner,
+            });
+            await this.staking.deposit(ORACLE_STAKE, oracles[i].owner, { from: oracles[i].owner });
+            await this.staking.subscribeToCoinPair(COINPAIR_ID, { from: oracles[i].owner });
+        }
 
         await this.coinPairPrice.switchRound();
 
@@ -58,8 +75,7 @@ contract('InfoGetter', async (accounts) => {
             coinPairPrice: this.coinPairPrice,
             coinPairName: COINPAIR_NAME,
             price,
-            oracle,
-            signers: [oracle],
+            oracles,
         });
 
         expect(price).to.not.be.undefined;

@@ -241,29 +241,29 @@ async function newUnlockedAccount() {
     return account;
 }
 
-async function publishPrice({ coinPairPrice, coinPairName, price, oracle, signers }) {
+async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
     const lastPublicationBlock = await coinPairPrice.getLastPublicationBlock();
-
     const { msg, encMsg } = await getDefaultEncodedMessage(
         3,
         coinPairName,
         price,
-        oracle,
+        oracles[0].address,
         lastPublicationBlock.toString(),
     );
 
-    const sortedSigners = signers.slice(0);
-    sortedSigners.sort((x, y) => x.localeCompare(y, 'en', { sensitivity: 'base' }));
+    let sigs = [];
 
-    const sv = [];
-    const sr = [];
-    const ss = [];
-    for (const signer of sortedSigners) {
-        const s = ethers.utils.splitSignature(await web3.eth.sign(encMsg, signer));
+    for (let i = 0; i < oracles.length; i++) {
+        sigs.push(ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[i].address)));
+    }
 
-        sv.push(s.v);
-        sr.push(s.r);
-        ss.push(s.s);
+    let sigV = [];
+    let sigR = [];
+    let sigS = [];
+    for (let j = sigs.length - 1; j >= 0; j--) {
+        sigV.push(sigs[j].v);
+        sigR.push(sigs[j].r);
+        sigS.push(sigs[j].s);
     }
 
     await coinPairPrice.publishPrice(
@@ -272,10 +272,10 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracle, signer
         msg.price,
         msg.votedOracle,
         lastPublicationBlock.toString(),
-        sv,
-        sr,
-        ss,
-        { from: oracle },
+        sigV,
+        sigR,
+        sigS,
+        { from: oracles[0].address },
     );
 }
 

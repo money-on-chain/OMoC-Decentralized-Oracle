@@ -37,10 +37,6 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
             maxSubscribedOraclesPerRound,
         });
         assert.equal(
-            minOraclesPerRound,
-            (await testobj.coinPairPrice.minOraclesPerRound()).toNumber(),
-        );
-        assert.equal(
             maxOraclesPerRound,
             (await testobj.coinPairPrice.maxOraclesPerRound()).toNumber(),
         );
@@ -57,7 +53,7 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
         });
 
         it('Should fail to subscribe with less than minSubscriptionStake', async () => {
-            const stake = minSubscriptionStake - 1;
+            const stake = minSubscriptionStake - 100000;
             await this.staking.registerOracle(oracleAddr, 'not enough stake', {
                 from: ownerAccount,
             });
@@ -69,49 +65,77 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
         });
     });
 
-    describe('After susbcription if we have less than minSubscriptionStake we are kicked off', async () => {
-        const oracleAddr = accounts[3];
-        const ownerAccount = accounts[4];
-        const otherAddr = accounts[5];
-        const otherOwner = accounts[6];
+    describe('After subscription if we have less than minSubscriptionStake we are kicked off', async () => {
+        const oracles = [
+            {
+                owner: accounts[0],
+                address: accounts[1],
+                name: 'oracle1',
+            },
+            {
+                owner: accounts[2],
+                address: accounts[3],
+                name: 'oracle2',
+            },
+            {
+                owner: accounts[4],
+                address: accounts[5],
+                name: 'oracle3',
+            },
+        ];
         it('creation', async () => {
             await initContracts(this);
-            await this.governor.mint(this.token.address, ownerAccount, '8' + '0'.repeat(20));
+            await this.governor.mint(this.token.address, oracles[0].owner, '8' + '0'.repeat(20));
         });
 
         it('subscribe other', async () => {
-            await this.governor.mint(this.token.address, otherOwner, '8' + '0'.repeat(20));
-            await this.staking.registerOracle(otherAddr, 'not enough stake', { from: otherOwner });
-            await deposit(
-                this.token,
-                this.staking,
-                this.oracleMgr,
-                otherOwner,
-                minSubscriptionStake,
-            );
-            await this.staking.subscribeToCoinPair(COINPAIR, { from: otherOwner });
+            for (let i = 1; i < oracles.length; i++) {
+                await this.governor.mint(
+                    this.token.address,
+                    oracles[i].owner,
+                    '8' + '0'.repeat(20),
+                );
+                await this.staking.registerOracle(oracles[i].address, 'not enough stake', {
+                    from: oracles[i].owner,
+                });
+                await deposit(
+                    this.token,
+                    this.staking,
+                    this.oracleMgr,
+                    oracles[i].owner,
+                    minSubscriptionStake,
+                );
+                await this.staking.subscribeToCoinPair(COINPAIR, { from: oracles[i].owner });
+                assert.isTrue(await this.oracleMgr.isSubscribed(oracles[i].owner, COINPAIR));
+                assert.equal(i, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length);
+                expect(await this.staking.getBalance(oracles[i].owner)).to.be.bignumber.equal(
+                    new BN(minSubscriptionStake),
+                );
+            }
 
-            assert.isTrue(await this.oracleMgr.isSubscribed(otherOwner, COINPAIR));
-            assert.equal(1, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length);
-            assert.equal(otherAddr, (await this.coinPairPrice.getRoundInfo()).selectedOracles[0]);
-            expect(await this.staking.getBalance(otherOwner)).to.be.bignumber.equal(
-                new BN(minSubscriptionStake),
+            assert.equal(
+                oracles[1].address,
+                (await this.coinPairPrice.getRoundInfo()).selectedOracles[0],
+            );
+            assert.equal(
+                oracles[2].address,
+                (await this.coinPairPrice.getRoundInfo()).selectedOracles[1],
             );
         });
 
         it('subscribe', async () => {
             const stake = minSubscriptionStake;
-            await this.staking.registerOracle(oracleAddr, 'not enough stake', {
-                from: ownerAccount,
+            await this.staking.registerOracle(oracles[0].address, 'not enough stake', {
+                from: oracles[0].owner,
             });
-            await deposit(this.token, this.staking, this.oracleMgr, ownerAccount, stake);
-            await this.staking.subscribeToCoinPair(COINPAIR, { from: ownerAccount });
+            await deposit(this.token, this.staking, this.oracleMgr, oracles[0].owner, stake);
+            await this.staking.subscribeToCoinPair(COINPAIR, { from: oracles[0].owner });
 
-            assert.isTrue(await this.oracleMgr.isSubscribed(ownerAccount, COINPAIR));
+            assert.isTrue(await this.oracleMgr.isSubscribed(oracles[0].owner, COINPAIR));
             expect((await this.coinPairPrice.getRoundInfo()).selectedOracles).to.contain(
-                oracleAddr,
+                oracles[0].address,
             );
-            expect(await this.staking.getBalance(ownerAccount)).to.be.bignumber.equal(
+            expect(await this.staking.getBalance(oracles[0].owner)).to.be.bignumber.equal(
                 new BN(minSubscriptionStake),
             );
         });
@@ -121,38 +145,40 @@ contract('CoinPairPrice Min Stake', async (accounts) => {
                 3,
                 'BTCUSD',
                 (0.3 * 10 ** 18).toString(),
-                oracleAddr,
+                oracles[0].address,
                 (await this.coinPairPrice.getLastPublicationBlock()).toString(),
             );
-            const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleAddr));
-            const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, otherAddr));
+            const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[0].address));
+            const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[1].address));
+            const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[2].address));
+
             await this.coinPairPrice.publishPrice(
                 msg.version,
                 web3.utils.asciiToHex('BTCUSD'),
                 msg.price,
                 msg.votedOracle,
                 (await this.coinPairPrice.getLastPublicationBlock()).toString(),
-                [s2.v, s1.v],
-                [s2.r, s1.r],
-                [s2.s, s1.s],
-                { from: oracleAddr },
+                [s3.v, s2.v, s1.v],
+                [s3.r, s2.r, s1.r],
+                [s3.s, s2.s, s1.s],
+                { from: oracles[0].address },
             );
             expect(
-                (await this.coinPairPrice.getOracleRoundInfo(ownerAccount)).points,
+                (await this.coinPairPrice.getOracleRoundInfo(oracles[0].owner)).points,
             ).to.be.bignumber.eq(new BN(1));
         });
 
         it('withdraw', async () => {
-            await this.staking.withdraw(1, { from: ownerAccount });
-            expect(await this.staking.getBalance(ownerAccount)).to.be.bignumber.equal(
+            await this.staking.withdraw(1, { from: oracles[0].owner });
+            expect(await this.staking.getBalance(oracles[0].owner)).to.be.bignumber.equal(
                 new BN(minSubscriptionStake - 1),
             );
-            assert.isFalse(await this.oracleMgr.isSubscribed(ownerAccount, COINPAIR));
+            assert.isFalse(await this.oracleMgr.isSubscribed(oracles[0].owner, COINPAIR));
             expect((await this.coinPairPrice.getRoundInfo()).selectedOracles).to.not.contain(
-                oracleAddr,
+                oracles[0].address,
             );
             expect(
-                (await this.coinPairPrice.getOracleRoundInfo(ownerAccount)).points,
+                (await this.coinPairPrice.getOracleRoundInfo(oracles[0].owner)).points,
             ).to.be.bignumber.eq(new BN(0));
         });
     });
