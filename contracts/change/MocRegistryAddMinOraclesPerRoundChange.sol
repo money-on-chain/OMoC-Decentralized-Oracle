@@ -11,10 +11,6 @@ import {RegistryConstants} from "@moc/shared/contracts/RegistryConstants.sol";
  */
 contract MocRegistryAddMinOraclesPerRoundChange is ChangeContract, RegistryConstants {
     IRegistry public registry;
-    address public delayMachine;
-    address public oracleManager;
-    address public supporters;
-    address public infoGetter;
 
     /**
       @notice Constructor
