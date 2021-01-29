@@ -106,6 +106,7 @@ contract CoinPairPrice is
         token = IERC20(_tokenAddress);
         coinPair = _coinPair;
         oracleManager = _oracleManager;
+        registry = _registry;
         roundInfo = RoundInfoLib.initRoundInfo(
             this.getMinOraclesPerRound(),
             _maxOraclesPerRound,
@@ -113,7 +114,6 @@ contract CoinPairPrice is
         );
         maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
         subscribedOracles = SubscribedOraclesLib.init();
-        registry = _registry;
         _publish(_bootstrapPrice);
     }
 
