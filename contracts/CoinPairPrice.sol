@@ -8,6 +8,7 @@ import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed
 import {ICoinPairPrice} from "@moc/shared/contracts/ICoinPairPrice.sol";
 import {IOracleManager} from "@moc/shared/contracts/ICoinPairPrice.sol";
 import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
+import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
 import {AddressSetLib} from "@moc/shared/contracts/lib/AddressSetLib.sol";
 import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
@@ -15,6 +16,8 @@ import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
+import {RegistryConstantsLib} from "@moc/shared/contracts/RegistryConstants.sol";
+
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
@@ -69,14 +72,14 @@ contract CoinPairPrice is
         address[] calldata _wlist,
         bytes32 _coinPair,
         address _tokenAddress,
-        uint256 _minOraclesPerRound,
         uint256 _maxOraclesPerRound,
         uint256 _maxSubscribedOraclesPerRound,
         uint256 _roundLockPeriod,
         uint256 _validPricePeriodInBlocks,
         uint256 _emergencyPublishingPeriodInBlocks,
         uint256 _bootstrapPrice,
-        OracleManager _oracleManager
+        OracleManager _oracleManager,
+        IRegistry _registry
     ) external initializer {
         require(_wlist.length != 0, "Whitelist must have at least one element");
         require(_coinPair != bytes32(0), "Coin pair must be valid");
@@ -104,12 +107,13 @@ contract CoinPairPrice is
         coinPair = _coinPair;
         oracleManager = _oracleManager;
         roundInfo = RoundInfoLib.initRoundInfo(
-            _minOraclesPerRound,
+            this.getMinOraclesPerRound(),
             _maxOraclesPerRound,
             _roundLockPeriod
         );
         maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
         subscribedOracles = SubscribedOraclesLib.init();
+        registry = _registry;
         _publish(_bootstrapPrice);
     }
 
@@ -243,7 +247,7 @@ contract CoinPairPrice is
         // require(subscribedOracles.contains(ownerAddr), "Sender oracle not subscribed");
         require(roundInfo.isSelected(ownerAddr), "Voter oracle is not part of this round");
         require(
-            roundInfo.length() >= roundInfo.minOraclesPerRound,
+            roundInfo.length() >= this.getMinOraclesPerRound(),
             "Minimum selected oracles required not reached"
         );
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
@@ -477,6 +481,17 @@ contract CoinPairPrice is
     // Public variable
     function getToken() external view override returns (IERC20) {
         return token;
+    }
+
+    // Public variable
+    function getRegistry() external view override returns (IRegistry) {
+        return registry;
+    }
+
+    // Public value from Registry:
+    //   The minimum count of oracles selected to participate each round
+    function getMinOraclesPerRound() external view override returns (uint256) {
+        return this.getRegistry().getUint(RegistryConstantsLib.ORACLE_MIN_ORACLES_PER_ROUND());
     }
 
     // ----------------------------------------------------------------------------------------------------------------

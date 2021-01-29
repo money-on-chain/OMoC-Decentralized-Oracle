@@ -21,8 +21,6 @@ library RoundInfoLib {
         uint256 startBlock;
         // The  timestamp where this round lock terminates (can be switched out).
         uint256 lockPeriodTimestamp;
-        // The minimum count of oracles selected to participate each round
-        uint256 minOraclesPerRound;
         // The maximum count of oracles selected to participate each round
         uint256 maxOraclesPerRound;
         // The duration in secs before a SwitchRound can occur.
@@ -53,7 +51,6 @@ library RoundInfoLib {
                 totalPoints: 0,
                 startBlock: 0,
                 lockPeriodTimestamp: 0,
-                minOraclesPerRound: _minOraclesPerRound,
                 maxOraclesPerRound: _maxOraclesPerRound,
                 roundLockPeriodSecs: _roundLockPeriod,
                 selectedOracles: AddressSetLib.init()
