@@ -141,14 +141,14 @@ async function initCoinpair(
         token,
         oracleMgr,
         whitelist,
-        minOraclesPerRound = 3,
+        registry,
         maxOraclesPerRound = 10,
         maxSubscribedOraclesPerRound = 30,
         roundLockPeriodInSecs = 60,
         validPricePeriodInBlocks = 3,
         emergencyPublishingPeriodInBlocks = 2,
         bootstrapPrice = '100000000',
-    },
+    }
 ) {
     const CoinPairPrice = artifacts.require('CoinPairPrice');
     const ret = await CoinPairPrice.new();
@@ -157,7 +157,6 @@ async function initCoinpair(
         whitelist,
         web3.utils.asciiToHex(name),
         token.address,
-        minOraclesPerRound,
         maxOraclesPerRound,
         maxSubscribedOraclesPerRound,
         roundLockPeriodInSecs,
@@ -165,6 +164,7 @@ async function initCoinpair(
         emergencyPublishingPeriodInBlocks,
         bootstrapPrice,
         oracleMgr.address,
+        registry
     );
     await governor.registerCoinPair(oracleMgr, web3.utils.asciiToHex(name), ret.address);
     return ret;
@@ -187,6 +187,7 @@ async function initContracts({
     const MockDelayMachine = artifacts.require('MockDelayMachine');
     const StakingMock = artifacts.require('StakingMock');
     const MockVotingMachine = artifacts.require('MockVotingMachine');
+    const Registry = artifacts.require('@moc/shared/GovernedRegistry');
 
     if (governor === null) {
         governor = await createGovernor(governorOwner);
@@ -200,6 +201,7 @@ async function initContracts({
     const staking = await Staking.new();
     const stakingMock = await StakingMock.new();
     const votingMachine = await MockVotingMachine.new();
+    const registry = await Registry.new();
 
     await supporters.initialize(
         governor.address,
@@ -222,6 +224,11 @@ async function initContracts({
     await stakingMock.initialize(staking.address, supporters.address);
     await votingMachine.initialize(staking.address);
 
+    await registry.initialize(governor.address);
+    const MocRegistryAddMinOraclesPerRoundChange = artifacts.require('MocRegistryAddMinOraclesPerRoundChange');
+    const change = await MocRegistryAddMinOraclesPerRoundChange.new(registry.address);
+    await governor.execute(change, { from: governorOwner });
+
     return {
         governor,
         token,
@@ -231,6 +238,7 @@ async function initContracts({
         staking,
         stakingMock,
         votingMachine,
+        registry: registry.address
     };
 }
 
