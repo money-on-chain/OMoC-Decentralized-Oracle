@@ -34,7 +34,6 @@ contract('OracleManager operations', async (accounts) => {
             [GOVERNOR_OWNER],
             COINPAIR_ID,
             ADDRESS_ONE, // token_address
-            3, // minOraclesPerRound
             10, // maxOraclesPerRound
             30, // maxSubscribedOraclesPerRound
             60, // roundLockPeriodInSecs,
@@ -42,7 +41,8 @@ contract('OracleManager operations', async (accounts) => {
             2, // emergencyPublishingPeriodInBlocks,
             '100000000', // bootstrapPrice,
             this.oracleMgr.address,
-        );
+            "0x0000000000000000000000000000000000000000"
+        ); // ^ can be replaced with contracts.registry but it's not required for this tests
 
         await this.oracleMgr.registerCoinPair(COINPAIR_ID, this.coinPairPrice.address, {
             from: GOVERNOR_OWNER,

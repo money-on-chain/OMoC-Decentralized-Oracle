@@ -108,7 +108,6 @@ contract CoinPairPrice is
         oracleManager = _oracleManager;
         registry = _registry;
         roundInfo = RoundInfoLib.initRoundInfo(
-            this.getMinOraclesPerRound(),
             _maxOraclesPerRound,
             _roundLockPeriod
         );

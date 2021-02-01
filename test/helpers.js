@@ -225,9 +225,13 @@ async function initContracts({
     await votingMachine.initialize(staking.address);
 
     await registry.initialize(governor.address);
-    const MocRegistryAddMinOraclesPerRoundChange = artifacts.require('MocRegistryAddMinOraclesPerRoundChange');
-    const change = await MocRegistryAddMinOraclesPerRoundChange.new(registry.address);
-    await governor.execute(change, { from: governorOwner });
+    if (governor.execute) { // in the case of fake governor we probably wont require this..
+        const MocRegistryAddMinOraclesPerRoundChange = artifacts.require('MocRegistryAddMinOraclesPerRoundChange');
+        const change = await MocRegistryAddMinOraclesPerRoundChange.new(registry.address);
+        await governor.execute(change, { from: governorOwner });
+    } else {
+        console.error("WARNING: execution without 'minOraclePerRound' setup!");
+    }
 
     return {
         governor,
