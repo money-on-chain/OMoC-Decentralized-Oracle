@@ -18,7 +18,6 @@ import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
 import {RegistryConstantsLib} from "@moc/shared/contracts/RegistryConstants.sol";
 
-
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
@@ -107,10 +106,7 @@ contract CoinPairPrice is
         coinPair = _coinPair;
         oracleManager = _oracleManager;
         registry = _registry;
-        roundInfo = RoundInfoLib.initRoundInfo(
-            _maxOraclesPerRound,
-            _roundLockPeriod
-        );
+        roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriod);
         maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
         subscribedOracles = SubscribedOraclesLib.init();
         _publish(_bootstrapPrice);
@@ -246,7 +242,7 @@ contract CoinPairPrice is
         // require(subscribedOracles.contains(ownerAddr), "Sender oracle not subscribed");
         require(roundInfo.isSelected(ownerAddr), "Voter oracle is not part of this round");
         require(
-            roundInfo.length() >= this.getMinOraclesPerRound(),
+            roundInfo.length() >= getMinOraclesPerRound(),
             "Minimum selected oracles required not reached"
         );
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
@@ -489,7 +485,7 @@ contract CoinPairPrice is
 
     // Public value from Registry:
     //   The minimum count of oracles selected to participate each round
-    function getMinOraclesPerRound() external view override returns (uint256) {
+    function getMinOraclesPerRound() public view override returns (uint256) {
         return this.getRegistry().getUint(RegistryConstantsLib.ORACLE_MIN_ORACLES_PER_ROUND());
     }
 
