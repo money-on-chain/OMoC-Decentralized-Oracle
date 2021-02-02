@@ -16,6 +16,8 @@ library CalculatedPriceProviderLib {
         uint256 divisor;
     }
 
+    uint256 public constant MAX_INT = 2**256 - 1;
+
     /**
     Contract creation.
 
@@ -41,19 +43,24 @@ library CalculatedPriceProviderLib {
     Get the calculated price
 
     */
-    function _peek(CalculatedPriceProviderData storage self) internal view returns (uint256, bool) {
-        bool valid = true;
+    function _getPriceInfo(CalculatedPriceProviderData storage self)
+        internal
+        view
+        returns (
+            uint256 price,
+            bool isValid,
+            uint256 lastPubBlock
+        )
+    {
         uint256 den;
-        (den, valid) = _multiplyAll(self.multiplicator, self.multiplyBy);
-        if (!valid) {
-            return (0, false);
+        (den, isValid, lastPubBlock) = _multiplyAll(self.multiplicator, self.multiplyBy);
+
+        (uint256 div, bool valid, uint256 pubBlock) = _multiplyAll(self.divisor, self.divideBy);
+        lastPubBlock = min(lastPubBlock, pubBlock);
+        if (!isValid || !valid || div == 0) {
+            return (0, false, lastPubBlock);
         }
-        uint256 div;
-        (div, valid) = _multiplyAll(self.divisor, self.divideBy);
-        if (!valid || div == 0) {
-            return (0, false);
-        }
-        return (den.div(div), true);
+        return (den.div(div), true, lastPubBlock);
     }
 
     /**
@@ -65,17 +72,32 @@ library CalculatedPriceProviderLib {
     function _multiplyAll(uint256 val, IPriceProvider[] memory providers)
         internal
         view
-        returns (uint256, bool)
+        returns (
+            uint256 price,
+            bool isValid,
+            uint256 lastPubBlock
+        )
     {
-        bytes32 current32;
+        lastPubBlock = MAX_INT;
+        isValid = true;
+        uint256 current;
         bool valid;
+        uint256 pubBlock;
         for (uint256 i = 0; i < providers.length; i++) {
-            (current32, valid) = providers[i].peek();
+            (current, valid, pubBlock) = providers[i].getPriceInfo();
             if (!valid) {
-                return (0, false);
+                isValid = false;
             }
-            val = val.mul(uint256(current32));
+            val = val.mul(uint256(current));
+            lastPubBlock = min(lastPubBlock, pubBlock);
         }
-        return (val, true);
+        return (val, isValid, lastPubBlock);
+    }
+
+    function min(uint256 a, uint256 b) private pure returns (uint256) {
+        if (a < b) {
+            return a;
+        }
+        return b;
     }
 }

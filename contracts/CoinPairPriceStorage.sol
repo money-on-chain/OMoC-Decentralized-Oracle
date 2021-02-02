@@ -9,6 +9,8 @@ import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelist
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
+import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+
 
 /*
     Abstract contract meant to be reused with all the configurable parameters of CoinPairPrice.
@@ -54,6 +56,8 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     OracleManager internal oracleManager;
 
     IERC20 internal token;
+
+    IRegistry internal registry;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.

@@ -34,11 +34,10 @@ library RoundInfoLib {
     /**
      * Initialize a register info structure
      */
-    function initRoundInfo(uint256 _maxOraclesPerRound, uint256 _roundLockPeriod)
-        internal
-        pure
-        returns (RoundInfo memory)
-    {
+    function initRoundInfo(
+        uint256 _maxOraclesPerRound,
+        uint256 _roundLockPeriod
+    ) internal pure returns (RoundInfo memory) {
         require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
         require(_roundLockPeriod > 0, "The round lock period must be positive and non zero");
         return

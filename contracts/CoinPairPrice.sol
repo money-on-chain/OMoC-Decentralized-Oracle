@@ -8,6 +8,7 @@ import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed
 import {ICoinPairPrice} from "@moc/shared/contracts/ICoinPairPrice.sol";
 import {IOracleManager} from "@moc/shared/contracts/ICoinPairPrice.sol";
 import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
+import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
 import {AddressSetLib} from "@moc/shared/contracts/lib/AddressSetLib.sol";
 import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
@@ -15,6 +16,7 @@ import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
+import {RegistryConstantsLib} from "@moc/shared/contracts/RegistryConstants.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
@@ -55,6 +57,7 @@ contract CoinPairPrice is
     /// @param _wlist List of whitelisted contracts (those that can get the price).
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
+    /// @param _minOraclesPerRound The minimum count of oracles selected to participate each round
     /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
     /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
     /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
@@ -74,7 +77,8 @@ contract CoinPairPrice is
         uint256 _validPricePeriodInBlocks,
         uint256 _emergencyPublishingPeriodInBlocks,
         uint256 _bootstrapPrice,
-        OracleManager _oracleManager
+        OracleManager _oracleManager,
+        IRegistry _registry
     ) external initializer {
         require(_wlist.length != 0, "Whitelist must have at least one element");
         require(_coinPair != bytes32(0), "Coin pair must be valid");
@@ -101,6 +105,7 @@ contract CoinPairPrice is
         token = IERC20(_tokenAddress);
         coinPair = _coinPair;
         oracleManager = _oracleManager;
+        registry = _registry;
         roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriod);
         maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
         subscribedOracles = SubscribedOraclesLib.init();
@@ -108,7 +113,7 @@ contract CoinPairPrice is
     }
 
     /// @notice return the type of provider
-    function getPriceProviderType() external override pure returns (IPriceProviderType) {
+    function getPriceProviderType() external pure override returns (IPriceProviderType) {
         return IPriceProviderType.Published;
     }
 
@@ -162,10 +167,11 @@ contract CoinPairPrice is
         }
         // If the current balance is lower than the unselected address that has the maximum stake
         // or it has less than the needed minimum, then the oracle is replaced.
-        (address addr, uint256 otherStake) = subscribedOracles.getMaxUnselectedStake(
-            oracleManager.getMaxStake,
-            roundInfo.selectedOracles
-        );
+        (address addr, uint256 otherStake) =
+            subscribedOracles.getMaxUnselectedStake(
+                oracleManager.getMaxStake,
+                roundInfo.selectedOracles
+            );
         uint256 minCPSubscriptionStake = oracleManager.getMinCPSubscriptionStake();
         uint256 ownerStake = oracleManager.getStake(oracleOwnerAddr);
         if (ownerStake < minCPSubscriptionStake || otherStake > ownerStake) {
@@ -197,10 +203,8 @@ contract CoinPairPrice is
         roundInfo.switchRound();
 
         // Select top stake oracles to participate on this round
-        address[] memory selected = subscribedOracles.sort(
-            oracleManager.getStake,
-            roundInfo.maxOraclesPerRound
-        );
+        address[] memory selected =
+            subscribedOracles.sort(oracleManager.getStake, roundInfo.maxOraclesPerRound);
         for (uint256 i = 0; i < selected.length && !roundInfo.isFull(); i++) {
             roundInfo.addOracleToRound(selected[i]);
         }
@@ -237,6 +241,10 @@ contract CoinPairPrice is
         require(roundInfo.number > 0, "Round not open");
         // require(subscribedOracles.contains(ownerAddr), "Sender oracle not subscribed");
         require(roundInfo.isSelected(ownerAddr), "Voter oracle is not part of this round");
+        require(
+            roundInfo.length() >= getMinOraclesPerRound(),
+            "Minimum selected oracles required not reached"
+        );
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
         require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
         require(_price > 0, "Price must be positive and non-zero");
@@ -251,36 +259,37 @@ contract CoinPairPrice is
             _sigS.length == _sigR.length && _sigR.length == _sigV.length,
             "Inconsistent signature count"
         );
-        require(
-            _sigS.length > roundInfo.length() / 2,
-            "Signature count must exceed 50% of active oracles"
-        );
 
         //
         // NOTE: Message Size is 148 = sizeof(uint256) +
         // sizeof(uint256) + sizeof(uint256) + sizeof(address) +sizeof(uint256)
         //
 
-        bytes memory hData = abi.encodePacked(
-            "\x19Ethereum Signed Message:\n148",
-            _version,
-            _coinpair,
-            _price,
-            _votedOracle,
-            _blockNumber
-        );
+        bytes memory hData =
+            abi.encodePacked(
+                "\x19Ethereum Signed Message:\n148",
+                _version,
+                _coinpair,
+                _price,
+                _votedOracle,
+                _blockNumber
+            );
         bytes32 messageHash = keccak256(hData);
 
+        uint256 validSigs = 0;
         address lastAddr = address(0);
         for (uint256 i = 0; i < _sigS.length; i++) {
             address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], messageHash);
-            require(rec != address(0), "Cannot recover signature");
             address ownerRec = oracleManager.getOracleOwner(rec);
-            // require(subscribedOracles.contains(ownerRec), "Signing oracle not subscribed");
-            require(roundInfo.isSelected(ownerRec), "Address of signer not part of this round");
+            if (roundInfo.isSelected(ownerRec)) validSigs += 1;
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
             lastAddr = rec;
         }
+
+        require(
+            validSigs > roundInfo.length() / 2,
+            "Valid signatures count must exceed 50% of active oracles"
+        );
 
         roundInfo.addPoints(ownerAddr, 1);
         _publish(_price);
@@ -306,40 +315,57 @@ contract CoinPairPrice is
         emit EmergencyPricePublished(msg.sender, _price, msg.sender, lastPublicationBlock);
     }
 
-    /// @notice Return the current price, compatible with old MOC Oracle
+    // Legacy function compatible with old MOC Oracle.
+    // returns a tuple (uint256, bool) that corresponds
+    // to the price and if it is not expired.
     function peek()
         external
-        override(IPriceProvider, ICoinPairPrice)
         view
+        override(IPriceProvider, ICoinPairPrice)
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (bytes32, bool)
     {
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
-
-        return (
-            bytes32(currentPrice),
-            (block.number - lastPublicationBlock) < validPricePeriodInBlocks
-        );
+        return (bytes32(currentPrice), _isValid());
     }
 
     /// @notice Return the current price
     function getPrice()
         external
-        override
         view
+        override(IPriceProvider, ICoinPairPrice)
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (uint256)
     {
         return currentPrice;
     }
 
+    // Return if the price is not expired.
+    function getIsValid() external view override returns (bool) {
+        return _isValid();
+    }
+
+    // Return the result of getPrice, getIsValid and getLastPublicationBlock at once.
+    function getPriceInfo()
+        external
+        view
+        override
+        returns (
+            uint256 price,
+            bool isValid,
+            uint256 lastPubBlock
+        )
+    {
+        return (currentPrice, _isValid(), lastPubBlock);
+    }
+
     // The maximum count of oracles selected to participate each round
-    function maxOraclesPerRound() external override view returns (uint256) {
+    function maxOraclesPerRound() external view override returns (uint256) {
         return roundInfo.maxOraclesPerRound;
     }
 
     // The maximum count of oracles selected to participate each round
-    function roundLockPeriodSecs() external override view returns (uint256) {
+    function roundLockPeriodSecs() external view override returns (uint256) {
         return roundInfo.roundLockPeriodSecs;
     }
 
@@ -347,28 +373,28 @@ contract CoinPairPrice is
         return roundInfo.isFull();
     }
 
-    function isOracleInCurrentRound(address oracleOwnerAddr) external override view returns (bool) {
+    function isOracleInCurrentRound(address oracleOwnerAddr) external view override returns (bool) {
         return roundInfo.isSelected(oracleOwnerAddr);
     }
 
     /// @notice Returns true if an oracle is subscribed to this contract' coin pair
     /// @param oracleOwnerAddr the oracle address to lookup.
     /// @dev This is designed to be called from OracleManager.
-    function isSubscribed(address oracleOwnerAddr) external override view returns (bool) {
+    function isSubscribed(address oracleOwnerAddr) external view override returns (bool) {
         return subscribedOracles.contains(oracleOwnerAddr);
     }
 
     /// @notice Return the available reward fees
     ///
-    function getAvailableRewardFees() external override view returns (uint256) {
+    function getAvailableRewardFees() external view override returns (uint256) {
         return token.balanceOf(address(this));
     }
 
     /// @notice Return current round information
     function getRoundInfo()
         external
-        override
         view
+        override
         returns (
             uint256 round,
             uint256 startBlock,
@@ -389,15 +415,15 @@ contract CoinPairPrice is
     /// @notice Return round information for specific oracle
     function getOracleRoundInfo(address oracleOwner)
         external
-        override
         view
+        override
         returns (uint256 points, bool selectedInCurrentRound)
     {
         return roundInfo.getOracleRoundInfo(oracleOwner);
     }
 
     /// @notice Returns the amount of oracles subscribed to this coin pair.
-    function getSubscribedOraclesLen() external override view returns (uint256) {
+    function getSubscribedOraclesLen() external view override returns (uint256) {
         return subscribedOracles.length();
     }
 
@@ -405,51 +431,72 @@ contract CoinPairPrice is
     /// @param idx index to query.
     function getSubscribedOracleAtIndex(uint256 idx)
         external
-        override
         view
+        override
         returns (address ownerAddr)
     {
         return subscribedOracles.at(idx);
     }
 
     // Public variable
-    function getMaxSubscribedOraclesPerRound() external override view returns (uint256) {
+    function getMaxSubscribedOraclesPerRound() external view override returns (uint256) {
         return maxSubscribedOraclesPerRound;
     }
 
     // Public variable
-    function getCoinPair() external override view returns (bytes32) {
+    function getCoinPair() external view override returns (bytes32) {
         return coinPair;
     }
 
     // Public variable
-    function getLastPublicationBlock() external override view returns (uint256) {
+    function getLastPublicationBlock()
+        external
+        view
+        override(IPriceProvider, ICoinPairPrice)
+        returns (uint256)
+    {
         return lastPublicationBlock;
     }
 
     // Public variable
-    function getValidPricePeriodInBlocks() external override view returns (uint256) {
+    function getValidPricePeriodInBlocks() external view override returns (uint256) {
         return validPricePeriodInBlocks;
     }
 
     // Public variable
-    function getEmergencyPublishingPeriodInBlocks() external override view returns (uint256) {
+    function getEmergencyPublishingPeriodInBlocks() external view override returns (uint256) {
         return emergencyPublishingPeriodInBlocks;
     }
 
     // Public variable
-    function getOracleManager() external override view returns (IOracleManager) {
+    function getOracleManager() external view override returns (IOracleManager) {
         return IOracleManager(oracleManager);
     }
 
     // Public variable
-    function getToken() external override view returns (IERC20) {
+    function getToken() external view override returns (IERC20) {
         return token;
+    }
+
+    // Public variable
+    function getRegistry() external view override returns (IRegistry) {
+        return registry;
+    }
+
+    // Public value from Registry:
+    //   The minimum count of oracles selected to participate each round
+    function getMinOraclesPerRound() public view override returns (uint256) {
+        return this.getRegistry().getUint(RegistryConstantsLib.ORACLE_MIN_ORACLES_PER_ROUND());
     }
 
     // ----------------------------------------------------------------------------------------------------------------
     // Internal functions
     // ----------------------------------------------------------------------------------------------------------------
+
+    /// @notice return true if the price is valid
+    function _isValid() private view returns (bool) {
+        return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
+    }
 
     /// @notice add or replace and oracle from the subscribed list of oracles.
     function _addOrReplaceSubscribedOracle(address oracleOwnerAddr) internal returns (bool) {
@@ -511,10 +558,7 @@ contract CoinPairPrice is
         }
 
         // If the version is correct return the signer address
-        if (v0 != 27 && v0 != 28) {
-            return (address(0));
-        } else {
-            return ecrecover(hash, v0, r, s);
-        }
+        require(v0 == 27 || v0 == 28, "Cannot recover signature");
+        return ecrecover(hash, v0, r, s);
     }
 }
