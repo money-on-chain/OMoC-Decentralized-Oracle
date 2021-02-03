@@ -325,7 +325,6 @@ contract CoinPairPrice is
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (bytes32, bool)
     {
-        require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
         return (bytes32(currentPrice), _isValid());
     }
 
@@ -351,12 +350,12 @@ contract CoinPairPrice is
         view
         override
         returns (
-            uint256 price,
-            bool isValid,
-            uint256 lastPubBlock
+            uint256,
+            bool,
+            uint256
         )
     {
-        return (currentPrice, _isValid(), lastPubBlock);
+        return (currentPrice, _isValid(), lastPublicationBlock);
     }
 
     // The maximum count of oracles selected to participate each round
@@ -495,6 +494,7 @@ contract CoinPairPrice is
 
     /// @notice return true if the price is valid
     function _isValid() private view returns (bool) {
+        require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
         return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
     }
 
