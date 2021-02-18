@@ -131,6 +131,12 @@ contract('Staking-withdraw', async (accounts) => {
         const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.false;
 
+        const { expirations } = await this.delayMachine.getTransactions(oracleOwner);
+        const expirationSecs = expirations[1];
+        const stakingLockPeriod = await this.staking.getWithdrawLockTime();
+        const { lockPeriodTimestamp } = await this.coinPairPrice.getRoundInfo();
+        expect(expirationSecs).to.be.bignumber.equal(lockPeriodTimestamp.add(stakingLockPeriod));
+
         const { points } = await this.coinPairPrice.getOracleRoundInfo(oracleOwner);
         expect(points).to.be.bignumber.equal(new BN(0));
     });
