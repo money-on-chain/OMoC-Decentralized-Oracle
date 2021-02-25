@@ -1,6 +1,6 @@
 /* global artifacts, beforeEach, contract, it */
 const helpers = require('./helpers');
-const { BN } = require('@openzeppelin/test-helpers');
+const { BN, time } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 const { toWei, toBN } = require('web3-utils');
 
@@ -135,6 +135,8 @@ contract('Staking-withdraw', async (accounts) => {
         const expirationSecs = expirations[1];
         const stakingLockPeriod = await this.staking.getWithdrawLockTime();
         const { lockPeriodTimestamp } = await this.coinPairPrice.getRoundInfo();
+        const currentTime = await time.latest();
+        console.log(currentTime.toString(), lockPeriodTimestamp.toString());
         expect(expirationSecs).to.be.bignumber.equal(lockPeriodTimestamp.add(stakingLockPeriod));
 
         const { points } = await this.coinPairPrice.getOracleRoundInfo(oracleOwner);

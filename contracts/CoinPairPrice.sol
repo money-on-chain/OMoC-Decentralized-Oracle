@@ -185,6 +185,12 @@ contract CoinPairPrice is
         if (ownerStake < minCPSubscriptionStake) {
             subscribedOracles.remove(oracleOwnerAddr);
         }
+
+        require(
+            roundInfo.lockPeriodTimestamp > block.timestamp,
+            "lockPeriodTimestamp lower than current block timestamp"
+        );
+
         return (roundInfo.lockPeriodTimestamp).sub(block.timestamp);
     }
 
