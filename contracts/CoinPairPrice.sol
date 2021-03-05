@@ -186,12 +186,11 @@ contract CoinPairPrice is
             subscribedOracles.remove(oracleOwnerAddr);
         }
 
-        require(
-            roundInfo.lockPeriodTimestamp > block.timestamp,
-            "lockPeriodTimestamp lower than current block timestamp"
-        );
-
-        return (roundInfo.lockPeriodTimestamp).sub(block.timestamp);
+        if (roundInfo.lockPeriodTimestamp > block.timestamp) {
+            return (roundInfo.lockPeriodTimestamp).sub(block.timestamp);
+        } else {
+            return 0;
+        }
     }
 
     //
