@@ -40,7 +40,7 @@ async function main() {
     console.log('Governor: ', governor.address, 'owner', governorOwner);
 
     const TestMOCMintChange = artifacts.require('TestMOCMintChange');
-    const testMOC = await artifacts.require('@moc/shared/GovernedERC20').deployed();
+    const testMOC = await artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20').deployed();
     console.log('TestMOC: ', testMOC.address);
 
     const balance = await testMOC.balanceOf(owner);
