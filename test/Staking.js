@@ -143,7 +143,7 @@ contract('Staking', async (accounts) => {
         assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[2].owner));
     });
 
-    it("Should not be able to lock mocs from an address other than the voting machine's", async () => {
+    it('Should not be able to lock mocs from an address other than the voting machine\'s', async () => {
         untilTimestampLock = Math.round(Date.now() / 1000) + secsUntilStakeRelease;
         await expectRevert(
             this.staking.lockMocs(oracleData[1].owner, new BN(untilTimestampLock), {
@@ -166,11 +166,11 @@ contract('Staking', async (accounts) => {
     // Slow test. Comment to test the others faster.
     it('Should not be able to withdraw stake of oracle B until it is unlocked', async () => {
         let currentTimestamp = await time.latest();
+        await expectRevert(
+            this.staking.withdraw(oracleData[1].stake, { from: oracleData[1].owner }),
+            'Stake not available for withdrawal.',
+        );
         while (currentTimestamp < untilTimestampLock) {
-            await expectRevert(
-                this.staking.withdraw(oracleData[1].stake, { from: oracleData[1].owner }),
-                'Stake not available for withdrawal.',
-            );
             await helpers.mineBlocks(1);
             currentTimestamp = await time.latest();
         }

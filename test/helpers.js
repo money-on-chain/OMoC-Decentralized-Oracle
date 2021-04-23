@@ -184,7 +184,7 @@ async function initContracts({
     const Supporters = artifacts.require('Supporters');
     const Staking = artifacts.require('Staking');
     // const CoinPairPrice = artifacts.require('CoinPairPrice');
-    const MockDelayMachine = artifacts.require('MockDelayMachine');
+    const DelayMachine = artifacts.require('DelayMachine');
     const StakingMock = artifacts.require('StakingMock');
     const MockVotingMachine = artifacts.require('MockVotingMachine');
     const Registry = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedRegistry');
@@ -196,9 +196,9 @@ async function initContracts({
     await token.initialize(governor.address);
     const oracleMgr = await OracleManager.new();
     const supporters = await Supporters.new();
-    const delayMachine = await MockDelayMachine.new();
-    await delayMachine.initialize(governor.address, token.address);
+    const delayMachine = await DelayMachine.new();
     const staking = await Staking.new();
+    await delayMachine.initialize(governor.address, token.address, staking.address);
     const stakingMock = await StakingMock.new();
     const votingMachine = await MockVotingMachine.new();
     const registry = await Registry.new();
