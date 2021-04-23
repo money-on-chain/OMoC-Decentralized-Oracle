@@ -8,6 +8,7 @@ async function deploy({ config, ozParams, governor, token }) {
     const infoGetterAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/InfoGetter', ozParams);
     const oracleManagerAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/OracleManager', ozParams);
     const proxyAdmin = await helpers.getProxyAdmin(config, ozParams);
+    const registryAddr = helpers.ozGetAddr('@money-on-chain/omoc-sc-shared/Registry', ozParams);
 
     for (const coin of Object.keys(config.stakingMachine.coinPairs)) {
         const coinPair = Web3.utils.asciiToHex(coin).padEnd(66, '0');
@@ -25,7 +26,6 @@ async function deploy({ config, ozParams, governor, token }) {
                 [coinPairPriceFree.address, infoGetterAddr],
                 coinPair,
                 token.address,
-                Web3.utils.toBN(coinData.minOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.maxOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.maxSubscribedOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.roundLockPeriodInSecs).toString(),
@@ -33,6 +33,7 @@ async function deploy({ config, ozParams, governor, token }) {
                 Web3.utils.toBN(coinData.emergencyPublishingPeriodInBlocks).toString(),
                 coinData.bootstrapPrice,
                 oracleManagerAddr,
+                registryAddr,
             ],
             contractAlias: 'CoinPairPrice_' + coin,
             admin: proxyAdmin,
