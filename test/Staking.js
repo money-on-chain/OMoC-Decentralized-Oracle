@@ -59,7 +59,7 @@ contract('Staking', async (accounts) => {
     ];
 
     it('Should register Oracles A, B, C', async () => {
-        let receipt = await this.staking.registerOracle(oracleData[0].account, oracleData[0].name, {
+        const receipt = await this.staking.registerOracle(oracleData[0].account, oracleData[0].name, {
             from: oracleData[0].owner,
         });
         expectEvent.inTransaction(receipt.tx, this.oracleMgr, 'OracleRegistered', {
@@ -122,11 +122,11 @@ contract('Staking', async (accounts) => {
     });
 
     it('Should subscribe Oracles A, B, C to coin pair BTCUSD', async () => {
-        let receipt = await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
+        const receipt = await this.staking.subscribeToCoinPair(web3.utils.asciiToHex('BTCUSD'), {
             from: oracleData[0].owner,
         });
         assert.isTrue(await this.coinPairPrice_BTCUSD.isSubscribed(oracleData[0].owner));
-        let coinPair = await this.staking.getCoinPairAtIndex(0);
+        const coinPair = await this.staking.getCoinPairAtIndex(0);
         expectEvent.inTransaction(receipt.tx, this.oracleMgr, 'OracleSubscribed', {
             caller: oracleData[0].owner,
             coinpair: coinPair,

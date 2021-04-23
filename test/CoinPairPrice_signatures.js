@@ -1,7 +1,7 @@
-const CoinPairPrice = artifacts.require('CoinPairPrice');
 const helpers = require('./helpers');
 const { expectRevert, BN } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
+const { expect } = require('chai');
 
 // Maybe this test suite is a little bit exaggerated, but it shows current behaviour so we can change it in the future
 // The sender signature count as one signature and must be added to the message, to
@@ -112,7 +112,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
         // switch round
         await this.coinPairPrice.switchRound();
         const roundInfo = await this.coinPairPrice.getRoundInfo();
-        expect(roundInfo['selectedOracles']).to.have.lengthOf(cantOracles);
+        expect(roundInfo.selectedOracles).to.have.lengthOf(cantOracles);
     }
 
     async function signWithOwner(oracleData, cantSignatures) {

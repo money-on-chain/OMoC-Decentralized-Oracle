@@ -41,7 +41,7 @@ contract('CoinPairEmergencyWhitelistListChange', async (accounts) => {
     });
 
     it('Should succeed execute call', async () => {
-        const receipt = await this.governor.execute(this.coinPairEmergencyWhitelistListChange);
+        await this.governor.execute(this.coinPairEmergencyWhitelistListChange);
     });
 
     it('Should get whitelist length', async () => {

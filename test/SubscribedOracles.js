@@ -1,4 +1,4 @@
-/* global artifacts, beforeEach, contract, it */
+/* global artifacts, contract, it */
 const {BN} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 const {toChecksumAddress, randomHex, toBN, padLeft, numberToHex} = require('web3-utils');
@@ -66,7 +66,7 @@ contract('SubscribedOracles', (accounts) => {
     it('remove', async () => {
         const length = await subscribedOracles.length();
         const selected = await subscribedOracles.sort(new BN(MAX_SELECTED_ORACLES));
-        for (oracle of selected) {
+        for (const oracle of selected) {
             await subscribedOracles.remove(oracle);
         }
         length.sub(new BN(selected.length));
@@ -96,7 +96,7 @@ contract('SubscribedOracles', (accounts) => {
         await subscribed.selectOracles(MAX_SELECTED_ORACLES);
         const selected = await subscribed.getSelectedOracles();
         for (let i = 0; i < selected.length; i += 1) {
-            await subscribed.onWithdraw(selected[i], i % 2 != 0);
+            await subscribed.onWithdraw(selected[i], i % 2 !== 0);
         }
     });
 });

@@ -1,4 +1,4 @@
-/* global artifacts, beforeEach, contract, it */
+/* global contract, it */
 const helpers = require('./helpers');
 const { BN, time } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
@@ -100,7 +100,7 @@ contract('Staking-withdraw', async (accounts) => {
         await this.coinPairPrice.switchRound();
 
         const oracleOwner = Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1];
-        let selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
+        const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.true;
 
         const signers = [];

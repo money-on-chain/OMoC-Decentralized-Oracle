@@ -1,4 +1,4 @@
-/* global artifacts, beforeEach, contract, it */
+/* global contract, it */
 const helpers = require('./helpers');
 const { BN } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');

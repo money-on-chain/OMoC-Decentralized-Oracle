@@ -2,8 +2,8 @@
 const { BN, expectRevert, constants, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 const Supporters = artifacts.require('Supporters');
-const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
-const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
+const TestMOC = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20');
+const MockGovernor = artifacts.require('@money-on-chain/omoc-sc-shared/MockGovernor');
 const helpers = require('./helpers');
 
 contract('Supporters', (accounts) => {
@@ -279,10 +279,10 @@ contract('Supporters', (accounts) => {
         ];
 
         it('Distribute should fail if contract not ready to distribute', async () => {
-            let tokens = await this.staking.totalToken();
+            const tokens = await this.staking.totalToken();
             expect(tokens, 'Initial token balance').to.be.bignumber.equal(new BN(0));
 
-            let mocs = await this.staking.totalMoc();
+            const mocs = await this.staking.totalMoc();
             expect(mocs, 'Initial MOC balance').to.be.bignumber.equal(new BN(0));
 
             await this.token.transfer(this.supporters.address, EARNINGS, { from: accounts[2] });
@@ -301,7 +301,7 @@ contract('Supporters', (accounts) => {
                 from: oracleData[0].owner,
             });
 
-            let receipt = await this.supporters.distribute({ from: accounts[2] });
+            const receipt = await this.supporters.distribute({ from: accounts[2] });
             const latestBlock = await helpers.getLatestBlock();
 
             expectEvent(receipt, 'PayEarnings', {

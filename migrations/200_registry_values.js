@@ -1,5 +1,5 @@
 'use strict';
-const helpers = require('@moc/shared/lib/helpers');
+const helpers = require('@money-on-chain/omoc-sc-shared/lib/helpers');
 
 async function deploy({ozParams, governor}) {
     const oracles = {
@@ -10,13 +10,13 @@ async function deploy({ozParams, governor}) {
     };
     const addrs = {};
     for (const o of Object.keys(oracles)) {
-        addrs[o] = helpers.ozGetAddr('@moc/oracles/' + oracles[o], ozParams);
+        addrs[o] = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/' + oracles[o], ozParams);
     }
 
-    addrs.registry = helpers.ozGetAddr('@moc/shared/Registry', ozParams);
+    addrs.registry = helpers.ozGetAddr('@money-on-chain/omoc-sc-shared/Registry', ozParams);
 
     console.log('Populate registry using', addrs);
-    const MocRegistryInitChange = artifacts.require('@moc/oracles/MocRegistryInitChange');
+    const MocRegistryInitChange = artifacts.require('@money-on-chain/omoc-decentralized-oracle/MocRegistryInitChange');
     const change = await MocRegistryInitChange.new(
         addrs.registry,
         addrs.delayMachine,
@@ -34,4 +34,4 @@ async function deploy({ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(artifacts, deploy);

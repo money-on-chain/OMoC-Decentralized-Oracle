@@ -2,7 +2,7 @@
 pragma solidity ^0.6.12;
 
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import {IDelayMachine} from "@moc/shared/contracts/IDelayMachine.sol";
+import {IDelayMachine} from "@money-on-chain/omoc-sc-shared/contracts/IDelayMachine.sol";
 
 contract MOCKStakingMachine {
     event PaymentDeposit(uint256 indexed id, address source, address destination, uint256 amount);

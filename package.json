@@ -1,65 +1,70 @@
 {
-    "name": "@moc/oracles",
-    "version": "1.3.1",
+    "name": "@money-on-chain/omoc-decentralized-oracle",
+    "version": "1.4.0",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
-    "dependencies": {
-        "@moc/shared": "http://omoc-do.coinfabrik.com/npm/moc-shared-1.3.1.tgz"
-    },
-    "devDependencies": {
-        "@commitlint/cli": "^9.1.1",
-        "@commitlint/config-conventional": "^9.1.1",
-        "@openzeppelin/cli": "^2.8.2",
-        "@openzeppelin/contracts-ethereum-package": "^3.0.0",
-        "@openzeppelin/test-helpers": "^0.5.6",
-        "chai": "^4.2.0",
-        "commitizen": "^4.1.2",
-        "ganache-cli": "^6.9.1",
-        "cz-conventional-changelog": "^3.2.0",
-        "dotenv": "^8.2.0",
-        "eslint": "^7.5.0",
-        "eslint-config-prettier": "^6.11.0",
-        "eslint-config-standard": "^14.1.1",
-        "eslint-plugin-import": "^2.22.0",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-promise": "^4.2.1",
-        "eslint-plugin-standard": "^4.0.1",
-        "eslint-plugin-truffle": "^0.3.1",
-        "eth-gas-reporter": "^0.2.14",
-        "husky": "^4.2.5",
-        "lint-staged": "^10.2.11",
-        "prettier": "^2.0.5",
-        "prettier-plugin-solidity": "^1.0.0-alpha.55",
-        "rimraf": "^3.0.2",
-        "solhint": "^3.1.0",
-        "solidity-coverage": "^0.7.9",
-        "standard-version": "^8.0.2",
-        "truffle": "5.1.44",
-        "truffle-hdwallet-provider-privkey": "^0.3.0",
-        "web3": "^1.2.4"
-    },
     "scripts": {
-        "rsk_testnet": "truffle migrate --network rsk_testnet",
-        "rsk_regtest": "truffle migrate --network rsk_regtest",
-        "test_rsk": "truffle test --network rsk_testnet",
         "test": "truffle test",
-        "coverage": "rimraf ./coverage && truffle run coverage",
         "prettier": "prettier --write *.{json,js} migrations/**/*.js test/**/*.js contracts/**/*.sol contracts/*.sol",
         "lint:solidity": "solhint -f table  contracts/**/*.sol contracts/*.sol",
         "lint:js": "eslint *.js migrations/**/*.js test/**/*.js",
         "lint": "npm run lint:js && npm run lint:solidity",
+        "prettier:solidity": "prettier --write contracts/**/*.sol",
         "compile": "rimraf ./build && truffle compile",
         "release": "standard-version",
+        "release_patch": "standard-version --release-as patch",
+        "release_minor": "standard-version --release-as minor",
+        "release_major": "standard-version --release-as major",
+        "coverage": "rimraf ./coverage && truffle run coverage",
         "commit": "git-cz",
         "deploy": "rimraf .openzeppelin ./build/contracts && truffle migrate",
         "migrate": "truffle migrate"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/money-on-chain/MoC-Gobernanza.git"
+        "url": "git+https://github.com/money-on-chain/OMoC-Decentralized-Oracle.git"
     },
     "author": "",
-    "license": "ISC",
+    "license": "",
+    "bugs": {
+        "url": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle.git/issues"
+    },
+    "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle.git#readme",
+    "devDependencies": {
+        "@commitlint/cli": "^12.1.1",
+        "@commitlint/config-conventional": "^12.1.1",
+        "@openzeppelin/cli": "^2.8.2",
+        "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+        "@openzeppelin/test-helpers": "^0.5.6",
+        "@truffle/hdwallet-provider": "^1.2.6",
+        "commitizen": "^4.1.2",
+        "cz-conventional-changelog": "^3.2.0",
+        "dotenv": "^8.2.0",
+        "eslint": "^7.5.0",
+        "eslint-config-prettier": "^8.2.0",
+        "eslint-config-standard": "^16.0.2",
+        "eslint-plugin-import": "^2.22.0",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-promise": "^5.1.0",
+        "eslint-plugin-standard": "^5.0.0",
+        "eslint-plugin-truffle": "^0.3.1",
+        "eth-gas-reporter": "^0.2.22",
+        "husky": "^6.0.0",
+        "lint-staged": "^10.2.11",
+        "nyc": "^15.1.0",
+        "prettier": "^2.0.5",
+        "prettier-plugin-solidity": "^1.0.0-alpha.54",
+        "rimraf": "^3.0.2",
+        "solc": "^0.8.4",
+        "solhint": "^3.1.0",
+        "solidity-coverage": "^0.7.9",
+        "standard-version": "^9.2.0",
+        "truffle": "^5.1.36"
+    },
+    "dependencies": {
+        "@money-on-chain/omoc-sc-shared": "^1.4.16",
+        "ganache-core": "^2.13.2"
+    },
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged",
@@ -68,6 +73,9 @@
         }
     },
     "lint-staged": {
+        "test/**/*.js": "eslint --fix",
+        "migrations/**/*.js": "eslint --fix",
+        "contracts/**/*.sol": "solhint",
         "*.{js,css,md,json,sol}": "prettier --write"
     },
     "prettier": {
@@ -103,17 +111,23 @@
         "parserOptions": {
             "ecmaVersion": 11
         },
-        "rules": {}
+        "rules": {},
+        "overrides": [
+            {
+                "files": [
+                    "test/**/*.js"
+                ],
+                "rules": {
+                    "no-unused-expressions": "off"
+                }
+            }
+        ]
     },
     "config": {
         "commitizen": {
             "path": "./node_modules/cz-conventional-changelog"
         }
     },
-    "bugs": {
-        "url": "https://github.com/money-on-chain/MoC-Gobernanza/issues"
-    },
-    "homepage": "https://github.com/money-on-chain/MoC-Gobernanza#readme",
     "files": [
         "/build/contracts/*Change.json",
         "/build/contracts/CalculatedPriceProvider.json",

@@ -3,9 +3,8 @@ const { ADDRESS_ONE, ADDRESS_ZERO } = require('./helpers');
 const { expectRevert } = require('@openzeppelin/test-helpers');
 const { toHex, padLeft, toChecksumAddress, toBN } = require('web3-utils');
 const { expect } = require('chai');
-const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
+const MockGovernor = artifacts.require('@money-on-chain/omoc-sc-shared/MockGovernor');
 const OracleManager = artifacts.require('OracleManager');
-const Staking = artifacts.require('Staking');
 const CoinPairPrice = artifacts.require('CoinPairPrice');
 
 contract('OracleManager operations', async (accounts) => {

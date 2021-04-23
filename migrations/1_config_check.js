@@ -1,5 +1,5 @@
 'use strict';
-const helpers = require('@moc/shared/lib/helpers');
+const helpers = require('@money-on-chain/omoc-sc-shared/lib/helpers');
 const NEEDED = [
     'coinPairs',
     'minCPSubscriptionStake',
@@ -7,7 +7,7 @@ const NEEDED = [
     'withdrawLockTime',
 ];
 
-async function deploy({config, token}) {
+async function deploy({ config }) {
     if (helpers.isProduction() && !process.env.PRIVATE_KEY) {
         console.error('PRIVATE KEY MUST BE CONFIGURED IN ENV FILE OR VARIABLE');
         process.exit();
@@ -31,4 +31,4 @@ async function deploy({config, token}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleMain(deploy);
+module.exports = helpers.truffleMain(artifacts, deploy);

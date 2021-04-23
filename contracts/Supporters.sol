@@ -3,9 +3,9 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import {ISupporters} from "@moc/shared/contracts/ISupporters.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {ISupporters} from "@money-on-chain/omoc-sc-shared/contracts/ISupporters.sol";
+import {IGovernor} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/IGovernor.sol";
+import {Governed} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/Governed.sol";
 import {SupportersStorage} from "./SupportersStorage.sol";
 
 /*

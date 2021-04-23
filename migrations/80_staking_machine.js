@@ -1,9 +1,9 @@
 'use strict';
-const helpers = require('@moc/shared/lib/helpers');
+const helpers = require('@money-on-chain/omoc-sc-shared/lib/helpers');
 
 async function deploy({config, ozParams, governor}) {
     console.log('Create StakingMachine');
-    const stakingMachine = await helpers.ozAdd('@moc/oracles/Staking', {
+    const stakingMachine = await helpers.ozAdd('@money-on-chain/omoc-decentralized-oracle/Staking', {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         ...ozParams,
@@ -13,4 +13,4 @@ async function deploy({config, ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(artifacts, deploy);

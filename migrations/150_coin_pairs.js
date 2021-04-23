@@ -1,25 +1,25 @@
 'use strict';
-const helpers = require('@moc/shared/lib/helpers');
+const helpers = require('@money-on-chain/omoc-sc-shared/lib/helpers');
 const Web3 = require('web3');
 
 async function deploy({ config, ozParams, governor, token }) {
-    const CoinPairPriceFree = artifacts.require('@moc/oracles/CoinPairPriceFree');
-    const OracleManagerPairChange = artifacts.require('@moc/oracles/OracleManagerPairChange');
-    const infoGetterAddr = helpers.ozGetAddr('@moc/oracles/InfoGetter', ozParams);
-    const oracleManagerAddr = helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
+    const CoinPairPriceFree = artifacts.require('@money-on-chain/omoc-decentralized-oracle/CoinPairPriceFree');
+    const OracleManagerPairChange = artifacts.require('@money-on-chain/omoc-decentralized-oracle/OracleManagerPairChange');
+    const infoGetterAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/InfoGetter', ozParams);
+    const oracleManagerAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/OracleManager', ozParams);
     const proxyAdmin = await helpers.getProxyAdmin(config, ozParams);
 
     for (const coin of Object.keys(config.stakingMachine.coinPairs)) {
         const coinPair = Web3.utils.asciiToHex(coin).padEnd(66, '0');
         const coinData = config.stakingMachine.coinPairs[coin];
-        const coinPairPriceFree = await helpers.ozAdd('@moc/oracles/CoinPairPriceFree', {
+        const coinPairPriceFree = await helpers.ozAdd('@money-on-chain/omoc-decentralized-oracle/CoinPairPriceFree', {
             contractAlias: 'CoinPairPriceFree_' + coin,
             admin: proxyAdmin,
             force: true,
             ...ozParams,
         });
         console.log('coinPairPriceFree: ', coinPairPriceFree.address, 'for coin', coin);
-        const coinPairPrice = await helpers.ozAdd('@moc/oracles/CoinPairPrice', {
+        const coinPairPrice = await helpers.ozAdd('@money-on-chain/omoc-decentralized-oracle/CoinPairPrice', {
             methodArgs: [
                 governor.address,
                 [coinPairPriceFree.address, infoGetterAddr],
@@ -65,4 +65,4 @@ async function deploy({ config, ozParams, governor, token }) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(artifacts, deploy);

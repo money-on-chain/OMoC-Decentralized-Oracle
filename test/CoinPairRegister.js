@@ -14,7 +14,7 @@ contract('CoinPairRegister', (accounts) => {
         const minOracleOwnerStake = '10000';
         const Supporters = artifacts.require('Supporters');
         const supporters = await Supporters.new();
-        const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
+        const TestMOC = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20');
         const token = await TestMOC.new();
         await supporters.initialize(
             governor.addr,

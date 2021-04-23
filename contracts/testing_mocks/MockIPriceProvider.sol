@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
+import {IPriceProvider} from "@money-on-chain/omoc-sc-shared/contracts/IPriceProvider.sol";
 
 /**
   @title MockIPriceProvider
@@ -12,7 +12,7 @@ import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
 contract MockIPriceProvider is IPriceProvider {
     bytes32 public price;
     bool public fail;
-    uint256 lastPubBlock;
+    uint256 public lastPubBlock;
 
     constructor(
         uint256 _price,

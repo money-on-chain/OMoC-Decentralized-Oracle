@@ -4,7 +4,7 @@ const { constants, expectRevert, BN } = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 const ethers = require('ethers');
 const crypto = require('crypto');
-const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
+const TestMOC = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20');
 const Supporters = artifacts.require('Supporters');
 
 const ORACLE_QUANTITY = 40;
@@ -85,21 +85,21 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             (await token.balanceOf(ownerAddr)).toString(),
             initialBalance.sub(new BN(stake)).toString(),
         );
-        const cant_prev = (await coinPairPrice.getRoundInfo()).selectedOracles.length;
+        const cantPrev = (await coinPairPrice.getRoundInfo()).selectedOracles.length;
         await oracleManager.subscribeToCoinPair(oracleAddr, COINPAIR, { from: ownerAddr });
         const subscribed = await oracleManager.isSubscribed(oracleAddr, COINPAIR);
         assert.isTrue(subscribed);
 
-        const round_info = await coinPairPrice.getRoundInfo();
-        if (round_info.round == 0) {
+        const roundInfo = await coinPairPrice.getRoundInfo();
+        if (roundInfo.round === 0) {
             // We can't detect if the oracle is inside the round, so we don't add them
         } else {
             // We add to selected oracles right away
-            const cant_post = round_info.selectedOracles.length;
-            if (cant_prev < maxOraclesPerRound) {
-                assert.equal(cant_prev + 1, cant_post);
+            const cantPost = roundInfo.selectedOracles.length;
+            if (cantPrev < maxOraclesPerRound) {
+                assert.equal(cantPrev + 1, cantPost);
             } else {
-                assert.equal(maxOraclesPerRound, cant_post);
+                assert.equal(maxOraclesPerRound, cantPost);
             }
         }
     }
@@ -130,16 +130,16 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
         const ret = [];
         const sortedOracles = oracles.concat().sort((a, b) => b.stake - a.stake);
         const oracleMap = oracles.reduce((acc, val, index) => {
-            acc[val['account']] = index;
+            acc[val.account] = index;
             return acc;
         }, {});
 
         for (let i = 0; i < sortedOracles.length; i++) {
             const oracleData = sortedOracles[i];
-            const idx = oracleMap[oracleData['account']];
+            const idx = oracleMap[oracleData.account];
             ret[idx] = constants.ZERO_ADDRESS;
             if (i > 0) {
-                ret[idx] = sortedOracles[i - 1]['account'];
+                ret[idx] = sortedOracles[i - 1].account;
             }
         }
         return ret;
@@ -201,9 +201,9 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
     it('Should select the maxOraclesPerRound oracles after adding stake', async () => {
         for (let i = 0; i < oracleList.length; i++) {
             const removePrevEntry = getPrevEntries(oracleList)[i];
-            const delta_stake = Math.floor(Math.random() * 1000000);
-            oracleList[i]['delta_stake'] = delta_stake;
-            oracleList[i].stake = oracleList[i].stake + delta_stake;
+            const deltaStake = Math.floor(Math.random() * 1000000);
+            oracleList[i].delta_stake = deltaStake;
+            oracleList[i].stake = oracleList[i].stake + deltaStake;
             const addPrevEntry = getPrevEntries(oracleList)[i];
             await this.token.approve(this.oracleMgr.address, oracleList[i].delta_stake, {
                 from: oracleList[i].owner_account,
@@ -234,13 +234,13 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
     it('Should get the right prev entry', async () => {
         const prevs = getPrevEntries(oracleList);
         const oracleMap = oracleList.reduce((acc, val, index) => {
-            acc[val['account']] = index;
+            acc[val.account] = index;
             return acc;
         }, {});
 
         for (let i = 0; i < oracleList.length; i++) {
-            const addr = oracleList[i]['account'];
-            const stake = oracleList[i]['stake'];
+            const addr = oracleList[i].account;
+            const stake = oracleList[i].stake;
             const p1 = await this.oracleMgr.getPrevByAddr(addr);
             assert.equal(prevs[i], p1);
             const p2 = await this.oracleMgr.getPrevByAddrWithHint(addr, prevs[i]);
@@ -268,21 +268,21 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             const next = oracleList.find((x) => x.stake < stake);
             if (next) {
                 await expectRevert(
-                    this.oracleMgr.getPrevByStakeWithHint(stake, next['account']),
+                    this.oracleMgr.getPrevByStakeWithHint(stake, next.account),
                     'Wrong prev entry stake',
                 );
                 await expectRevert(
-                    this.oracleMgr.getPrevByAddrWithHint(addr, next['account']),
+                    this.oracleMgr.getPrevByAddrWithHint(addr, next.account),
                     'Invalid prev entry',
                 );
-                const nextNext = oracleList.find((x) => x.stake < next['stake']);
+                const nextNext = oracleList.find((x) => x.stake < next.stake);
                 if (nextNext) {
                     await expectRevert(
-                        this.oracleMgr.getPrevByStakeWithHint(stake, nextNext['account']),
+                        this.oracleMgr.getPrevByStakeWithHint(stake, nextNext.account),
                         'Wrong prev entry stake',
                     );
                     await expectRevert(
-                        this.oracleMgr.getPrevByAddrWithHint(addr, nextNext['account']),
+                        this.oracleMgr.getPrevByAddrWithHint(addr, nextNext.account),
                         'Invalid prev entry',
                     );
                 }
@@ -294,7 +294,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
         const selAddreses = (await this.coinPairPrice.getRoundInfo()).selectedOracles;
         const maxOraclesPerRound = (await this.coinPairPrice.maxOraclesPerRound()).toNumber();
         assert.equal(selAddreses.length, maxOraclesPerRound);
-        const selOracles = selAddreses.map((x) => oracleList.find((y) => x == y.account));
+        const selOracles = selAddreses.map((x) => oracleList.find((y) => x === y.account));
         for (let i = 0; i < selOracles.length; i++) {
             const o = selOracles[i];
             assert.ok(
@@ -321,7 +321,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
                 const signatures = [];
                 for (let j = 0; j < selOracles.length / 2 + 2; j++) {
                     const account = selOracles[j].account;
-                    if (account == o.account) {
+                    if (account === o.account) {
                         continue;
                     }
                     const signed = ethers.utils.splitSignature(
@@ -353,7 +353,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
     it('Oracle list should be sorted correctly', async () => {
         const sortedAddrs = [];
         let it = await this.oracleMgr.getRegisteredOracleHead();
-        while (it != constants.ZERO_ADDRESS) {
+        while (it !== constants.ZERO_ADDRESS) {
             sortedAddrs.push(it);
             it = await this.oracleMgr.getRegisteredOracleNext(it);
         }

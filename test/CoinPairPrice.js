@@ -419,8 +419,8 @@ contract('CoinPairPrice', async (accounts) => {
         const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
         const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
 
-        let lastPublicationBlock = (await this.coinPairPrice.getLastPublicationBlock()).toString();
-        let receipt = await this.coinPairPrice.publishPrice(
+        const lastPublicationBlock = (await this.coinPairPrice.getLastPublicationBlock()).toString();
+        const receipt = await this.coinPairPrice.publishPrice(
             msg.version,
             web3.utils.asciiToHex('BTCUSD'),
             msg.price,
@@ -461,11 +461,11 @@ contract('CoinPairPrice', async (accounts) => {
         assert.equal(helpers.bytes32toBN(price).toString(), (10 ** 18).toString());
         assert.isTrue(valid);
         await helpers.mineBlocks(this.validPricePeriodInBlocks);
-        const { 0: price_after, 1: not_valid } = await this.coinPairPrice.peek({
+        const { 0: priceAfter, 1: notValid } = await this.coinPairPrice.peek({
             from: helpers.ADDRESS_ONE,
         });
-        assert.equal(helpers.bytes32toBN(price_after).toString(), (10 ** 18).toString());
-        assert.isFalse(not_valid);
+        assert.equal(helpers.bytes32toBN(priceAfter).toString(), (10 ** 18).toString());
+        assert.isFalse(notValid);
     });
 
     it.skip('Should fail to publish price from unsubscribed address. NOT TRUE ANYMORE', async () => {
@@ -527,8 +527,6 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should fail to publish price if block does not match where the last publication occurred', async () => {
-        const thisBlock = 0;
-
         const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -593,9 +591,6 @@ contract('CoinPairPrice', async (accounts) => {
             (await this.coinPairPrice.getLastPublicationBlock()).toString(),
         );
         const s1 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[0].account));
-        const s2 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[1].account));
-        const s3 = ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracleData[2].account));
-
         await expectRevert(
             this.coinPairPrice.publishPrice(
                 msg.version,
@@ -690,7 +685,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should add-up points submitting several prices from Oracles A,B and C', async () => {
-        let roundInfo = await this.coinPairPrice.getRoundInfo();
+        // const roundInfo = await this.coinPairPrice.getRoundInfo();
         // Addup points submitting several prices from Oracles A,B and C
         // Oracle A    publications.
         {
@@ -723,7 +718,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -755,7 +750,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -789,7 +784,7 @@ contract('CoinPairPrice', async (accounts) => {
 
         // Oracle B  publications.
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -821,7 +816,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -854,7 +849,7 @@ contract('CoinPairPrice', async (accounts) => {
         }
 
         // Oracle C  publications.
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
@@ -891,7 +886,7 @@ contract('CoinPairPrice', async (accounts) => {
     });
 
     it('Should be possible for Oracle A to publish a valid price message after the lock period ', async () => {
-        const roundInfo = await this.coinPairPrice.getRoundInfo();
+        // const roundInfo = await this.coinPairPrice.getRoundInfo();
         const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
             3,
             'BTCUSD',
@@ -942,7 +937,7 @@ contract('CoinPairPrice', async (accounts) => {
         let roundInfo = await this.coinPairPrice.getRoundInfo();
         const selOracles = roundInfo.selectedOracles;
         const round = roundInfo.round;
-        let receipt = await this.coinPairPrice.switchRound();
+        const receipt = await this.coinPairPrice.switchRound();
         roundInfo = await this.coinPairPrice.getRoundInfo();
         expectEvent.inTransaction(receipt.tx, this.coinPairPrice, 'OracleRewardTransfer', {
             roundNumber: round,
@@ -951,7 +946,7 @@ contract('CoinPairPrice', async (accounts) => {
             amount: expectReward1,
         });
         const latestBlock = await helpers.getLatestBlock();
-        let selOracleOwners = [];
+        const selOracleOwners = [];
         for (let i = 0; i < roundInfo.selectedOracles.length; i++) {
             selOracleOwners.push(await this.oracleMgr.getOracleOwner(roundInfo.selectedOracles[i]));
         }

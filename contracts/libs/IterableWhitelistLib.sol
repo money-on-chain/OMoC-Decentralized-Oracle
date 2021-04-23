@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {AddressSetLib} from "@moc/shared/contracts/lib/AddressSetLib.sol";
+import {AddressSetLib} from "@money-on-chain/omoc-sc-shared/contracts/lib/AddressSetLib.sol";
 
 /**
   @dev An iterable mapping of addresses to boolean, used to check if an address is whitelisted.

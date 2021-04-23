@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const {constants, expectRevert, BN} = require('@openzeppelin/test-helpers');
+const {constants, expectRevert} = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
 contract('OracleManager', async (accounts) => {

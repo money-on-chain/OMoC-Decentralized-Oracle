@@ -1,4 +1,4 @@
-/* global artifacts, beforeEach, contract, it */
+/* global contract, it */
 const helpers = require('./helpers');
 const { expect } = require('chai');
 const { toWei, toBN } = require('web3-utils');

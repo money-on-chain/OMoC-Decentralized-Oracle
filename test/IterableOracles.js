@@ -1,7 +1,7 @@
-/* global artifacts, beforeEach, contract, it */
+/* global artifacts, contract, it */
 const {BN, expectRevert, constants} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
-const {toChecksumAddress, randomHex, toBN, padLeft, numberToHex} = require('web3-utils');
+const {toChecksumAddress, padLeft, numberToHex} = require('web3-utils');
 const {ADDRESS_ZERO, ADDRESS_ONE} = require('./helpers');
 
 const IterableOracles = artifacts.require('IterableOraclesMock');
@@ -60,7 +60,7 @@ contract('IterableOracles', (accounts) => {
     });
 
     it('registration success', async () => {
-        for (oracle of ORACLES_DATA) {
+        for (const oracle of ORACLES_DATA) {
             await iterableOracles.registerOracle(oracle.owner, oracle.address, oracle.url);
 
             const oracleRegistered = await iterableOracles.isOracleRegistered(oracle.address);

@@ -1,8 +1,7 @@
 const PriceProviderRegister = artifacts.require('PriceProviderRegister');
-const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
-const {BN, expectEvent, expectRevert, constants} = require('@openzeppelin/test-helpers');
-const {expect} = require('chai');
-const helpers = require('./helpers');
+const MockGovernor = artifacts.require('@money-on-chain/omoc-sc-shared/MockGovernor');
+const { BN, expectRevert, constants } = require('@openzeppelin/test-helpers');
+const { expect } = require('chai');
 
 contract('PriceProviderRegister', (accounts) => {
     beforeEach(async () => {
@@ -13,9 +12,9 @@ contract('PriceProviderRegister', (accounts) => {
     });
 
     it('Should fail to register address zero', async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
+        const coinPair = web3.utils.asciiToHex('TEST');
         await expectRevert(
-            this.priceProviderRegister.registerCoinPair(coin_pair, constants.ZERO_ADDRESS, {
+            this.priceProviderRegister.registerCoinPair(coinPair, constants.ZERO_ADDRESS, {
                 from: accounts[0],
             }),
             'Address cannot be zero',
@@ -23,21 +22,21 @@ contract('PriceProviderRegister', (accounts) => {
     });
 
     it('Should fail to register the same coin pair twice', async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
-        await this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
+        const coinPair = web3.utils.asciiToHex('TEST');
+        await this.priceProviderRegister.registerCoinPair(coinPair, accounts[1], {
             from: accounts[0],
         });
         await expectRevert(
-            this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
+            this.priceProviderRegister.registerCoinPair(coinPair, accounts[1], {
                 from: accounts[0],
             }),
             'Pair is already registered',
         );
     });
 
-    it("Should fail to unregister a coin pair that wasn't registered", async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
-        await this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
+    it('Should fail to unregister a coin pair that wasn\'t registered', async () => {
+        const coinPair = web3.utils.asciiToHex('TEST');
+        await this.priceProviderRegister.registerCoinPair(coinPair, accounts[1], {
             from: accounts[0],
         });
         await expectRevert(
@@ -49,33 +48,33 @@ contract('PriceProviderRegister', (accounts) => {
     });
 
     it('Should fail to unregister a coin pair with invalid hint', async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
-        await this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
+        const coinPair = web3.utils.asciiToHex('TEST');
+        await this.priceProviderRegister.registerCoinPair(coinPair, accounts[1], {
             from: accounts[0],
         });
         await expectRevert(
-            this.priceProviderRegister.unRegisterCoinPair(coin_pair, 100, {from: accounts[0]}),
+            this.priceProviderRegister.unRegisterCoinPair(coinPair, 100, { from: accounts[0] }),
             'Illegal index',
         );
     });
 
     it('Should fail to get and invalid index', async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
-        await this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
+        const coinPair = web3.utils.asciiToHex('TEST');
+        await this.priceProviderRegister.registerCoinPair(coinPair, accounts[1], {
             from: accounts[0],
         });
         await expectRevert(this.priceProviderRegister.getCoinPairAtIndex(100), 'Illegal index');
     });
 
     it('Should be able to unregister a coin pair', async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
-        await this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
+        const coinPair = web3.utils.asciiToHex('TEST');
+        await this.priceProviderRegister.registerCoinPair(coinPair, accounts[1], {
             from: accounts[0],
         });
         expect(await this.priceProviderRegister.getCoinPairCount()).to.be.bignumber.equal(
             new BN(1),
         );
-        await this.priceProviderRegister.unRegisterCoinPair(coin_pair, 0, {from: accounts[0]});
+        await this.priceProviderRegister.unRegisterCoinPair(coinPair, 0, { from: accounts[0] });
         expect(await this.priceProviderRegister.getCoinPairCount()).to.be.bignumber.equal(
             new BN(0),
         );
@@ -84,23 +83,23 @@ contract('PriceProviderRegister', (accounts) => {
     it('Should be able to register/unregister a some coinpairs', async () => {
         const cant = 10;
         for (let i = 1; i < cant; i++) {
-            const coin_pair = web3.utils.asciiToHex('TEST' + i);
-            await this.priceProviderRegister.registerCoinPair(coin_pair, accounts[i], {
+            const coinPair = web3.utils.asciiToHex('TEST' + i);
+            await this.priceProviderRegister.registerCoinPair(coinPair, accounts[i], {
                 from: accounts[0],
             });
 
             expect(await this.priceProviderRegister.getCoinPairCount()).to.be.bignumber.equal(
                 new BN(i),
             );
-            expect(await this.priceProviderRegister.getContractAddress(coin_pair)).to.equal(
+            expect(await this.priceProviderRegister.getContractAddress(coinPair)).to.equal(
                 accounts[i],
             );
 
             expect(await this.priceProviderRegister.getCoinPairAtIndex(i - 1)).to.equal(
-                coin_pair.padEnd(66, '0'),
+                coinPair.padEnd(66, '0'),
             );
             expect(
-                await this.priceProviderRegister.getCoinPairIndex(coin_pair, 0),
+                await this.priceProviderRegister.getCoinPairIndex(coinPair, 0),
             ).to.be.bignumber.equal(new BN(i - 1));
         }
         expect(await this.priceProviderRegister.getCoinPairCount()).to.be.bignumber.equal(
@@ -133,9 +132,9 @@ contract('PriceProviderRegister', (accounts) => {
     });
 
     it('Should fail to set a coin pair address zero', async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
+        const coinPair = web3.utils.asciiToHex('TEST');
         await expectRevert(
-            this.priceProviderRegister.setCoinPair(coin_pair, constants.ZERO_ADDRESS, {
+            this.priceProviderRegister.setCoinPair(coinPair, constants.ZERO_ADDRESS, {
                 from: accounts[0],
             }),
             'Address cannot be zero',
@@ -143,23 +142,23 @@ contract('PriceProviderRegister', (accounts) => {
     });
 
     it('Should fail to set an unregistered coin pair', async () => {
-        const coin_pair = web3.utils.asciiToHex('TESTX');
+        const coinPair = web3.utils.asciiToHex('TESTX');
         await expectRevert(
-            this.priceProviderRegister.setCoinPair(coin_pair, accounts[1], {from: accounts[0]}),
+            this.priceProviderRegister.setCoinPair(coinPair, accounts[1], { from: accounts[0] }),
             'This coin pair is not registered',
         );
     });
 
     it('Should be able to set a coin pair', async () => {
-        const coin_pair = web3.utils.asciiToHex('TEST');
-        await this.priceProviderRegister.registerCoinPair(coin_pair, accounts[1], {
+        const coinPair = web3.utils.asciiToHex('TEST');
+        await this.priceProviderRegister.registerCoinPair(coinPair, accounts[1], {
             from: accounts[0],
         });
-        expect(await this.priceProviderRegister.getContractAddress(coin_pair)).to.equal(
+        expect(await this.priceProviderRegister.getContractAddress(coinPair)).to.equal(
             accounts[1],
         );
-        await this.priceProviderRegister.setCoinPair(coin_pair, accounts[2], {from: accounts[0]});
-        expect(await this.priceProviderRegister.getContractAddress(coin_pair)).to.equal(
+        await this.priceProviderRegister.setCoinPair(coinPair, accounts[2], { from: accounts[0] });
+        expect(await this.priceProviderRegister.getContractAddress(coinPair)).to.equal(
             accounts[2],
         );
     });

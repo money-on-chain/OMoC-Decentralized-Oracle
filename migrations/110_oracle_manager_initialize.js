@@ -1,13 +1,13 @@
 'use strict';
-const helpers = require('@moc/shared/lib/helpers');
+const helpers = require('@money-on-chain/omoc-sc-shared/lib/helpers');
 const Web3 = require('web3');
 
 async function deploy({config, ozParams, governor}) {
     console.log('Initialize OracleManager');
-    const staking = helpers.ozGetAddr('@moc/oracles/Staking', ozParams);
-    const oracleManagerAddr = helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
+    const staking = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/Staking', ozParams);
+    const oracleManagerAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/OracleManager', ozParams);
     const oracleManager = await artifacts
-        .require('@moc/oracles/OracleManager')
+        .require('@money-on-chain/omoc-decentralized-oracle/OracleManager')
         .at(oracleManagerAddr);
     await oracleManager.initialize(
         governor.address,
@@ -18,4 +18,4 @@ async function deploy({config, ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(artifacts, deploy);

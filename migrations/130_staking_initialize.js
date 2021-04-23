@@ -1,14 +1,14 @@
 'use strict';
-const helpers = require('@moc/shared/lib/helpers');
+const helpers = require('@money-on-chain/omoc-sc-shared/lib/helpers');
 const Web3 = require('web3');
 
 async function deploy({config, ozParams, governor}) {
     console.log('Initialize staking machine');
-    const supportersAddr = helpers.ozGetAddr('@moc/oracles/Supporters', ozParams);
-    const oracleManagerAddr = helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
-    const delayMachineAddr = helpers.ozGetAddr('@moc/oracles/DelayMachine', ozParams);
-    const stakingMachineAddr = helpers.ozGetAddr('@moc/oracles/Staking', ozParams);
-    const stakingMachine = await artifacts.require('@moc/oracles/Staking').at(stakingMachineAddr);
+    const supportersAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/Supporters', ozParams);
+    const oracleManagerAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/OracleManager', ozParams);
+    const delayMachineAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/DelayMachine', ozParams);
+    const stakingMachineAddr = helpers.ozGetAddr('@money-on-chain/omoc-decentralized-oracle/Staking', ozParams);
+    const stakingMachine = await artifacts.require('@money-on-chain/omoc-decentralized-oracle/Staking').at(stakingMachineAddr);
     // TODO: The whitelist needs tha address of the VotingMachine.
     const iterableWhitelistDataLock = [];
     await stakingMachine.initialize(
@@ -22,4 +22,4 @@ async function deploy({config, ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(artifacts, deploy);

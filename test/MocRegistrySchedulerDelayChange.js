@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
 const MocRegistrySchedulerDelayChange = artifacts.require('MocRegistrySchedulerDelayChange');
-const Registry = artifacts.require('@moc/shared/GovernedRegistry');
+const Registry = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedRegistry');
 
 contract('MocRegistrySchedulerDelayChange', async (accounts) => {
     const minCPSubscriptionStake = (10 ** 18).toString();

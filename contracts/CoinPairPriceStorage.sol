@@ -4,12 +4,12 @@ pragma solidity 0.6.12;
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {Governed} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/Governed.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+import {IRegistry} from "@money-on-chain/omoc-sc-shared/contracts/IRegistry.sol";
 
 
 /*

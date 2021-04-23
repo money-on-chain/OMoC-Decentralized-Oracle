@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const MocRegistryEnteringFallbacksAmountsChange = artifacts.require(
     'MocRegistryEnteringFallbacksAmountsChange',
 );
-const Registry = artifacts.require('@moc/shared/GovernedRegistry');
+const Registry = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedRegistry');
 
 contract('MocRegistryEnteringFallbacksAmountsChange', async (accounts) => {
     const minCPSubscriptionStake = (10 ** 18).toString();

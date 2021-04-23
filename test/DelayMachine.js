@@ -4,8 +4,8 @@ const {expect} = require('chai');
 const {BN, expectRevert, expectEvent, time} = require('@openzeppelin/test-helpers');
 const DelayMachine = artifacts.require('DelayMachine');
 const MOCKStakingMachine = artifacts.require('MOCKStakingMachine');
-const GovernedERC20 = artifacts.require('@moc/shared/GovernedERC20');
-const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
+const GovernedERC20 = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20');
+const MockGovernor = artifacts.require('@money-on-chain/omoc-sc-shared/MockGovernor');
 
 contract('DelayMachine', (accounts) => {
     const [GOVERNOR_OWNER, DESTIONATION_MOC_HOLDER, SOURCE_MOC_HOLDER, DUMMY_ACCOUNT] = accounts;

@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {Governed} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/Governed.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 import {IterableOraclesLib} from "./libs/IterableOraclesLib.sol";
 import {CoinPairRegisterLib} from "./libs/CoinPairRegisterLib.sol";

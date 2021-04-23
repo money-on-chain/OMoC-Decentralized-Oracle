@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const { expectRevert, BN, time } = require('@openzeppelin/test-helpers');
+const { expectRevert } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 const { toBN, toWei } = require('web3-utils');
 const CoinPairPriceFree = artifacts.require('CoinPairPriceFree');

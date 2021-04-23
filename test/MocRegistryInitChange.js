@@ -1,7 +1,7 @@
 const helpers = require('./helpers');
 const MocRegistryInitChange = artifacts.require('MocRegistryInitChange');
 const InfoGetter = artifacts.require('InfoGetter');
-const Registry = artifacts.require('@moc/shared/GovernedRegistry');
+const Registry = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedRegistry');
 
 contract('MocRegistryInitChange', async (accounts) => {
     const minCPSubscriptionStake = (10 ** 18).toString();

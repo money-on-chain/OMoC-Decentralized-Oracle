@@ -2,9 +2,9 @@
 pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
-import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
+import {IGovernor} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/IGovernor.sol";
+import {IPriceProvider} from "@money-on-chain/omoc-sc-shared/contracts/IPriceProvider.sol";
+import {IPriceProviderRegisterEntry} from "@money-on-chain/omoc-sc-shared/contracts/IPriceProviderRegisterEntry.sol";
 import {CalculatedPriceProviderStorage} from "./CalculatedPriceProviderStorage.sol";
 
 /// @title This contract gets the price from some IPriceProviders and do the math to calculate

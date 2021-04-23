@@ -90,7 +90,7 @@ function findEvent(logs, name) {
 }
 
 async function createGovernor(owner) {
-    const Governor = artifacts.require('@moc/shared/Governor');
+    const Governor = artifacts.require('@money-on-chain/omoc-sc-shared/Governor');
     const OracleManagerPairChange = artifacts.require('OracleManagerPairChange');
     const TestMOCMintChange = artifacts.require('TestMOCMintChange');
     const governor = await Governor.new();
@@ -148,7 +148,7 @@ async function initCoinpair(
         validPricePeriodInBlocks = 3,
         emergencyPublishingPeriodInBlocks = 2,
         bootstrapPrice = '100000000',
-    }
+    },
 ) {
     const CoinPairPrice = artifacts.require('CoinPairPrice');
     const ret = await CoinPairPrice.new();
@@ -164,22 +164,22 @@ async function initCoinpair(
         emergencyPublishingPeriodInBlocks,
         bootstrapPrice,
         oracleMgr.address,
-        registry
+        registry,
     );
     await governor.registerCoinPair(oracleMgr, web3.utils.asciiToHex(name), ret.address);
     return ret;
 }
 
 async function initContracts({
-    governorOwner,
-    period = 20,
-    minSubscriptionStake = (10 ** 18).toString(),
-    oracleManagerWhitelisted = [],
-    withdrawLockTime = (60 * 60).toString(),
-    governor = null,
-    wList = [],
-}) {
-    const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
+                                 governorOwner,
+                                 period = 20,
+                                 minSubscriptionStake = (10 ** 18).toString(),
+                                 oracleManagerWhitelisted = [],
+                                 withdrawLockTime = (60 * 60).toString(),
+                                 governor = null,
+                                 wList = [],
+                             }) {
+    const TestMOC = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20');
     const OracleManager = artifacts.require('OracleManager');
     const Supporters = artifacts.require('Supporters');
     const Staking = artifacts.require('Staking');
@@ -187,7 +187,7 @@ async function initContracts({
     const MockDelayMachine = artifacts.require('MockDelayMachine');
     const StakingMock = artifacts.require('StakingMock');
     const MockVotingMachine = artifacts.require('MockVotingMachine');
-    const Registry = artifacts.require('@moc/shared/GovernedRegistry');
+    const Registry = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedRegistry');
 
     if (governor === null) {
         governor = await createGovernor(governorOwner);
@@ -230,7 +230,7 @@ async function initContracts({
         const change = await MocRegistryAddMinOraclesPerRoundChange.new(registry.address);
         await governor.execute(change, { from: governorOwner });
     } else {
-        console.error("WARNING: execution without 'minOraclePerRound' setup!");
+        console.error('WARNING: execution without \'minOraclePerRound\' setup!');
     }
 
     return {
@@ -242,7 +242,7 @@ async function initContracts({
         staking,
         stakingMock,
         votingMachine,
-        registry: registry.address
+        registry: registry.address,
     };
 }
 
@@ -263,15 +263,14 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
         lastPublicationBlock.toString(),
     );
 
-    let sigs = [];
-
+    const sigs = [];
     for (let i = 0; i < oracles.length; i++) {
         sigs.push(ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[i].address)));
     }
 
-    let sigV = [];
-    let sigR = [];
-    let sigS = [];
+    const sigV = [];
+    const sigR = [];
+    const sigS = [];
     for (let j = sigs.length - 1; j >= 0; j--) {
         sigV.push(sigs[j].v);
         sigR.push(sigs[j].r);

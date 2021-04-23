@@ -4,7 +4,7 @@ const { expect } = require('chai');
 const helpers = require('./helpers');
 
 const SupportersMock = artifacts.require('SupportersMock');
-const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
+const TestMOC = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20');
 
 contract('SupportersMock', (accounts) => {
     let supporters;
@@ -266,8 +266,6 @@ contract('SupportersMock', (accounts) => {
         const INITIAL_BALANCE = BALANCE_USER1.add(BALANCE_USER2).add(BALANCE_USER3);
         const EARNINGS = new BN(web3.utils.toWei('1', 'ether'));
         const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS);
-        let latestBlock;
-        let endBlock;
 
         beforeEach(async () => {
             const governor = await helpers.createGovernor(accounts[8]);
@@ -292,10 +290,10 @@ contract('SupportersMock', (accounts) => {
         });
 
         it('single withdrawal', async () => {
-            tokens = await supporters.getBalance(user1);
+            let tokens = await supporters.getBalance(user1);
             expect(tokens, 'Initial user token balance').to.be.bignumber.equal(BALANCE_USER1);
 
-            mocs = await supporters.getMOCBalance(user1);
+            let mocs = await supporters.getMOCBalance(user1);
             expect(mocs, 'Initial MOC balance').to.be.bignumber.equal(BALANCE_USER1);
 
             await token.transfer(supporters.address, EARNINGS, { from: payer });
@@ -396,8 +394,6 @@ contract('SupportersMock', (accounts) => {
 
     describe('Subaccounts', () => {
         const INITIAL_BALANCE = BALANCE_USER1.add(BALANCE_USER1);
-        const EARNINGS = new BN(web3.utils.toWei('1', 'ether'));
-        const FINAL_BALANCE = INITIAL_BALANCE.add(EARNINGS);
 
         beforeEach(async () => {
             const governor = await helpers.createGovernor(accounts[8]);

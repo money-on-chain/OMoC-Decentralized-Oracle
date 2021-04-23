@@ -1,7 +1,6 @@
 const helpers = require('./helpers');
-const { expectRevert, BN, time } = require('@openzeppelin/test-helpers');
+const { BN } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
-const { ZERO_ADDRESS } = require('@openzeppelin/test-helpers/src/constants');
 const { expect } = require('chai');
 
 contract('CoinPairPrice', async (accounts) => {
@@ -136,7 +135,7 @@ contract('CoinPairPrice', async (accounts) => {
         await this.coinPairPrice.switchRound();
 
         // Add up points submitting several prices from Oracles A,B,C and D
-        let roundInfo = await this.coinPairPrice.getRoundInfo();
+        // let roundInfo = await this.coinPairPrice.getRoundInfo();
         // Oracle A    publications.
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -171,7 +170,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -206,7 +205,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -241,7 +240,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -278,7 +277,7 @@ contract('CoinPairPrice', async (accounts) => {
 
         // Oracle B  publications.
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -313,7 +312,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -348,7 +347,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -384,7 +383,7 @@ contract('CoinPairPrice', async (accounts) => {
         }
 
         // Oracle C  publications.
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
@@ -417,7 +416,7 @@ contract('CoinPairPrice', async (accounts) => {
                 { from: oracleData[2].account },
             );
         }
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
@@ -451,7 +450,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
         // Oracle D  publications.
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
@@ -615,7 +614,7 @@ contract('CoinPairPrice', async (accounts) => {
         await this.coinPairPrice.switchRound();
 
         // Add up points submitting several prices from Oracles A,B and C
-        let roundInfo = await this.coinPairPrice.getRoundInfo();
+        // let roundInfo = await this.coinPairPrice.getRoundInfo();
         // Oracle A    publications.
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -647,7 +646,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -679,7 +678,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -711,7 +710,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -745,7 +744,7 @@ contract('CoinPairPrice', async (accounts) => {
 
         // Oracle B  publications.
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -777,7 +776,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -809,7 +808,7 @@ contract('CoinPairPrice', async (accounts) => {
             );
         }
 
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
 
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -842,7 +841,7 @@ contract('CoinPairPrice', async (accounts) => {
         }
 
         // Oracle C  publications.
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
@@ -872,7 +871,7 @@ contract('CoinPairPrice', async (accounts) => {
                 { from: oracleData[2].account },
             );
         }
-        roundInfo = await this.coinPairPrice.getRoundInfo();
+        // roundInfo = await this.coinPairPrice.getRoundInfo();
         {
             const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                 3,
@@ -1060,7 +1059,7 @@ contract('CoinPairPrice', async (accounts) => {
             await this.coinPairPrice.switchRound();
 
             // Add up points submitting several prices from Oracles A,B and C
-            let roundInfo = await this.coinPairPrice.getRoundInfo();
+            // let roundInfo = await this.coinPairPrice.getRoundInfo();
             // Oracle A    publications.
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -1092,7 +1091,7 @@ contract('CoinPairPrice', async (accounts) => {
                 );
             }
 
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -1124,7 +1123,7 @@ contract('CoinPairPrice', async (accounts) => {
                 );
             }
 
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -1156,7 +1155,7 @@ contract('CoinPairPrice', async (accounts) => {
                 );
             }
 
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -1190,7 +1189,7 @@ contract('CoinPairPrice', async (accounts) => {
 
             // Oracle B  publications.
 
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -1222,7 +1221,7 @@ contract('CoinPairPrice', async (accounts) => {
                 );
             }
 
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -1254,7 +1253,7 @@ contract('CoinPairPrice', async (accounts) => {
                 );
             }
 
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
 
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
@@ -1287,7 +1286,7 @@ contract('CoinPairPrice', async (accounts) => {
             }
 
             // Oracle C  publications.
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,
@@ -1317,7 +1316,7 @@ contract('CoinPairPrice', async (accounts) => {
                     { from: oracleData[2].account },
                 );
             }
-            roundInfo = await this.coinPairPrice.getRoundInfo();
+            // roundInfo = await this.coinPairPrice.getRoundInfo();
             {
                 const { msg, encMsg } = await helpers.getDefaultEncodedMessage(
                     3,

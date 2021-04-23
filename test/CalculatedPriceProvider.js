@@ -1,7 +1,7 @@
 const helpers = require('./helpers');
 const CalculatedPriceProvider = artifacts.require('CalculatedPriceProvider');
 const MockIPriceProvider = artifacts.require('MockIPriceProvider');
-const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
+const MockGovernor = artifacts.require('@money-on-chain/omoc-sc-shared/MockGovernor');
 const {expectRevert, BN, constants} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 

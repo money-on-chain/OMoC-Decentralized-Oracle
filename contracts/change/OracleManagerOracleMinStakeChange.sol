@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {ChangeContract} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {Governed} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/Governed.sol";
 import {OracleManagerStorage} from "../OracleManagerStorage.sol";
 
 /**
@@ -10,16 +10,16 @@ import {OracleManagerStorage} from "../OracleManagerStorage.sol";
   @notice This contract is a ChangeContract intended to be used to change ..
  */
 contract OracleManagerOracleMinStakeChange is OracleManagerStorage, ChangeContract {
-    Governed public oracle_manager;
+    Governed public oracleManager;
     bytes public encodedData;
 
     /**
       @notice Constructor
-      @param _oracle_manager Address of supporters whitelisted contract to upgrade
+      @param _oracleManager Address of supporters whitelisted contract to upgrade
       @param _period The length of the round in blocks
     */
-    constructor(Governed _oracle_manager, uint256 _period) public {
-        oracle_manager = _oracle_manager;
+    constructor(Governed _oracleManager, uint256 _period) public {
+        oracleManager = _oracleManager;
         encodedData = abi.encode(_period);
     }
 
@@ -29,7 +29,7 @@ contract OracleManagerOracleMinStakeChange is OracleManagerStorage, ChangeContra
       it is not its responsability in the current architecture
      */
     function execute() external override {
-        oracle_manager.delegateCallToChanger(encodedData);
+        oracleManager.delegateCallToChanger(encodedData);
         // TODO: Make it usable just once.
     }
 

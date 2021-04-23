@@ -2,7 +2,7 @@
 pragma solidity 0.6.12;
 
 import {SubscribedOraclesLib} from "../libs/SubscribedOraclesLib.sol";
-import {AddressSetLib} from "@moc/shared/contracts/lib/AddressSetLib.sol";
+import {AddressSetLib} from "@money-on-chain/omoc-sc-shared/contracts/lib/AddressSetLib.sol";
 
 /*
     Test for subscribed oracles library.

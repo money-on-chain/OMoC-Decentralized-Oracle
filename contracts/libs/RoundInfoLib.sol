@@ -2,7 +2,7 @@
 pragma solidity 0.6.12;
 
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {AddressSetLib} from "@moc/shared/contracts/lib/AddressSetLib.sol";
+import {AddressSetLib} from "@money-on-chain/omoc-sc-shared/contracts/lib/AddressSetLib.sol";
 
 /**
   @notice Manage round specific information

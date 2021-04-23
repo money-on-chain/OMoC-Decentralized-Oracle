@@ -58,7 +58,7 @@ contract('CoinPairPrice Emergency Publish', async (accounts) => {
         expect(prev[1], 'valid').to.be.true;
 
         await helpers.mineBlocks(emergencyPublishingPeriodInBlocks);
-        let receipt = await this.coinPairPrice.emergencyPublish(TO_PUBLISH, {
+        const receipt = await this.coinPairPrice.emergencyPublish(TO_PUBLISH, {
             from: EMERGENCY_PUBLISHER,
         });
         const latestBlock = await helpers.getLatestBlock();

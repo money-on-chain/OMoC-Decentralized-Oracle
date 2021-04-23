@@ -1848,11 +1848,9 @@ contract('Staking_rounding', async (accounts) => {
     };
 
     describe('Should check reward distribution in cases with a period of 1 block', async () => {
-        let contractSet = {};
-        let periodValues;
-        let period;
-        periodValues = testCasesValuesStructure.byBlockAmountInPeriods[0];
-        period = periodValues.blocks;
+        const contractSet = {};
+        const periodValues = testCasesValuesStructure.byBlockAmountInPeriods[0];
+        const period = periodValues.blocks;
         log('PERIOD', period);
         beforeEach(async () => {
             const contracts = await helpers.initContracts({
@@ -2020,11 +2018,9 @@ contract('Staking_rounding', async (accounts) => {
     });
 
     describe('Should check reward distribution in cases with a period of 8 blocks', async () => {
-        let contractSet = {};
-        let periodValues;
-        let period;
-        periodValues = testCasesValuesStructure.byBlockAmountInPeriods[7];
-        period = periodValues.blocks;
+        const contractSet = {};
+        const periodValues = testCasesValuesStructure.byBlockAmountInPeriods[7];
+        const period = periodValues.blocks;
         log('PERIOD', period);
         beforeEach(async () => {
             const contracts = await helpers.initContracts({
@@ -2304,9 +2300,9 @@ contract('Staking_rounding', async (accounts) => {
     async function checkRewardDistribution(testValues, period, contracts) {
         log('Test number:', testValues.testNumber);
 
-        //////////////////////////////////////////
-        /////       DEPOSIT IN STAKING       /////
-        //////////////////////////////////////////
+        // ////////////////////////////////////////
+        // ///       DEPOSIT IN STAKING       /////
+        // ////////////////////////////////////////
 
         let mocBalanceAfterFirstDeposit;
         let tokenBalanceAfterFirstDeposit;
@@ -2363,9 +2359,9 @@ contract('Staking_rounding', async (accounts) => {
             );
         }
 
-        //////////////////////////////////////////
-        ///// TRANSFER REWARDS TO SUPPORTERS /////
-        //////////////////////////////////////////
+        // ////////////////////////////////////////
+        // /// TRANSFER REWARDS TO SUPPORTERS /////
+        // ////////////////////////////////////////
 
         // Check Supporters's balance before reward deposit
         const supportersBalanceBeforeTransfer = await contracts.token.balanceOf(
@@ -2425,9 +2421,9 @@ contract('Staking_rounding', async (accounts) => {
                 ),
             );
         }
-        //////////////////////////////////////////
-        /////   GO THROUGH EARNINGS PERIOD   /////
-        //////////////////////////////////////////
+        // ////////////////////////////////////////
+        // ///   GO THROUGH EARNINGS PERIOD   /////
+        // ////////////////////////////////////////
 
         let mocBalance;
         let tokenBalance;

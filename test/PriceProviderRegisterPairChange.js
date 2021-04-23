@@ -1,7 +1,6 @@
 const helpers = require('./helpers');
 const PriceProviderRegisterPairChange = artifacts.require('PriceProviderRegisterPairChange');
 const PriceProviderRegister = artifacts.require('PriceProviderRegister');
-//const IPriceProviderRegisterEntry = artifacts.require('@moc/shared/IPriceProviderRegisterEntry');
 
 contract('PriceProviderRegisterPairChange', async (accounts) => {
     const iPriceProviderRegisterEntryAddr = accounts[7];
@@ -19,7 +18,7 @@ contract('PriceProviderRegisterPairChange', async (accounts) => {
 
         this.priceProviderRegister = await PriceProviderRegister.new();
         await this.priceProviderRegister.initialize(this.governor.address);
-        //this.iPriceProviderRegisterEntry = await IPriceProviderRegisterEntry.new();
+        // this.iPriceProviderRegisterEntry = await IPriceProviderRegisterEntry.new();
 
         this.coinPairPrice_BTCUSD = await helpers.initCoinpair('BTCUSD', {
             ...contracts,
