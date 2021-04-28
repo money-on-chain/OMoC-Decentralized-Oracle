@@ -19,6 +19,7 @@ jobs:
       - run: echo always-auth=true >> .npmrc
       - run: npm ci
       - run: npm run test -- --network ganacheCore
+      - run: npm run compile
       - run: rm -r .npmrc
       - run: npm publish
         env:
