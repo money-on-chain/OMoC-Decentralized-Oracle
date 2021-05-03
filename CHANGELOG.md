@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.4](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.3...v1.4.4) (2021-05-03)
+
+
+### Features
+
+* add InfoGetterFlat version ([5a0a6ae](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/5a0a6ae657bab0c40ef0080861f4095c1d30e7d2))
+* added license file ([7c4f165](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/7c4f165571e63d4380d6c57cbca5d91e53b4ce0d))
+
 ### [1.4.3](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.2...v1.4.3) (2021-04-28)
 
 
