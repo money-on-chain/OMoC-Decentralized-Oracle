@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.5](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.4...v1.4.5) (2021-05-03)
+
+
+### Bug Fixes
+
+* fix the InfoGetterFlat step now that we use npm packages ([6a27bf5](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/6a27bf590d82daf5ac3c676be8a2de0a8e69c014))
+
 ### [1.4.4](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.3...v1.4.4) (2021-05-03)
 
 
