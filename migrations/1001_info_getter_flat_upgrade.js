@@ -1,8 +1,8 @@
 'use strict';
-const helpers = require('@moc/shared/lib/helpers');
+const helpers = require('@money-on-chain/omoc-sc-shared/lib/helpers');
 
-async function deploy({ ozParams, governor }) {
-    await helpers.ozUpgrade(governor, '@moc/oracles/InfoGetterFlat', {
+async function deploy({ ozParams, governor, artifacts }) {
+    await helpers.ozUpgrade(artifacts, governor, '@money-on-chain/omoc-decentralized-oracle/InfoGetterFlat', {
         contractAlias: 'InfoGetter',
         network: ozParams.network,
         txParams: { ...ozParams.txParams, gas: 4000000 },
@@ -11,4 +11,4 @@ async function deploy({ ozParams, governor }) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy, artifacts);
+module.exports = helpers.truffleOZMain(artifacts, deploy);

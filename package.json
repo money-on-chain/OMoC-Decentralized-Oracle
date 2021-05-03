@@ -11,6 +11,8 @@
         "lint": "npm run lint:js && npm run lint:solidity",
         "prettier:solidity": "prettier --write contracts/**/*.sol",
         "compile": "rimraf ./build && truffle compile",
+        "postcompile": "node scripts/flat_compile_and_save.js contracts/InfoGetter.sol",
+        "premigrate": "mkdir -p build/contracts && node scripts/flat_compile_and_save.js contracts/InfoGetter.sol",
         "release": "standard-version",
         "release_patch": "standard-version --release-as patch",
         "release_minor": "standard-version --release-as minor",
@@ -31,14 +33,18 @@
     },
     "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle.git#readme",
     "devDependencies": {
+        "@coinfabrik-private/omoc-flatener-verification": "0.0.5",
         "@commitlint/cli": "^12.1.1",
         "@commitlint/config-conventional": "^12.1.1",
         "@openzeppelin/cli": "^2.8.2",
         "@openzeppelin/contracts-ethereum-package": "^3.0.0",
         "@openzeppelin/test-helpers": "^0.5.6",
+        "@truffle/artifactor": "^4.0.103",
+        "@truffle/compile-common": "^0.7.3",
+        "@truffle/compile-solidity": "^5.3.0",
+        "@truffle/config": "^1.2.38",
         "@truffle/hdwallet-provider": "^1.3.0",
         "commitizen": "^4.1.2",
-        "ganache-cli": "^6.9.1",
         "cz-conventional-changelog": "^3.2.0",
         "dotenv": "^8.2.0",
         "eslint": "^7.25.0",
@@ -50,6 +56,7 @@
         "eslint-plugin-standard": "^5.0.0",
         "eslint-plugin-truffle": "^0.3.1",
         "eth-gas-reporter": "^0.2.22",
+        "ganache-cli": "^6.9.1",
         "husky": "^6.0.0",
         "lint-staged": "^10.2.11",
         "nyc": "^15.1.0",
@@ -63,7 +70,7 @@
         "truffle": "^5.3.3"
     },
     "dependencies": {
-        "@money-on-chain/omoc-sc-shared": "^1.4.17",
+        "@money-on-chain/omoc-sc-shared": "^1.4.26",
         "ganache-core": "^2.13.2"
     },
     "husky": {
