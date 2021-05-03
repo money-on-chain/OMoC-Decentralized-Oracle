@@ -16,6 +16,8 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - run: echo @money-on-chain:registry=https://npm.pkg.github.com >> .npmrc
       - run: echo //npm.pkg.github.com/:_authToken=${{secrets.MOC_SC_SHARED}} >> .npmrc
+      - run: echo @coinfabrik-private:registry=https://gitlab.com/api/v4/projects/22872046/packages/npm/ >> .npmrc
+      - run: echo //gitlab.com/api/v4/projects/22872046/packages/npm/:_authToken=PDjnQiHNetS1LyEzu1ZB >> .npmrc
       - run: echo always-auth=true >> .npmrc
       - run: npm ci
       - run: npm run test -- --network ganacheCore
