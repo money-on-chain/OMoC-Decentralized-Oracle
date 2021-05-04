@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.13](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.12...v1.4.13) (2021-05-04)
+
+
+### Features
+
+* use the last flattener version (one with no dependecies) ([c63b224](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/c63b224c53dff2c7d6d2b7afe2eef3364e5f1e2b))
+
 ### [1.4.12](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.11...v1.4.12) (2021-05-04)
 
 
