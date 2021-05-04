@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.7](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.6...v1.4.7) (2021-05-04)
+
+
+### Features
+
+* add SupportersStopPeriodChange use packages from coinfabrik ([98b9f74](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/98b9f74cb40319fbaf451428d867e0b2684364de))
+* added a change contract to stop a suporters round ([ecdf3a0](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/ecdf3a00a2f21b1de05499aa048c34da7fcd7d65))
+* use [@moc](https://github.com/moc) and update the tests of SupportersStopPeriodChange ([7ec8099](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/7ec809906112203dfd55cecd3e0b9661cbdd2e4b))
+
+
+### Bug Fixes
+
+* remove an only in a test ([b3791d3](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/b3791d3b8d188445226c261742eb325721e6e160))
+
 ### [1.4.6](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.5...v1.4.6) (2021-05-03)
 
 
