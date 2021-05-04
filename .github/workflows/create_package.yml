@@ -14,9 +14,9 @@ jobs:
         with:
           node-version: 14
           registry-url: https://npm.pkg.github.com/
-      - run: echo //npm.pkg.github.com/:_authToken=${{secrets.MOC_SC_SHARED}} >> .npmrc
-      - run: echo always-auth=true >> .npmrc
       - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.MOC_SC_SHARED}}
       - run: npm run test -- --network ganacheCore
       - run: npm run compile
       - run: rm -r .npmrc
