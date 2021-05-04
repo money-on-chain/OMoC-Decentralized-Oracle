@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.8](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.7...v1.4.8) (2021-05-04)
+
+
+### Bug Fixes
+
+* **workflow:** remove gitlab from .npmrc ([ac33bef](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/ac33bef936c00d1dd42dc5496ce433bcbff3685f))
+
 ### [1.4.7](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.6...v1.4.7) (2021-05-04)
 
 
