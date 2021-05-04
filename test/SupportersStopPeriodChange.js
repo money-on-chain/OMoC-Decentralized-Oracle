@@ -79,7 +79,7 @@ contract('SupportersEndEarningsChange', (accounts) => {
         await checkBalances(EARNINGS);
     });
 
-    it.only('should change end earnings and be able to distribute again', async () => {
+    it('should change end earnings and be able to distribute again', async () => {
         await supporters.distribute({ from: CALLER });
         await checkBalances(0);
         await helpers.mineBlocks(1);
