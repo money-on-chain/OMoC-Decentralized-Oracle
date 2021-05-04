@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.12](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.11...v1.4.12) (2021-05-04)
+
+
+### Features
+
+* **workflow:** add coinfabrik github registry path ([de40e96](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/de40e9625f8bf981b5982c9f9bd54d44dcec9e5f))
+
 ### [1.4.11](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.10...v1.4.11) (2021-05-04)
 
 
