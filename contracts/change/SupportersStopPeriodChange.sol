@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/ChangeContract.sol";
-import {Governed} from "@money-on-chain/omoc-sc-shared/contracts/moc-governance/Governance/Governed.sol";
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
 import {SupportersStorage} from "../SupportersStorage.sol";
 
 /**
