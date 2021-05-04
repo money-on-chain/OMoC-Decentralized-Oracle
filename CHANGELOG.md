@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.17](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.16...v1.4.17) (2021-05-04)
+
+
+### Bug Fixes
+
+* **workflow:** remove [@truffle](https://github.com/truffle) packages to test ([17aab17](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/17aab175998df86ce7556527aa48efcd28759f2c))
+
 ### [1.4.16](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.15...v1.4.16) (2021-05-04)
 
 

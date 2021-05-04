@@ -1,6 +1,6 @@
 {
     "name": "@money-on-chain/omoc-decentralized-oracle",
-    "version": "1.4.16",
+    "version": "1.4.17",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "scripts": {
