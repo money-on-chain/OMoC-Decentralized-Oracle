@@ -2,7 +2,7 @@
 const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 const Supporters = artifacts.require('Supporters');
-const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
+const TestMOC = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedERC20');
 const helpers = require('./helpers');
 
 contract('SupportersEndEarningsChange', (accounts) => {
@@ -39,9 +39,8 @@ contract('SupportersEndEarningsChange', (accounts) => {
             await supporters.stakeAt(balance, user, { from: user });
         }
         await depositEarnings();
-        expect(await token.balanceOf(supporters.address)).to.be.bignumber.equal(
-            balance2BN(EARNINGS + sum(balances)),
-        );
+        expect(await token.balanceOf(supporters.address))
+            .to.be.bignumber.equal(balance2BN(EARNINGS + sum(balances)));
     });
 
     async function checkBalances(earnings) {
@@ -51,14 +50,15 @@ contract('SupportersEndEarningsChange', (accounts) => {
             const current = await supporters.getMOCBalanceAt(user, user);
             const balance = balances[i];
             // earnigns is multiple of sum(balances)^2 so we get integers.
-            const userBalance = balance + (balance * earnings) / sum(balances);
+            const userBalance = balance + balance * earnings / sum(balances);
             expect(current, `User ${i} balance`).to.be.bignumber.equal(balance2BN(userBalance));
             totalBalance += userBalance;
         }
         // Available total balance to the stakers.
         // This is a call to _getAvailableMOC and is the function used to determine how much
         // each user can withdraw (without taking into account the token<->moc relationship).
-        expect(await supporters.totalMoc()).to.be.bignumber.equal(balance2BN(totalBalance));
+        expect(await supporters.totalMoc())
+            .to.be.bignumber.equal(balance2BN(totalBalance));
     }
 
     it('Creation', async () => {
@@ -159,9 +159,8 @@ contract('SupportersEndEarningsChange', (accounts) => {
         await checkBalances(EARNINGS / 2);
 
         await depositEarnings();
-        expect(await token.balanceOf(supporters.address)).to.be.bignumber.equal(
-            balance2BN(2 * EARNINGS + sum(balances)),
-        );
+        expect(await token.balanceOf(supporters.address))
+            .to.be.bignumber.equal(balance2BN(2 * EARNINGS + sum(balances)));
         await checkBalances(EARNINGS / 2);
 
         // The contract stop distributing, earnings = 0
@@ -187,6 +186,7 @@ contract('SupportersEndEarningsChange', (accounts) => {
         const change = await artifacts
             .require('SupportersStopPeriodChange')
             .new(supporters.address);
+
 
         await supporters.distribute({ from: CALLER });
         await checkBalances(0);
@@ -228,11 +228,11 @@ contract('SupportersEndEarningsChange', (accounts) => {
         await helpers.mineBlocks(10 * period);
         await checkBalances(after2ExecEarnings);
 
+
         // Start over with a deposit.
         await depositEarnings();
-        expect(await token.balanceOf(supporters.address)).to.be.bignumber.equal(
-            balance2BN(2 * EARNINGS + sum(balances)),
-        );
+        expect(await token.balanceOf(supporters.address))
+            .to.be.bignumber.equal(balance2BN(2 * EARNINGS + sum(balances)));
 
         await checkBalances(after2ExecEarnings);
         // The contract stop distributing, earnings = 0
@@ -257,4 +257,5 @@ contract('SupportersEndEarningsChange', (accounts) => {
         await helpers.mineBlocks(10);
         await checkBalances(2 * EARNINGS);
     });
+
 });

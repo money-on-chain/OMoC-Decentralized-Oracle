@@ -2,7 +2,7 @@
 /*
     This script get the flat version of InfoGetter and generate a truffle artifact InfoGetterFlat.
  */
-const { flatten } = require('@coinfabrik-private/omoc-flatener-verification');
+const { flatten } = require('@coinfabrik/solidity-flattener');
 const Config = require('@truffle/config');
 const { Compile } = require('@truffle/compile-solidity');
 const Artifactor = require('@truffle/artifactor');
@@ -27,8 +27,7 @@ async function main(contract) {
         (x) => x.contractName === contractPath.name,
     );
     const artifact = Shims.NewToLegacy.forContract(contractCompiled);
-    const dest = contractPath.name + 'Flat';
-    artifact.contract_name = dest;
+    artifact.contract_name = contractPath.name + 'Flat';
     await artifactor.save(artifact);
 }
 
