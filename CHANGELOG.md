@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.9](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.8...v1.4.9) (2021-05-04)
+
+
+### Features
+
+* **workflow:** use a better way to pass auth tokens to npm ([b88eef4](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/b88eef4bf2c8fa713d5edee945bbe5a9b5f8dc10))
+
 ### [1.4.8](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.7...v1.4.8) (2021-05-04)
 
 
