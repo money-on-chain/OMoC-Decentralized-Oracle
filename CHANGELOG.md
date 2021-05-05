@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.20](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.19...v1.4.20) (2021-05-05)
+
+
+### Bug Fixes
+
+* **workflow:** set MOC_SC_SHARED_AUTH_TOKEN env var for the whole job ([7757678](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/77576788d3bb4b9843de0199ee9ede24ec91986a))
+
 ### [1.4.19](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.18...v1.4.19) (2021-05-05)
 
 ### [1.4.18](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.17...v1.4.18) (2021-05-05)
