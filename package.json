@@ -68,7 +68,7 @@
         "truffle": "^5.3.3"
     },
     "dependencies": {
-        "@money-on-chain/omoc-sc-shared": "^1.4.28",
+        "@money-on-chain/omoc-sc-shared": "^1.4.29",
         "ganache-core": "^2.13.2"
     },
     "husky": {
