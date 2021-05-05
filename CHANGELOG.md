@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.21](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.20...v1.4.21) (2021-05-05)
+
+
+### Bug Fixes
+
+* **workflow:** upgrade the moc-shared version we use ([3e3ce60](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/3e3ce60a1c709dfefb38b6164e1bd885aefb4fd4))
+
 ### [1.4.20](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.19...v1.4.20) (2021-05-05)
 
 
