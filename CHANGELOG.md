@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.18](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.17...v1.4.18) (2021-05-05)
+
+
+### Features
+
+* use the [@coinfabrik](https://github.com/coinfabrik) solidity flattener ([51d83f5](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/51d83f578f296e2840df46defc32a0c3b3743125))
+
+
+### Bug Fixes
+
+* **workflow:** generate package-lock.json with a downgraded npm version ([a756368](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/a75636860ac1e918dd6044faafab0d612c714e82))
+* **workflow:** try to fix workflow errors ([9bc513c](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/9bc513cb092b12691eaf8d06dcdb8c5fa88f21e4))
+
 ### [1.4.17](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.16...v1.4.17) (2021-05-04)
 
 
