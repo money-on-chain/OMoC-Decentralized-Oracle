@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.22](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.21...v1.4.22) (2021-05-06)
+
 ### [1.4.21](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.20...v1.4.21) (2021-05-05)
 
 
