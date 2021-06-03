@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const {expectRevert} = require('@openzeppelin/test-helpers');
+const { expectRevert } = require('@openzeppelin/test-helpers');
 
 contract('OracleManager by gobernanza', async (accounts) => {
     const minOracleOwnerStake = 10 ** 18;
@@ -74,7 +74,7 @@ contract('OracleManager by gobernanza', async (accounts) => {
             oracleData[0].owner,
             this.coinPair,
         );
-        await this.governor.governor.executeChange(change.address, {from: GOBERNOR});
+        await this.governor.governor.executeChange(change.address, { from: GOBERNOR });
         assert.isFalse(await this.coinPairPrice.isSubscribed(oracleData[0].owner));
         assert.isTrue(await this.oracleMgr.isOracleRegistered(oracleData[0].owner));
     });
@@ -88,12 +88,16 @@ contract('OracleManager by gobernanza', async (accounts) => {
 
     it('Remove by gobernanza', async () => {
         assert.isTrue(await this.oracleMgr.isOracleRegistered(oracleData[0].owner));
+        // Oracle is still selected, withdraw so we can remove it.
+        await this.staking.withdraw(oracleData[0].stake, { from: oracleData[0].owner });
+        assert.equal((await this.staking.getBalance(oracleData[0].owner)).toString(), '0');
+
         const OracleManagerRemoveChange = artifacts.require('OracleManagerRemoveChange');
         const change = await OracleManagerRemoveChange.new(
             this.oracleMgr.address,
             oracleData[0].owner,
         );
-        await this.governor.governor.executeChange(change.address, {from: GOBERNOR});
+        await this.governor.governor.executeChange(change.address, { from: GOBERNOR });
         assert.isFalse(await this.oracleMgr.isOracleRegistered(oracleData[0].owner));
     });
 });

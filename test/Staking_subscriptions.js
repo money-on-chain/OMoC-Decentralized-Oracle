@@ -100,6 +100,10 @@ contract('Staking-subscriptions', async (accounts) => {
 
     it('removing oracle', async () => {
         const oracleOwner = Object.keys(this.oracles)[0];
+        const stake = await this.staking.getBalance(oracleOwner);
+        await this.staking.withdraw(stake, { from: oracleOwner });
+        assert.equal((await this.staking.getBalance(oracleOwner)).toString(), '0');
+
         const canRemove = await this.staking.canRemoveOracle(oracleOwner);
         expect(canRemove).to.be.true;
         await this.staking.removeOracle({ from: oracleOwner });

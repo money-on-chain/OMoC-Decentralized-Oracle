@@ -115,11 +115,9 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         uint256 maxTimestamp = 0;
         for (uint256 i = 0; i < coinPairCount; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            if (cp.isSubscribed(oracleOwnerAddr)) {
-                timestamp = cp.onWithdraw(oracleOwnerAddr);
-                if (timestamp > maxTimestamp) {
-                    maxTimestamp = timestamp;
-                }
+            timestamp = cp.onWithdraw(oracleOwnerAddr);
+            if (timestamp > maxTimestamp) {
+                maxTimestamp = timestamp;
             }
         }
         return maxTimestamp;
@@ -130,8 +128,8 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @return oracleAddr Address of oracle
     function getOracleAddress(address oracleOwnerAddr)
         public
-        override
         view
+        override
         returns (address oracleAddr)
     {
         return registeredOracles._getOracleAddress(oracleOwnerAddr);
@@ -172,8 +170,8 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @notice Returns true if an oracle is subscribed to a coin pair
     function isSubscribed(address ownerAddr, bytes32 coinPair)
         external
-        override
         view
+        override
         returns (bool)
     {
         require(_isOwnerRegistered(ownerAddr), "Oracle is not registered.");
@@ -208,7 +206,7 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
     /// @notice Return true if the oracle is registered in the contract
     /// @param ownerAddr The address of the owner of the Oracle to check for.
-    function isOracleRegistered(address ownerAddr) external override view returns (bool) {
+    function isOracleRegistered(address ownerAddr) external view override returns (bool) {
         return _isOwnerRegistered(ownerAddr);
     }
 
@@ -217,8 +215,8 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @param coinpair The coin pair to lookup.
     function getOracleRoundInfo(address ownerAddr, bytes32 coinpair)
         external
-        override
         view
+        override
         returns (uint256 points, bool selectedInCurrentRound)
     {
         CoinPairPrice ctAddr = _getCoinPairAddress(coinpair);
@@ -232,19 +230,20 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
 
         _unsubscribeAll(ownerAddr);
+        require(_canRemoveOracle(ownerAddr), "Not ready to remove");
         registeredOracles._removeOracle(ownerAddr);
         emit OracleRemoved(ownerAddr);
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param ownerAddr the address of the owner of the oracle to lookup.
-    function canRemoveOracle(address ownerAddr) external override view returns (bool) {
+    function canRemoveOracle(address ownerAddr) external view override returns (bool) {
         return _isOwnerRegistered(ownerAddr) && _canRemoveOracle(ownerAddr);
     }
 
     /// @notice Get the stake in MOCs that an oracle has.
     /// @param ownerAddr The address of the oracle's owner.
-    function getStake(address ownerAddr) public override view returns (uint256 balance) {
+    function getStake(address ownerAddr) public view override returns (uint256 balance) {
         return stakingContract.getBalance(ownerAddr);
     }
 
@@ -252,8 +251,8 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @param ownerAddr The address of the oracle's owner.
     function getOracleRegistrationInfo(address ownerAddr)
         external
-        override
         view
+        override
         returns (
             string memory internetName,
             uint256 stake,
@@ -266,18 +265,18 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
     /// @notice Returns true if oracle is registered.
     /// @param ownerAddr The address of the oracle's owner.
-    function isRegistered(address ownerAddr) external override view returns (bool) {
+    function isRegistered(address ownerAddr) external view override returns (bool) {
         return _isOwnerRegistered(ownerAddr);
     }
 
     /// @notice Used by CoinPair
     /// @param oracleAddr The oracle address not the owner address.
-    function getOracleOwner(address oracleAddr) external override view returns (address) {
+    function getOracleOwner(address oracleAddr) external view override returns (address) {
         return registeredOracles._getOwner(oracleAddr);
     }
 
     /// @notice Returns the amount of owners registered.
-    function getRegisteredOraclesLen() external override view returns (uint256) {
+    function getRegisteredOraclesLen() external view override returns (uint256) {
         return registeredOracles._getLen();
     }
 
@@ -285,8 +284,8 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @param idx index to query.
     function getRegisteredOracleAtIndex(uint256 idx)
         external
-        override
         view
+        override
         returns (
             address ownerAddr,
             address oracleAddr,
@@ -298,27 +297,27 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
     /// @notice Returns the count of registered coin pairs.
     /// Keep in mind that Deleted coin-pairs will contain zeroed addresses.
-    function getCoinPairCount() external override view returns (uint256) {
+    function getCoinPairCount() external view override returns (uint256) {
         return coinPairRegisterData._getCoinPairCount();
     }
 
     /// @notice Returns the coin pair at index.
     /// @param i index to query.
-    function getCoinPairAtIndex(uint256 i) external override view returns (bytes32) {
+    function getCoinPairAtIndex(uint256 i) external view override returns (bytes32) {
         return coinPairRegisterData._getCoinPairAtIndex(i);
     }
 
     /// @notice Return the contract address for a specified registered coin pair.
     /// @param coinpair Coin-pair string to lookup (e.g: BTCUSD)
     /// @return address Address of contract or zero if does not exist or was deleted.
-    function getContractAddress(bytes32 coinpair) external override view returns (address) {
+    function getContractAddress(bytes32 coinpair) external view override returns (address) {
         return coinPairRegisterData._getContractAddress(coinpair);
     }
 
     function getMaxStake(address[] calldata addresses)
         external
-        override
         view
+        override
         returns (address, uint256)
     {
         return stakingContract.getMaxBalance(addresses);
@@ -329,20 +328,20 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
     function getCoinPairIndex(bytes32 coinPair, uint256 hint)
         external
-        override
         view
+        override
         returns (uint256)
     {
         return coinPairRegisterData._getCoinPairIndex(coinPair, hint);
     }
 
     // Public variable
-    function getStakingContract() external override view returns (IStakingMachine) {
+    function getStakingContract() external view override returns (IStakingMachine) {
         return stakingContract;
     }
 
     // Public variable
-    function getMinCPSubscriptionStake() external override view returns (uint256) {
+    function getMinCPSubscriptionStake() external view override returns (uint256) {
         return minCPSubscriptionStake;
     }
 
@@ -352,7 +351,7 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         for (uint256 i = 0; i < coinPairCount; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            if (cp.isSubscribed(ownerAddr)) {
+            if (cp.isSubscribed(ownerAddr) || cp.isOracleInCurrentRound(ownerAddr)) {
                 return false;
             }
         }
