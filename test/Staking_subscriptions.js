@@ -4,7 +4,7 @@ const { expect } = require('chai');
 const { toWei, toBN } = require('web3-utils');
 const { BN } = require('@openzeppelin/test-helpers');
 
-contract('Staking-subscriptions', async (accounts) => {
+contract.only('Staking-subscriptions', async (accounts) => {
     const feesAccount = accounts[1];
     const mocAccount = accounts[2];
     const governorOwner = accounts[8];
@@ -56,9 +56,8 @@ contract('Staking-subscriptions', async (accounts) => {
             await this.staking.registerOracle(this.oracles[oracleOwner], oracleName, {
                 from: oracleOwner,
             });
-            await this.staking.depositFrom(oracleStake, oracleOwner, mocAccount, {
-                from: mocAccount,
-            });
+            await this.token.transfer(oracleOwner, oracleStake, { from: mocAccount });
+            await this.staking.deposit(oracleStake, oracleOwner, { from: oracleOwner });
         }
 
         const COINPAIR_ID = await this.coinPairPrice.getCoinPair();

@@ -148,7 +148,7 @@ async function initCoinpair(
         validPricePeriodInBlocks = 3,
         emergencyPublishingPeriodInBlocks = 2,
         bootstrapPrice = '100000000',
-    }
+    },
 ) {
     const CoinPairPrice = artifacts.require('CoinPairPrice');
     const ret = await CoinPairPrice.new();
@@ -164,7 +164,7 @@ async function initCoinpair(
         emergencyPublishingPeriodInBlocks,
         bootstrapPrice,
         oracleMgr.address,
-        registry
+        registry,
     );
     await governor.registerCoinPair(oracleMgr, web3.utils.asciiToHex(name), ret.address);
     return ret;
@@ -184,7 +184,8 @@ async function initContracts({
     const Supporters = artifacts.require('Supporters');
     const Staking = artifacts.require('Staking');
     // const CoinPairPrice = artifacts.require('CoinPairPrice');
-    const MockDelayMachine = artifacts.require('MockDelayMachine');
+    const DelayMachine = artifacts.require('DelayMachine');
+
     const StakingMock = artifacts.require('StakingMock');
     const MockVotingMachine = artifacts.require('MockVotingMachine');
     const Registry = artifacts.require('@moc/shared/GovernedRegistry');
@@ -196,9 +197,9 @@ async function initContracts({
     await token.initialize(governor.address);
     const oracleMgr = await OracleManager.new();
     const supporters = await Supporters.new();
-    const delayMachine = await MockDelayMachine.new();
-    await delayMachine.initialize(governor.address, token.address);
+    const delayMachine = await DelayMachine.new();
     const staking = await Staking.new();
+    await delayMachine.initialize(governor.address, token.address, staking.address);
     const stakingMock = await StakingMock.new();
     const votingMachine = await MockVotingMachine.new();
     const registry = await Registry.new();
@@ -209,9 +210,7 @@ async function initContracts({
         token.address,
         period,
     );
-    if (wList.length === 0) {
-        wList = [staking.address, ...oracleManagerWhitelisted];
-    }
+    wList = [...wList, staking.address, ...oracleManagerWhitelisted];
     await oracleMgr.initialize(governor.address, minSubscriptionStake, staking.address, wList);
     await staking.initialize(
         governor.address,
@@ -225,8 +224,11 @@ async function initContracts({
     await votingMachine.initialize(staking.address);
 
     await registry.initialize(governor.address);
-    if (governor.execute) { // in the case of fake governor we probably wont require this..
-        const MocRegistryAddMinOraclesPerRoundChange = artifacts.require('MocRegistryAddMinOraclesPerRoundChange');
+    if (governor.execute) {
+        // in the case of fake governor we probably wont require this..
+        const MocRegistryAddMinOraclesPerRoundChange = artifacts.require(
+            'MocRegistryAddMinOraclesPerRoundChange',
+        );
         const change = await MocRegistryAddMinOraclesPerRoundChange.new(registry.address);
         await governor.execute(change, { from: governorOwner });
     } else {
@@ -242,7 +244,7 @@ async function initContracts({
         staking,
         stakingMock,
         votingMachine,
-        registry: registry.address
+        registry: registry.address,
     };
 }
 
