@@ -265,15 +265,14 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
         lastPublicationBlock.toString(),
     );
 
-    let sigs = [];
-
+    const sigs = [];
     for (let i = 0; i < oracles.length; i++) {
         sigs.push(ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[i].address)));
     }
 
-    let sigV = [];
-    let sigR = [];
-    let sigS = [];
+    const sigV = [];
+    const sigR = [];
+    const sigS = [];
     for (let j = sigs.length - 1; j >= 0; j--) {
         sigV.push(sigs[j].v);
         sigR.push(sigs[j].r);
