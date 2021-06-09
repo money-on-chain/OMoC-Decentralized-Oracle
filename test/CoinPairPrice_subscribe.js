@@ -126,18 +126,18 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             }
             // The last oracle expulse the first one
             assert.isFalse(await this.oracleMgr.isSubscribed(oracleList[0].ownerAddr, COINPAIR));
-            // The first has less stake, it fails to subscribe
+            // The first has less stake, it fails to subscribe, but he is still selected in this round
             await expectRevert(
                 this.staking.subscribeToCoinPair(COINPAIR, { from: oracleList[0].ownerAddr }),
                 'Not enough stake to add',
             );
-            // Can withdraw freely.
-            assert.equal(
-                (await this.staking.getBalance(oracleList[0].ownerAddr)).toString(),
-                oracleList[0].stake.toString(),
-            );
-            await this.staking.withdraw(oracleList[0].stake, { from: oracleList[0].ownerAddr });
-            assert.equal((await this.staking.getBalance(oracleList[0].ownerAddr)).toString(), '0');
+            // Can withdraw freely, but will be removed from the selected list.....
+            // assert.equal(
+            //     (await this.staking.getBalance(oracleList[0].ownerAddr)).toString(),
+            //     oracleList[0].stake.toString(),
+            // );
+            // await this.staking.withdraw(oracleList[0].stake, { from: oracleList[0].ownerAddr });
+            // assert.equal((await this.staking.getBalance(oracleList[0].ownerAddr)).toString(), '0');
             // If subscribed but not selected in current round can withdraw too.
             const idx = ORACLE_QUANTITY - maxOraclesPerRound - 1;
             assert.isTrue(await this.oracleMgr.isSubscribed(oracleList[idx].ownerAddr, COINPAIR));
@@ -145,6 +145,8 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                 (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
                 oracleList[idx].stake.toString(),
             );
+
+            // A selected oracle withdraws some amount and is replaced.
             await this.staking.withdraw(oracleList[idx].stake, { from: oracleList[idx].ownerAddr });
             assert.equal(
                 (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
