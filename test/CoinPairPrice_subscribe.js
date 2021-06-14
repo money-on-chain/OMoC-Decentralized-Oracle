@@ -98,6 +98,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
     describe('During non zero we add oracles on subscription right away', () => {
         let oracleList;
         let ORACLE_WITH_A_LOT_OF_STAKE;
+        let ORACLE_WITH_A_LESS_LOT_OF_STAKE;
         let ORACLE_WITH_SMALL_STAKE;
 
         it('creation', async () => {
@@ -106,6 +107,7 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             await this.coinPairPrice.switchRound();
             assert.equal(0, (await this.coinPairPrice.getRoundInfo()).selectedOracles.length);
             ORACLE_WITH_A_LOT_OF_STAKE = oracleList[ORACLE_QUANTITY - 1];
+            ORACLE_WITH_A_LESS_LOT_OF_STAKE = oracleList[ORACLE_QUANTITY - 2];
             ORACLE_WITH_SMALL_STAKE = oracleList[2];
         });
 
@@ -126,32 +128,57 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             }
             // The last oracle expulse the first one
             assert.isFalse(await this.oracleMgr.isSubscribed(oracleList[0].ownerAddr, COINPAIR));
+            assert.isTrue(await this.oracleMgr.isSubscribed(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr, COINPAIR));
             // The first has less stake, it fails to subscribe, but he is still selected in this round
             await expectRevert(
                 this.staking.subscribeToCoinPair(COINPAIR, { from: oracleList[0].ownerAddr }),
                 'Not enough stake to add',
             );
-            // Can withdraw freely, but will be removed from the selected list.....
-            // assert.equal(
-            //     (await this.staking.getBalance(oracleList[0].ownerAddr)).toString(),
-            //     oracleList[0].stake.toString(),
-            // );
-            // await this.staking.withdraw(oracleList[0].stake, { from: oracleList[0].ownerAddr });
-            // assert.equal((await this.staking.getBalance(oracleList[0].ownerAddr)).toString(), '0');
-            // If subscribed but not selected in current round can withdraw too.
-            const idx = ORACLE_QUANTITY - maxOraclesPerRound - 1;
-            assert.isTrue(await this.oracleMgr.isSubscribed(oracleList[idx].ownerAddr, COINPAIR));
+            assert.isTrue(await this.coinPairPrice.isOracleInCurrentRound(oracleList[0].ownerAddr));
+            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr));
+
+            // Select two cases with different status for the current round
+            const idx1 = ORACLE_QUANTITY - maxOraclesPerRound - 1;
+            const idx2 = ORACLE_QUANTITY - maxOraclesPerRound - 2;
+
+            // Both cases are subscribed
+            assert.isTrue(await this.oracleMgr.isSubscribed(oracleList[idx1].ownerAddr, COINPAIR));
+            assert.isTrue(await this.oracleMgr.isSubscribed(oracleList[idx2].ownerAddr, COINPAIR));
             assert.equal(
-                (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
-                oracleList[idx].stake.toString(),
+                (await this.staking.getBalance(oracleList[idx1].ownerAddr)).toString(),
+                oracleList[idx1].stake.toString(),
+            );
+            assert.equal(
+                (await this.staking.getBalance(oracleList[idx2].ownerAddr)).toString(),
+                oracleList[idx2].stake.toString(),
             );
 
-            // A selected oracle withdraws some amount and is replaced.
-            await this.staking.withdraw(oracleList[idx].stake, { from: oracleList[idx].ownerAddr });
+            // Only the second case was selected for this round
+            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx1].ownerAddr));
+            assert.isTrue(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx2].ownerAddr));
+
+            // Both cases withdraws some amount with different behaviours
+            await this.staking.withdraw(oracleList[idx1].stake, { from: oracleList[idx1].ownerAddr });
             assert.equal(
-                (await this.staking.getBalance(oracleList[idx].ownerAddr)).toString(),
+                (await this.staking.getBalance(oracleList[idx1].ownerAddr)).toString(),
                 '0',
             );
+            await this.staking.withdraw(oracleList[idx2].stake, { from: oracleList[idx2].ownerAddr });
+            assert.equal(
+                (await this.staking.getBalance(oracleList[idx2].ownerAddr)).toString(),
+                '0',
+            );
+
+            // First case remain subscribed and not selected for the current round
+            assert.isTrue(await this.oracleMgr.isSubscribed(oracleList[idx1].ownerAddr, COINPAIR));
+            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx1].ownerAddr));
+
+            // Second case was punished: got unsubscribed and expelled from the round
+            assert.isFalse(await this.oracleMgr.isSubscribed(oracleList[idx2].ownerAddr, COINPAIR));
+            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx2].ownerAddr));
+
+            // The subscribed oracle with the max stake replaced the punished oracle in the current round
+            assert.isTrue(await this.coinPairPrice.isOracleInCurrentRound(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr));
         });
 
         it('The oracles are added right away when we saturate the selected list the new ones even if have more stake must wait to next round', async () => {
@@ -163,13 +190,13 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
                     ORACLE_WITH_SMALL_STAKE.oracleAddr,
                 ) >= 0,
             );
-
             assert.isTrue(
                 await this.oracleMgr.isSubscribed(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr, COINPAIR),
             );
+            // Asserted with the next-to-last (max stake) because the top was selected in last test
             assert.isFalse(
                 (await this.coinPairPrice.getRoundInfo()).selectedOracles.indexOf(
-                    ORACLE_WITH_A_LOT_OF_STAKE.oracleAddr,
+                    ORACLE_WITH_A_LESS_LOT_OF_STAKE.oracleAddr,
                 ) >= 0,
             );
         });
