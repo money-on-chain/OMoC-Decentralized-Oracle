@@ -82,10 +82,7 @@ contract('OracleManager operations', async (accounts) => {
     });
 
     it('Oracle is not registered', async () => {
-        await expectRevert(
-            this.oracleMgr.isSubscribed(ADDRESS_ONE, COINPAIR_ID),
-            'Oracle is not registered.',
-        );
+        expect(await this.oracleMgr.isSubscribed(ADDRESS_ONE, COINPAIR_ID)).to.be.false;
     });
 
     it('Get oracle round info', async () => {

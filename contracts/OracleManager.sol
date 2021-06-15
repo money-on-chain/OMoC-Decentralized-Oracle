@@ -174,8 +174,6 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         override
         returns (bool)
     {
-        require(_isOwnerRegistered(ownerAddr), "Oracle is not registered.");
-
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
         return ctAddr.isSubscribed(ownerAddr);
     }

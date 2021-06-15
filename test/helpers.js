@@ -1,5 +1,6 @@
 const { constants, BN, time, expectEvent } = require('@openzeppelin/test-helpers');
 const crypto = require('crypto');
+const { toBN } = require('web3-utils');
 const ethers = require('ethers');
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
@@ -255,13 +256,17 @@ async function newUnlockedAccount() {
     return account;
 }
 
-async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
+async function publishPrice({ coinPairPrice, coinPairName, price, oracles, publisher }) {
+    publisher = publisher || oracles[0];
+    oracles = oracles
+        .map((x) => ({ ...x, iaddr: toBN(x.address) }))
+        .sort((a, b) => b.iaddr.cmp(a.iaddr));
     const lastPublicationBlock = await coinPairPrice.getLastPublicationBlock();
     const { msg, encMsg } = await getDefaultEncodedMessage(
         3,
         coinPairName,
         price,
-        oracles[0].address,
+        publisher.address,
         lastPublicationBlock.toString(),
     );
 
@@ -269,7 +274,6 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
     for (let i = 0; i < oracles.length; i++) {
         sigs.push(ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[i].address)));
     }
-
     const sigV = [];
     const sigR = [];
     const sigS = [];
@@ -288,7 +292,7 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
         sigV,
         sigR,
         sigS,
-        { from: oracles[0].address },
+        { from: publisher.address },
     );
 }
 
