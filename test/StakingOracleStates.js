@@ -116,9 +116,7 @@ contract('Staking-Oracle-States', async (accounts) => {
                     selected: false,
                 });
 
-                expect(await this.staking.canRemoveOracle(maxOracle.owner)).to.be.false;
-                // RemoveOracle unsubscribe the oracle from all the coinss before removing
-                // The logic of RemoveOracle and canRemoveOracle are a little bit different.
+                expect(await this.staking.canRemoveOracle(maxOracle.owner)).to.be.true;
                 await this.staking.removeOracle({ from: maxOracle.owner });
                 await checkState(this, maxOracle, {
                     registered: false,
@@ -138,6 +136,7 @@ contract('Staking-Oracle-States', async (accounts) => {
                     subscribed: true,
                     selected: true,
                 });
+                expect(await this.staking.canRemoveOracle(maxOracle.owner)).to.be.false;
                 await expectRevert(
                     this.staking.removeOracle({ from: oracle.owner }),
                     'Not ready to remove',
@@ -158,6 +157,7 @@ contract('Staking-Oracle-States', async (accounts) => {
                     selected: true,
                 });
 
+                expect(await this.staking.canRemoveOracle(maxOracle.owner)).to.be.false;
                 await expectRevert(
                     this.staking.removeOracle({ from: oracle.owner }),
                     'Not ready to remove',

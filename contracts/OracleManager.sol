@@ -349,7 +349,7 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         for (uint256 i = 0; i < coinPairCount; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            if (cp.isSubscribed(ownerAddr) || cp.isOracleInCurrentRound(ownerAddr)) {
+            if (cp.isOracleInCurrentRound(ownerAddr)) {
                 return false;
             }
         }
