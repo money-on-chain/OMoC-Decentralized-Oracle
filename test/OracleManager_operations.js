@@ -40,7 +40,7 @@ contract('OracleManager operations', async (accounts) => {
             2, // emergencyPublishingPeriodInBlocks,
             '100000000', // bootstrapPrice,
             this.oracleMgr.address,
-            "0x0000000000000000000000000000000000000000"
+            '0x0000000000000000000000000000000000000000',
         ); // ^ can be replaced with contracts.registry but it's not required for this tests
 
         await this.oracleMgr.registerCoinPair(COINPAIR_ID, this.coinPairPrice.address, {
@@ -81,10 +81,7 @@ contract('OracleManager operations', async (accounts) => {
     });
 
     it('Oracle is not registered', async () => {
-        await expectRevert(
-            this.oracleMgr.isSubscribed(ADDRESS_ONE, COINPAIR_ID),
-            'Oracle is not registered.',
-        );
+        expect(await this.oracleMgr.isSubscribed(ADDRESS_ONE, COINPAIR_ID)).to.be.false;
     });
 
     it('Get oracle round info', async () => {
@@ -102,6 +99,13 @@ contract('OracleManager operations', async (accounts) => {
         });
         const subscribed = await this.oracleMgr.isSubscribed(ORACLE_OWNER, COINPAIR_ID);
         expect(subscribed).to.be.true;
+
+        // Still in the round, withdraw so we can remove the oracle
+        const stake = await this.staking.getBalance(ORACLE_OWNER);
+        await this.staking.withdraw(stake, { from: ORACLE_OWNER });
+        assert.equal((await this.staking.getBalance(ORACLE_OWNER)).toString(), '0');
+
+        // Now we can remove the Oracle
         await this.oracleMgr.removeOracle(ORACLE_OWNER, { from: GOVERNOR_OWNER });
         const unregistered = await this.oracleMgr.isRegistered(ORACLE_OWNER);
         expect(unregistered).to.be.false;

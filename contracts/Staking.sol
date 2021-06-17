@@ -15,6 +15,15 @@ import {StakingStorage} from "./StakingStorage.sol";
 contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     using SafeMath for uint256;
 
+    /**
+      @notice Modifier that protects the function
+      @dev You should use this modifier in any function that should be called only by the delay machine
+     */
+    modifier delayMachineOnly() {
+        require(msg.sender == address(delayMachine), "delayMachineOnly");
+        _;
+    }
+
     // -----------------------------------------------------------------------
     //
     //   Public interface
@@ -65,9 +74,17 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @notice Accept a deposit from an account.
     /// Delegates to the Supporters smart contract.
     /// @param mocs token quantity
+    function deposit(uint256 mocs) external override {
+        deposit(mocs, msg.sender);
+    }
+
+    /// @notice Accept a deposit from an account.
+    /// Delegates to the Supporters smart contract.
+    /// @param mocs token quantity
     /// @param destination the destination account of this deposit.
-    function deposit(uint256 mocs, address destination) external override {
-        depositFrom(mocs, destination, msg.sender);
+    function deposit(uint256 mocs, address destination) public override {
+        require(destination == msg.sender, "FIX: Only sender");
+        _depositFrom(mocs, destination, msg.sender);
     }
 
     /// @notice Accept a deposit from an account.
@@ -79,7 +96,20 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         uint256 mocs,
         address destination,
         address source
-    ) public override {
+    ) public override delayMachineOnly {
+        _depositFrom(mocs, destination, source);
+    }
+
+    /// @notice Accept a deposit from an account.
+    /// Delegates to the Supporters smart contract.
+    /// @param mocs token quantity
+    /// @param destination the destination account of this deposit.
+    /// @param source the address that approved the transfer
+    function _depositFrom(
+        uint256 mocs,
+        address destination,
+        address source
+    ) internal {
         // Floor(mocs * totalTokens /  totalMocs)
         uint256 _tokens = supporters.mocToToken(mocs);
         // require(_tokens > 0, "Not enough mocs");
@@ -110,6 +140,12 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         withdrawTokens(tokens);
     }
 
+    /// @notice Withdraw all the stake and send it to the delay machine.
+    function withdrawAll() external override {
+        uint256 tokens = supporters.getBalanceAt(address(this), msg.sender);
+        withdrawTokens(tokens);
+    }
+
     /// @notice Withdraw stake, send it to the delay machine.
     /// @param tokens token quantity
     function withdrawTokens(uint256 tokens) public {
@@ -132,14 +168,21 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @notice Reports the balance of MOCs for a specific user.
     /// Delegates to the Supporters smart contract.
     /// @param user user address
-    function getBalance(address user) external override view returns (uint256) {
+    function getBalance(address user) external view override returns (uint256) {
         return supporters.getMOCBalanceAt(address(this), user);
+    }
+
+    /// @notice Reports the balance of tokens for a specific user.
+    /// Delegates to the Supporters smart contract.
+    /// @param user user address
+    function getTokenBalance(address user) external view override returns (uint256) {
+        return supporters.getBalanceAt(address(this), user);
     }
 
     /// @notice Reports the balance of locked MOCs for a specific user.
     /// Delegates to the Supporters smart contract.
     /// @param user user address
-    function getLockedBalance(address user) external override view returns (uint256) {
+    function getLockedBalance(address user) external view override returns (uint256) {
         return supporters.getLockedBalance(user);
     }
 
@@ -150,8 +193,8 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @return untilTimestamp the timestamp that corresponds to the locking date.
     function getLockingInfo(address user)
         external
-        override
         view
+        override
         returns (uint256 amount, uint256 untilTimestamp)
     {
         (amount, untilTimestamp) = supporters.getLockingInfo(user);
@@ -163,7 +206,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
 
     /// @notice Returns the amount of owners registered.
     /// Delegates to the Oracle Manager smart contract.
-    function getRegisteredOraclesLen() external override view returns (uint256) {
+    function getRegisteredOraclesLen() external view override returns (uint256) {
         return oracleManager.getRegisteredOraclesLen();
     }
 
@@ -172,8 +215,8 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param idx index to query.
     function getRegisteredOracleAtIndex(uint256 idx)
         external
-        override
         view
+        override
         returns (
             address ownerAddr,
             address oracleAddr,
@@ -205,13 +248,13 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
 
     /// @notice Return true if the oracle is registered.
     /// @param ownerAddr The address of the owner of the Oracle to check for.
-    function isOracleRegistered(address ownerAddr) external override view returns (bool) {
+    function isOracleRegistered(address ownerAddr) external view override returns (bool) {
         return oracleManager.isOracleRegistered(ownerAddr);
     }
 
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param ownerAddr the address of the owner of the oracle to lookup.
-    function canRemoveOracle(address ownerAddr) external override view returns (bool) {
+    function canRemoveOracle(address ownerAddr) external view override returns (bool) {
         return oracleManager.canRemoveOracle(ownerAddr);
     }
 
@@ -223,20 +266,20 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
 
     /// @notice Returns the count of registered coin pairs.
     /// Keep in mind that Deleted coin-pairs will contain zeroed addresses.
-    function getCoinPairCount() external override view returns (uint256) {
+    function getCoinPairCount() external view override returns (uint256) {
         return oracleManager.getCoinPairCount();
     }
 
     /// @notice Returns the coin pair at index.
     /// @param i index to query.
-    function getCoinPairAtIndex(uint256 i) external override view returns (bytes32) {
+    function getCoinPairAtIndex(uint256 i) external view override returns (bytes32) {
         return oracleManager.getCoinPairAtIndex(i);
     }
 
     /// @notice Return the contract address for a specified registered coin pair.
     /// @param coinPair Coin-pair string to lookup (e.g: BTCUSD)
     /// @return address Address of contract or zero if does not exist or was deleted.
-    function getContractAddress(bytes32 coinPair) external override view returns (address) {
+    function getContractAddress(bytes32 coinPair) external view override returns (address) {
         return oracleManager.getContractAddress(coinPair);
     }
 
@@ -245,8 +288,8 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
     function getCoinPairIndex(bytes32 coinPair, uint256 hint)
         external
-        override
         view
+        override
         returns (uint256)
     {
         return oracleManager.getCoinPairIndex(coinPair, hint);
@@ -271,8 +314,8 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
     function isSubscribed(address ownerAddr, bytes32 coinPair)
         external
-        override
         view
+        override
         returns (bool)
     {
         return oracleManager.isSubscribed(ownerAddr, coinPair);
@@ -283,27 +326,27 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     }
 
     // Public variable
-    function getSupporters() external override view returns (address) {
+    function getSupporters() external view override returns (address) {
         return address(supporters);
     }
 
     // Public variable
-    function getOracleManager() external override view returns (IOracleManager) {
+    function getOracleManager() external view override returns (IOracleManager) {
         return oracleManager;
     }
 
     // Public variable
-    function getMocToken() external override view returns (IERC20) {
+    function getMocToken() external view override returns (IERC20) {
         return mocToken;
     }
 
     // Public variable
-    function getDelayMachine() external override view returns (IDelayMachine) {
+    function getDelayMachine() external view override returns (IDelayMachine) {
         return delayMachine;
     }
 
     // Public variable
-    function getWithdrawLockTime() external override view returns (uint256) {
+    function getWithdrawLockTime() external view override returns (uint256) {
         return withdrawLockTime;
     }
 }

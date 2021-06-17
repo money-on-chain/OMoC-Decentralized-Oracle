@@ -52,13 +52,12 @@ contract('Staking-subscriptions', async (accounts) => {
             const oracleOwner = Object.keys(this.oracles)[i];
             const oracleName = 'oracle-' + i;
             const oracleStake = ORACLE_STAKE.add(new BN(i));
-            await this.token.approve(this.staking.address, oracleStake, { from: mocAccount });
+            await this.token.transfer(oracleOwner, oracleStake, { from: mocAccount });
+            await this.token.approve(this.staking.address, oracleStake, { from: oracleOwner });
             await this.staking.registerOracle(this.oracles[oracleOwner], oracleName, {
                 from: oracleOwner,
             });
-            await this.staking.depositFrom(oracleStake, oracleOwner, mocAccount, {
-                from: mocAccount,
-            });
+            await this.staking.deposit(oracleStake, oracleOwner, { from: oracleOwner });
         }
 
         const COINPAIR_ID = await this.coinPairPrice.getCoinPair();
@@ -100,6 +99,10 @@ contract('Staking-subscriptions', async (accounts) => {
 
     it('removing oracle', async () => {
         const oracleOwner = Object.keys(this.oracles)[0];
+        const stake = await this.staking.getBalance(oracleOwner);
+        await this.staking.withdraw(stake, { from: oracleOwner });
+        assert.equal((await this.staking.getBalance(oracleOwner)).toString(), '0');
+
         const canRemove = await this.staking.canRemoveOracle(oracleOwner);
         expect(canRemove).to.be.true;
         await this.staking.removeOracle({ from: oracleOwner });

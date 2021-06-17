@@ -180,7 +180,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
                                 test.signatures +
                                 ' signatures apart from owner',
                             async () => {
-                                expectRevert(
+                                await expectRevert(
                                     signWithOwner.call(this, ORACLE_DATA, test.signatures),
                                     'Minimum selected oracles required not reached',
                                 );
@@ -207,7 +207,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
                                 test.signatures +
                                 ' signatures apart from owner',
                             async () => {
-                                expectRevert(
+                                await expectRevert(
                                     signWithOwner.call(this, ORACLE_DATA, test.signatures),
                                     'Minimum selected oracles required not reached',
                                 );
@@ -221,7 +221,7 @@ contract('CoinPairPrice Signature', async (accounts) => {
                                 test.signatures +
                                 ' signatures apart from owner',
                             async () => {
-                                expectRevert(
+                                await expectRevert(
                                     signWithOwner.call(this, ORACLE_DATA, test.signatures),
                                     'Valid signatures count must exceed 50% of active oracles',
                                 );

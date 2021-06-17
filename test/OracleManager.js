@@ -1,12 +1,12 @@
 const helpers = require('./helpers');
-const {constants, expectRevert} = require('@openzeppelin/test-helpers');
+const { constants, expectRevert, BN } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
 contract('OracleManager', async (accounts) => {
     const WHITELISTED_CALLER = accounts[9];
     const GOVERNOR_OWNER = accounts[10];
     const MIN_ORACLE_STAKE = (10 ** 18).toString();
-    /* Account is the simulated oracle server address. The stake 
+    /* Account is the simulated oracle server address. The stake
        will come from the owner's address. */
 
     before(async () => {
@@ -204,6 +204,20 @@ contract('OracleManager', async (accounts) => {
         assert.isFalse(await this.coinPairPrice_btcusd.isSubscribed(oracleData[2].owner));
     });
 
+    it('Should subscribe oracle C to coin-pair RIFBTC', async () => {
+        await this.token.approve(this.staking.address, oracleData[2].stake, {
+            from: oracleData[2].owner,
+        });
+        await this.staking.deposit(oracleData[2].stake, oracleData[2].owner, {
+            from: oracleData[2].owner,
+        });
+        await this.oracleMgr.subscribeToCoinPair(oracleData[2].owner, this.coinPair2, {
+            from: WHITELISTED_CALLER,
+        });
+        assert.isTrue(await this.coinPairPrice_RIFBTC.isSubscribed(oracleData[2].owner));
+    });
+
+
     it('Should unsubscribe oracle A from coin-pair USDBTC', async () => {
         await this.oracleMgr.unSubscribeFromCoinPair(oracleData[0].owner, this.coinPair, {
             from: WHITELISTED_CALLER,
@@ -223,14 +237,16 @@ contract('OracleManager', async (accounts) => {
     it('Should reject to change name of unregistered oracle', async () => {
         const randomAddr = ethers.utils.hexlify(ethers.utils.randomBytes(20));
         await expectRevert(
-            this.oracleMgr.setOracleName(randomAddr, 'X', {from: WHITELISTED_CALLER}),
+            this.oracleMgr.setOracleName(randomAddr, 'X', { from: WHITELISTED_CALLER }),
             'Oracle not registered',
         );
     });
 
     it('Should reject to change name of oracle if called by non-owner', async () => {
         await expectRevert(
-            this.oracleMgr.setOracleName(oracleData[0].account, 'XYZ', {from: WHITELISTED_CALLER}),
+            this.oracleMgr.setOracleName(oracleData[0].account, 'XYZ', {
+                from: WHITELISTED_CALLER,
+            }),
             'Oracle not registered',
         );
     });
@@ -249,22 +265,45 @@ contract('OracleManager', async (accounts) => {
 
     it('Should fail to remove an oracle if is not registered', async () => {
         await expectRevert(
-            this.oracleMgr.removeOracle(oracleData[3].owner, {from: WHITELISTED_CALLER}),
+            this.oracleMgr.removeOracle(oracleData[3].owner, { from: WHITELISTED_CALLER }),
             'Oracle not registered',
         );
     });
 
     it('Should fail to remove an oracle if called from non-owner', async () => {
         await expectRevert(
-            this.oracleMgr.removeOracle(oracleData[0].account, {from: WHITELISTED_CALLER}),
+            this.oracleMgr.removeOracle(oracleData[0].account, { from: WHITELISTED_CALLER }),
             'Oracle not registered',
         );
     });
 
+    it('Should fail to remove an oracle if it is in a current round', async () => {
+        assert.isTrue(await this.oracleMgr.isRegistered(oracleData[0].owner));
+        await expectRevert(
+            this.oracleMgr.removeOracle(oracleData[0].owner, { from: WHITELISTED_CALLER }),
+            'Not ready to remove',
+        );
+    });
+
     it('Should remove an oracle A', async () => {
+        // We need to withdraw so we get expelled from current round.
+        await this.staking.withdraw(oracleData[0].stake, { from: oracleData[0].owner });
+        assert.equal((await this.staking.getBalance(oracleData[0].owner)).toString(), '0');
+
         assert.isTrue(await this.oracleMgr.canRemoveOracle(oracleData[0].owner));
-        await this.oracleMgr.removeOracle(oracleData[0].owner, {from: WHITELISTED_CALLER});
+        await this.oracleMgr.removeOracle(oracleData[0].owner, { from: WHITELISTED_CALLER });
         assert.isFalse(await this.oracleMgr.isRegistered(oracleData[0].owner));
+    });
+
+    it('Should not be able to remove an unsubscribed oracle if it is in a current round', async () => {
+        // Unsubscribe from all coinpairs to remove
+        assert.isFalse(await this.oracleMgr.canRemoveOracle(oracleData[2].owner));
+
+        await this.oracleMgr.unSubscribeFromCoinPair(oracleData[2].owner, this.coinPair2, {
+            from: WHITELISTED_CALLER,
+        });
+
+        assert.isFalse(await this.oracleMgr.canRemoveOracle(oracleData[2].owner));
     });
 
     it('Should be able to remove an oracle', async () => {
@@ -280,10 +319,13 @@ contract('OracleManager', async (accounts) => {
         await this.oracleMgr.unSubscribeFromCoinPair(oracleData[1].owner, this.coinPair2, {
             from: WHITELISTED_CALLER,
         });
+        // got unselected
+        await this.staking.withdraw(oracleData[1].stake, { from: oracleData[1].owner });
+        assert.equal((await this.staking.getBalance(oracleData[1].owner)).toString(), '0');
 
         assert.isTrue(await this.oracleMgr.canRemoveOracle(oracleData[1].owner));
         assert.isTrue(await this.oracleMgr.isRegistered(oracleData[1].owner));
-        await this.oracleMgr.removeOracle(oracleData[1].owner, {from: WHITELISTED_CALLER});
+        await this.oracleMgr.removeOracle(oracleData[1].owner, { from: WHITELISTED_CALLER });
         assert.isFalse(await this.oracleMgr.isRegistered(oracleData[1].owner));
     });
 });

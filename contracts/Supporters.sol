@@ -81,7 +81,7 @@ contract Supporters is SupportersStorage, ISupporters {
     /// @notice Reports the balance of locked MOCs for a specific user.
     /// Delegates to the Supporters smart contract.
     /// @param user user address
-    function getLockedBalance(address user) external view returns (uint256) {
+    function getLockedBalance(address user) external view override returns (uint256) {
         LockingInfo storage lockedMocsInfo = lockedMocs[user];
         return lockedMocsInfo.amount;
     }
@@ -94,6 +94,7 @@ contract Supporters is SupportersStorage, ISupporters {
     function getLockingInfo(address user)
         external
         view
+        override
         returns (uint256 amount, uint256 untilTimestamp)
     {
         LockingInfo storage lockedMocsInfo = lockedMocs[user];
@@ -131,7 +132,7 @@ contract Supporters is SupportersStorage, ISupporters {
 
       @return true if ready
     */
-    function isReadyToDistribute() external override view returns (bool) {
+    function isReadyToDistribute() external view override returns (bool) {
         return supportersData._isReadyToDistribute();
     }
 
@@ -226,7 +227,12 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _subaccount subaccount to get balance
       @return tokens for _user at _subaccount
     */
-    function getBalanceAt(address _user, address _subaccount) external view returns (uint256) {
+    function getBalanceAt(address _user, address _subaccount)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return supportersData._getBalanceAt(_user, _subaccount);
     }
 
@@ -237,7 +243,12 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _subaccount subaccount to get MOC balance
       @return MOC for _user
     */
-    function getMOCBalanceAt(address _user, address _subaccount) external view returns (uint256) {
+    function getMOCBalanceAt(address _user, address _subaccount)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return supportersData._getMOCBalanceAt(_user, _subaccount);
     }
 
@@ -247,7 +258,7 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _block Block used to calculate
       @return Earnings to be paid
     */
-    function getEarningsAt(uint256 _block) external view returns (uint256) {
+    function getEarningsAt(uint256 _block) external view override returns (uint256) {
         return supportersData._getEarningsAt(_block);
     }
 
@@ -257,7 +268,7 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _block Block used for calculations
       @return Locked amount of earnings in MOC
     */
-    function getLockedAt(uint256 _block) external view returns (uint256) {
+    function getLockedAt(uint256 _block) external view override returns (uint256) {
         return supportersData._getLockedAt(_block);
     }
 
@@ -269,6 +280,7 @@ contract Supporters is SupportersStorage, ISupporters {
     function getEarningsInfo()
         external
         view
+        override
         returns (
             uint256,
             uint256,
@@ -279,7 +291,7 @@ contract Supporters is SupportersStorage, ISupporters {
     }
 
     /// @notice The moc token address
-    function mocToken() external override view returns (IERC20) {
+    function mocToken() external view override returns (IERC20) {
         return supportersData.mocToken;
     }
 
@@ -289,12 +301,12 @@ contract Supporters is SupportersStorage, ISupporters {
 
      @return Number of blocks to distribute earnings
     */
-    function period() external override view returns (uint256) {
+    function period() external view override returns (uint256) {
         return supportersData.period;
     }
 
     /// @notice Returns the count of whitelisted addresses.
-    function getWhiteListLen() external view returns (uint256) {
+    function getWhiteListLen() external view override returns (uint256) {
         return iterableWhitelistData._getWhiteListLen();
     }
 
@@ -303,7 +315,7 @@ contract Supporters is SupportersStorage, ISupporters {
 
      @param _idx index to query.
     */
-    function getWhiteListAtIndex(uint256 _idx) external view returns (address) {
+    function getWhiteListAtIndex(uint256 _idx) external view override returns (address) {
         return iterableWhitelistData._getWhiteListAtIndex(_idx);
     }
 
@@ -312,7 +324,7 @@ contract Supporters is SupportersStorage, ISupporters {
 
      @param _account The account to check
     */
-    function isWhitelisted(address _account) external view returns (bool) {
+    function isWhitelisted(address _account) external view override returns (bool) {
         return iterableWhitelistData._isWhitelisted(_account);
     }
 
@@ -322,7 +334,7 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _mocs Amount of MOC
       @return Equivalent amount of tokens
     */
-    function mocToToken(uint256 _mocs) external view returns (uint256) {
+    function mocToToken(uint256 _mocs) external view override returns (uint256) {
         return supportersData._mocToToken(_mocs);
     }
 
@@ -332,7 +344,7 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _token Amount of tokens
       @return Equivalent amount of tokens
     */
-    function tokenToMoc(uint256 _token) external view returns (uint256) {
+    function tokenToMoc(uint256 _token) external view override returns (uint256) {
         return supportersData._tokenToMoc(_token);
     }
 
@@ -342,17 +354,17 @@ contract Supporters is SupportersStorage, ISupporters {
        @param _token Amount of tokens
        @return Equivalent amount of tokens
      */
-    function tokenToMocUP(uint256 _token) external view returns (uint256) {
+    function tokenToMocUP(uint256 _token) external view override returns (uint256) {
         return supportersData._tokenToMocUP(_token);
     }
 
     // @notice total amount of mocs inside the supporters contract
-    function totalMoc() external override view returns (uint256) {
+    function totalMoc() external view override returns (uint256) {
         return supportersData._getAvailableMOC();
     }
 
     // @notice total amount of tokens inside the supporters contect.
-    function totalToken() external override view returns (uint256) {
+    function totalToken() external view override returns (uint256) {
         return supportersData._getTokens();
     }
 

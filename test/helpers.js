@@ -1,5 +1,6 @@
 const { constants, BN, time, expectEvent } = require('@openzeppelin/test-helpers');
 const crypto = require('crypto');
+const { toBN } = require('web3-utils');
 const ethers = require('ethers');
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
@@ -185,6 +186,7 @@ async function initContracts({
     const Staking = artifacts.require('Staking');
     // const CoinPairPrice = artifacts.require('CoinPairPrice');
     const DelayMachine = artifacts.require('DelayMachine');
+
     const StakingMock = artifacts.require('StakingMock');
     const MockVotingMachine = artifacts.require('MockVotingMachine');
     const Registry = artifacts.require('@money-on-chain/omoc-sc-shared/GovernedRegistry');
@@ -209,9 +211,7 @@ async function initContracts({
         token.address,
         period,
     );
-    if (wList.length === 0) {
-        wList = [staking.address, ...oracleManagerWhitelisted];
-    }
+    wList = [...wList, staking.address, ...oracleManagerWhitelisted];
     await oracleMgr.initialize(governor.address, minSubscriptionStake, staking.address, wList);
     await staking.initialize(
         governor.address,
@@ -225,8 +225,11 @@ async function initContracts({
     await votingMachine.initialize(staking.address);
 
     await registry.initialize(governor.address);
-    if (governor.execute) { // in the case of fake governor we probably wont require this..
-        const MocRegistryAddMinOraclesPerRoundChange = artifacts.require('MocRegistryAddMinOraclesPerRoundChange');
+    if (governor.execute) {
+        // in the case of fake governor we probably wont require this..
+        const MocRegistryAddMinOraclesPerRoundChange = artifacts.require(
+            'MocRegistryAddMinOraclesPerRoundChange',
+        );
         const change = await MocRegistryAddMinOraclesPerRoundChange.new(registry.address);
         await governor.execute(change, { from: governorOwner });
     } else {
@@ -253,13 +256,17 @@ async function newUnlockedAccount() {
     return account;
 }
 
-async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
+async function publishPrice({ coinPairPrice, coinPairName, price, oracles, publisher }) {
+    publisher = publisher || oracles[0];
+    oracles = oracles
+        .map((x) => ({ ...x, iaddr: toBN(x.address) }))
+        .sort((a, b) => b.iaddr.cmp(a.iaddr));
     const lastPublicationBlock = await coinPairPrice.getLastPublicationBlock();
     const { msg, encMsg } = await getDefaultEncodedMessage(
         3,
         coinPairName,
         price,
-        oracles[0].address,
+        publisher.address,
         lastPublicationBlock.toString(),
     );
 
@@ -267,7 +274,6 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
     for (let i = 0; i < oracles.length; i++) {
         sigs.push(ethers.utils.splitSignature(await web3.eth.sign(encMsg, oracles[i].address)));
     }
-
     const sigV = [];
     const sigR = [];
     const sigS = [];
@@ -286,7 +292,7 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles }) {
         sigV,
         sigR,
         sigS,
-        { from: oracles[0].address },
+        { from: publisher.address },
     );
 }
 
