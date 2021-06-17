@@ -202,7 +202,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
         expect(await calculatedPriceProvider.getWhiteListAtIndex(1)).to.equal(whitelist[1]);
 
         await expectRevert(calculatedPriceProvider.addToWhitelist(accounts[2]), 'Invalid changer');
-        calculatedPriceProvider.addToWhitelist(accounts[2], {from: GOVERNOR});
+        await calculatedPriceProvider.addToWhitelist(accounts[2], {from: GOVERNOR});
 
         expect(await calculatedPriceProvider.getWhiteListLen()).to.be.bignumber.equal(new BN(3));
 
