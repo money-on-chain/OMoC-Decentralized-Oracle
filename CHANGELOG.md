@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.23](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.22...v1.4.23) (2021-06-17)
+
+
+### Features
+
+* add tests for the Staking deposits fix ([ac18d07](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/ac18d076cb289cf6782952ecc533b0ee12dfc2c1))
+* remove the revert in isSubscribed, tests for OracleManager and Coinpari ([e96919c](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/e96919c004e2d40ef6adf44b5b2820bdca8d1fb7))
+* use moc-shared 1.3.6, add the necesary overrides ([e5284fc](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/e5284fc3c0edf13ee11a59e6ceaacd6f665e23be))
+
+
+### Bug Fixes
+
+* fix a test that missed an await when calling expectRevert ([91b6fc1](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/91b6fc1e8e1c638b8e9fb6ad429e4ef862fa77cc))
+* fix a test that was sending funds with the wrong address ([dd5c5af](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/dd5c5af2a1f40941ccf1b96a72a9e6f7646d7fe2))
+* fix OracleManager, unsubscribe+withdraw is punished same as withdraws only ([1327dd5](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/1327dd5c2718fe492918edffaf9c432aab15ca47))
+* fixed a test that was missing an await and failed randomly ([319863f](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/319863f5cfe881380f338cda3d93156067f77dc7))
+* make canRemove and removeOracle consistent ([f5454ef](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/f5454efb20dcdb1e5a310a3130f0c7aacdc32ecf))
+* remove the posibility to deposit to third parties in the staking machine ([97a6e77](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/97a6e77cfb080180c6ba154b5747462bc6f4d62a))
+* use the delaymachine for tests ([e20a26c](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/e20a26cc6b1b5e6461891bc629f17280dd1a6d55))
+
 ### [1.4.22](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.21...v1.4.22) (2021-05-06)
 
 ### [1.4.21](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.20...v1.4.21) (2021-05-05)
