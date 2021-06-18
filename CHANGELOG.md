@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.24](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.23...v1.4.24) (2021-06-18)
+
+
+### Bug Fixes
+
+* fix a test now that helpers.publish sorts the addresses ([e09f050](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/commit/e09f0509b4feb431e48368b85c01ac27181c87cb))
+
 ### [1.4.23](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/compare/v1.4.22...v1.4.23) (2021-06-17)
 
 
