@@ -257,7 +257,7 @@ async function newUnlockedAccount() {
 }
 
 async function publishPrice({ coinPairPrice, coinPairName, price, oracles, publisher }) {
-    publisher = publisher || oracles[0];
+    publisher = publisher || oracles[0].address;
     oracles = oracles
         .map((x) => ({ ...x, iaddr: toBN(x.address) }))
         .sort((a, b) => b.iaddr.cmp(a.iaddr));
@@ -266,7 +266,7 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles, publi
         3,
         coinPairName,
         price,
-        publisher.address,
+        publisher,
         lastPublicationBlock.toString(),
     );
 
@@ -292,7 +292,7 @@ async function publishPrice({ coinPairPrice, coinPairName, price, oracles, publi
         sigV,
         sigR,
         sigS,
-        { from: publisher.address },
+        { from: publisher },
     );
 }
 

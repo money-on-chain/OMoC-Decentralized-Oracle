@@ -34,8 +34,10 @@ contract('Staking-withdraw', async (accounts) => {
         await this.governor.mint(this.token.address, feesAccount, TOKEN_FEES);
 
         this.oracles = {};
+        this.owners = [];
         for (let i = 0; i < NUM_ORACLES; i += 1) {
             const oracleOwner = await helpers.newUnlockedAccount();
+            this.owners.push(oracleOwner);
             const oracle = await helpers.newUnlockedAccount();
             const oracleStake = ORACLE_STAKE.add(toBN(NUM_ORACLES - i));
             this.oracles[oracleOwner] = oracle;
@@ -56,7 +58,7 @@ contract('Staking-withdraw', async (accounts) => {
     it('subscription', async () => {
         const COINPAIR_ID = await this.coinPairPrice.getCoinPair();
         for (let i = 0; i < NUM_ORACLES; i += 1) {
-            const oracleOwner = Object.keys(this.oracles)[i];
+            const oracleOwner = this.owners[i];
             const oracleName = 'oracle-' + i;
             const oracleStake = ORACLE_STAKE.add(toBN(NUM_ORACLES - i));
             await this.token.approve(this.staking.address, oracleStake, { from: oracleOwner });
@@ -71,7 +73,7 @@ contract('Staking-withdraw', async (accounts) => {
         expect(selectedOracles.length).to.equal(MAX_SELECTED_ORACLES);
 
         for (let i = 0; i < MAX_SELECTED_ORACLES; i += 1) {
-            const oracleOwner = Object.keys(this.oracles)[i];
+            const oracleOwner = this.owners[i];
             const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
             const subscribed = await this.coinPairPrice.isSubscribed(oracleOwner);
             expect(selected).to.be.true;
@@ -79,7 +81,7 @@ contract('Staking-withdraw', async (accounts) => {
         }
 
         for (let i = MAX_SELECTED_ORACLES; i < NUM_ORACLES; i += 1) {
-            const oracleOwner = Object.keys(this.oracles)[i];
+            const oracleOwner = this.owners[i];
             const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
             const subscribed = await this.coinPairPrice.isSubscribed(oracleOwner);
             expect(selected).to.be.false;
@@ -88,7 +90,7 @@ contract('Staking-withdraw', async (accounts) => {
     });
 
     it('withdraw and keep in round', async () => {
-        const oracleOwner = Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1];
+        const oracleOwner = this.owners[MAX_SELECTED_ORACLES - 1];
         let selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.true;
         await this.staking.withdraw(1, { from: oracleOwner });
@@ -99,25 +101,21 @@ contract('Staking-withdraw', async (accounts) => {
     it('publish price', async () => {
         await this.coinPairPrice.switchRound();
 
-        const oracleOwner = Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1];
+        const oracleOwner = this.owners[MAX_SELECTED_ORACLES - 1];
         const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
         expect(selected).to.be.true;
 
         const signers = [];
         for (let i = 0; i < MAX_SELECTED_ORACLES / 2 + 1; i += 1) {
-            signers.push({
-                address: this.oracles[Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1 - i]],
-                owner: Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1 - i],
-            });
+            const owner = this.owners[MAX_SELECTED_ORACLES - 1 - i];
+            signers.push({ address: this.oracles[owner], owner });
         }
-
-        signers.sort((a, b) => b.address - a.address);
-
         await helpers.publishPrice({
             coinPairPrice: this.coinPairPrice,
             coinPairName: COINPAIR_NAME,
             price: (10 ** 18).toString(),
             oracles: signers,
+            publisher: this.oracles[oracleOwner],
         });
 
         const { points } = await this.coinPairPrice.getOracleRoundInfo(signers[0].owner);
@@ -125,7 +123,7 @@ contract('Staking-withdraw', async (accounts) => {
     });
 
     it('withdraw and drop from round', async () => {
-        const oracleOwner = Object.keys(this.oracles)[MAX_SELECTED_ORACLES - 1];
+        const oracleOwner = this.owners[MAX_SELECTED_ORACLES - 1];
 
         await this.staking.withdraw(1, { from: oracleOwner });
         const selected = await this.coinPairPrice.isOracleInCurrentRound(oracleOwner);
@@ -144,29 +142,25 @@ contract('Staking-withdraw', async (accounts) => {
     });
 
     it('new selected oracle can publish', async () => {
-        const newOracleOwner = Object.keys(this.oracles)[MAX_SELECTED_ORACLES];
+        const newOracleOwner = this.owners[MAX_SELECTED_ORACLES];
         const selected = await this.coinPairPrice.isOracleInCurrentRound(newOracleOwner);
         expect(selected).to.be.true;
 
         const signers = [];
         for (let i = 0; i < MAX_SELECTED_ORACLES / 2; i += 1) {
-            signers.push({
-                address: this.oracles[Object.keys(this.oracles)[i]],
-                owner: Object.keys(this.oracles)[i],
-            });
+            const owner = this.owners[i];
+            signers.push({ address: this.oracles[owner], owner });
         }
         signers.push({ address: this.oracles[newOracleOwner], owner: newOracleOwner });
-
-        signers.sort((a, b) => b.address - a.address);
-
         await helpers.publishPrice({
             coinPairPrice: this.coinPairPrice,
             coinPairName: COINPAIR_NAME,
             price: (10 ** 18).toString(),
             oracles: signers,
+            publisher: this.oracles[newOracleOwner],
         });
 
-        const { points } = await this.coinPairPrice.getOracleRoundInfo(signers[0].owner);
+        const { points } = await this.coinPairPrice.getOracleRoundInfo(newOracleOwner);
         expect(points).to.be.bignumber.equal(new BN(1));
     });
 });
