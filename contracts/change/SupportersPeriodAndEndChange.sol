@@ -10,7 +10,7 @@ import {SupportersStorage} from "../SupportersStorage.sol";
   @notice This contract is a ChangeContract intended to be used to change the Supporters contract
   parameter period
  */
-contract SupportersPeriodChange is SupportersStorage, ChangeContract {
+contract SupportersPeriodAndEndChange is SupportersStorage, ChangeContract {
     Governed public supporters;
     bytes public encodedData;
 
