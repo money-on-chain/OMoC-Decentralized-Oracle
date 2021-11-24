@@ -159,8 +159,6 @@ contract CoinPairPrice is
         onlyOracleManager
         returns (uint256)
     {
-        require(subscribedOracles.contains(oracleOwnerAddr), "Not subscribed to this coin");
-
         if (!roundInfo.isSelected(oracleOwnerAddr)) {
             // not participating in current round, its ok to withdraw.
             return 0;
@@ -525,13 +523,14 @@ contract CoinPairPrice is
         if (availableRewardFees == 0) return;
 
         // Distribute according to points/TotalPoints ratio
-        uint256 distSum = 0;
         for (uint256 i = 0; i < roundInfo.length(); i++) {
             address oracleOwnerAddr = roundInfo.at(i);
             uint256 points = roundInfo.getPoints(oracleOwnerAddr);
+            if (points == 0) {
+                continue;
+            }
             uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
             require(token.transfer(oracleOwnerAddr, distAmount), "Token transfer failed");
-            distSum = distSum.add(distAmount);
             emit OracleRewardTransfer(
                 roundInfo.number,
                 oracleOwnerAddr,

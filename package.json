@@ -1,10 +1,10 @@
 {
     "name": "@moc/oracles",
-    "version": "1.3.5",
+    "version": "1.3.6",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
-        "@moc/shared": "http://omoc-do.coinfabrik.com/npm/moc-shared-1.3.4.tgz"
+        "@moc/shared": "http://omoc-do.coinfabrik.com/npm/moc-shared-1.3.6.tgz"
     },
     "devDependencies": {
         "@coinfabrik/solidity-flattener": "0.0.7",

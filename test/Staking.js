@@ -166,11 +166,11 @@ contract('Staking', async (accounts) => {
     // Slow test. Comment to test the others faster.
     it('Should not be able to withdraw stake of oracle B until it is unlocked', async () => {
         let currentTimestamp = await time.latest();
+        await expectRevert(
+            this.staking.withdraw(oracleData[1].stake, { from: oracleData[1].owner }),
+            'Stake not available for withdrawal.',
+        );
         while (currentTimestamp < untilTimestampLock) {
-            await expectRevert(
-                this.staking.withdraw(oracleData[1].stake, { from: oracleData[1].owner }),
-                'Stake not available for withdrawal.',
-            );
             await helpers.mineBlocks(1);
             currentTimestamp = await time.latest();
         }

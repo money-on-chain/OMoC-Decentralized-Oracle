@@ -74,7 +74,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @notice Accept a deposit from an account.
     /// Delegates to the Supporters smart contract.
     /// @param mocs token quantity
-    function deposit(uint256 mocs) external {
+    function deposit(uint256 mocs) external override {
         deposit(mocs, msg.sender);
     }
 
@@ -141,7 +141,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     }
 
     /// @notice Withdraw all the stake and send it to the delay machine.
-    function withdrawAll() external {
+    function withdrawAll() external override {
         uint256 tokens = supporters.getBalanceAt(address(this), msg.sender);
         withdrawTokens(tokens);
     }
@@ -170,6 +170,13 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param user user address
     function getBalance(address user) external view override returns (uint256) {
         return supporters.getMOCBalanceAt(address(this), user);
+    }
+
+    /// @notice Reports the balance of tokens for a specific user.
+    /// Delegates to the Supporters smart contract.
+    /// @param user user address
+    function getTokenBalance(address user) external view override returns (uint256) {
+        return supporters.getBalanceAt(address(this), user);
     }
 
     /// @notice Reports the balance of locked MOCs for a specific user.
