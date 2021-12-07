@@ -1,14 +1,14 @@
 # MONEY ON CHAIN
 
-**Descentralized Oracle System**
+**Decentralized Oracle System**
 
 ## Overview
 
-This repository contains the source code for the Money On Chain Descentralized Oracle system.
-
-The objective of this system is to provide on-chain price for our tokens in a trustless decentralized manner. 
+The objective of this system is to provide on-chain price for our tokens in a trust-less decentralized manner. 
 
 We describe the different components involved in this system and their interaction.
+
+This repository contains the **Smart Contracts**' source code ***only*** and its related utilities and tests. The off-chain part of this system is available at [money-on-chain/OMoC-Node](https://github.com/money-on-chain/OMoC-Node).
 
 ## Components
 
@@ -25,32 +25,30 @@ We describe the different components involved in this system and their interacti
 
 ## Project Structure
 
-* [development.md](./development.md): How to run a local development environment.
 * [contracts](./contracts): The source code of the Solidity contracts that support the system.
-* [contracts/scripts](./contracts/scripts): Allow to run helper processes on RSK network.
-* [servers](./servers): The reference Oracle implementation along with the schedulers.
-* [servers/scripts](./servers/scripts): Scripts to test servers and manually register, start round, etc... This is useful for the development environment.
-* [servers/delfos](./servers/delfos): Sets up a group of price feeders working together to test the system in a single machine.
-* [dapp](./dapp): Includes the code for the WebDApp which needs to be deployed to a web server.
+* [contracts/change](./contracts/change): Contracts prepared to update system settings _on chain_.
+* [contracts/libs](./contracts/libs): Some contracts with common functionality.
+* [contracts/testing_mocks](./contracts/testing_mocks): Contracts used to mock up external contracts functionality.
+* [test](./test): Tests for this contract system.
 * [scripts](./scripts): Tools to monitor and interact with the system when running over RSK network.
 
 ## Smart Contracts Design
 
 ![Architecture](docs/contracts.png)
 
-**OracleManager**: Allows any blockchain user to register an oracle in the system and subcribe it as a price-provider for different coinpairs.
+**OracleManager**: Allows any blockchain user to register an oracle in the system and subscribe it as a price-provider for different coin-pairs.
 
 **CoinPairPrice** (one per coinpair): This contract keeps the price and is responsible to receive and validate price updates provided. Also tracks providers participation in order to provide rewards.
 
 **Supporters**: Will track stake-period contributed by supporters and will provide a reward in compensation.
 
-**CoinPairRegister**: A contract to setup which coinpairs will the system accept.
+**CoinPairRegister**: A contract to set up which coin-pairs will the system accept.
 
 **Governance**: Control changes and upgrades over the contracts
 
 # Smart-Contract Code structure
 
-All the contracts are upgradeables so when they are deployed there are two instances
+All the contracts are upgradeable so when they are deployed there are two instances
 one has the implementation code and one the storage. We must have 
 the storage well organized so different upgrades can reuse the same storage without
 clashes. 
@@ -62,12 +60,9 @@ To do that we have all the storage in one base contract that is inherited by the
 implementation. All the reusable code is in libraries and doesn't use any
 storage (libraries are stateless).   
 
-
-
-
 ## Operation
 
-Foundation will setup and deploy contracts and will provide theirs addresses for anyone willing to participate. When minimal participants join the contracts will be "started".
+Foundation will set up and deploy contracts and will provide theirs addresses for anyone willing to participate. When minimal participants join the contracts will be "started".
 
 ### Kickoff
 
@@ -75,7 +70,7 @@ When a coinpair participants have reach a minimal number required to work, the 0
 
 ### Rounds
 
-The CoinPair contracts work on a round-basis. The top N price-provider which contribute more stake will be selected to work at the begining of each round. Each round lasts one month and it is expected for the selected providers to work to do their job the whole time of the round. 
+The CoinPair contracts work on a round-basis. The top N price-provider which contribute more stake will be selected to work at the beginning of each round. Each round lasts one month, and it is expected for the selected providers to work to do their job the whole time of the round. 
 The round will end and a new round will be started automatically. When the new round begins a new provider selection will be made.
 During the round, each time a provider publish a pair-price to the contract, it will be accounted **one** point. At the same time, the contract will be receiving reward tokens which will be distributed at the end of the round proportionally to the points collected by each provider.
 
@@ -89,6 +84,6 @@ To publish a price it is required the consensus from half plus one of the round-
 
 ### Supporters
 
-Supporters do have a round-system too but it is transparent for the users. Reward is collected all during a certain period, and after that it is assigned to current supporters according to their stake and will be all available for the user at the end of the following round. If the user decides to retire before it will receive a part proportional to how long it stayed in the system.
+Supporters do have a round-system too, but it is transparent for the users. Reward is collected all during a certain period, and after that it is assigned to current supporters according to their stake and will be all available for the user at the end of the following round. If the user decides to retire before it will receive a part proportional to how long it stayed in the system.
 Each participant registering a price-provider will automatically also be registered as supporter and will receive proportional support-rewards as any other supporter no matter if is selected as price-provider.
 
