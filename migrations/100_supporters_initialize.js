@@ -1,7 +1,7 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
 
-async function deploy({config, ozParams, governor, token}) {
+async function deploy({ config, ozParams, governor, token }, artifacts) {
     console.log('Initialize Supporters');
     const stakingMachine = helpers.ozGetAddr('@moc/oracles/Staking', ozParams);
     const supportersAddr = helpers.ozGetAddr('@moc/oracles/Supporters', ozParams);
@@ -15,4 +15,4 @@ async function deploy({config, ozParams, governor, token}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(deploy, artifacts);
