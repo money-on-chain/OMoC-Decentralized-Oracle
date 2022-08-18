@@ -2,7 +2,7 @@
 const helpers = require('@moc/shared/lib/helpers');
 const Web3 = require('web3');
 
-async function deploy({config, ozParams, governor}) {
+async function deploy({ config, ozParams, governor }, artifacts) {
     console.log('Initialize staking machine');
     const supportersAddr = helpers.ozGetAddr('@moc/oracles/Supporters', ozParams);
     const oracleManagerAddr = helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
@@ -22,4 +22,4 @@ async function deploy({config, ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(deploy, artifacts);

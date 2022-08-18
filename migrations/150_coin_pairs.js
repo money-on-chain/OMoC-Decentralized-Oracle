@@ -2,7 +2,7 @@
 const helpers = require('@moc/shared/lib/helpers');
 const Web3 = require('web3');
 
-async function deploy({ config, ozParams, governor, token }) {
+async function deploy({ config, ozParams, governor, token }, artifacts) {
     const CoinPairPriceFree = artifacts.require('@moc/oracles/CoinPairPriceFree');
     const OracleManagerPairChange = artifacts.require('@moc/oracles/OracleManagerPairChange');
     const infoGetterAddr = helpers.ozGetAddr('@moc/oracles/InfoGetter', ozParams);
@@ -65,4 +65,4 @@ async function deploy({ config, ozParams, governor, token }) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(deploy, artifacts);
