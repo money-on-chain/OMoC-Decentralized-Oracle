@@ -1,7 +1,7 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
 
-async function deploy({config, ozParams, governor}) {
+async function deploy({ config, ozParams, governor }, artifacts) {
     const oracleManagerAddr = await helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
     console.log('oracleManagerAddr', oracleManagerAddr);
 
@@ -11,7 +11,7 @@ async function deploy({config, ozParams, governor}) {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         network: ozParams.network,
-        txParams: {...ozParams.txParams},
+        txParams: { ...ozParams.txParams },
     });
     console.log('PriceProviderRegister: ', priceProviderRegister.address);
 
@@ -24,4 +24,4 @@ async function deploy({config, ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(deploy, artifacts);

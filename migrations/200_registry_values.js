@@ -1,7 +1,7 @@
 'use strict';
 const helpers = require('@moc/shared/lib/helpers');
 
-async function deploy({ozParams, governor}) {
+async function deploy({ ozParams, governor }, artifacts) {
     const oracles = {
         delayMachine: 'DelayMachine',
         oracleManager: 'OracleManager',
@@ -34,4 +34,4 @@ async function deploy({ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(deploy, artifacts);

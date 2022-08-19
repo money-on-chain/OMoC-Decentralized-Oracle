@@ -2,7 +2,7 @@
 const helpers = require('@moc/shared/lib/helpers');
 const Web3 = require('web3');
 
-async function deploy({config, ozParams, governor}) {
+async function deploy({ config, ozParams, governor }, artifacts) {
     const coin = 'RIFUSD';
     const coinPair = Web3.utils.asciiToHex(coin).padEnd(66, '0');
 
@@ -52,7 +52,7 @@ async function deploy({config, ozParams, governor}) {
         admin: await helpers.getProxyAdmin(config, ozParams),
         force: true,
         network: ozParams.network,
-        txParams: {...ozParams.txParams, gas: 1800000},
+        txParams: { ...ozParams.txParams, gas: 1800000 },
     });
     console.log('calculatedPriceProvider: ', calculatedPriceProvider.address);
 
@@ -97,7 +97,7 @@ async function deploy({config, ozParams, governor}) {
         priceProviderRegisterAddr,
         coinPair,
         calculatedPriceProvider.address,
-        {gas: 3000000},
+        { gas: 3000000 },
     );
     console.log(
         'Register coin via governor',
@@ -111,4 +111,4 @@ async function deploy({config, ozParams, governor}) {
 }
 
 // FOR TRUFFLE
-module.exports = helpers.truffleOZMain(deploy);
+module.exports = helpers.truffleOZMain(deploy, artifacts);
