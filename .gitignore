@@ -29,3 +29,5 @@ build/
 .openzeppelin/.session
 
 moc-*-*.tgz
+
+package-lock.json
