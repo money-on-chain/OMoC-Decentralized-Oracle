@@ -47,7 +47,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         IDelayMachine _delayMachine,
         address[] calldata _wlistlock,
         uint256 _withdrawLockTime
-    ) external {
+    ) external initializer {
         Governed._initialize(_governor);
         oracleManager = _oracleManager;
         supporters = _supporters;
