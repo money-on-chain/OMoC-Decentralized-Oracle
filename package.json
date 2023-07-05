@@ -59,7 +59,8 @@
         "commit": "git-cz",
         "deploy": "rimraf .openzeppelin ./build/contracts && truffle migrate",
         "deploy_314": "truffle migrate -f 1000 --to 1001",
-        "migrate": "truffle migrate"
+        "migrate": "truffle migrate",
+        "deploy_staking_impl_testnet": "truffle --network rsk_testnet exec scripts/deploy_staking_impl.js"
     },
     "repository": {
         "type": "git",
