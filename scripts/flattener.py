@@ -1,10 +1,11 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+
 import ast
 import os
 import sys
 
-
 class Flattener:
+
     def __init__(self, start):
         self.file_stack = []
         self.file_set = set()
@@ -79,8 +80,15 @@ class Flattener:
                 self.file_stack.pop()
 
 
-if len(sys.argv) != 2:
-    sys.exit("Usage: python3 flattener.py FILEPATH")
+if __name__ == '__main__':
 
-flattener = Flattener(sys.argv[1])
-flattener.run()
+    if len(sys.argv) != 2:
+        print("Usage: python3 flattener.py FILEPATH", file=sys.stderr)
+        exit(1)
+
+    try:
+        flattener = Flattener(sys.argv[1])
+        flattener.run()
+    except FileNotFoundError:
+        print(f"Error: {repr(sys.argv[1])} file not found.", file=sys.stderr)
+        exit(1)
