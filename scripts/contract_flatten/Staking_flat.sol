@@ -4223,6 +4223,10 @@ contract StakingStorage is Initializable, Governed, IIterableWhitelist {
 contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     using SafeMath for uint256;
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /**
       @notice Modifier that protects the function
       @dev You should use this modifier in any function that should be called only by the delay machine
