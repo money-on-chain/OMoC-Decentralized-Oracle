@@ -23,14 +23,14 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     event PaymentCancel(uint256 indexed id, address source, address destination, uint256 amount);
     event PaymentWithdraw(uint256 indexed id, address source, address destination, uint256 amount);
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /// @notice Construct this contract.
     /// @param governor The minimum amount of tokens required as stake for a coin pair subscription.
     /// @param token the Supporters contract contract address.
-    function initialize(
-        IGovernor governor,
-        IERC20 token,
-        address source
-    ) external initializer {
+    function initialize(IGovernor governor, IERC20 token, address source) external initializer {
         _token = token;
         _source = source;
         Governed._initialize(governor);
@@ -90,15 +90,13 @@ contract DelayMachine is DelayMachineStorage, IDelayMachine {
     /// @return ids transaction ids
     /// @return amounts token quantity
     /// @return expirations expiration dates
-    function getTransactions(address account)
+    function getTransactions(
+        address account
+    )
         external
         view
         override
-        returns (
-            uint256[] memory ids,
-            uint256[] memory amounts,
-            uint256[] memory expirations
-        )
+        returns (uint256[] memory ids, uint256[] memory amounts, uint256[] memory expirations)
     {
         uint256 len = owners[account].ids.length();
         ids = new uint256[](len);
