@@ -1,6 +1,6 @@
 {
     "name": "@moneyonchain/oracles",
-    "version": "1.5.1-beta.0",
+    "version": "1.5.1-beta.1",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
@@ -12,6 +12,7 @@
         "@openzeppelin/cli": "^2.8.2",
         "@openzeppelin/contracts-ethereum-package": "^3.0.0",
         "@openzeppelin/test-helpers": "^0.5.6",
+        "@openzeppelin/truffle-upgrades": "^1.19.0",
         "@truffle/artifactor": "^4.0.101",
         "@truffle/compile-common": "^0.7.2",
         "@truffle/compile-solidity": "^5.2.5",
