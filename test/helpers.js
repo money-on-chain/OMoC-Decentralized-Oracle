@@ -2,6 +2,21 @@ const { constants, BN, time, expectEvent } = require('@openzeppelin/test-helpers
 const crypto = require('crypto');
 const { toBN } = require('web3-utils');
 const ethers = require('ethers');
+const { deployProxy, silenceWarnings } = require('@openzeppelin/truffle-upgrades');
+
+async function deployProxySimple(Contract, opts) {
+    /// Since I can't use this: /// @custom:oz-upgrades-unsafe-allow constructor
+    /// in contracts because of the solidity version
+    /// I must use { unsafeAllow: ['constructor', 'delegatecall'] } here!!!
+    if (opts === undefined) {
+        return deployProxy(Contract, {
+            unsafeAllow: ['constructor', 'delegatecall'],
+            initializer: false,
+        });
+    } else {
+        return deployProxy(Contract, opts, { unsafeAllow: ['constructor', 'delegatecall'] });
+    }
+}
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 
@@ -314,4 +329,7 @@ module.exports = {
     publishPrice,
     newUnlockedAccount,
     processEvents,
+    deployProxy,
+    silenceWarnings,
+    deployProxySimple,
 };

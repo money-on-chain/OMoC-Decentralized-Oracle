@@ -4,10 +4,9 @@ const MockIPriceProvider = artifacts.require('MockIPriceProvider');
 const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
 const { expectRevert, BN, constants } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
-const { deployProxy, silenceWarnings } = require('@openzeppelin/truffle-upgrades');
 
 contract('CalculatedPriceProvider', async (accounts) => {
-    await silenceWarnings();
+    await helpers.silenceWarnings();
 
     const GOVERNOR = accounts[8];
     const lastPubBlockMin = web3.utils.toBN(213);
@@ -21,25 +20,14 @@ contract('CalculatedPriceProvider', async (accounts) => {
         whitelist = [],
     ) {
         const governor = await MockGovernor.new(GOVERNOR);
-        //const ret = await CalculatedPriceProvider.new();
-        //await ret.initialize(
-        //    governor.address,
-        //    whitelist,
-        //    multiplicator,
-        //    multiplyBy,
-        //    divisor,
-        //    divideBy,
-        //);
-        const ret = await deployProxy(
-            CalculatedPriceProvider,
-            [governor.address, whitelist, multiplicator, multiplyBy, divisor, divideBy],
-            {
-                /// Since I can't use this: /// @custom:oz-upgrades-unsafe-allow constructor
-                /// in contracts because of the solidity version
-                /// I must use { unsafeAllow: ['constructor', 'delegatecall'] } here!!!
-                unsafeAllow: ['constructor', 'delegatecall'],
-            },
-        );
+        const ret = await helpers.deployProxySimple(CalculatedPriceProvider, [
+            governor.address,
+            whitelist,
+            multiplicator,
+            multiplyBy,
+            divisor,
+            divideBy,
+        ]);
 
         return ret;
     }
