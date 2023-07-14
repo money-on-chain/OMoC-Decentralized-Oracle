@@ -168,8 +168,7 @@ async function initCoinpair(
     },
 ) {
     const CoinPairPrice = artifacts.require('CoinPairPrice');
-    const ret = await CoinPairPrice.new();
-    await ret.initialize(
+    const ret = await deployProxySimple(CoinPairPrice, [
         governor.addr,
         whitelist,
         web3.utils.asciiToHex(name),
@@ -182,7 +181,7 @@ async function initCoinpair(
         bootstrapPrice,
         oracleMgr.address,
         registry,
-    );
+    ]);
     await governor.registerCoinPair(oracleMgr, web3.utils.asciiToHex(name), ret.address);
     return ret;
 }
@@ -212,10 +211,10 @@ async function initContracts({
     }
     const token = await TestMOC.new();
     await token.initialize(governor.address);
-    const oracleMgr = await OracleManager.new();
-    const supporters = await Supporters.new();
-    const delayMachine = await DelayMachine.new();
-    const staking = await Staking.new();
+    const oracleMgr = await deployProxySimple(OracleManager);
+    const supporters = await deployProxySimple(Supporters);
+    const delayMachine = await deployProxySimple(DelayMachine);
+    const staking = await deployProxySimple(Staking);
     await delayMachine.initialize(governor.address, token.address, staking.address);
     const stakingMock = await StakingMock.new();
     const votingMachine = await MockVotingMachine.new();
@@ -241,6 +240,7 @@ async function initContracts({
     await votingMachine.initialize(staking.address);
 
     await registry.initialize(governor.address);
+
     if (governor.execute) {
         // in the case of fake governor we probably wont require this..
         const MocRegistryAddMinOraclesPerRoundChange = artifacts.require(
