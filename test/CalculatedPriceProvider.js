@@ -6,8 +6,6 @@ const { expectRevert, BN, constants } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 contract('CalculatedPriceProvider', async (accounts) => {
-    await helpers.silenceWarnings();
-
     const GOVERNOR = accounts[8];
     const lastPubBlockMin = web3.utils.toBN(213);
     const lastPubBlockMax = web3.utils.toBN(1213);

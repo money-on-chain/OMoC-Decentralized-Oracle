@@ -8,6 +8,7 @@ async function deployProxySimple(Contract, opts) {
     /// Since I can't use this: /// @custom:oz-upgrades-unsafe-allow constructor
     /// in contracts because of the solidity version
     /// I must use { unsafeAllow: ['constructor', 'delegatecall'] } here!!!
+    await silenceWarnings(); // probably not the best practice but the warnings for using uses of unsafe flags are very annoying.
     if (opts === undefined) {
         return deployProxy(Contract, {
             unsafeAllow: ['constructor', 'delegatecall'],
