@@ -16,8 +16,9 @@ contract('MocRegistryInitChange', async (accounts) => {
         });
         Object.assign(this, contracts);
 
-        this.infoGetter = await InfoGetter.new();
-        await this.infoGetter.initialize(this.governor.address);
+        this.infoGetter = await helpers.deployProxySimple(InfoGetter, [this.governor.address]);
+
+        // Surely in the near future this should also be changed, now not because it would fail.
         this.registry = await Registry.new();
         await this.registry.initialize(this.governor.address);
 

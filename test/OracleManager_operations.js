@@ -28,7 +28,9 @@ contract('OracleManager operations', async (accounts) => {
         await this.token.approve(this.staking.address, MIN_ORACLE_STAKE, { from: ORACLE_OWNER });
         await this.staking.deposit(MIN_ORACLE_STAKE, ORACLE_OWNER, { from: ORACLE_OWNER });
 
-        this.coinPairPrice = await CoinPairPrice.new(GOVERNOR_OWNER);
+        //this.coinPairPrice = await CoinPairPrice.new(GOVERNOR_OWNER);
+        this.coinPairPrice = await helpers.deployProxySimple(CoinPairPrice);
+
         await this.coinPairPrice.initialize(
             this.governor.address,
             [GOVERNOR_OWNER],
@@ -113,7 +115,7 @@ contract('OracleManager operations', async (accounts) => {
     });
 
     it('Initialization verifications', async () => {
-        const oracleManager = await OracleManager.new();
+        const oracleManager = await helpers.deployProxySimple(OracleManager);
         await expectRevert(
             oracleManager.initialize(
                 this.governor.address, // governor

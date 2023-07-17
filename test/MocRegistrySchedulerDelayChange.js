@@ -15,6 +15,7 @@ contract('MocRegistrySchedulerDelayChange', async (accounts) => {
         });
         Object.assign(this, contracts);
 
+        // Surely in the near future this should also be changed, now not because it would fail.
         this.registry = await Registry.new();
         await this.registry.initialize(this.governor.address);
 

@@ -147,7 +147,7 @@ function coinPairStr(hex) {
 }
 
 function bytes32toBN(pr) {
-    pr = pr.replace(/^0x/, '');
+    // pr = pr.replace(/^0x/, ''); // Now with this it fails, apparently it is no longer necessary
     return new BN(pr, 16);
 }
 
@@ -218,6 +218,8 @@ async function initContracts({
     await delayMachine.initialize(governor.address, token.address, staking.address);
     const stakingMock = await StakingMock.new();
     const votingMachine = await MockVotingMachine.new();
+
+    // Surely in the near future this should also be changed, now not because it would fail.
     const registry = await Registry.new();
 
     await supporters.initialize(

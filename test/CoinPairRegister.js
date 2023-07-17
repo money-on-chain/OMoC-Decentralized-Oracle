@@ -1,19 +1,19 @@
-const {BN, expectRevert} = require('@openzeppelin/test-helpers');
+const { BN, expectRevert } = require('@openzeppelin/test-helpers');
 const helpers = require('./helpers');
 
 contract('CoinPairRegister', (accounts) => {
     before(async () => {
         this.pairs = [
-            {coinpair: 'BTCUSD', address: web3.utils.randomHex(20)},
-            {coinpair: 'RIFBTC', address: web3.utils.randomHex(20)},
+            { coinpair: 'BTCUSD', address: web3.utils.randomHex(20) },
+            { coinpair: 'RIFBTC', address: web3.utils.randomHex(20) },
         ];
 
         const OracleManager = artifacts.require('OracleManager');
         const governor = await helpers.createGovernor(accounts[8]);
-        const oracleManager = await OracleManager.new();
+        const oracleManager = await helpers.deployProxySimple(OracleManager);
         const minOracleOwnerStake = '10000';
         const Supporters = artifacts.require('Supporters');
-        const supporters = await Supporters.new();
+        const supporters = await helpers.deployProxySimple(Supporters);
         const TestMOC = artifacts.require('@moc/shared/GovernedERC20');
         const token = await TestMOC.new();
         await supporters.initialize(
@@ -64,7 +64,7 @@ contract('CoinPairRegister', (accounts) => {
             this.coinPairRegister.origRegisterCoinPair(
                 web3.utils.asciiToHex(this.pairs[1].coinpair),
                 this.pairs[1].address,
-                {from: accounts[2]},
+                { from: accounts[2] },
             ),
             'not_authorized_changer',
         );

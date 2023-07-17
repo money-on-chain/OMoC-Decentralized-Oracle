@@ -17,6 +17,7 @@ contract('MocRegistryEnteringFallbacksAmountsChange', async (accounts) => {
         });
         Object.assign(this, contracts);
 
+        // Surely in the near future this should also be changed, now not because it would fail.
         this.registry = await Registry.new();
         await this.registry.initialize(this.governor.address);
 
@@ -29,9 +30,8 @@ contract('MocRegistryEnteringFallbacksAmountsChange', async (accounts) => {
             whitelist: [accounts[0]],
         });
 
-        this.mocRegistryEnteringFallbacksAmountsChange = await MocRegistryEnteringFallbacksAmountsChange.new(
-            this.registry.address,
-        );
+        this.mocRegistryEnteringFallbacksAmountsChange =
+            await MocRegistryEnteringFallbacksAmountsChange.new(this.registry.address);
     });
 
     it('Should succeed execute call', async () => {

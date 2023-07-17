@@ -29,8 +29,12 @@ contract('SupportersEndEarningsChange', (accounts) => {
         governor = await helpers.createGovernor(GOVERNOR_OWNER);
         token = await TestMOC.new();
         await token.initialize(governor.address);
-        supporters = await Supporters.new();
-        await supporters.initialize(governor.address, users, token.address, period);
+        supporters = await helpers.deployProxySimple(Supporters, [
+            governor.address,
+            users,
+            token.address,
+            period,
+        ]);
         for (let i = 0; i < users.length; i++) {
             const user = users[i];
             const balance = balance2BN(balances[i]);
