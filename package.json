@@ -1,6 +1,6 @@
 {
     "name": "@moneyonchain/oracles",
-    "version": "1.5.1-beta.1",
+    "version": "1.5.1-beta.2",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
