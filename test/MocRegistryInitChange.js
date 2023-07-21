@@ -18,9 +18,9 @@ contract('MocRegistryInitChange', async (accounts) => {
 
         this.infoGetter = await helpers.deployProxySimple(InfoGetter, [this.governor.address]);
 
-        // Surely in the near future this should also be changed, now not because it would fail.
-        this.registry = await Registry.new();
-        await this.registry.initialize(this.governor.address);
+        this.registry = await helpers.deployTransparentProxySimple(Registry, [
+            this.governor.address,
+        ]);
 
         this.coinPairPrice_BTCUSD = await helpers.initCoinpair('BTCUSD', {
             ...contracts,

@@ -2,22 +2,7 @@ const { constants, BN, time, expectEvent } = require('@openzeppelin/test-helpers
 const crypto = require('crypto');
 const { toBN } = require('web3-utils');
 const ethers = require('ethers');
-const { deployProxy, silenceWarnings } = require('@openzeppelin/truffle-upgrades');
-
-async function deployProxySimple(Contract, opts) {
-    /// Since I can't use this: /// @custom:oz-upgrades-unsafe-allow constructor
-    /// in contracts because of the solidity version
-    /// I must use { unsafeAllow: ['constructor', 'delegatecall'] } here!!!
-    await silenceWarnings(); // probably not the best practice but the warnings for using uses of unsafe flags are very annoying.
-    if (opts === undefined) {
-        return deployProxy(Contract, {
-            unsafeAllow: ['constructor', 'delegatecall'],
-            initializer: false,
-        });
-    } else {
-        return deployProxy(Contract, opts, { unsafeAllow: ['constructor', 'delegatecall'] });
-    }
-}
+const { deployProxySimple, deployTransparentProxySimple } = require('@moc/shared/test/helpers.js');
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 
@@ -110,8 +95,7 @@ async function createGovernor(owner) {
     const Governor = artifacts.require('@moc/shared/Governor');
     const OracleManagerPairChange = artifacts.require('OracleManagerPairChange');
     const TestMOCMintChange = artifacts.require('TestMOCMintChange');
-    const governor = await Governor.new();
-    await governor.initialize(owner);
+    const governor = await deployTransparentProxySimple(Governor, [owner]);
     return {
         addr: governor.address,
         address: governor.address,
@@ -219,8 +203,7 @@ async function initContracts({
     const stakingMock = await StakingMock.new();
     const votingMachine = await MockVotingMachine.new();
 
-    // Surely in the near future this should also be changed, now not because it would fail.
-    const registry = await Registry.new();
+    const registry = await deployTransparentProxySimple(Registry);
 
     await supporters.initialize(
         governor.address,
@@ -332,7 +315,6 @@ module.exports = {
     publishPrice,
     newUnlockedAccount,
     processEvents,
-    deployProxy,
-    silenceWarnings,
     deployProxySimple,
+    deployTransparentProxySimple,
 };
