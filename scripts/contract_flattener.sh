@@ -22,6 +22,8 @@ CONTRACTS=(
     "contracts/change/OracleManagerOracleMinStakeChange.sol"
     "contracts/change/MocRegistryAddMinOraclesPerRoundChange.sol"
     "contracts/change/OracleManagerPairChange.sol"
+    "contracts/change/OracleManagerPairChangeList.sol"
+    "contracts/change/OracleManagerPairChangeRemove.sol"  
     "contracts/change/OracleManagerRemoveChange.sol"
     "contracts/change/CoinPairPriceAddCalculatedPriceProviderChange.sol"
     "contracts/change/MocRegistryInitChange.sol"
