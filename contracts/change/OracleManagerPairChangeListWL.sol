@@ -54,7 +54,7 @@ contract OracleManagerPairChangeListWL is CoinPairPriceStorage, ChangeContract {
     function execute() external override {
         for (uint256 i = 0; i < coinPairs.length; i++) {
             for (uint256 j = 0; j < wlist.length; j++) {
-                Governed(contractAddr[i]).delegateCallToChanger(abi.encode(wlist[i]));
+                Governed(contractAddr[i]).delegateCallToChanger(abi.encode(wlist[j]));
             }
             oracleManager_.registerCoinPair(coinPairs[i], contractAddr[i]);
         }
