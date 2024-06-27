@@ -1,6 +1,6 @@
 {
     "name": "@moneyonchain/oracles",
-    "version": "1.5.1-beta.8",
+    "version": "1.5.1-beta.9",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
@@ -142,6 +142,7 @@
         "/build/contracts/OracleManagerPairChangeList.json",
         "/build/contracts/OracleManagerPairChangeListWL.json",
         "/build/contracts/OracleManagerPairChangeListUpdate.json",
+        "/build/contracts/OracleManagerPairChangeListRemove.json",
         "/build/contracts/OracleManagerPairChangeRemove.json",
         "/build/contracts/PriceProviderOracleManagerRegisterPairChange.json",
         "/build/contracts/CoinPairPriceAddCalculatedPriceProviderChange.json",

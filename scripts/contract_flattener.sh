@@ -25,6 +25,7 @@ CONTRACTS=(
     "contracts/change/OracleManagerPairChangeList.sol"
     "contracts/change/OracleManagerPairChangeListWL.sol"
     "contracts/change/OracleManagerPairChangeListUpdate.sol"
+    "contracts/change/OracleManagerPairChangeListRemove.sol"
     "contracts/change/OracleManagerPairChangeRemove.sol"  
     "contracts/change/OracleManagerRemoveChange.sol"
     "contracts/change/CoinPairPriceAddCalculatedPriceProviderChange.sol"
