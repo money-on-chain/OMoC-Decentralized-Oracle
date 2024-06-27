@@ -4614,12 +4614,15 @@ contract OracleManagerPairChangeListUpdate is
       redefine the _beforeUpgrade and _afterUpgrade to use this template
      */
     function execute() external override {
+        uint8 idAddToWhitelist = 1;
+        uint8 idUnRegisterCoinPair = 2;
+
         if (coinPairsToAdd.length > 0) {
             for (uint256 i = 0; i < coinPairsToAdd.length; i++) {
                 if (wlist.length > 0) {
                     for (uint256 j = 0; j < wlist.length; j++) {
                         Governed(contractAddrToAdd[i]).delegateCallToChanger(
-                            abi.encode(1, wlist[j], 0)
+                            abi.encode(idAddToWhitelist, wlist[j], bytes32(0))
                         );
                     }
                 }
@@ -4628,7 +4631,9 @@ contract OracleManagerPairChangeListUpdate is
         }
         if (coinPairsToRemove.length > 0) {
             for (uint256 i = 0; i < coinPairsToRemove.length; i++) {
-                oracleManager_.delegateCallToChanger(abi.encode(2, 0, coinPairsToRemove[i]));
+                oracleManager_.delegateCallToChanger(
+                    abi.encode(idUnRegisterCoinPair, address(0x0), coinPairsToRemove[i])
+                );
             }
         }
         // TODO: Make it usable just once.
@@ -4639,16 +4644,19 @@ contract OracleManagerPairChangeListUpdate is
         This methods runs in the Governed contract storage.
     */
     function impersonate(bytes calldata data) external {
-        (uint256 _idx, address _addToWhiteAddr, bytes32 _coinPair) = abi.decode(
+        uint8 idAddToWhitelist = 1;
+        uint8 idUnRegisterCoinPair = 2;
+
+        (uint8 _idx, address _addToWhiteAddr, bytes32 _coinPair) = abi.decode(
             data,
-            (uint256, address, bytes32)
+            (uint8, address, bytes32)
         );
 
-        if (_idx == 1) {
+        if (_idx == idAddToWhitelist) {
             emergencyPublishWhitelistData._addToWhitelist(_addToWhiteAddr);
         }
 
-        if (_idx == 2) {
+        if (_idx == idUnRegisterCoinPair) {
             coinPairRegisterData._unRegisterCoinPair(_coinPair, 0);
         }
     }
