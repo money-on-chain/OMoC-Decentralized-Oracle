@@ -15,8 +15,8 @@ import {OracleManagerStorage} from "../OracleManagerStorage.sol";
   this one or taking it as a guide
  */
 contract OracleManagerPairChangeListUpdate is
-    CoinPairPriceStorage,
     OracleManagerStorage,
+    CoinPairPriceStorage,
     ChangeContract
 {
     OracleManager public oracleManager_;
@@ -71,6 +71,7 @@ contract OracleManagerPairChangeListUpdate is
                 oracleManager_.registerCoinPair(coinPairsToAdd[i], contractAddrToAdd[i]);
             }
         }
+
         if (coinPairsToRemove.length > 0) {
             for (uint256 i = 0; i < coinPairsToRemove.length; i++) {
                 oracleManager_.delegateCallToChanger(
@@ -78,6 +79,7 @@ contract OracleManagerPairChangeListUpdate is
                 );
             }
         }
+
         // TODO: Make it usable just once.
     }
 
