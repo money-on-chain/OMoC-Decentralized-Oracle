@@ -35,6 +35,7 @@ CONTRACTS=(
     "contracts/change/SupportersPeriodAndEndChange.sol"
     "contracts/change/SupportersPeriodChange.sol"
     "contracts/change/GovernorChange.sol"
+    "contracts/change/StakingWithdrawLockTimeChange.sol"
     "contracts/CoinPairPrice.sol"
     "contracts/CoinPairPriceFree.sol"
     "contracts/StakingStorage.sol"
