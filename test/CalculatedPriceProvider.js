@@ -2,8 +2,8 @@ const helpers = require('./helpers');
 const CalculatedPriceProvider = artifacts.require('CalculatedPriceProvider');
 const MockIPriceProvider = artifacts.require('MockIPriceProvider');
 const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
-const {expectRevert, BN, constants} = require('@openzeppelin/test-helpers');
-const {expect} = require('chai');
+const { expectRevert, BN, constants } = require('@openzeppelin/test-helpers');
+const { expect } = require('chai');
 
 contract('CalculatedPriceProvider', async (accounts) => {
     const GOVERNOR = accounts[8];
@@ -18,15 +18,15 @@ contract('CalculatedPriceProvider', async (accounts) => {
         whitelist = [],
     ) {
         const governor = await MockGovernor.new(GOVERNOR);
-        const ret = await CalculatedPriceProvider.new();
-        await ret.initialize(
+        const ret = await helpers.deployProxySimple(CalculatedPriceProvider, [
             governor.address,
             whitelist,
             multiplicator,
             multiplyBy,
             divisor,
             divideBy,
-        );
+        ]);
+
         return ret;
     }
 
@@ -43,13 +43,13 @@ contract('CalculatedPriceProvider', async (accounts) => {
         expect(lastPubBlockMin.lt(lastPubBlockMax), 'pubBlock').to.be.true;
 
         const mock1 = await MockIPriceProvider.new(price, true, lastPubBlockMin);
-        val = await mock1.getPriceInfo({from: helpers.ADDRESS_ONE});
+        val = await mock1.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(price));
         expect(val[1], 'valid').to.be.true;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(new BN(lastPubBlockMin));
 
         const mock2 = await MockIPriceProvider.new(price, false, lastPubBlockMax);
-        val = await mock2.getPriceInfo({from: helpers.ADDRESS_ONE});
+        val = await mock2.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(price));
         expect(val[1], 'valid').to.be.false;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(new BN(lastPubBlockMax));
@@ -57,7 +57,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
 
     it('Result can be zero', async () => {
         const calculatedPriceProvider = await constructCalculatedPriceProvider(0, [], 1, []);
-        const val = await calculatedPriceProvider.getPriceInfo({from: helpers.ADDRESS_ONE});
+        const val = await calculatedPriceProvider.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(0));
         expect(val[1], 'valid').to.be.true;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(constants.MAX_UINT256);
@@ -65,7 +65,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
 
     it('Should fail to divide by zero', async () => {
         const calculatedPriceProvider = await constructCalculatedPriceProvider(1, [], 0, []);
-        const val = await calculatedPriceProvider.getPriceInfo({from: helpers.ADDRESS_ONE});
+        const val = await calculatedPriceProvider.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(0));
         expect(val[1], 'valid').to.be.false;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(constants.MAX_UINT256);
@@ -73,7 +73,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
 
     it('Identity', async () => {
         const calculatedPriceProvider = await constructCalculatedPriceProvider(1, [], 1, []);
-        const val = await calculatedPriceProvider.getPriceInfo({from: helpers.ADDRESS_ONE});
+        const val = await calculatedPriceProvider.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(1));
         expect(val[1], 'valid').to.be.true;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(constants.MAX_UINT256);
@@ -87,7 +87,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
             123,
             [mock1.address],
         );
-        const val = await calculatedPriceProvider.getPriceInfo({from: helpers.ADDRESS_ONE});
+        const val = await calculatedPriceProvider.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(1));
         expect(val[1], 'valid').to.be.true;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(web3.utils.toBN(123));
@@ -101,7 +101,9 @@ contract('CalculatedPriceProvider', async (accounts) => {
         let val;
 
         args = [123, [success.address, fail.address], 123, [success.address]];
-        val = await (await constructCalculatedPriceProvider(...args)).getPriceInfo({
+        val = await (
+            await constructCalculatedPriceProvider(...args)
+        ).getPriceInfo({
             from: helpers.ADDRESS_ONE,
         });
         expect(val[0], 'price').to.be.bignumber.equal(web3.utils.toBN(0));
@@ -109,7 +111,9 @@ contract('CalculatedPriceProvider', async (accounts) => {
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(lastPubBlockMin);
 
         args = [123, [success.address], 123, [success.address, fail.address]];
-        val = await (await constructCalculatedPriceProvider(...args)).getPriceInfo({
+        val = await (
+            await constructCalculatedPriceProvider(...args)
+        ).getPriceInfo({
             from: helpers.ADDRESS_ONE,
         });
         expect(val[0], 'price').to.be.bignumber.equal(web3.utils.toBN(0));
@@ -117,13 +121,15 @@ contract('CalculatedPriceProvider', async (accounts) => {
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(lastPubBlockMin);
 
         args = [123, [success.address, fail.address], 123, [success.address, fail.address]];
-        val = await (await constructCalculatedPriceProvider(...args)).getPriceInfo({
+        val = await (
+            await constructCalculatedPriceProvider(...args)
+        ).getPriceInfo({
             from: helpers.ADDRESS_ONE,
         });
         expect(val[0], 'price').to.be.bignumber.equal(web3.utils.toBN(0));
         expect(val[1], 'valid').to.be.false;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(lastPubBlockMin);
-    });
+    }).timeout(5000); // Why timeout?
 
     it('Some calculation', async () => {
         const mock1 = await MockIPriceProvider.new(123, true, lastPubBlockMin);
@@ -133,21 +139,22 @@ contract('CalculatedPriceProvider', async (accounts) => {
 
         const result = (456 * 123 * 321) / (789 * 123);
 
-        const val = await contract.peek({from: helpers.ADDRESS_ONE});
+        const val = await contract.peek({ from: helpers.ADDRESS_ONE });
         expect(web3.utils.toBN(val[0]), 'price').to.be.bignumber.equal(new BN(result));
         expect(val[1], 'valid').to.be.true;
 
-        const val2 = await contract.getPriceInfo({from: helpers.ADDRESS_ONE});
+        const val2 = await contract.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val2[0], 'price').to.be.bignumber.equal(new BN(result));
         expect(val2[1], 'valid').to.be.true;
         expect(val2[2], 'lastPubBlock').to.be.bignumber.equal(lastPubBlockMin);
 
-        expect(await contract.getPrice({from: helpers.ADDRESS_ONE}), 'price').to.be.bignumber.equal(
-            val2[0],
-        );
-        expect(await contract.getIsValid({from: helpers.ADDRESS_ONE}), 'valid').to.be.true;
         expect(
-            await contract.getLastPublicationBlock({from: helpers.ADDRESS_ONE}),
+            await contract.getPrice({ from: helpers.ADDRESS_ONE }),
+            'price',
+        ).to.be.bignumber.equal(val2[0]);
+        expect(await contract.getIsValid({ from: helpers.ADDRESS_ONE }), 'valid').to.be.true;
+        expect(
+            await contract.getLastPublicationBlock({ from: helpers.ADDRESS_ONE }),
             'lastPubBlock',
         ).to.be.bignumber.equal(val2[2]);
     });
@@ -159,7 +166,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
         const contract = await constructCalculatedPriceProvider(...args);
 
         const result = (456 * 123 * 321) / (789 * 123);
-        const val = await contract.getPriceInfo({from: helpers.ADDRESS_ONE});
+        const val = await contract.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(result));
         expect(val[1], 'valid').to.be.true;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(lastPubBlockMin);
@@ -180,7 +187,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
         const args = [789, addrs, 423, addrs];
         const contract = await constructCalculatedPriceProvider(...args);
 
-        const val = await contract.getPriceInfo({from: helpers.ADDRESS_ONE});
+        const val = await contract.getPriceInfo({ from: helpers.ADDRESS_ONE });
         expect(val[0], 'price').to.be.bignumber.equal(new BN(789 / 423));
         expect(val[1], 'valid').to.be.true;
         expect(val[2], 'lastPubBlock').to.be.bignumber.equal(lastPubBlockMin);
@@ -202,7 +209,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
         expect(await calculatedPriceProvider.getWhiteListAtIndex(1)).to.equal(whitelist[1]);
 
         await expectRevert(calculatedPriceProvider.addToWhitelist(accounts[2]), 'Invalid changer');
-        calculatedPriceProvider.addToWhitelist(accounts[2], {from: GOVERNOR});
+        calculatedPriceProvider.addToWhitelist(accounts[2], { from: GOVERNOR });
 
         expect(await calculatedPriceProvider.getWhiteListLen()).to.be.bignumber.equal(new BN(3));
 
@@ -210,7 +217,7 @@ contract('CalculatedPriceProvider', async (accounts) => {
             calculatedPriceProvider.removeFromWhitelist(accounts[1]),
             'Invalid changer',
         );
-        await calculatedPriceProvider.removeFromWhitelist(accounts[1], {from: GOVERNOR});
+        await calculatedPriceProvider.removeFromWhitelist(accounts[1], { from: GOVERNOR });
 
         expect(await calculatedPriceProvider.getWhiteListLen()).to.be.bignumber.equal(new BN(2));
     });

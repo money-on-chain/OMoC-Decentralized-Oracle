@@ -17,8 +17,9 @@ contract('PriceProviderRegisterPairChange', async (accounts) => {
         });
         Object.assign(this, contracts);
 
-        this.priceProviderRegister = await PriceProviderRegister.new();
-        await this.priceProviderRegister.initialize(this.governor.address);
+        this.priceProviderRegister = await helpers.deployProxySimple(PriceProviderRegister, [
+            this.governor.address,
+        ]);
         //this.iPriceProviderRegisterEntry = await IPriceProviderRegisterEntry.new();
 
         this.coinPairPrice_BTCUSD = await helpers.initCoinpair('BTCUSD', {

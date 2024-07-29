@@ -44,6 +44,10 @@ contract Supporters is SupportersStorage, ISupporters {
         uint256 blockNum
     );
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /**
      @notice Contract creation
 
@@ -68,10 +72,10 @@ contract Supporters is SupportersStorage, ISupporters {
     /// @notice Used by the voting machine to lock an amount of MOCs.
     /// @param mocHolder the moc holder whose mocs will be locked.
     /// @param untilTimestamp timestamp until which the mocs will be locked.
-    function lockMocs(address mocHolder, uint256 untilTimestamp)
-        external
-        onlyWhitelisted(iterableWhitelistData)
-    {
+    function lockMocs(
+        address mocHolder,
+        uint256 untilTimestamp
+    ) external onlyWhitelisted(iterableWhitelistData) {
         LockingInfo storage lockedMocsInfo = lockedMocs[mocHolder];
         lockedMocsInfo.untilTimestamp = untilTimestamp;
         uint256 mocBalance = supportersData._getMOCBalanceAt(msg.sender, mocHolder);
@@ -91,12 +95,9 @@ contract Supporters is SupportersStorage, ISupporters {
     /// @param user user address
     /// @return amount the amount of mocs locked
     /// @return untilTimestamp the timestamp that corresponds to the locking date.
-    function getLockingInfo(address user)
-        external
-        view
-        override
-        returns (uint256 amount, uint256 untilTimestamp)
-    {
+    function getLockingInfo(
+        address user
+    ) external view override returns (uint256 amount, uint256 untilTimestamp) {
         LockingInfo storage lockedMocsInfo = lockedMocs[user];
         return (lockedMocsInfo.amount, lockedMocsInfo.untilTimestamp);
     }
@@ -106,7 +107,7 @@ contract Supporters is SupportersStorage, ISupporters {
 
      @param  _whitelisted - the override coinPair
     */
-    function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+    function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger {
         iterableWhitelistData._addToWhitelist(_whitelisted);
     }
 
@@ -115,7 +116,7 @@ contract Supporters is SupportersStorage, ISupporters {
 
      @param _whitelisted - the override coinPair
     */
-    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger {
         iterableWhitelistData._removeFromWhitelist(_whitelisted);
     }
 
@@ -142,10 +143,10 @@ contract Supporters is SupportersStorage, ISupporters {
      @param _mocs amount of MOC to stake
      @param _subaccount sub-account used to identify the stake
     */
-    function stakeAt(uint256 _mocs, address _subaccount)
-        external
-        onlyWhitelisted(iterableWhitelistData)
-    {
+    function stakeAt(
+        uint256 _mocs,
+        address _subaccount
+    ) external onlyWhitelisted(iterableWhitelistData) {
         supportersData._stakeAtFrom(_mocs, _subaccount, msg.sender);
     }
 
@@ -190,7 +191,10 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _subaccount subaccount used to withdraw MOC
       @return Amount of MOC transfered
     */
-    function withdrawFrom(uint256 _tokens, address _subaccount)
+    function withdrawFrom(
+        uint256 _tokens,
+        address _subaccount
+    )
         external
         onlyWhitelisted(iterableWhitelistData)
         stakeAvailable(msg.sender, _subaccount, _tokens)
@@ -227,12 +231,10 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _subaccount subaccount to get balance
       @return tokens for _user at _subaccount
     */
-    function getBalanceAt(address _user, address _subaccount)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getBalanceAt(
+        address _user,
+        address _subaccount
+    ) external view override returns (uint256) {
         return supportersData._getBalanceAt(_user, _subaccount);
     }
 
@@ -243,12 +245,10 @@ contract Supporters is SupportersStorage, ISupporters {
       @param _subaccount subaccount to get MOC balance
       @return MOC for _user
     */
-    function getMOCBalanceAt(address _user, address _subaccount)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getMOCBalanceAt(
+        address _user,
+        address _subaccount
+    ) external view override returns (uint256) {
         return supportersData._getMOCBalanceAt(_user, _subaccount);
     }
 
@@ -277,16 +277,7 @@ contract Supporters is SupportersStorage, ISupporters {
 
       @return Information about earnings
     */
-    function getEarningsInfo()
-        external
-        view
-        override
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getEarningsInfo() external view override returns (uint256, uint256, uint256) {
         return supportersData._getEarningsInfo();
     }
 
@@ -368,11 +359,10 @@ contract Supporters is SupportersStorage, ISupporters {
         return supportersData._getTokens();
     }
 
-    function getMaxMOCBalance(address owner, address[] calldata addresses)
-        external
-        view
-        returns (address selected, uint256 maxBalance)
-    {
+    function getMaxMOCBalance(
+        address owner,
+        address[] calldata addresses
+    ) external view returns (address selected, uint256 maxBalance) {
         if (addresses.length == 0) {
             return (selected, maxBalance);
         }

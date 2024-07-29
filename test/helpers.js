@@ -2,6 +2,7 @@ const { constants, BN, time, expectEvent } = require('@openzeppelin/test-helpers
 const crypto = require('crypto');
 const { toBN } = require('web3-utils');
 const ethers = require('ethers');
+const { deployProxySimple, deployTransparentProxySimple } = require('@moc/shared/test/helpers.js');
 
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 
@@ -94,8 +95,7 @@ async function createGovernor(owner) {
     const Governor = artifacts.require('@moc/shared/Governor');
     const OracleManagerPairChange = artifacts.require('OracleManagerPairChange');
     const TestMOCMintChange = artifacts.require('TestMOCMintChange');
-    const governor = await Governor.new();
-    await governor.initialize(owner);
+    const governor = await deployTransparentProxySimple(Governor, [owner]);
     return {
         addr: governor.address,
         address: governor.address,
@@ -131,7 +131,7 @@ function coinPairStr(hex) {
 }
 
 function bytes32toBN(pr) {
-    pr = pr.replace(/^0x/, '');
+    // pr = pr.replace(/^0x/, ''); // Now with this it fails, apparently it is no longer necessary
     return new BN(pr, 16);
 }
 
@@ -152,8 +152,7 @@ async function initCoinpair(
     },
 ) {
     const CoinPairPrice = artifacts.require('CoinPairPrice');
-    const ret = await CoinPairPrice.new();
-    await ret.initialize(
+    const ret = await deployProxySimple(CoinPairPrice, [
         governor.addr,
         whitelist,
         web3.utils.asciiToHex(name),
@@ -166,7 +165,7 @@ async function initCoinpair(
         bootstrapPrice,
         oracleMgr.address,
         registry,
-    );
+    ]);
     await governor.registerCoinPair(oracleMgr, web3.utils.asciiToHex(name), ret.address);
     return ret;
 }
@@ -196,14 +195,15 @@ async function initContracts({
     }
     const token = await TestMOC.new();
     await token.initialize(governor.address);
-    const oracleMgr = await OracleManager.new();
-    const supporters = await Supporters.new();
-    const delayMachine = await DelayMachine.new();
-    const staking = await Staking.new();
+    const oracleMgr = await deployProxySimple(OracleManager);
+    const supporters = await deployProxySimple(Supporters);
+    const delayMachine = await deployProxySimple(DelayMachine);
+    const staking = await deployProxySimple(Staking);
     await delayMachine.initialize(governor.address, token.address, staking.address);
     const stakingMock = await StakingMock.new();
     const votingMachine = await MockVotingMachine.new();
-    const registry = await Registry.new();
+
+    const registry = await deployTransparentProxySimple(Registry);
 
     await supporters.initialize(
         governor.address,
@@ -225,6 +225,7 @@ async function initContracts({
     await votingMachine.initialize(staking.address);
 
     await registry.initialize(governor.address);
+
     if (governor.execute) {
         // in the case of fake governor we probably wont require this..
         const MocRegistryAddMinOraclesPerRoundChange = artifacts.require(
@@ -314,4 +315,6 @@ module.exports = {
     publishPrice,
     newUnlockedAccount,
     processEvents,
+    deployProxySimple,
+    deployTransparentProxySimple,
 };

@@ -1,10 +1,10 @@
 {
-    "name": "@moc/oracles",
-    "version": "1.5.0",
+    "name": "@moneyonchain/oracles",
+    "version": "1.5.1-beta.11",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "dependencies": {
-        "@moc/shared": "http://omoc-do.coinfabrik.com/npm/moc-shared-1.5.0.tgz"
+        "@moc/shared": "npm:@moneyonchain/shared@1.5.1-beta.2"
     },
     "devDependencies": {
         "@commitlint/cli": "^9.1.1",
@@ -12,6 +12,7 @@
         "@openzeppelin/cli": "^2.8.2",
         "@openzeppelin/contracts-ethereum-package": "^3.0.0",
         "@openzeppelin/test-helpers": "^0.5.6",
+        "@openzeppelin/truffle-upgrades": "^1.19.0",
         "@truffle/artifactor": "^4.0.101",
         "@truffle/compile-common": "^0.7.2",
         "@truffle/compile-solidity": "^5.2.5",
@@ -59,11 +60,15 @@
         "commit": "git-cz",
         "deploy": "rimraf .openzeppelin ./build/contracts && truffle migrate",
         "deploy_314": "truffle migrate -f 1000 --to 1001",
-        "migrate": "truffle migrate"
+        "migrate": "truffle migrate",
+        "deploy_staking_impl_testnet": "truffle --network rsk_testnet exec scripts/deploy_staking_impl.js"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/money-on-chain/OMoC-Decentralized-Oracle.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
     },
     "author": "",
     "license": "ISC",
@@ -134,6 +139,11 @@
         "/build/contracts/Staking.json",
         "/build/contracts/Supporters.json",
         "/build/contracts/OracleManagerPairChange.json",
+        "/build/contracts/OracleManagerPairChangeList.json",
+        "/build/contracts/OracleManagerPairChangeListWL.json",
+        "/build/contracts/OracleManagerPairChangeListUpdate.json",
+        "/build/contracts/OracleManagerPairChangeListRemove.json",
+        "/build/contracts/OracleManagerPairChangeRemove.json",
         "/build/contracts/PriceProviderOracleManagerRegisterPairChange.json",
         "/build/contracts/CoinPairPriceAddCalculatedPriceProviderChange.json",
         "/build/contracts/PriceProviderRegisterPairChange.json",

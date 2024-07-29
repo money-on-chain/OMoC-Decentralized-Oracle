@@ -1,12 +1,12 @@
 const PriceProviderRegister = artifacts.require('PriceProviderRegister');
 const MockGovernor = artifacts.require('@moc/shared/MockGovernor');
-const {BN, expectEvent, expectRevert, constants} = require('@openzeppelin/test-helpers');
-const {expect} = require('chai');
+const { BN, expectEvent, expectRevert, constants } = require('@openzeppelin/test-helpers');
+const { expect } = require('chai');
 const helpers = require('./helpers');
 
 contract('PriceProviderRegister', (accounts) => {
     beforeEach(async () => {
-        this.priceProviderRegister = await PriceProviderRegister.new();
+        this.priceProviderRegister = await helpers.deployProxySimple(PriceProviderRegister);
         // a governor that let me do direct calls.
         const mockGovernor = await MockGovernor.new(accounts[0]);
         await this.priceProviderRegister.initialize(mockGovernor.address);
@@ -54,7 +54,7 @@ contract('PriceProviderRegister', (accounts) => {
             from: accounts[0],
         });
         await expectRevert(
-            this.priceProviderRegister.unRegisterCoinPair(coin_pair, 100, {from: accounts[0]}),
+            this.priceProviderRegister.unRegisterCoinPair(coin_pair, 100, { from: accounts[0] }),
             'Illegal index',
         );
     });
@@ -75,7 +75,7 @@ contract('PriceProviderRegister', (accounts) => {
         expect(await this.priceProviderRegister.getCoinPairCount()).to.be.bignumber.equal(
             new BN(1),
         );
-        await this.priceProviderRegister.unRegisterCoinPair(coin_pair, 0, {from: accounts[0]});
+        await this.priceProviderRegister.unRegisterCoinPair(coin_pair, 0, { from: accounts[0] });
         expect(await this.priceProviderRegister.getCoinPairCount()).to.be.bignumber.equal(
             new BN(0),
         );
@@ -145,7 +145,7 @@ contract('PriceProviderRegister', (accounts) => {
     it('Should fail to set an unregistered coin pair', async () => {
         const coin_pair = web3.utils.asciiToHex('TESTX');
         await expectRevert(
-            this.priceProviderRegister.setCoinPair(coin_pair, accounts[1], {from: accounts[0]}),
+            this.priceProviderRegister.setCoinPair(coin_pair, accounts[1], { from: accounts[0] }),
             'This coin pair is not registered',
         );
     });
@@ -158,7 +158,7 @@ contract('PriceProviderRegister', (accounts) => {
         expect(await this.priceProviderRegister.getContractAddress(coin_pair)).to.equal(
             accounts[1],
         );
-        await this.priceProviderRegister.setCoinPair(coin_pair, accounts[2], {from: accounts[0]});
+        await this.priceProviderRegister.setCoinPair(coin_pair, accounts[2], { from: accounts[0] });
         expect(await this.priceProviderRegister.getContractAddress(coin_pair)).to.equal(
             accounts[2],
         );

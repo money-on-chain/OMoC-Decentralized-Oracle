@@ -31,6 +31,10 @@ contract SupportersMock is Initializable {
         uint256 mocs
     );
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     function initialize(IERC20 _mocToken, uint256 _period) external initializer {
         supportersData._initialize(_mocToken, _period);
     }
@@ -168,15 +172,7 @@ contract SupportersMock is Initializable {
 
       @return Information about earnings
     */
-    function getEarningsInfo()
-        external
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getEarningsInfo() external view returns (uint256, uint256, uint256) {
         return supportersData._getEarningsInfo();
     }
 

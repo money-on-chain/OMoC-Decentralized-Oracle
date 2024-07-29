@@ -47,14 +47,15 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
         for (let i = 0; i < ORACLE_QUANTITY; i++) {
             const oracleAddr = await helpers.newUnlockedAccount();
             const ownerAccount = await helpers.newUnlockedAccount();
+            const account_i = 10 + (i % 10);
             // Send funds to new owner account (token and base coin).
+            assert.isDefined(accounts[account_i], `Error: accounts[${account_i}] is undefined.`);
             await web3.eth.sendTransaction({
-                from: accounts[10 + (i % 10)],
+                from: accounts[account_i],
                 to: ownerAccount,
                 value: '1' + '0'.repeat(18),
             });
             await testobj.governor.mint(testobj.token.address, ownerAccount, '8' + '0'.repeat(20));
-
             const stake = minSubscriptionStake + i * 100000;
             const name = 'ORACLE-' + i;
             await register(
@@ -128,14 +129,20 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             }
             // The last oracle expulse the first one
             assert.isFalse(await this.oracleMgr.isSubscribed(oracleList[0].ownerAddr, COINPAIR));
-            assert.isTrue(await this.oracleMgr.isSubscribed(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr, COINPAIR));
+            assert.isTrue(
+                await this.oracleMgr.isSubscribed(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr, COINPAIR),
+            );
             // The first has less stake, it fails to subscribe, but he is still selected in this round
             await expectRevert(
                 this.staking.subscribeToCoinPair(COINPAIR, { from: oracleList[0].ownerAddr }),
                 'Not enough stake to add',
             );
             assert.isTrue(await this.coinPairPrice.isOracleInCurrentRound(oracleList[0].ownerAddr));
-            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr));
+            assert.isFalse(
+                await this.coinPairPrice.isOracleInCurrentRound(
+                    ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr,
+                ),
+            );
 
             // Select two cases with different status for the current round
             const idx1 = ORACLE_QUANTITY - maxOraclesPerRound - 1;
@@ -154,16 +161,24 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
             );
 
             // Only the second case was selected for this round
-            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx1].ownerAddr));
-            assert.isTrue(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx2].ownerAddr));
+            assert.isFalse(
+                await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx1].ownerAddr),
+            );
+            assert.isTrue(
+                await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx2].ownerAddr),
+            );
 
             // Both cases withdraws some amount with different behaviours
-            await this.staking.withdraw(oracleList[idx1].stake, { from: oracleList[idx1].ownerAddr });
+            await this.staking.withdraw(oracleList[idx1].stake, {
+                from: oracleList[idx1].ownerAddr,
+            });
             assert.equal(
                 (await this.staking.getBalance(oracleList[idx1].ownerAddr)).toString(),
                 '0',
             );
-            await this.staking.withdraw(oracleList[idx2].stake, { from: oracleList[idx2].ownerAddr });
+            await this.staking.withdraw(oracleList[idx2].stake, {
+                from: oracleList[idx2].ownerAddr,
+            });
             assert.equal(
                 (await this.staking.getBalance(oracleList[idx2].ownerAddr)).toString(),
                 '0',
@@ -171,14 +186,22 @@ contract('CoinPairPrice Subscribe', async (accounts) => {
 
             // First case remain subscribed and not selected for the current round
             assert.isTrue(await this.oracleMgr.isSubscribed(oracleList[idx1].ownerAddr, COINPAIR));
-            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx1].ownerAddr));
+            assert.isFalse(
+                await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx1].ownerAddr),
+            );
 
             // Second case was punished: got unsubscribed and expelled from the round
             assert.isFalse(await this.oracleMgr.isSubscribed(oracleList[idx2].ownerAddr, COINPAIR));
-            assert.isFalse(await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx2].ownerAddr));
+            assert.isFalse(
+                await this.coinPairPrice.isOracleInCurrentRound(oracleList[idx2].ownerAddr),
+            );
 
             // The subscribed oracle with the max stake replaced the punished oracle in the current round
-            assert.isTrue(await this.coinPairPrice.isOracleInCurrentRound(ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr));
+            assert.isTrue(
+                await this.coinPairPrice.isOracleInCurrentRound(
+                    ORACLE_WITH_A_LOT_OF_STAKE.ownerAddr,
+                ),
+            );
         });
 
         it('The oracles are added right away when we saturate the selected list the new ones even if have more stake must wait to next round', async () => {

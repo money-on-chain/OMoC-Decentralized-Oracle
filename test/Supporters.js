@@ -25,7 +25,7 @@ contract('Supporters', (accounts) => {
             const governor = await helpers.createGovernor(GOVERNOR_OWNER);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await Supporters.new();
+            supporters = await helpers.deployProxySimple(Supporters);
             await supporters.initialize(governor.address, [], token.address, period);
         });
 
@@ -62,8 +62,12 @@ contract('Supporters', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await Supporters.new();
-            await supporters.initialize(governor.address, [user1], token.address, period);
+            supporters = await helpers.deployProxySimple(Supporters, [
+                governor.address,
+                [user1],
+                token.address,
+                period,
+            ]);
 
             await governor.mint(token.address, user1, INITIAL_BALANCE);
             await governor.mint(token.address, user2, BALANCE_USER2);
@@ -134,8 +138,12 @@ contract('Supporters', (accounts) => {
             this.governor = await MockGovernor.new(GOVERNOR_OWNER);
             this.token = await TestMOC.new();
             await this.token.initialize(this.governor.address);
-            this.supporters = await Supporters.new();
-            await this.supporters.initialize(this.governor.address, [], this.token.address, period);
+            this.supporters = await helpers.deployProxySimple(Supporters, [
+                this.governor.address,
+                [],
+                this.token.address,
+                period,
+            ]);
         });
 
         it('add and remove', async () => {
@@ -202,8 +210,12 @@ contract('Supporters', (accounts) => {
             this.governor = await helpers.createGovernor(GOVERNOR_OWNER);
             this.token = await TestMOC.new();
             await this.token.initialize(this.governor.address);
-            this.supporters = await Supporters.new();
-            await this.supporters.initialize(this.governor.address, [], this.token.address, period);
+            this.supporters = await helpers.deployProxySimple(Supporters, [
+                this.governor.address,
+                [],
+                this.token.address,
+                period,
+            ]);
         });
 
         it('should fail in if not a governor call', async () => {

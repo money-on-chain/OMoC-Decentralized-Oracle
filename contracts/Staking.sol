@@ -15,6 +15,10 @@ import {StakingStorage} from "./StakingStorage.sol";
 contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     using SafeMath for uint256;
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /**
       @notice Modifier that protects the function
       @dev You should use this modifier in any function that should be called only by the delay machine
@@ -47,7 +51,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
         IDelayMachine _delayMachine,
         address[] calldata _wlistlock,
         uint256 _withdrawLockTime
-    ) external {
+    ) external initializer {
         Governed._initialize(_governor);
         oracleManager = _oracleManager;
         supporters = _supporters;
@@ -63,11 +67,10 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// Delegates to the Supporters smart contract.
     /// @param mocHolder the moc holder whose mocs will be locked.
     /// @param untilTimestamp timestamp until which the mocs will be locked.
-    function lockMocs(address mocHolder, uint256 untilTimestamp)
-        external
-        override
-        onlyWhitelisted(iterableWhitelistDataLock)
-    {
+    function lockMocs(
+        address mocHolder,
+        uint256 untilTimestamp
+    ) external override onlyWhitelisted(iterableWhitelistDataLock) {
         supporters.lockMocs(mocHolder, untilTimestamp);
     }
 
@@ -105,11 +108,7 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param mocs token quantity
     /// @param destination the destination account of this deposit.
     /// @param source the address that approved the transfer
-    function _depositFrom(
-        uint256 mocs,
-        address destination,
-        address source
-    ) internal {
+    function _depositFrom(uint256 mocs, address destination, address source) internal {
         // Floor(mocs * totalTokens /  totalMocs)
         uint256 _tokens = supporters.mocToToken(mocs);
         // require(_tokens > 0, "Not enough mocs");
@@ -191,12 +190,9 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @param user user address
     /// @return amount the amount of mocs locked
     /// @return untilTimestamp the timestamp that corresponds to the locking date.
-    function getLockingInfo(address user)
-        external
-        view
-        override
-        returns (uint256 amount, uint256 untilTimestamp)
-    {
+    function getLockingInfo(
+        address user
+    ) external view override returns (uint256 amount, uint256 untilTimestamp) {
         (amount, untilTimestamp) = supporters.getLockingInfo(user);
     }
 
@@ -213,16 +209,9 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @notice Returns the oracle name and address at index.
     /// Delegates to the Oracle Manager smart contract.
     /// @param idx index to query.
-    function getRegisteredOracleAtIndex(uint256 idx)
-        external
-        view
-        override
-        returns (
-            address ownerAddr,
-            address oracleAddr,
-            string memory url
-        )
-    {
+    function getRegisteredOracleAtIndex(
+        uint256 idx
+    ) external view override returns (address ownerAddr, address oracleAddr, string memory url) {
         return oracleManager.getRegisteredOracleAtIndex(idx);
     }
 
@@ -286,12 +275,10 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @notice Searches a coinpair in coinPairList
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
-    function getCoinPairIndex(bytes32 coinPair, uint256 hint)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getCoinPairIndex(
+        bytes32 coinPair,
+        uint256 hint
+    ) external view override returns (uint256) {
         return oracleManager.getCoinPairIndex(coinPair, hint);
     }
 
@@ -312,12 +299,10 @@ contract Staking is StakingStorage, IStakingMachine, IStakingMachineOracles {
     /// @notice Returns true if an oracle is subscribed to a coin pair
     /// @param ownerAddr address of the oracle
     /// @param coinPair coin pair to unsubscribe, for example BTCUSD
-    function isSubscribed(address ownerAddr, bytes32 coinPair)
-        external
-        view
-        override
-        returns (bool)
-    {
+    function isSubscribed(
+        address ownerAddr,
+        bytes32 coinPair
+    ) external view override returns (bool) {
         return oracleManager.isSubscribed(ownerAddr, coinPair);
     }
 

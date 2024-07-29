@@ -17,8 +17,9 @@ contract('PriceProviderOracleManagerRegisterPairChange', async (accounts) => {
         });
         Object.assign(this, contracts);
 
-        this.priceProviderRegister = await PriceProviderRegister.new();
-        await this.priceProviderRegister.initialize(this.governor.address);
+        this.priceProviderRegister = await helpers.deployProxySimple(PriceProviderRegister, [
+            this.governor.address,
+        ]);
 
         this.coinPairPrice_BTCUSD = await helpers.initCoinpair('BTCUSD', {
             ...contracts,
@@ -29,10 +30,11 @@ contract('PriceProviderOracleManagerRegisterPairChange', async (accounts) => {
             whitelist: [accounts[0]],
         });
 
-        this.priceProviderOracleManagerRegisterPairChange = await PriceProviderOracleManagerRegisterPairChange.new(
-            this.priceProviderRegister.address,
-            this.oracleMgr.address,
-        );
+        this.priceProviderOracleManagerRegisterPairChange =
+            await PriceProviderOracleManagerRegisterPairChange.new(
+                this.priceProviderRegister.address,
+                this.oracleMgr.address,
+            );
     });
 
     it('Should succeed execute call', async () => {

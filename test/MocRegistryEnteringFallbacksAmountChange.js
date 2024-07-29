@@ -17,8 +17,9 @@ contract('MocRegistryEnteringFallbacksAmountsChange', async (accounts) => {
         });
         Object.assign(this, contracts);
 
-        this.registry = await Registry.new();
-        await this.registry.initialize(this.governor.address);
+        this.registry = await helpers.deployTransparentProxySimple(Registry, [
+            this.governor.address,
+        ]);
 
         this.coinPairPrice_BTCUSD = await helpers.initCoinpair('BTCUSD', {
             ...contracts,
@@ -29,9 +30,8 @@ contract('MocRegistryEnteringFallbacksAmountsChange', async (accounts) => {
             whitelist: [accounts[0]],
         });
 
-        this.mocRegistryEnteringFallbacksAmountsChange = await MocRegistryEnteringFallbacksAmountsChange.new(
-            this.registry.address,
-        );
+        this.mocRegistryEnteringFallbacksAmountsChange =
+            await MocRegistryEnteringFallbacksAmountsChange.new(this.registry.address);
     });
 
     it('Should succeed execute call', async () => {

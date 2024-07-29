@@ -12,6 +12,10 @@ import {PriceProviderRegisterStorage} from "./PriceProviderRegisterStorage.sol";
 contract PriceProviderRegister is PriceProviderRegisterStorage {
     using SafeMath for uint256;
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /**
       @notice Initialize the contract with the basic settings
       @dev This initialize replaces the constructor but it is not called automatically.
@@ -25,27 +29,27 @@ contract PriceProviderRegister is PriceProviderRegisterStorage {
     /// @notice Register a new coin pair contract.
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.
-    function registerCoinPair(bytes32 coinPair, IPriceProviderRegisterEntry addr)
-        external
-        onlyAuthorizedChanger()
-    {
+    function registerCoinPair(
+        bytes32 coinPair,
+        IPriceProviderRegisterEntry addr
+    ) external onlyAuthorizedChanger {
         coinPairRegisterData._registerCoinPair(coinPair, address(addr));
     }
 
     /// @notice Set the address for a coinpair (the old one is lost!!!!)
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.
-    function setCoinPair(bytes32 coinPair, IPriceProviderRegisterEntry addr)
-        external
-        onlyAuthorizedChanger()
-    {
+    function setCoinPair(
+        bytes32 coinPair,
+        IPriceProviderRegisterEntry addr
+    ) external onlyAuthorizedChanger {
         coinPairRegisterData._setCoinPair(coinPair, address(addr));
     }
 
     /// @notice Unregister a coin pair contract.
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param hint Optional hint to start traversing the coinPairList array.
-    function unRegisterCoinPair(bytes32 coinPair, uint256 hint) external onlyAuthorizedChanger() {
+    function unRegisterCoinPair(bytes32 coinPair, uint256 hint) external onlyAuthorizedChanger {
         coinPairRegisterData._unRegisterCoinPair(coinPair, hint);
     }
 

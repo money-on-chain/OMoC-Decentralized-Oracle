@@ -27,6 +27,10 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     //
     // -------------------------------------------------------------------------------------------------------------
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /// @notice Construct this contract.
     /// @param _governor The address of the contract which governs this one
     /// @param _minCPSubscriptionStake The minimum amount of tokens required as stake for a coin pair subscription.
@@ -56,11 +60,10 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @notice Register a new coin pair contract.
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param addr The contract address associated to the coinpair.
-    function registerCoinPair(bytes32 coinPair, address addr)
-        external
-        override
-        onlyAuthorizedChanger
-    {
+    function registerCoinPair(
+        bytes32 coinPair,
+        address addr
+    ) external override onlyAuthorizedChanger {
         coinPairRegisterData._registerCoinPair(coinPair, addr);
     }
 
@@ -69,7 +72,7 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
      @param  _whitelisted - the override coinPair
     */
-    function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+    function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger {
         iterableWhitelistData._addToWhitelist(_whitelisted);
     }
 
@@ -78,7 +81,7 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
      @param _whitelisted - the override coinPair
     */
-    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger {
         iterableWhitelistData._removeFromWhitelist(_whitelisted);
     }
 
@@ -104,12 +107,9 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// The return value is the maximum timestamp from all the coin pairs.
     /// @param oracleOwnerAddr Address of oracle owner
     /// @return the timestamp until which the funds must be locked.
-    function onWithdraw(address oracleOwnerAddr)
-        external
-        override
-        onlyWhitelisted(iterableWhitelistData)
-        returns (uint256)
-    {
+    function onWithdraw(
+        address oracleOwnerAddr
+    ) external override onlyWhitelisted(iterableWhitelistData) returns (uint256) {
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         uint256 timestamp = 0;
         uint256 maxTimestamp = 0;
@@ -126,23 +126,19 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @notice Used by the coin pair to get the oracle address from the oracleOwnerAddress.
     /// @param  oracleOwnerAddr the address of the owner of the oracle.
     /// @return oracleAddr Address of oracle
-    function getOracleAddress(address oracleOwnerAddr)
-        public
-        view
-        override
-        returns (address oracleAddr)
-    {
+    function getOracleAddress(
+        address oracleOwnerAddr
+    ) public view override returns (address oracleAddr) {
         return registeredOracles._getOracleAddress(oracleOwnerAddr);
     }
 
     /// @notice Subscribe a registered oracle to participate in rounds of a registered coin-pair
     /// @param ownerAddr Address of message sender
     /// @param coinPair Name of coin pair
-    function subscribeToCoinPair(address ownerAddr, bytes32 coinPair)
-        external
-        override
-        authorizedChangerOrWhitelisted
-    {
+    function subscribeToCoinPair(
+        address ownerAddr,
+        bytes32 coinPair
+    ) external override authorizedChangerOrWhitelisted {
         require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
@@ -154,11 +150,10 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @notice Unsubscribe a registered oracle from participating in rounds of a registered coin-pair
     /// @param ownerAddr Address of message sender
     /// @param coinPair Name of coin pair
-    function unSubscribeFromCoinPair(address ownerAddr, bytes32 coinPair)
-        external
-        override
-        authorizedChangerOrWhitelisted
-    {
+    function unSubscribeFromCoinPair(
+        address ownerAddr,
+        bytes32 coinPair
+    ) external override authorizedChangerOrWhitelisted {
         require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
 
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
@@ -168,12 +163,10 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     }
 
     /// @notice Returns true if an oracle is subscribed to a coin pair
-    function isSubscribed(address ownerAddr, bytes32 coinPair)
-        external
-        view
-        override
-        returns (bool)
-    {
+    function isSubscribed(
+        address ownerAddr,
+        bytes32 coinPair
+    ) external view override returns (bool) {
         CoinPairPrice ctAddr = _getCoinPairAddress(coinPair);
         return ctAddr.isSubscribed(ownerAddr);
     }
@@ -181,11 +174,10 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @notice Change the oracle "internet" name (URI)
     /// @param ownerAddr Address of message sender
     /// @param name The new name to set.
-    function setOracleName(address ownerAddr, string calldata name)
-        external
-        override
-        authorizedChangerOrWhitelisted
-    {
+    function setOracleName(
+        address ownerAddr,
+        string calldata name
+    ) external override authorizedChangerOrWhitelisted {
         require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
         registeredOracles._setName(ownerAddr, name);
     }
@@ -193,11 +185,10 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @notice Change the oracle address
     /// @param ownerAddr Address of message sender
     /// @param oracleAddr The new oracle address
-    function setOracleAddress(address ownerAddr, address oracleAddr)
-        external
-        override
-        authorizedChangerOrWhitelisted
-    {
+    function setOracleAddress(
+        address ownerAddr,
+        address oracleAddr
+    ) external override authorizedChangerOrWhitelisted {
         require(_isOwnerRegistered(ownerAddr), "Oracle not registered");
         registeredOracles._setOracleAddress(ownerAddr, oracleAddr);
     }
@@ -211,12 +202,10 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     /// @notice Returns round information for a registered oracle in a specific coin-pair.
     /// @param ownerAddr address of the oracle owner to query for.
     /// @param coinpair The coin pair to lookup.
-    function getOracleRoundInfo(address ownerAddr, bytes32 coinpair)
-        external
-        view
-        override
-        returns (uint256 points, bool selectedInCurrentRound)
-    {
+    function getOracleRoundInfo(
+        address ownerAddr,
+        bytes32 coinpair
+    ) external view override returns (uint256 points, bool selectedInCurrentRound) {
         CoinPairPrice ctAddr = _getCoinPairAddress(coinpair);
         (points, selectedInCurrentRound) = ctAddr.getOracleRoundInfo(ownerAddr);
     }
@@ -247,15 +236,13 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
     /// @notice Returns registration information for a registered Oracle.
     /// @param ownerAddr The address of the oracle's owner.
-    function getOracleRegistrationInfo(address ownerAddr)
+    function getOracleRegistrationInfo(
+        address ownerAddr
+    )
         external
         view
         override
-        returns (
-            string memory internetName,
-            uint256 stake,
-            address oracleAddr
-        )
+        returns (string memory internetName, uint256 stake, address oracleAddr)
     {
         (oracleAddr, internetName) = registeredOracles._getOracleInfo(ownerAddr);
         stake = getStake(ownerAddr);
@@ -280,16 +267,9 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
 
     /// @notice Returns the oracle name and address at index.
     /// @param idx index to query.
-    function getRegisteredOracleAtIndex(uint256 idx)
-        external
-        view
-        override
-        returns (
-            address ownerAddr,
-            address oracleAddr,
-            string memory url
-        )
-    {
+    function getRegisteredOracleAtIndex(
+        uint256 idx
+    ) external view override returns (address ownerAddr, address oracleAddr, string memory url) {
         return registeredOracles._getOracleAtIndex(idx);
     }
 
@@ -312,24 +292,19 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         return coinPairRegisterData._getContractAddress(coinpair);
     }
 
-    function getMaxStake(address[] calldata addresses)
-        external
-        view
-        override
-        returns (address, uint256)
-    {
+    function getMaxStake(
+        address[] calldata addresses
+    ) external view override returns (address, uint256) {
         return stakingContract.getMaxBalance(addresses);
     }
 
     /// @notice Searches a coinpair in coinPairList
     /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
     /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
-    function getCoinPairIndex(bytes32 coinPair, uint256 hint)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getCoinPairIndex(
+        bytes32 coinPair,
+        uint256 hint
+    ) external view override returns (uint256) {
         return coinPairRegisterData._getCoinPairIndex(coinPair, hint);
     }
 

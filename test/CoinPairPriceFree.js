@@ -14,7 +14,7 @@ contract('CoinPairPriceFree', async (accounts) => {
         const contracts = await helpers.initContracts({ governorOwner: accounts[8] });
         Object.assign(this, contracts);
 
-        this.coinPairPriceFree = await CoinPairPriceFree.new();
+        this.coinPairPriceFree = await helpers.deployProxySimple(CoinPairPriceFree);
 
         this.coinPairPrice = await helpers.initCoinpair(COINPAIR_NAME, {
             ...contracts,

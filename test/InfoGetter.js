@@ -13,7 +13,7 @@ contract('InfoGetter', async (accounts) => {
         const contracts = await helpers.initContracts({ governorOwner: accounts[8] });
         Object.assign(this, contracts);
 
-        this.infoGetter = await InfoGetter.new();
+        this.infoGetter = await helpers.deployProxySimple(InfoGetter);
 
         this.coinPairPrice = await helpers.initCoinpair(COINPAIR_NAME, {
             ...contracts,

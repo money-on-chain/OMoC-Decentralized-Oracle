@@ -16,10 +16,11 @@ contract('MocRegistryInitChange', async (accounts) => {
         });
         Object.assign(this, contracts);
 
-        this.infoGetter = await InfoGetter.new();
-        await this.infoGetter.initialize(this.governor.address);
-        this.registry = await Registry.new();
-        await this.registry.initialize(this.governor.address);
+        this.infoGetter = await helpers.deployProxySimple(InfoGetter, [this.governor.address]);
+
+        this.registry = await helpers.deployTransparentProxySimple(Registry, [
+            this.governor.address,
+        ]);
 
         this.coinPairPrice_BTCUSD = await helpers.initCoinpair('BTCUSD', {
             ...contracts,

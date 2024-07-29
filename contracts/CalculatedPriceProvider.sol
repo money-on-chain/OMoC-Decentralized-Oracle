@@ -16,6 +16,10 @@ contract CalculatedPriceProvider is
 {
     using SafeMath for uint256;
 
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /**
     Contract creation.
 
@@ -45,7 +49,7 @@ contract CalculatedPriceProvider is
      * @dev Add to the list of contracts that can stake in this contract
      * @param  _whitelisted - the override coinPair
      */
-    function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+    function addToWhitelist(address _whitelisted) external onlyAuthorizedChanger {
         iterableWhitelistData._addToWhitelist(_whitelisted);
     }
 
@@ -53,7 +57,7 @@ contract CalculatedPriceProvider is
      * @dev Remove from the list of contracts that can stake in this contract
      * @param _whitelisted - the override coinPair
      */
-    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger() {
+    function removeFromWhitelist(address _whitelisted) external onlyAuthorizedChanger {
         iterableWhitelistData._removeFromWhitelist(_whitelisted);
     }
 
@@ -69,15 +73,15 @@ contract CalculatedPriceProvider is
     }
 
     /// @notice return the type of provider
-    function getPriceProviderType() external override pure returns (IPriceProviderType) {
+    function getPriceProviderType() external pure override returns (IPriceProviderType) {
         return IPriceProviderType.Calculated;
     }
 
     /// @notice Return the current price, compatible with old MOC Oracle
     function peek()
         external
-        override
         view
+        override
         whitelistedOrExternal(iterableWhitelistData)
         returns (bytes32, bool)
     {
@@ -86,19 +90,19 @@ contract CalculatedPriceProvider is
     }
 
     // Return the current price.
-    function getPrice() external override view returns (uint256) {
+    function getPrice() external view override returns (uint256) {
         (uint256 price, , ) = calculatedPriceProviderData._getPriceInfo();
         return uint256(price);
     }
 
     // Return if the price is not expired.
-    function getIsValid() external override view returns (bool) {
+    function getIsValid() external view override returns (bool) {
         (, bool valid, ) = calculatedPriceProviderData._getPriceInfo();
         return valid;
     }
 
     // Returns the block number of the last publication.
-    function getLastPublicationBlock() external override view returns (uint256) {
+    function getLastPublicationBlock() external view override returns (uint256) {
         (, , uint256 lastPubBlock) = calculatedPriceProviderData._getPriceInfo();
         return lastPubBlock;
     }
@@ -106,13 +110,9 @@ contract CalculatedPriceProvider is
     // Return the result of getPrice, getIsValid and getLastPublicationBlock at once.
     function getPriceInfo()
         external
-        override
         view
-        returns (
-            uint256 price,
-            bool isValid,
-            uint256 lastPubBlock
-        )
+        override
+        returns (uint256 price, bool isValid, uint256 lastPubBlock)
     {
         return calculatedPriceProviderData._getPriceInfo();
     }

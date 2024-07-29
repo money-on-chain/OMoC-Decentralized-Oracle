@@ -14,6 +14,10 @@ import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed
 ///        get the current price. One contract must be instanced per supported coin pair,
 ///        and registered through OracleManager global contract.
 contract InfoGetter is Initializable, Governed, IOracleInfoGetter {
+    constructor() public initializer {
+        // Avoid leaving the implementation contract uninitialized.
+    }
+
     /**
       @notice Initialize the contract with the basic settings
       @dev This initialize replaces the constructor but it is not called automatically.
@@ -29,12 +33,9 @@ contract InfoGetter is Initializable, Governed, IOracleInfoGetter {
 
         @param _coinPairPrice coinPairPrice contract
     */
-    function getCoinPairUIInfo(ICoinPairPrice _coinPairPrice)
-        external
-        override
-        view
-        returns (CoinPairPriceUIInfo memory coinPairPriceUIInfo)
-    {
+    function getCoinPairUIInfo(
+        ICoinPairPrice _coinPairPrice
+    ) external view override returns (CoinPairPriceUIInfo memory coinPairPriceUIInfo) {
         (
             uint256 round,
             uint256 startBlock,
@@ -77,7 +78,7 @@ contract InfoGetter is Initializable, Governed, IOracleInfoGetter {
         IOracleManager _oracleManager,
         uint256 _offset,
         uint256 _limit
-    ) external override view returns (ManagerUICoinPairInfo[] memory info) {
+    ) external view override returns (ManagerUICoinPairInfo[] memory info) {
         uint256 total = _oracleManager.getCoinPairCount();
         if (_limit > total || _limit == 0) {
             _limit = total;
@@ -104,7 +105,7 @@ contract InfoGetter is Initializable, Governed, IOracleInfoGetter {
         IOracleManager _oracleManager,
         uint256 _from,
         uint256 _cant
-    ) external override view returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
+    ) external view override returns (ManagerUIOracleInfo[] memory info, address nextEntry) {
         uint256 len = _oracleManager.getRegisteredOraclesLen();
         if (_from >= len) {
             return (info, nextEntry);
@@ -137,12 +138,10 @@ contract InfoGetter is Initializable, Governed, IOracleInfoGetter {
         @param _oracleManager oracleManager contract
         @param _coinPairPrice coinPairPrice contract
     */
-    function getOracleServerInfo(IOracleManager _oracleManager, ICoinPairPrice _coinPairPrice)
-        external
-        override
-        view
-        returns (OracleServerInfo memory oracleServerInfo)
-    {
+    function getOracleServerInfo(
+        IOracleManager _oracleManager,
+        ICoinPairPrice _coinPairPrice
+    ) external view override returns (OracleServerInfo memory oracleServerInfo) {
         uint256 lastPubBlock = _coinPairPrice.getLastPublicationBlock();
         (bytes32 currentPrice, ) = _coinPairPrice.peek();
 

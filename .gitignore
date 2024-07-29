@@ -29,3 +29,6 @@ build/
 .openzeppelin/.session
 
 moc-*-*.tgz
+moneyonchain-oracles-*-*.tgz
+
+package-lock.json

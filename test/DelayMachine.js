@@ -1,7 +1,8 @@
 /* global artifacts, it, describe, contract, beforeEach */
 /* eslint-disable no-unused-expressions */
-const {expect} = require('chai');
-const {BN, expectRevert, expectEvent, time} = require('@openzeppelin/test-helpers');
+const helpers = require('./helpers');
+const { expect } = require('chai');
+const { BN, expectRevert, expectEvent, time } = require('@openzeppelin/test-helpers');
 const DelayMachine = artifacts.require('DelayMachine');
 const MOCKStakingMachine = artifacts.require('MOCKStakingMachine');
 const GovernedERC20 = artifacts.require('@moc/shared/GovernedERC20');
@@ -19,15 +20,15 @@ contract('DelayMachine', (accounts) => {
         const governor = await MockGovernor.new(GOVERNOR_OWNER);
         const erc20 = await GovernedERC20.new();
         await erc20.initialize(governor.address);
-        const delay = await DelayMachine.new();
+        const delay = await helpers.deployProxySimple(DelayMachine);
         await delay.initialize(governor.address, erc20.address, source);
-        await erc20.mint(SOURCE_MOC_HOLDER, INITIAL_BALANCE, {from: GOVERNOR_OWNER});
-        return {erc20, delay};
+        await erc20.mint(SOURCE_MOC_HOLDER, INITIAL_BALANCE, { from: GOVERNOR_OWNER });
+        return { erc20, delay };
     }
 
     async function depositViaStaking(contract, token, stacking, amount, expirationSecs) {
         // Deposit in the staking machine.
-        await token.approve(stacking.address, amount, {from: SOURCE_MOC_HOLDER});
+        await token.approve(stacking.address, amount, { from: SOURCE_MOC_HOLDER });
         await stacking.depositFrom(amount, DESTIONATION_MOC_HOLDER, SOURCE_MOC_HOLDER, {
             from: SOURCE_MOC_HOLDER,
         });
@@ -40,7 +41,7 @@ contract('DelayMachine', (accounts) => {
         expect(await token.balanceOf(contract.address)).to.be.bignumber.equal(
             prevBalance.add(amount),
         );
-        expectEvent(receipt, 'PaymentDeposit', {destination: DESTIONATION_MOC_HOLDER});
+        expectEvent(receipt, 'PaymentDeposit', { destination: DESTIONATION_MOC_HOLDER });
         return receipt.logs[0].args[0];
     }
 
@@ -51,7 +52,7 @@ contract('DelayMachine', (accounts) => {
             const expirationDelta = new BN(10 + Math.random() * 1000000);
             const amount = new BN(Math.random() * 10000);
             const currentTime = await time.latest();
-            inserted.push({id: new BN(i + 1), amount, expirationDelta, currentTime});
+            inserted.push({ id: new BN(i + 1), amount, expirationDelta, currentTime });
             await depositViaStaking(contract, token, stacking, amount, expirationDelta);
             totalBalance = totalBalance.add(amount);
             expect(await contract.getBalance(DESTIONATION_MOC_HOLDER)).to.be.bignumber.equal(
@@ -81,14 +82,14 @@ contract('DelayMachine', (accounts) => {
         let contract;
         let token;
         beforeEach(async () => {
-            const {erc20, delay} = await createContracts(SOURCE_MOC_HOLDER);
+            const { erc20, delay } = await createContracts(SOURCE_MOC_HOLDER);
             contract = delay;
             token = erc20;
         });
 
         it('creation', async () => {
             expect(await token.balanceOf(SOURCE_MOC_HOLDER)).to.be.bignumber.equal(INITIAL_BALANCE);
-            await token.approve(contract.address, 123, {from: SOURCE_MOC_HOLDER});
+            await token.approve(contract.address, 123, { from: SOURCE_MOC_HOLDER });
             expect(
                 await token.allowance(SOURCE_MOC_HOLDER, contract.address),
             ).to.be.bignumber.equal(new BN(123));
@@ -109,12 +110,12 @@ contract('DelayMachine', (accounts) => {
             const expirationSecs = new BN(Math.random() * 10000);
             const amount = new BN(Math.random() * 10000);
 
-            await token.approve(contract.address, amount, {from: SOURCE_MOC_HOLDER});
+            await token.approve(contract.address, amount, { from: SOURCE_MOC_HOLDER });
             const receipt = await contract.deposit(
                 amount,
                 DESTIONATION_MOC_HOLDER,
                 expirationSecs,
-                {from: SOURCE_MOC_HOLDER},
+                { from: SOURCE_MOC_HOLDER },
             );
 
             expect(await contract.getBalance(DESTIONATION_MOC_HOLDER)).to.be.bignumber.equal(
@@ -138,18 +139,18 @@ contract('DelayMachine', (accounts) => {
             const expirationSecs = new BN(Math.random() * 10000);
             const amount = new BN(Math.random() * 10000);
 
-            await token.approve(contract.address, amount, {from: SOURCE_MOC_HOLDER});
+            await token.approve(contract.address, amount, { from: SOURCE_MOC_HOLDER });
             const receipt = await contract.deposit(
                 amount,
                 DESTIONATION_MOC_HOLDER,
                 expirationSecs,
-                {from: SOURCE_MOC_HOLDER},
+                { from: SOURCE_MOC_HOLDER },
             );
             const payId = receipt.logs[0].args[0];
 
-            await expectRevert(contract.withdraw(payId, {from: SOURCE_MOC_HOLDER}), 'Invalid ID');
+            await expectRevert(contract.withdraw(payId, { from: SOURCE_MOC_HOLDER }), 'Invalid ID');
             await expectRevert(
-                contract.withdraw(payId, {from: DESTIONATION_MOC_HOLDER}),
+                contract.withdraw(payId, { from: DESTIONATION_MOC_HOLDER }),
                 'Not expired',
             );
         });
@@ -158,18 +159,18 @@ contract('DelayMachine', (accounts) => {
             const expirationSecs = new BN(Math.random() * 10000);
             const amount = new BN(Math.random() * 10000);
 
-            await token.approve(contract.address, amount, {from: SOURCE_MOC_HOLDER});
+            await token.approve(contract.address, amount, { from: SOURCE_MOC_HOLDER });
             const receipt = await contract.deposit(
                 amount,
                 DESTIONATION_MOC_HOLDER,
                 expirationSecs,
-                {from: SOURCE_MOC_HOLDER},
+                { from: SOURCE_MOC_HOLDER },
             );
             const payId = receipt.logs[0].args[0];
 
             const startBalance = await token.balanceOf(DESTIONATION_MOC_HOLDER);
             await time.increase(expirationSecs.addn(1));
-            const receipt2 = await contract.withdraw(payId, {from: DESTIONATION_MOC_HOLDER});
+            const receipt2 = await contract.withdraw(payId, { from: DESTIONATION_MOC_HOLDER });
             expectEvent(receipt2, 'PaymentWithdraw', {
                 destination: DESTIONATION_MOC_HOLDER,
                 source: SOURCE_MOC_HOLDER,
@@ -187,7 +188,7 @@ contract('DelayMachine', (accounts) => {
 
         beforeEach(async () => {
             stacking = await MOCKStakingMachine.new();
-            const {erc20, delay} = await createContracts(stacking.address);
+            const { erc20, delay } = await createContracts(stacking.address);
             contract = delay;
             token = erc20;
             await stacking.initialize(contract.address, token.address);
@@ -212,9 +213,9 @@ contract('DelayMachine', (accounts) => {
                 amount,
                 expirationSecs,
             );
-            await expectRevert(contract.withdraw(payId, {from: SOURCE_MOC_HOLDER}), 'Invalid ID');
+            await expectRevert(contract.withdraw(payId, { from: SOURCE_MOC_HOLDER }), 'Invalid ID');
             await expectRevert(
-                contract.withdraw(payId, {from: DESTIONATION_MOC_HOLDER}),
+                contract.withdraw(payId, { from: DESTIONATION_MOC_HOLDER }),
                 'Not expired',
             );
         });
@@ -231,7 +232,7 @@ contract('DelayMachine', (accounts) => {
             );
             const startBalance = await token.balanceOf(DESTIONATION_MOC_HOLDER);
             await time.increase(expirationSecs + 1);
-            const receipt2 = await contract.withdraw(payId, {from: DESTIONATION_MOC_HOLDER});
+            const receipt2 = await contract.withdraw(payId, { from: DESTIONATION_MOC_HOLDER });
             expectEvent(receipt2, 'PaymentWithdraw', {
                 destination: DESTIONATION_MOC_HOLDER,
                 source: stacking.address,
@@ -251,7 +252,7 @@ contract('DelayMachine', (accounts) => {
                 amount,
                 expirationSecs,
             );
-            await expectRevert(contract.cancel(payId, {from: SOURCE_MOC_HOLDER}), 'Invalid ID');
+            await expectRevert(contract.cancel(payId, { from: SOURCE_MOC_HOLDER }), 'Invalid ID');
         });
 
         it('cancel success', async () => {
@@ -267,7 +268,7 @@ contract('DelayMachine', (accounts) => {
 
             expect(await stacking.source()).to.be.equal(SOURCE_MOC_HOLDER);
             const startBalance = await token.balanceOf(stacking.address);
-            const receipt2 = await contract.cancel(payId, {from: DESTIONATION_MOC_HOLDER});
+            const receipt2 = await contract.cancel(payId, { from: DESTIONATION_MOC_HOLDER });
             expectEvent(receipt2, 'PaymentCancel', {
                 destination: DESTIONATION_MOC_HOLDER,
                 source: stacking.address,
@@ -287,7 +288,7 @@ contract('DelayMachine', (accounts) => {
         let token;
         beforeEach(async () => {
             stacking = await MOCKStakingMachine.new();
-            const {erc20, delay} = await createContracts(stacking.address);
+            const { erc20, delay } = await createContracts(stacking.address);
             contract = delay;
             token = erc20;
             await stacking.initialize(contract.address, token.address);
@@ -304,7 +305,7 @@ contract('DelayMachine', (accounts) => {
                     if (j < i) {
                         // Already withdrawn
                         await expectRevert(
-                            contract.withdraw(sorted[j].id, {from: DESTIONATION_MOC_HOLDER}),
+                            contract.withdraw(sorted[j].id, { from: DESTIONATION_MOC_HOLDER }),
                             'Invalid ID',
                         );
                     } else if (j === i) {
@@ -325,7 +326,7 @@ contract('DelayMachine', (accounts) => {
                     } else if (j > i) {
                         // fail, still need time
                         await expectRevert(
-                            contract.withdraw(sorted[j].id, {from: DESTIONATION_MOC_HOLDER}),
+                            contract.withdraw(sorted[j].id, { from: DESTIONATION_MOC_HOLDER }),
                             'Not expired',
                         );
                     }

@@ -1,0 +1,50 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.6.12;
+
+import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {OracleManager} from "../OracleManager.sol";
+import {OracleManagerStorage} from "../OracleManagerStorage.sol";
+
+/**
+  @title UpgraderTemplate
+  @notice This contract is a ChangeContract intended to be used when
+  upgrading any contract upgradeable through the zos-lib upgradeability
+  system. This doesn't initialize the upgraded contract, that should be done extending
+  this one or taking it as a guide
+ */
+contract OracleManagerPairChangeRemove is OracleManagerStorage, ChangeContract {
+    OracleManager public oracleManager;
+    bytes public encodedData;
+
+    /**
+      @notice Constructor
+      @param _oracleManager Address of oracle manager used to register the coin pair
+      @param _coinPair The coinpair to register
+      @param _hint Optional hint to start traversing the coinPairList array, zero is to search all the array
+    */
+    constructor(OracleManager _oracleManager, bytes32 _coinPair, uint256 _hint) public {
+        oracleManager = _oracleManager;
+        encodedData = abi.encode(_coinPair, _hint);
+    }
+
+    /**
+      @notice Execute the changes.
+      @dev Should be called by the governor, but this contract does not check that explicitly because
+      it is not its responsability in the current architecture
+      IMPORTANT: This function should not be overriden, you should only
+      redefine the _beforeUpgrade and _afterUpgrade to use this template
+     */
+    function execute() external override {
+        oracleManager.delegateCallToChanger(encodedData);
+        // TODO: Make it usable just once.
+    }
+
+    /**
+        Called by the Governed contract delegateCallToChanger method
+        This methods runs in the Governed contract storage.
+    */
+    function impersonate(bytes calldata data) external {
+        (bytes32 _coinPair, uint256 _hint) = abi.decode(data, (bytes32, uint256));
+        coinPairRegisterData._unRegisterCoinPair(_coinPair, _hint);
+    }
+}

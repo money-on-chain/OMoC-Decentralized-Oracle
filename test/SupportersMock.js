@@ -25,7 +25,7 @@ contract('SupportersMock', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await SupportersMock.new();
+            supporters = await helpers.deployProxySimple(SupportersMock);
             await supporters.initialize(token.address, new BN(10));
         });
 
@@ -54,7 +54,7 @@ contract('SupportersMock', (accounts) => {
             token = await TestMOC.new();
             await token.initialize(governor.address);
 
-            supporters = await SupportersMock.new();
+            supporters = await helpers.deployProxySimple(SupportersMock);
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, BALANCE_USER1);
@@ -126,7 +126,7 @@ contract('SupportersMock', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await SupportersMock.new();
+            supporters = await helpers.deployProxySimple(SupportersMock);
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, BALANCE_USER1);
@@ -273,7 +273,7 @@ contract('SupportersMock', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await SupportersMock.new();
+            supporters = await helpers.deployProxySimple(SupportersMock);
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, BALANCE_USER1);
@@ -403,7 +403,7 @@ contract('SupportersMock', (accounts) => {
             const governor = await helpers.createGovernor(accounts[8]);
             token = await TestMOC.new();
             await token.initialize(governor.address);
-            supporters = await SupportersMock.new();
+            supporters = await helpers.deployProxySimple(SupportersMock);
             await supporters.initialize(token.address, new BN(10));
 
             await governor.mint(token.address, user1, INITIAL_BALANCE);
