@@ -59,6 +59,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
     ) external initializer {
         __RoundManager_init(
             _governor,
+            _coinPair,
             _tokenAddress,
             _maxOraclesPerRound,
             _maxSubscribedOraclesPerRound,
@@ -66,7 +67,6 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
             _oracleManager,
             _registry
         );
-        require(_coinPair != bytes32(0), "Coin pair must be valid");
         require(
             _validPricePeriodInBlocks > 0,
             "The valid price period must be positive and non zero"
@@ -82,7 +82,6 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         }
         validPricePeriodInBlocks = _validPricePeriodInBlocks;
         emergencyPublishingPeriodInBlocks = _emergencyPublishingPeriodInBlocks;
-        coinPair = _coinPair;
         _publish(_bootstrapPrice);
     }
 

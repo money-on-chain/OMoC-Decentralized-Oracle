@@ -40,6 +40,7 @@ contract TasksRunner is RoundManager {
     /**
      * @notice Initializer
      * @param _governor The governor address.
+     * @param _name The name used to identify the contract. Used same as coin pair identifier.
      * @param _tasks The initial list of task addresses to be added.
      * @param _tokenAddress The address of the MOC token to use.
      * @param _maxOraclesPerRound The maximum count of oracles selected to participate each round.
@@ -51,6 +52,7 @@ contract TasksRunner is RoundManager {
      */
     function initialize(
         IGovernor _governor,
+        bytes32 _name,
         address[] calldata _tasks,
         address _tokenAddress,
         uint256 _maxOraclesPerRound,
@@ -62,6 +64,7 @@ contract TasksRunner is RoundManager {
     ) external initializer {
         __RoundManager_init(
             _governor,
+            _name,
             _tokenAddress,
             _maxOraclesPerRound,
             _maxSubscribedOraclesPerRound,
@@ -107,6 +110,7 @@ contract TasksRunner is RoundManager {
     /**
      * @notice Executes tasks based on the provided parameters and signatures.
      * @param _version Version number of message format (3)
+     * @param _name The contract name to report (must match this contract)
      * @param _votedOracle The address of the oracle voted as a publisher by the network.
      * @param _blockNumber The blocknumber acting as nonce to prevent replay attacks.
      * @param _sigV The array of V-component of Oracle signatures.
@@ -115,28 +119,25 @@ contract TasksRunner is RoundManager {
      */
     function runTasks(
         uint256 _version,
+        bytes32 _name,
         address _votedOracle,
         uint256 _blockNumber,
         uint8[] calldata _sigV,
         bytes32[] calldata _sigR,
         bytes32[] calldata _sigS
     ) external {
+        require(_name == coinPair, "Name - contract mismatch");
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
-        uint256 chainId;
-        assembly {
-            chainId := chainid()
-        }
         //
-        // NOTE: Message Size is 136 = sizeof(uint256) + sizeof(address)
-        // + sizeof(uint256) + sizeof(address) + sizeof(uint256)
+        // NOTE: Message Size is 116 = sizeof(uint256) + sizeof(bytes32)
+        // + sizeof(address) + sizeof(uint256)
         //
         bytes memory hData = abi.encodePacked(
-            "\x19Ethereum Signed Message:\n136",
+            "\x19Ethereum Signed Message:\n116",
             _version, // 32
+            _name, // 32
             _votedOracle, // 20
-            _blockNumber, // 32
-            address(this), // 20
-            chainId // 32
+            _blockNumber // 32
         );
 
         _validateExecution(
@@ -235,6 +236,22 @@ contract TasksRunner is RoundManager {
     }
 
     /**
+     * @notice Returns a list of all tasks available for execution.
+     * @return An array of addresses representing the tasks.
+     */
+    function getTasksAvailable() external view returns (address[] memory) {
+        uint256 taskLength = tasks.length();
+        address[] memory tasksAvailable = new address[](taskLength);
+        for (uint256 i = 0; i < taskLength; i++) {
+            ITask task = ITask(tasks.at(i));
+            if (task.checkTask()) {
+                tasksAvailable[i] = address(task);
+            }
+        }
+        return tasksAvailable;
+    }
+
+    /**
      * @notice Returns a list of all tasks currently registered in the runner.
      * @return An array of addresses representing the tasks.
      */
@@ -271,6 +288,31 @@ contract TasksRunner is RoundManager {
      */
     function containsTask(address _task) external view returns (bool) {
         return tasks.contains(_task);
+    }
+
+    // Public variable
+    function getName() external view returns (bytes32) {
+        return coinPair;
+    }
+
+    // Public variable
+    function getLastPublicationBlock() external view returns (uint256) {
+        return lastPublicationBlock;
+    }
+
+    // Legacy function compatible with old MOC Oracle.
+    function getValidPricePeriodInBlocks() external view returns (uint256) {
+        return 0;
+    }
+
+    // Legacy function compatible with old MOC Oracle.
+    function peek() external view returns (bytes32, bool) {
+        return (bytes32(0), true);
+    }
+
+    // Legacy function compatible with old MOC Oracle.
+    function getPrice() external view returns (uint256) {
+        return 0;
     }
 
     /**

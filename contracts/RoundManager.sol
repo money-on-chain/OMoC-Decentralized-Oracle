@@ -37,6 +37,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
 
     /// @notice Initializer
     /// @param _governor The governor address.
+    /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
     /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
     /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
@@ -45,6 +46,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
     /// @param _registry The registry contract
     function __RoundManager_init(
         IGovernor _governor,
+        bytes32 _coinPair,
         address _tokenAddress,
         uint256 _maxOraclesPerRound,
         uint256 _maxSubscribedOraclesPerRound,
@@ -52,12 +54,14 @@ abstract contract RoundManager is CoinPairPriceStorage {
         OracleManager _oracleManager,
         IRegistry _registry
     ) internal {
+        require(_coinPair != bytes32(0), "Coin pair must be valid");
         require(
             _tokenAddress != address(0),
             "The MOC token address must be provided in constructor"
         );
 
         Governed._initialize(_governor);
+        coinPair = _coinPair;
         token = IERC20(_tokenAddress);
         oracleManager = _oracleManager;
         registry = _registry;
@@ -310,7 +314,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
     /// @notice Transfer coinbase
     function _transfer(address _to, uint256 _amount) internal {
         if (_amount > 0) {
-            require(_to == address(0), "Invalid address");
+            require(_to != address(0), "Invalid address");
             (bool success, ) = _to.call{value: _amount}("");
             require(success, "Coinbase transfer failed");
         }
