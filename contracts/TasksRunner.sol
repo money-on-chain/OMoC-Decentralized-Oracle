@@ -6,9 +6,7 @@ import {ITask} from "./interfaces/ITask.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
 /// @title TasksRunner
 /// @dev This contract manages a set of tasks that can be executed in batches.
@@ -23,6 +21,7 @@ contract TasksRunner is RoundManager {
     EnumerableSet.AddressSet private tasks;
     uint256 public maxTasksPerBatch;
     uint256 public lastTaskIndex;
+    uint256 private constant MIN_ORACLES_PER_ROUND = 1; // Hardcoded to 1 to bypass registry-driven minimum oracle quorum.
 
     event TaskExecuted(
         address sender,
@@ -140,7 +139,7 @@ contract TasksRunner is RoundManager {
             _blockNumber // 32
         );
 
-        _validateExecution(
+        _validateExecutionWithMinOne( // Previously, _validateExecution was used, inherited from RoundManager.
             ownerAddr,
             _version,
             _votedOracle,
@@ -150,6 +149,24 @@ contract TasksRunner is RoundManager {
             _sigS,
             keccak256(hData)
         );
+
+        /*
+         *
+         * Original RoundManager `_validateExecution`
+         * - Ensures the oracle is part of the round and the round size meets the registry-driven
+         *   minimum (`getMinOraclesPerRound()`).
+         * - Requires signatures from more than 50% of selected oracles.
+         * - Keeps the existing message and block number validations.
+         *
+         * Current TasksRunner override
+         * - Uses `_validateExecutionWithMinOne` with a hardcoded `MIN_ORACLES_PER_ROUND = 1` instead
+         *   of the registry value.
+         * - Preserves membership, message format, and signature ordering checks plus the majority
+         *   (>50% of selected oracles) signature requirement, while bypassing the registry-backed
+         *   minimum oracle quorum via the hardcoded value.
+         * - Keeps the same `runTasks` surface but skips the registry quorum lookup.
+         */
+
         (uint256 pointEarned, uint256 coinbaseEarned) = _runTasks(
             ownerAddr,
             _votedOracle,
@@ -157,6 +174,51 @@ contract TasksRunner is RoundManager {
         );
         roundInfo.addPoints(ownerAddr, pointEarned);
         _transfer(ownerAddr, coinbaseEarned);
+    }
+
+    function _validateExecutionWithMinOne(
+        address _ownerAddr,
+        uint256 _version,
+        address _votedOracle,
+        uint256 _blockNumber,
+        uint8[] calldata _sigV,
+        bytes32[] calldata _sigR,
+        bytes32[] calldata _sigS,
+        bytes32 _messageHash
+    ) internal view {
+        require(roundInfo.number > 0, "Round not open");
+        require(roundInfo.isSelected(_ownerAddr), "Voter oracle is not part of this round");
+        require(
+            roundInfo.length() >= MIN_ORACLES_PER_ROUND,
+            "Minimum selected oracles required not reached"
+        );
+        require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
+        require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
+        require(
+            _blockNumber == lastPublicationBlock,
+            "Blocknumber does not match the last publication block"
+        );
+
+        // Verify signatures
+        require(
+            _sigS.length == _sigR.length && _sigR.length == _sigV.length,
+            "Inconsistent signature count"
+        );
+
+        uint256 validSigs = 0;
+        address lastAddr = address(0);
+        for (uint256 i = 0; i < _sigS.length; i++) {
+            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], _messageHash);
+            address ownerRec = oracleManager.getOracleOwner(rec);
+            if (roundInfo.isSelected(ownerRec)) validSigs += 1;
+            require(lastAddr < rec, "Signatures are not unique or not ordered by address");
+            lastAddr = rec;
+        }
+
+        require(
+            validSigs > roundInfo.length() / 2,
+            "Valid signatures count must exceed 50% of active oracles"
+        );
     }
 
     /**
