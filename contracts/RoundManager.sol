@@ -223,11 +223,9 @@ abstract contract RoundManager is CoinPairPriceStorage {
     }
 
     /// @notice Return round information for specific oracle
-    function getOracleRoundInfo(address oracleOwner)
-        external
-        view
-        returns (uint256 points, bool selectedInCurrentRound)
-    {
+    function getOracleRoundInfo(
+        address oracleOwner
+    ) external view returns (uint256 points, bool selectedInCurrentRound) {
         return roundInfo.getOracleRoundInfo(oracleOwner);
     }
 
@@ -350,10 +348,34 @@ abstract contract RoundManager is CoinPairPriceStorage {
         bytes32[] calldata _sigS,
         bytes32 _messageHash
     ) internal view {
+        _validateExecutionHelper(
+            _ownerAddr,
+            _version,
+            _votedOracle,
+            _blockNumber,
+            _sigV,
+            _sigR,
+            _sigS,
+            _messageHash,
+            getMinOraclesPerRound()
+        );
+    }
+
+    function _validateExecutionHelper(
+        address _ownerAddr,
+        uint256 _version,
+        address _votedOracle,
+        uint256 _blockNumber,
+        uint8[] calldata _sigV,
+        bytes32[] calldata _sigR,
+        bytes32[] calldata _sigS,
+        bytes32 _messageHash,
+        uint256 _minOraclesPerRound
+    ) internal view {
         require(roundInfo.number > 0, "Round not open");
         require(roundInfo.isSelected(_ownerAddr), "Voter oracle is not part of this round");
         require(
-            roundInfo.length() >= getMinOraclesPerRound(),
+            roundInfo.length() >= _minOraclesPerRound,
             "Minimum selected oracles required not reached"
         );
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
