@@ -49,6 +49,7 @@ contract('TasksRunner', (accounts) => {
             10,
             this.oracleMgr.address,
             this.registry,
+            1,
             { from: GOVERNOR_OWNER },
         );
 

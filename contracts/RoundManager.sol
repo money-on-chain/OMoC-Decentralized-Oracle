@@ -262,7 +262,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
 
     // Public value from Registry:
     //   The minimum count of oracles selected to participate each round
-    function getMinOraclesPerRound() public view returns (uint256) {
+    function getMinOraclesPerRound() public view virtual returns (uint256) {
         return this.getRegistry().getUint(RegistryConstantsLib.ORACLE_MIN_ORACLES_PER_ROUND());
     }
 
