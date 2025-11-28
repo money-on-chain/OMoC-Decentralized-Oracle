@@ -186,16 +186,38 @@ contract TasksRunner is RoundManager {
         bytes32[] calldata _sigS,
         bytes32 _messageHash
     ) internal view {
-        _validateExecutionHelper(
-            _ownerAddr,
-            _version,
-            _votedOracle,
-            _blockNumber,
-            _sigV,
-            _sigR,
-            _sigS,
-            _messageHash,
-            MIN_ORACLES_PER_ROUND
+        require(roundInfo.number > 0, "Round not open");
+        require(roundInfo.isSelected(_ownerAddr), "Voter oracle is not part of this round");
+        require(
+            roundInfo.length() >= MIN_ORACLES_PER_ROUND,
+            "Minimum selected oracles required not reached"
+        );
+        require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
+        require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
+        require(
+            _blockNumber == lastPublicationBlock,
+            "Blocknumber does not match the last publication block"
+        );
+
+        // Verify signatures
+        require(
+            _sigS.length == _sigR.length && _sigR.length == _sigV.length,
+            "Inconsistent signature count"
+        );
+
+        uint256 validSigs = 0;
+        address lastAddr = address(0);
+        for (uint256 i = 0; i < _sigS.length; i++) {
+            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], _messageHash);
+            address ownerRec = oracleManager.getOracleOwner(rec);
+            if (roundInfo.isSelected(ownerRec)) validSigs += 1;
+            require(lastAddr < rec, "Signatures are not unique or not ordered by address");
+            lastAddr = rec;
+        }
+
+        require(
+            validSigs > roundInfo.length() / 2,
+            "Valid signatures count must exceed 50% of active oracles"
         );
     }
 
