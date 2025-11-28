@@ -117,6 +117,15 @@ contract TasksRunner is RoundManager {
     }
 
     /**
+     * @notice Sets the minimum number of oracles required to run tasks.
+     * @param _minOraclesPerRound The minimum number of oracles required to run tasks. If 0, use registry value.
+     * @dev This function can only be called by an authorized changer.
+     */
+    function setMinOraclesPerRound(uint256 _minOraclesPerRound) external onlyAuthorizedChanger {
+        minOraclesPerRound = _minOraclesPerRound;
+    }
+
+    /**
      * @notice Executes tasks based on the provided parameters and signatures.
      * @param _version Version number of message format (3)
      * @param _name The contract name to report (must match this contract)
