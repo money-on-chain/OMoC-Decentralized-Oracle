@@ -38,6 +38,7 @@ contract TasksRunner is RoundManager {
         uint256 points,
         bool success
     );
+    event CheckTaskReverted(address task);
 
     constructor() public initializer {
         // Avoid leaving the implementation contract uninitialized.
@@ -205,6 +206,7 @@ contract TasksRunner is RoundManager {
             try task.checkTask() returns (bool result) {
                 shouldRun = result;
             } catch {
+                emit CheckTaskReverted(address(task));
                 shouldRun = false;
             }
 

@@ -34,14 +34,16 @@ contract('TasksRunner', (accounts) => {
         Object.assign(this, contracts);
 
         const MockTask = artifacts.require('MockTask');
+        const MockRevertingTask = artifacts.require('MockRevertingTask');
         this.mockTask = await MockTask.new(true, 5);
+        this.revertingTask = await MockRevertingTask.new();
 
         const TasksRunner = artifacts.require('TasksRunner');
         this.tasksRunner = await helpers.deployProxySimple(TasksRunner);
         await this.tasksRunner.initialize(
             this.governor.addr,
             TASKS_PAIR,
-            [this.mockTask.address],
+            [this.revertingTask.address, this.mockTask.address],
             this.token.address,
             5,
             10,
@@ -100,6 +102,9 @@ contract('TasksRunner', (accounts) => {
             points: new BN(5),
             success: true,
         });
+        expectEvent(receipt, 'CheckTaskReverted', {
+            task: this.revertingTask.address,
+        });
 
         const roundInfo = await this.tasksRunner.getRoundInfo();
         const selectedOwners = roundInfo[4];
@@ -108,34 +113,12 @@ contract('TasksRunner', (accounts) => {
     });
 
     it('handles checkTask revert as unavailable for availability checks', async () => {
-        const MockTask = artifacts.require('MockTask');
-        const MockRevertingTask = artifacts.require('MockRevertingTask');
-        const okTask = await MockTask.new(true, 1);
-        const revertingTask = await MockRevertingTask.new();
-
-        const TasksRunner = artifacts.require('TasksRunner');
-        const tasksRunner = await helpers.deployProxySimple(TasksRunner);
-        await tasksRunner.initialize(
-            this.governor.addr,
-            TASKS_PAIR,
-            [revertingTask.address, okTask.address],
-            this.token.address,
-            5,
-            10,
-            60,
-            10,
-            this.oracleMgr.address,
-            this.registry,
-            1,
-            { from: GOVERNOR_OWNER },
-        );
-
-        const available = await tasksRunner.areTasksAvailable();
+        const available = await this.tasksRunner.areTasksAvailable();
         assert.equal(available, true);
 
-        const tasksAvailable = await tasksRunner.getTasksAvailable();
+        const tasksAvailable = await this.tasksRunner.getTasksAvailable();
         assert.equal(tasksAvailable.length, 2);
         assert.equal(tasksAvailable[0], helpers.ADDRESS_ZERO);
-        assert.equal(tasksAvailable[1], okTask.address);
+        assert.equal(tasksAvailable[1], this.mockTask.address);
     });
 });
