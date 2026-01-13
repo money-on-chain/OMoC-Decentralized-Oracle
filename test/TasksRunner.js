@@ -106,4 +106,36 @@ contract('TasksRunner', (accounts) => {
         assert.equal(selectedOwners.length, 1);
         assert.equal(selectedOwners[0], ORACLE_OWNER);
     });
+
+    it('handles checkTask revert as unavailable for availability checks', async () => {
+        const MockTask = artifacts.require('MockTask');
+        const MockRevertingTask = artifacts.require('MockRevertingTask');
+        const okTask = await MockTask.new(true, 1);
+        const revertingTask = await MockRevertingTask.new();
+
+        const TasksRunner = artifacts.require('TasksRunner');
+        const tasksRunner = await helpers.deployProxySimple(TasksRunner);
+        await tasksRunner.initialize(
+            this.governor.addr,
+            TASKS_PAIR,
+            [revertingTask.address, okTask.address],
+            this.token.address,
+            5,
+            10,
+            60,
+            10,
+            this.oracleMgr.address,
+            this.registry,
+            1,
+            { from: GOVERNOR_OWNER },
+        );
+
+        const available = await tasksRunner.areTasksAvailable();
+        assert.equal(available, true);
+
+        const tasksAvailable = await tasksRunner.getTasksAvailable();
+        assert.equal(tasksAvailable.length, 2);
+        assert.equal(tasksAvailable[0], helpers.ADDRESS_ZERO);
+        assert.equal(tasksAvailable[1], okTask.address);
+    });
 });
