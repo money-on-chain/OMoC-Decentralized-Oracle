@@ -2,18 +2,20 @@ const helpers = require('./helpers');
 const { expectEvent, BN } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
 
-function buildRunTasksMessage(version, coinPair, votedOracle, blockNumber) {
+function buildRunTasksMessage(version, coinPair, tasksFlags, votedOracle, blockNumber) {
     const encVersion = web3.eth.abi.encodeParameter('uint256', version).substr(2);
     const encCoinpair = web3.eth.abi.encodeParameter('bytes32', coinPair).substr(2);
+    const encTasksFlags = web3.eth.abi.encodeParameter('uint256', tasksFlags).substr(2);
     const encOracle = votedOracle.substr(2);
     const encBlockNumber = web3.eth.abi.encodeParameter('uint256', blockNumber).substr(2);
 
     return {
         version,
         coinPair,
+        tasksFlags,
         votedOracle,
         blockNumber,
-        encMsg: '0x' + encVersion + encCoinpair + encOracle + encBlockNumber,
+        encMsg: '0x' + encVersion + encCoinpair + encTasksFlags + encOracle + encBlockNumber,
     };
 }
 
@@ -34,14 +36,16 @@ contract('TasksRunner', (accounts) => {
         Object.assign(this, contracts);
 
         const MockTask = artifacts.require('MockTask');
+        const MockRevertingRunTask = artifacts.require('MockRevertingRunTask');
         this.mockTask = await MockTask.new(true, 5);
+        this.revertingTask = await MockRevertingRunTask.new();
 
         const TasksRunner = artifacts.require('TasksRunner');
         this.tasksRunner = await helpers.deployProxySimple(TasksRunner);
         await this.tasksRunner.initialize(
             this.governor.addr,
             TASKS_PAIR,
-            [this.mockTask.address],
+            [this.revertingTask.address, this.mockTask.address],
             this.token.address,
             5,
             10,
@@ -71,9 +75,11 @@ contract('TasksRunner', (accounts) => {
 
     it('runs tasks with a single selected oracle even when registry minimum is higher', async () => {
         const lastPublicationBlock = await this.tasksRunner.getLastPublicationBlock();
+        const tasksFlags = await this.tasksRunner.getTasksAvailableAsFlags();
         const message = buildRunTasksMessage(
             3,
             TASKS_PAIR,
+            tasksFlags.toString(),
             ORACLE_ACCOUNT,
             lastPublicationBlock.toString(),
         );
@@ -84,6 +90,7 @@ contract('TasksRunner', (accounts) => {
         const receipt = await this.tasksRunner.runTasks(
             message.version,
             message.coinPair,
+            message.tasksFlags,
             message.votedOracle,
             message.blockNumber,
             [signature.v],
@@ -100,10 +107,23 @@ contract('TasksRunner', (accounts) => {
             points: new BN(5),
             success: true,
         });
+        expectEvent(receipt, 'TaskExecuted', {
+            sender: ORACLE_OWNER,
+            votedOracle: ORACLE_ACCOUNT,
+            task: this.revertingTask.address,
+            blockNumber: lastPublicationBlock,
+            points: new BN(0),
+            success: false,
+        });
 
         const roundInfo = await this.tasksRunner.getRoundInfo();
         const selectedOwners = roundInfo[4];
         assert.equal(selectedOwners.length, 1);
         assert.equal(selectedOwners[0], ORACLE_OWNER);
+    });
+
+    it('returns available tasks as bitflags', async () => {
+        const flags = await this.tasksRunner.getTasksAvailableAsFlags();
+        assert.equal(flags.toString(), new BN(3).toString());
     });
 });

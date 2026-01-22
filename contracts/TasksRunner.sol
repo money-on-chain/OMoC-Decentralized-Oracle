@@ -129,6 +129,7 @@ contract TasksRunner is RoundManager {
      * @notice Executes tasks based on the provided parameters and signatures.
      * @param _version Version number of message format (3)
      * @param _name The contract name to report (must match this contract)
+     * @param _tasksFlags Bitflags for tasks to be considered for execution.
      * @param _votedOracle The address of the oracle voted as a publisher by the network.
      * @param _blockNumber The blocknumber acting as nonce to prevent replay attacks.
      * @param _sigV The array of V-component of Oracle signatures.
@@ -138,6 +139,7 @@ contract TasksRunner is RoundManager {
     function runTasks(
         uint256 _version,
         bytes32 _name,
+        uint256 _tasksFlags,
         address _votedOracle,
         uint256 _blockNumber,
         uint8[] calldata _sigV,
@@ -147,13 +149,14 @@ contract TasksRunner is RoundManager {
         require(_name == coinPair, "Name - contract mismatch");
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
         //
-        // NOTE: Message Size is 116 = sizeof(uint256) + sizeof(bytes32)
-        // + sizeof(address) + sizeof(uint256)
+        // NOTE: Message Size is 148 = sizeof(uint256) + sizeof(bytes32)
+        // + sizeof(uint256) + sizeof(address) + sizeof(uint256)
         //
         bytes memory hData = abi.encodePacked(
-            "\x19Ethereum Signed Message:\n116",
+            "\x19Ethereum Signed Message:\n148",
             _version, // 32
             _name, // 32
+            _tasksFlags, // 32
             _votedOracle, // 20
             _blockNumber // 32
         );
@@ -170,7 +173,8 @@ contract TasksRunner is RoundManager {
         (uint256 pointEarned, uint256 coinbaseEarned) = _runTasks(
             ownerAddr,
             _votedOracle,
-            _blockNumber
+            _blockNumber,
+            _tasksFlags
         );
         roundInfo.addPoints(ownerAddr, pointEarned);
         _transfer(ownerAddr, coinbaseEarned);
@@ -181,13 +185,15 @@ contract TasksRunner is RoundManager {
      * @param _ownerAddr The address of the oracle owner.
      * @param _votedOracle The address of the oracle voted as a publisher by the network.
      * @param _blockNumber The block number at which the tasks are being executed.
+     * @param _tasksFlags Bitflags for tasks to be considered for execution.
      * @return pointEarned The total points earned from executing the tasks.
      * @return coinbaseEarned The total coinbase earned from executing the tasks.
      */
     function _runTasks(
         address _ownerAddr,
         address _votedOracle,
-        uint256 _blockNumber
+        uint256 _blockNumber,
+        uint256 _tasksFlags
     ) internal returns (uint256 pointEarned, uint256 coinbaseEarned) {
         lastPublicationBlock = block.number;
 
@@ -198,17 +204,9 @@ contract TasksRunner is RoundManager {
         // some tasks may pay the execution fee in coinbase
         uint256 coinbaseBalance = address(this).balance;
         while (executed < maxTasksPerBatch && i != startIndex + taskLength) {
-            ITask task = ITask(tasks.at(i % taskLength));
-
-            bool shouldRun = false;
-
-            try task.checkTask() returns (bool result) {
-                shouldRun = result;
-            } catch {
-                shouldRun = false;
-            }
-
-            if (shouldRun) {
+            uint256 taskIndex = i % taskLength;
+            if (((_tasksFlags >> taskIndex) & 1) == 1) {
+                ITask task = ITask(tasks.at(taskIndex));
                 bool success;
                 uint256 points;
                 try task.runTask() returns (uint256 result) {
@@ -266,6 +264,22 @@ contract TasksRunner is RoundManager {
             }
         }
         return tasksAvailable;
+    }
+
+    /**
+     * @notice Returns a bitflags value for tasks available for execution.
+     * @return Bitflags where each set bit represents an available task index.
+     */
+    function getTasksAvailableAsFlags() external view returns (uint256) {
+        uint256 taskLength = tasks.length();
+        uint256 flags = 0;
+        for (uint256 i = 0; i < taskLength; i++) {
+            ITask task = ITask(tasks.at(i));
+            if (task.checkTask()) {
+                flags |= (uint256(1) << i);
+            }
+        }
+        return flags;
     }
 
     /**
