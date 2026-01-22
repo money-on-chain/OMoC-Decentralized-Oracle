@@ -278,8 +278,12 @@ contract TasksRunner is RoundManager {
         uint256 flags = 0;
         for (uint256 i = 0; i < taskLength; i++) {
             ITask task = ITask(tasks.at(i));
-            if (task.checkTask()) {
-                flags |= (uint256(1) << i);
+            try task.checkTask() returns (bool isAvailable) {
+                if (isAvailable) {
+                    flags |= (uint256(1) << i);
+                }
+            } catch {
+                // If checkTask reverts, treat the task as unavailable and continue.
             }
         }
         return flags;
