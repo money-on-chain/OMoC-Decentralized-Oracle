@@ -15,6 +15,9 @@ import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/
 ///      if the task should be executed, and a runTask function that performs the task and returns points earned.
 ///      The contract also manages the execution of tasks based on signatures from oracles,
 ///      ensuring that the execution is authorized and valid.
+///      Checking task availability is expensive to do on-chain, so the list of tasks to be run is ultimately
+///      decided by oracle consensus, with help from this contract's public view methods.
+///      It is possible, but unlikely, that consensus attempts to run tasks that are not available to run.
 contract TasksRunner is RoundManager {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -181,7 +184,7 @@ contract TasksRunner is RoundManager {
     }
 
     /**
-     * @notice Runs tasks based on the current state of the contract.
+     * @notice Runs tasks selected by consensus of OMOC nodes. All tasks are assumed to be available.
      * @param _ownerAddr The address of the oracle owner.
      * @param _votedOracle The address of the oracle voted as a publisher by the network.
      * @param _blockNumber The block number at which the tasks are being executed.
