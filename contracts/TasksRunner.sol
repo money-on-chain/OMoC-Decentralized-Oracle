@@ -155,14 +155,14 @@ contract TasksRunner is RoundManager {
         // NOTE: Message Size is 148 = sizeof(uint256) + sizeof(bytes32)
         // + sizeof(uint256) + sizeof(address) + sizeof(uint256)
         //
-        bytes memory hData = abi.encodePacked(
+        bytes32 h = keccak256(abi.encodePacked(
             "\x19Ethereum Signed Message:\n148",
             _version, // 32
             _name, // 32
             _tasksFlags, // 32
             _votedOracle, // 20
             _blockNumber // 32
-        );
+        ));
         _validateExecution(
             ownerAddr,
             _version,
@@ -171,16 +171,30 @@ contract TasksRunner is RoundManager {
             _sigV,
             _sigR,
             _sigS,
-            keccak256(hData)
+            h
         );
-        (uint256 pointEarned, uint256 coinbaseEarned) = _runTasks(
+        _runTasksAndPay(
             ownerAddr,
             _votedOracle,
             _blockNumber,
             _tasksFlags
         );
-        roundInfo.addPoints(ownerAddr, pointEarned);
-        _transfer(ownerAddr, coinbaseEarned);
+    }
+
+    function _runTasksAndPay(
+        address _ownerAddr,
+        address _votedOracle,
+        uint256 _blockNumber,
+        uint256 _tasksFlags
+    ) internal {
+        (uint256 pointEarned, uint256 coinbaseEarned) = _runTasks(
+            _ownerAddr,
+            _votedOracle,
+            _blockNumber,
+            _tasksFlags
+        );
+        roundInfo.addPoints(_ownerAddr, pointEarned);
+        _transfer(_ownerAddr, coinbaseEarned);
     }
 
     /**
@@ -206,12 +220,11 @@ contract TasksRunner is RoundManager {
         uint256 taskLength = tasks.length();
         // some tasks may pay the execution fee in coinbase
         uint256 coinbaseBalance = address(this).balance;
+        bool success;
+        uint256 points;
         while (executed < maxTasksPerBatch && i != startIndex + taskLength) {
-            uint256 taskIndex = i % taskLength;
-            if (((_tasksFlags >> taskIndex) & 1) == 1) {
-                ITask task = ITask(tasks.at(taskIndex));
-                bool success;
-                uint256 points;
+            if (((_tasksFlags >> (i % taskLength)) & 1) == 1) {
+                ITask task = ITask(tasks.at( i % taskLength));
                 try task.runTask() returns (uint256 result) {
                     success = true;
                     points = result;
