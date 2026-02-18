@@ -259,9 +259,6 @@ contract TasksRunner is RoundManager {
         uint256 taskLength = tasks.length();
         for (uint256 i = 0; i < taskLength; i++) {
             ITask task = ITask(tasks.at(i));
-            if (task.checkTask()) {
-                return true;
-            }
             try task.checkTask() returns (bool isAvailable) {
                 if (isAvailable) {
                     return true;
