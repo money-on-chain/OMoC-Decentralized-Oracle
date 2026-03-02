@@ -259,8 +259,12 @@ contract TasksRunner is RoundManager {
         uint256 taskLength = tasks.length();
         for (uint256 i = 0; i < taskLength; i++) {
             ITask task = ITask(tasks.at(i));
-            if (task.checkTask()) {
-                return true;
+            try task.checkTask() returns (bool isAvailable) {
+                if (isAvailable) {
+                    return true;
+                }
+            } catch {
+                // If checkTask reverts, treat the task as unavailable and continue.
             }
         }
         return false;
@@ -275,8 +279,12 @@ contract TasksRunner is RoundManager {
         address[] memory tasksAvailable = new address[](taskLength);
         for (uint256 i = 0; i < taskLength; i++) {
             ITask task = ITask(tasks.at(i));
-            if (task.checkTask()) {
-                tasksAvailable[i] = address(task);
+            try task.checkTask() returns (bool isAvailable) {
+                if (isAvailable) {
+                    tasksAvailable[i] = address(task);
+                }
+            } catch {
+                // If checkTask reverts, treat the task as unavailable and continue.
             }
         }
         return tasksAvailable;
