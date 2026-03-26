@@ -286,7 +286,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
     }
 
     /// @notice Distribute rewards to oracles, taking fees from this smart contract.
-    function _distributeRewards() internal {
+    function _distributeRewards() internal virtual {
         if (roundInfo.totalPoints == 0) return;
         uint256 availableRewardFees = token.balanceOf(address(this));
         if (availableRewardFees == 0) return;

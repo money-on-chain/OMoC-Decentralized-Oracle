@@ -6,6 +6,7 @@ import {ITask} from "./interfaces/ITask.sol";
 import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
 import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
 import {OracleManager} from "./OracleManager.sol";
+import {IPriceProvider} from "./IPriceProvider.sol";
 import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
 /// @title TasksRunner
@@ -25,6 +26,9 @@ contract TasksRunner is RoundManager {
     uint256 public maxTasksPerBatch;
     uint256 public lastTaskIndex;
     uint256 private minOraclesPerRound; // Optional override to bypass registry-driven minimum oracle quorum.
+    IPriceProvider public tokenToCoinbasePriceProvider;
+    IPriceProvider public baseFeeProvider;
+    mapping(address => uint256) public oracleOwnerCoinbaseUsed;
 
     function getMinOraclesPerRound() public view override returns (uint256) {
         if (minOraclesPerRound != 0) {
@@ -59,6 +63,8 @@ contract TasksRunner is RoundManager {
      * @param _oracleManager The contract of the oracle manager.
      * @param _registry The registry contract
      * @param _minOraclesPerRound The minimum number of oracles required to run tasks. If 0, use registry value.
+     * @param _tokenToCoinbasePriceProvider Price provider for token-to-coinbase conversion.
+     * @param _baseFeeProvider Price provider for base fee.
      */
     function initialize(
         IGovernor _governor,
@@ -71,7 +77,9 @@ contract TasksRunner is RoundManager {
         uint256 _maxTasksPerBatch,
         OracleManager _oracleManager,
         IRegistry _registry,
-        uint256 _minOraclesPerRound
+        uint256 _minOraclesPerRound,
+        IPriceProvider _tokenToCoinbasePriceProvider,
+        IPriceProvider _baseFeeProvider
     ) external initializer {
         __RoundManager_init(
             _governor,
@@ -90,6 +98,8 @@ contract TasksRunner is RoundManager {
         maxTasksPerBatch = _maxTasksPerBatch;
         lastTaskIndex = 0;
         minOraclesPerRound = _minOraclesPerRound;
+        tokenToCoinbasePriceProvider = _tokenToCoinbasePriceProvider;
+        baseFeeProvider = _baseFeeProvider;
     }
 
     /**
@@ -129,6 +139,68 @@ contract TasksRunner is RoundManager {
     }
 
     /**
+     * @notice Sets the token-to-coinbase price provider.
+     * @param _tokenToCoinbasePriceProvider Price provider for token-to-coinbase conversion.
+     * @dev This function can only be called by an authorized changer.
+     */
+    function setTokenToCoinbasePriceProvider(IPriceProvider _tokenToCoinbasePriceProvider)
+        external
+        onlyAuthorizedChanger
+    {
+        tokenToCoinbasePriceProvider = _tokenToCoinbasePriceProvider;
+    }
+
+    /**
+     * @notice Sets the base fee price provider.
+     * @param _baseFeeProvider Price provider for base fee.
+     * @dev This function can only be called by an authorized changer.
+     */
+    function setBaseFeeProvider(IPriceProvider _baseFeeProvider) external onlyAuthorizedChanger {
+        baseFeeProvider = _baseFeeProvider;
+    }
+
+    /**
+     * @notice Gets the base fee value from the configured price provider.
+     * @return baseFee The base fee price value.
+     */
+    function _getBaseFee() internal view returns (uint256) {
+        (uint256 baseFee, ) = baseFeeProvider.peek();
+        return baseFee;
+    }
+
+    /**
+     * @notice Gets the token-to-coinbase price from the configured price provider.
+     * @return tokenToCoinbasePrice The conversion rate from token units to coinbase units.
+     */
+    function _getTokenToCoinbasePrice() internal view returns (uint256) {
+        (uint256 tokenToCoinbasePrice, ) = tokenToCoinbasePriceProvider.peek();
+        return tokenToCoinbasePrice;
+    }
+
+    /**
+     * @notice Calculates the token reward for gas used by one oracle owner in the current round.
+     * @param oracleOwnerAddr Oracle owner address.
+     * @param availableRewardFees Current reward token balance available for distribution.
+     * @return tokenReward Amount of tokens to reward for gas usage.
+     */
+    function _getRewardTokensForGasUsed(
+        address oracleOwnerAddr,
+        uint256 availableRewardFees
+    ) internal override returns (uint256) {
+        uint256 coinbaseUsed = oracleOwnerCoinbaseUsed[oracleOwnerAddr];
+        if (coinbaseUsed == 0) {
+            return 0;
+        }
+
+        uint256 tokenReward = coinbaseUsed.div(_getTokenToCoinbasePrice());
+        if (tokenReward == 0 || tokenReward > availableRewardFees) {
+            return 0;
+        }
+        oracleOwnerCoinbaseUsed[oracleOwnerAddr] = 0;
+        return tokenReward;
+    }
+
+    /**
      * @notice Executes tasks based on the provided parameters and signatures.
      * @param _version Version number of message format (3)
      * @param _name The contract name to report (must match this contract)
@@ -149,6 +221,7 @@ contract TasksRunner is RoundManager {
         bytes32[] calldata _sigR,
         bytes32[] calldata _sigS
     ) external {
+        uint256 initialGas = gasleft();
         require(_name == coinPair, "Name - contract mismatch");
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
         //
@@ -181,20 +254,26 @@ contract TasksRunner is RoundManager {
         );
     }
 
+
     function _runTasksAndPay(
         address _ownerAddr,
         address _votedOracle,
         uint256 _blockNumber,
         uint256 _tasksFlags
     ) internal {
-        (uint256 pointEarned, uint256 coinbaseEarned) = _runTasks(
+        uint256 pointEarned = _runTasks(
             _ownerAddr,
             _votedOracle,
             _blockNumber,
             _tasksFlags
         );
-        roundInfo.addPoints(_ownerAddr, pointEarned);
-        _transfer(_ownerAddr, coinbaseEarned);
+        roundInfo.addPoints(ownerAddr, pointEarned);
+
+        uint256 gasUsed = initialGas.sub(gasleft());
+        uint256 baseFee = _getBaseFee();
+        uint256 coinbaseUsed = gasUsed.mul(baseFee);
+        uint256 totalCoinbaseUsed = oracleOwnerCoinbaseUsed[ownerAddr].add(coinbaseUsed);
+        oracleOwnerCoinbaseUsed[ownerAddr] = totalCoinbaseUsed;
     }
 
     /**
@@ -204,22 +283,19 @@ contract TasksRunner is RoundManager {
      * @param _blockNumber The block number at which the tasks are being executed.
      * @param _tasksFlags Bitflags for tasks to be considered for execution.
      * @return pointEarned The total points earned from executing the tasks.
-     * @return coinbaseEarned The total coinbase earned from executing the tasks.
      */
     function _runTasks(
         address _ownerAddr,
         address _votedOracle,
         uint256 _blockNumber,
         uint256 _tasksFlags
-    ) internal returns (uint256 pointEarned, uint256 coinbaseEarned) {
+    ) internal returns (uint256 pointEarned) {
         lastPublicationBlock = block.number;
 
         uint256 startIndex = lastTaskIndex;
         uint256 i = startIndex;
         uint256 executed = 0;
         uint256 taskLength = tasks.length();
-        // some tasks may pay the execution fee in coinbase
-        uint256 coinbaseBalance = address(this).balance;
         bool success;
         uint256 points;
         while (executed < maxTasksPerBatch && i != startIndex + taskLength) {
@@ -248,7 +324,51 @@ contract TasksRunner is RoundManager {
         }
 
         lastTaskIndex = i % taskLength;
-        return (pointEarned, address(this).balance.sub(coinbaseBalance));
+        return pointEarned;
+    }
+
+    /** 
+     * @notice Distribute rewards to oracles, taking fees from this smart contract.
+     * @dev Overrides RoundManager to:
+     *  1. Oracles receive the gas spent to execute the tasks in Tokens
+     *  2. Oracles shares are capped depending on their pct of stake
+     */
+    function _distributeRewards() internal override {
+        uint256 availableRewardFees = token.balanceOf(address(this));
+        if (availableRewardFees == 0) return;
+        
+        uint256 roundInfoLength = roundInfo.length();
+        address[] memory oracleOwners = new address[](roundInfoLength);
+        uint256[] memory gasRewardByOracle = new uint256[](roundInfoLength);
+
+        for (uint256 i = 0; i < roundInfoLength; i++) {
+            address oracleOwnerAddr = roundInfo.at(i);
+            oracleOwners[i] = oracleOwnerAddr;
+            uint256 gasReward = _getRewardTokensForGasUsed(oracleOwnerAddr, availableRewardFees);
+            if (gasReward > 0) {
+                availableRewardFees = availableRewardFees.sub(gasReward);
+                gasRewardByOracle[i] = gasReward;
+            }
+        }
+
+        for (uint256 i = 0; i < roundInfoLength; i++) {
+            uint256 distAmount = gasRewardByOracle[i];
+            uint256 points = roundInfo.getPoints(oracleOwners[i]);
+            if (points > 0) {
+                distAmount = distAmount.add(
+                    ((points).mul(availableRewardFees)).div(roundInfo.totalPoints)
+                );
+            }
+            if (distAmount > 0) {
+                require(token.transfer(oracleOwners[i], distAmount), "Token transfer failed");
+                emit OracleRewardTransfer(
+                    roundInfo.number,
+                    oracleOwners[i],
+                    oracleOwners[i],
+                    distAmount
+                );
+            }
+        }
     }
 
     /**

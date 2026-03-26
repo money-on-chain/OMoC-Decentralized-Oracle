@@ -37,8 +37,11 @@ contract('TasksRunner', (accounts) => {
 
         const MockTask = artifacts.require('MockTask');
         const MockRevertingRunTask = artifacts.require('MockRevertingRunTask');
+        const MockIPriceProvider = artifacts.require('MockIPriceProvider');
         this.mockTask = await MockTask.new(true, 5);
         this.revertingTask = await MockRevertingRunTask.new();
+        this.mockTokenToCoinbaseProvider = await MockIPriceProvider.new(1, true, 0);
+        this.mockBaseFeeProvider = await MockIPriceProvider.new(1, true, 0);
 
         const TasksRunner = artifacts.require('TasksRunner');
         this.tasksRunner = await helpers.deployProxySimple(TasksRunner);
@@ -54,6 +57,8 @@ contract('TasksRunner', (accounts) => {
             this.oracleMgr.address,
             this.registry,
             1,
+            this.mockTokenToCoinbaseProvider.address,
+            this.mockBaseFeeProvider.address,
             { from: GOVERNOR_OWNER },
         );
 
@@ -120,6 +125,47 @@ contract('TasksRunner', (accounts) => {
         const selectedOwners = roundInfo[4];
         assert.equal(selectedOwners.length, 1);
         assert.equal(selectedOwners[0], ORACLE_OWNER);
+
+        const usedCoinbase = await this.tasksRunner.oracleOwnerCoinbaseUsed(ORACLE_OWNER);
+        assert(usedCoinbase.gt(new BN(0)));
+    });
+
+    it('distributes token rewards equivalent to execution coinbase usage on switchRound', async () => {
+        const lastPublicationBlock = await this.tasksRunner.getLastPublicationBlock();
+        const message = buildRunTasksMessage(
+            3,
+            TASKS_PAIR,
+            ORACLE_ACCOUNT,
+            lastPublicationBlock.toString(),
+        );
+        const signature = ethers.utils.splitSignature(
+            await web3.eth.sign(message.encMsg, ORACLE_ACCOUNT),
+        );
+
+        await this.tasksRunner.runTasks(
+            message.version,
+            message.coinPair,
+            message.votedOracle,
+            message.blockNumber,
+            [signature.v],
+            [signature.r],
+            [signature.s],
+            { from: ORACLE_ACCOUNT },
+        );
+
+        const usedBefore = await this.tasksRunner.oracleOwnerCoinbaseUsed(ORACLE_OWNER);
+        assert(usedBefore.gt(new BN(0)));
+
+        const initialOracleBalance = await this.token.balanceOf(ORACLE_OWNER);
+        await this.governor.mint(this.token.address, this.tasksRunner.address, MIN_STAKE.toString());
+        await helpers.mineUntilNextRound(this.tasksRunner);
+        await this.tasksRunner.switchRound({ from: ORACLE_OWNER });
+
+        const finalOracleBalance = await this.token.balanceOf(ORACLE_OWNER);
+        assert(finalOracleBalance.gt(initialOracleBalance));
+
+        const usedAfter = await this.tasksRunner.oracleOwnerCoinbaseUsed(ORACLE_OWNER);
+        assert(usedAfter.lt(usedBefore));
     });
 
     it('returns available tasks as bitflags', async () => {
