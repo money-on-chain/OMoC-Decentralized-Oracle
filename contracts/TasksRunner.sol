@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
+pragma experimental ABIEncoderV2;
 
 import {RoundManager} from "./RoundManager.sol";
 import {ITask} from "./interfaces/ITask.sol";
@@ -22,13 +23,23 @@ import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/
 contract TasksRunner is RoundManager {
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    uint256 internal constant PRECISION = 10**18;
+
     EnumerableSet.AddressSet private tasks;
     uint256 public maxTasksPerBatch;
     uint256 public lastTaskIndex;
     uint256 private minOraclesPerRound; // Optional override to bypass registry-driven minimum oracle quorum.
     IPriceProvider public tokenToCoinbasePriceProvider;
     IPriceProvider public baseFeeProvider;
+    uint256 public sharesCapMultiplier;
     mapping(address => uint256) public oracleOwnerCoinbaseUsed;
+
+    struct TasksRunnerParams {
+        uint256 maxTasksPerBatch;
+        IPriceProvider tokenToCoinbasePriceProvider;
+        IPriceProvider baseFeeProvider;
+        uint256 sharesCapMultiplier;
+    }
 
     function getMinOraclesPerRound() public view override returns (uint256) {
         if (minOraclesPerRound != 0) {
@@ -59,12 +70,14 @@ contract TasksRunner is RoundManager {
      * @param _maxOraclesPerRound The maximum count of oracles selected to participate each round.
      * @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles.
      * @param _roundLockPeriod The minimum time span for each round before a new one can be started, in seconds.
-     * @param _maxTasksPerBatch The maximum number of tasks to be executed in a single batch.
      * @param _oracleManager The contract of the oracle manager.
      * @param _registry The registry contract
      * @param _minOraclesPerRound The minimum number of oracles required to run tasks. If 0, use registry value.
-     * @param _tokenToCoinbasePriceProvider Price provider for token-to-coinbase conversion.
-     * @param _baseFeeProvider Price provider for base fee.
+     * @param _tasksRunnerParams TasksRunner-specific config:
+     *  - maxTasksPerBatch: The maximum number of tasks to be executed in a single batch.
+     *  - tokenToCoinbasePriceProvider: Price provider for token-to-coinbase conversion.
+     *  - baseFeeProvider: Price provider for base fee.
+     *  - sharesCapMultiplier: Shares cap multiplier used for reward distribution.
      */
     function initialize(
         IGovernor _governor,
@@ -74,12 +87,10 @@ contract TasksRunner is RoundManager {
         uint256 _maxOraclesPerRound,
         uint256 _maxSubscribedOraclesPerRound,
         uint256 _roundLockPeriod,
-        uint256 _maxTasksPerBatch,
         OracleManager _oracleManager,
         IRegistry _registry,
         uint256 _minOraclesPerRound,
-        IPriceProvider _tokenToCoinbasePriceProvider,
-        IPriceProvider _baseFeeProvider
+        TasksRunnerParams calldata _tasksRunnerParams
     ) external initializer {
         __RoundManager_init(
             _governor,
@@ -91,15 +102,18 @@ contract TasksRunner is RoundManager {
             _oracleManager,
             _registry
         );
+
         for (uint256 i = 0; i < _tasks.length; i++) {
             tasks.add(_tasks[i]);
         }
+
         lastPublicationBlock = block.number;
-        maxTasksPerBatch = _maxTasksPerBatch;
         lastTaskIndex = 0;
         minOraclesPerRound = _minOraclesPerRound;
-        tokenToCoinbasePriceProvider = _tokenToCoinbasePriceProvider;
-        baseFeeProvider = _baseFeeProvider;
+        maxTasksPerBatch =  _tasksRunnerParams.maxTasksPerBatch;
+        tokenToCoinbasePriceProvider = _tasksRunnerParams.tokenToCoinbasePriceProvider;
+        baseFeeProvider =  _tasksRunnerParams.baseFeeProvider;
+        sharesCapMultiplier = _tasksRunnerParams.sharesCapMultiplier;
     }
 
     /**
@@ -160,12 +174,21 @@ contract TasksRunner is RoundManager {
     }
 
     /**
+     * @notice Sets the shares cap multiplier.
+     * @param _sharesCapMultiplier Shares cap multiplier used for reward distribution.
+     * @dev This function can only be called by an authorized changer.
+     */
+    function setSharesCapMultiplier(uint256 _sharesCapMultiplier) external onlyAuthorizedChanger {
+        sharesCapMultiplier = _sharesCapMultiplier;
+    }
+
+    /**
      * @notice Gets the base fee value from the configured price provider.
      * @return baseFee The base fee price value.
      */
     function _getBaseFee() internal view returns (uint256) {
-        (uint256 baseFee, ) = baseFeeProvider.peek();
-        return baseFee;
+        (bytes32 baseFee, ) = baseFeeProvider.peek();
+        return uint256(baseFee);
     }
 
     /**
@@ -173,8 +196,8 @@ contract TasksRunner is RoundManager {
      * @return tokenToCoinbasePrice The conversion rate from token units to coinbase units.
      */
     function _getTokenToCoinbasePrice() internal view returns (uint256) {
-        (uint256 tokenToCoinbasePrice, ) = tokenToCoinbasePriceProvider.peek();
-        return tokenToCoinbasePrice;
+        (bytes32 price, ) = tokenToCoinbasePriceProvider.peek();
+        return uint256(price);
     }
 
     /**
@@ -186,13 +209,13 @@ contract TasksRunner is RoundManager {
     function _getRewardTokensForGasUsed(
         address oracleOwnerAddr,
         uint256 availableRewardFees
-    ) internal override returns (uint256) {
+    ) internal returns (uint256) {
         uint256 coinbaseUsed = oracleOwnerCoinbaseUsed[oracleOwnerAddr];
         if (coinbaseUsed == 0) {
             return 0;
         }
 
-        uint256 tokenReward = coinbaseUsed.div(_getTokenToCoinbasePrice());
+        uint256 tokenReward = coinbaseUsed.mul(PRECISION).div(_getTokenToCoinbasePrice());
         if (tokenReward == 0 || tokenReward > availableRewardFees) {
             return 0;
         }
@@ -252,6 +275,14 @@ contract TasksRunner is RoundManager {
             _blockNumber,
             _tasksFlags
         );
+
+        // do not pay gas if there was nothing to execute
+        if(_tasksFlags > 0){
+            uint256 baseFee = _getBaseFee();
+            uint256 gasUsed = initialGas.sub(gasleft());
+            uint256 coinbaseUsed = gasUsed.mul(baseFee);
+            oracleOwnerCoinbaseUsed[ownerAddr] = oracleOwnerCoinbaseUsed[ownerAddr].add(coinbaseUsed);
+        }
     }
 
 
@@ -267,13 +298,7 @@ contract TasksRunner is RoundManager {
             _blockNumber,
             _tasksFlags
         );
-        roundInfo.addPoints(ownerAddr, pointEarned);
-
-        uint256 gasUsed = initialGas.sub(gasleft());
-        uint256 baseFee = _getBaseFee();
-        uint256 coinbaseUsed = gasUsed.mul(baseFee);
-        uint256 totalCoinbaseUsed = oracleOwnerCoinbaseUsed[ownerAddr].add(coinbaseUsed);
-        oracleOwnerCoinbaseUsed[ownerAddr] = totalCoinbaseUsed;
+        roundInfo.addPoints(_ownerAddr, pointEarned);
     }
 
     /**
@@ -336,11 +361,14 @@ contract TasksRunner is RoundManager {
     function _distributeRewards() internal override {
         uint256 availableRewardFees = token.balanceOf(address(this));
         if (availableRewardFees == 0) return;
-        
+
         uint256 roundInfoLength = roundInfo.length();
         address[] memory oracleOwners = new address[](roundInfoLength);
         uint256[] memory gasRewardByOracle = new uint256[](roundInfoLength);
-
+        uint256[] memory stakes = new uint256[](roundInfoLength);
+        uint256 totalStake = 0;
+        OracleManager localOracleManager = oracleManager;
+        // cache oracle owners, compute per-oracle gas rewards, and aggregate total stake.
         for (uint256 i = 0; i < roundInfoLength; i++) {
             address oracleOwnerAddr = roundInfo.at(i);
             oracleOwners[i] = oracleOwnerAddr;
@@ -349,26 +377,71 @@ contract TasksRunner is RoundManager {
                 availableRewardFees = availableRewardFees.sub(gasReward);
                 gasRewardByOracle[i] = gasReward;
             }
+            uint256 oracleStake = localOracleManager.getStake(oracleOwnerAddr);
+            stakes[i] = oracleStake;
+            totalStake = totalStake.add(oracleStake);
         }
 
+        uint256 totalPoints = roundInfo.totalPoints;
+        uint256 roundNumber = roundInfo.number;
+        uint256 localSharesCapMultiplier = sharesCapMultiplier;
+        // distribute points rewards (capped by stake share) plus gas rewards.
         for (uint256 i = 0; i < roundInfoLength; i++) {
-            uint256 distAmount = gasRewardByOracle[i];
-            uint256 points = roundInfo.getPoints(oracleOwners[i]);
-            if (points > 0) {
-                distAmount = distAmount.add(
-                    ((points).mul(availableRewardFees)).div(roundInfo.totalPoints)
-                );
-            }
+            uint256 pointsReward = _getCappedPointsReward(
+                roundInfo.getPoints(oracleOwners[i]),
+                availableRewardFees,
+                totalPoints,
+                stakes[i],
+                totalStake,
+                localSharesCapMultiplier
+            );
+            uint256 distAmount = gasRewardByOracle[i].add(pointsReward);
             if (distAmount > 0) {
                 require(token.transfer(oracleOwners[i], distAmount), "Token transfer failed");
                 emit OracleRewardTransfer(
-                    roundInfo.number,
+                    roundNumber,
                     oracleOwners[i],
                     oracleOwners[i],
                     distAmount
                 );
             }
         }
+    }
+
+    /**
+     * @notice Calculates the points-based reward for one oracle applying the stake-share cap.
+     * @dev Returns zero when there are no points, no available fees, or invalid denominators.
+     * @param points Oracle points in the current round.
+     * @param availableRewardFees Remaining rewards pool after gas reimbursement.
+     * @param totalPoints Total points accumulated in the current round.
+     * @param stake Oracle stake used to compute its maximum share.
+     * @param totalStake Sum of stakes for selected oracle owners.
+     * @param capMultiplier Multiplier applied over stake share to cap reward share.
+     * @return pointsReward Points-based reward after cap.
+     */
+    function _getCappedPointsReward(
+        uint256 points,
+        uint256 availableRewardFees,
+        uint256 totalPoints,
+        uint256 stake,
+        uint256 totalStake,
+        uint256 capMultiplier
+    ) internal pure returns (uint256) {
+        if (points == 0 || totalPoints == 0 || totalStake == 0 || availableRewardFees == 0) {
+            return 0;
+        }
+
+        uint256 pointsReward = availableRewardFees.mul(points).div(totalPoints);
+        uint256 maxShare = stake.mul(capMultiplier).div(totalStake);
+        if (maxShare >= PRECISION) {
+            return pointsReward;
+        }
+
+        uint256 maxReward = availableRewardFees.mul(maxShare).div(PRECISION);
+        if (pointsReward > maxReward) {
+            return maxReward;
+        }
+        return pointsReward;
     }
 
     /**

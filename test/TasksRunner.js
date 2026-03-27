@@ -53,12 +53,15 @@ contract('TasksRunner', (accounts) => {
             5,
             10,
             60,
-            10,
             this.oracleMgr.address,
             this.registry,
             1,
-            this.mockTokenToCoinbaseProvider.address,
-            this.mockBaseFeeProvider.address,
+            [
+                10,
+                this.mockTokenToCoinbaseProvider.address,
+                this.mockBaseFeeProvider.address,
+                1,
+            ],
             { from: GOVERNOR_OWNER },
         );
 
