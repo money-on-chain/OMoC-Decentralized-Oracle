@@ -53,7 +53,6 @@ contract TasksRunner is RoundManager {
         address votedOracle,
         address task,
         uint256 blockNumber,
-        uint256 points,
         bool success
     );
 
@@ -292,13 +291,13 @@ contract TasksRunner is RoundManager {
         uint256 _blockNumber,
         uint256 _tasksFlags
     ) internal {
-        uint256 pointEarned = _runTasks(
+        uint256 points = _runTasks(
             _ownerAddr,
             _votedOracle,
             _blockNumber,
             _tasksFlags
         );
-        roundInfo.addPoints(_ownerAddr, pointEarned);
+        roundInfo.addPoints(_ownerAddr, points);
     }
 
     /**
@@ -307,14 +306,14 @@ contract TasksRunner is RoundManager {
      * @param _votedOracle The address of the oracle voted as a publisher by the network.
      * @param _blockNumber The block number at which the tasks are being executed.
      * @param _tasksFlags Bitflags for tasks to be considered for execution.
-     * @return pointEarned The total points earned from executing the tasks.
+     * @return points The total points earned from executing the tasks.
      */
     function _runTasks(
         address _ownerAddr,
         address _votedOracle,
         uint256 _blockNumber,
         uint256 _tasksFlags
-    ) internal returns (uint256 pointEarned) {
+    ) internal returns (uint256 points) {
         lastPublicationBlock = block.number;
 
         uint256 startIndex = lastTaskIndex;
@@ -322,34 +321,30 @@ contract TasksRunner is RoundManager {
         uint256 executed = 0;
         uint256 taskLength = tasks.length();
         bool success;
-        uint256 points;
         while (executed < maxTasksPerBatch && i != startIndex + taskLength) {
             if (((_tasksFlags >> (i % taskLength)) & 1) == 1) {
                 ITask task = ITask(tasks.at( i % taskLength));
-                try task.runTask() returns (uint256 result) {
+                try task.runTask() {
                     success = true;
-                    points = result;
-                    pointEarned = pointEarned.add(points);
+                    ++points;
                 } catch {
                     success = false;
-                    points = 0;
                 }
                 emit TaskExecuted(
                     _ownerAddr,
                     _votedOracle,
                     address(task),
                     _blockNumber,
-                    points,
                     success
                 );
-                executed++;
+                ++executed;
             }
 
-            i++;
+            ++i;
         }
 
         lastTaskIndex = i % taskLength;
-        return pointEarned;
+        return points;
     }
 
     /** 
