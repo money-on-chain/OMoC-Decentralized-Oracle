@@ -442,6 +442,9 @@ abstract contract RoundManager is CoinPairPriceStorage {
             address ownerRec = oracleManager.getOracleOwner(rec);
             if (roundInfo.isSelected(ownerRec)) {
                 validSigs += 1;
+                // Reset here so signer activity is reflected even in rounds where auto-unsubscribe
+                // accounting is skipped (for example, when disabled or constrained by min subscribed floor).
+                missedSignatureRoundsByOracle[ownerRec] = 0;
                 lastSignedRoundByOracle[ownerRec] = roundInfo.number;
             }
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
@@ -476,9 +479,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
 
         for (uint256 i = 0; i < _selectedOwners.length; i++) {
             address ownerAddr = _selectedOwners[i];
-            if (lastSignedRoundByOracle[ownerAddr] == _roundNumber) {
-                missedSignatureRoundsByOracle[ownerAddr] = 0;
-            } else {
+            if (lastSignedRoundByOracle[ownerAddr] != _roundNumber) {
                 uint256 missed = missedSignatureRoundsByOracle[ownerAddr].add(1);
                 missedSignatureRoundsByOracle[ownerAddr] = missed;
 
