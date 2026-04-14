@@ -20,6 +20,13 @@ abstract contract RoundManager is CoinPairPriceStorage {
     using SubscribedOraclesLib for SubscribedOraclesLib.SubscribedOracles;
     using SafeMath for uint256;
 
+    struct RoundConfig {
+        uint256 maxOraclesPerRound;
+        uint256 maxSubscribedOraclesPerRound;
+        uint256 roundLockPeriod;
+        uint256 maxMissedSigRounds;
+    }
+
     event OracleRewardTransfer(
         uint256 roundNumber,
         address oracleOwnerAddress,
@@ -45,10 +52,9 @@ abstract contract RoundManager is CoinPairPriceStorage {
     /// @param _governor The governor address.
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
-    /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
-    /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
-    /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
-    /// @param _maxMissedSigRounds Maximum consecutive rounds without valid signatures
+    /// @param _roundConfig Round-level config values:
+    ///        maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
+    /// @dev _roundConfig.maxMissedSigRounds defines maximum consecutive rounds without valid signatures
     ///        before automatic unsubscribe. Set to 0 to disable.
     /// @param _oracleManager The contract of the oracle manager.
     /// @param _registry The registry contract
@@ -56,10 +62,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
         IGovernor _governor,
         bytes32 _coinPair,
         address _tokenAddress,
-        uint256 _maxOraclesPerRound,
-        uint256 _maxSubscribedOraclesPerRound,
-        uint256 _roundLockPeriod,
-        uint256 _maxMissedSigRounds,
+        RoundConfig memory _roundConfig,
         OracleManager _oracleManager,
         IRegistry _registry
     ) internal {
@@ -74,9 +77,12 @@ abstract contract RoundManager is CoinPairPriceStorage {
         token = IERC20(_tokenAddress);
         oracleManager = _oracleManager;
         registry = _registry;
-        roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriod);
-        maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
-        maxMissedSigRounds = _maxMissedSigRounds;
+        roundInfo = RoundInfoLib.initRoundInfo(
+            _roundConfig.maxOraclesPerRound,
+            _roundConfig.roundLockPeriod
+        );
+        maxSubscribedOraclesPerRound = _roundConfig.maxSubscribedOraclesPerRound;
+        maxMissedSigRounds = _roundConfig.maxMissedSigRounds;
         subscribedOracles = SubscribedOraclesLib.init();
     }
 

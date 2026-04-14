@@ -26,15 +26,16 @@ async function deploy({ config, ozParams, governor, token }, artifacts) {
                 [coinPairPriceFree.address, infoGetterAddr],
                 coinPair,
                 token.address,
-                Web3.utils.toBN(coinData.minOraclesPerRound).toString(),
-                Web3.utils.toBN(coinData.maxOraclesPerRound).toString(),
-                Web3.utils.toBN(coinData.maxSubscribedOraclesPerRound).toString(),
-                Web3.utils.toBN(coinData.roundLockPeriodInSecs).toString(),
-                Web3.utils.toBN(
-                    coinData.maxMissedSigRounds ||
-                        coinData.maxMissedSignatureRoundsForAutoUnsubscribe ||
-                        0,
-                ).toString(),
+                [
+                    Web3.utils.toBN(coinData.maxOraclesPerRound).toString(),
+                    Web3.utils.toBN(coinData.maxSubscribedOraclesPerRound).toString(),
+                    Web3.utils.toBN(coinData.roundLockPeriodInSecs).toString(),
+                    Web3.utils.toBN(
+                        coinData.maxMissedSigRounds ||
+                            coinData.maxMissedSignatureRoundsForAutoUnsubscribe ||
+                            0,
+                    ).toString(),
+                ],
                 Web3.utils.toBN(coinData.validPricePeriodInBlocks).toString(),
                 Web3.utils.toBN(coinData.emergencyPublishingPeriodInBlocks).toString(),
                 coinData.bootstrapPrice,

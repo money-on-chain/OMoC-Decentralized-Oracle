@@ -66,10 +66,9 @@ contract TasksRunner is RoundManager {
      * @param _name The name used to identify the contract. Used same as coin pair identifier.
      * @param _tasks The initial list of task addresses to be added.
      * @param _tokenAddress The address of the MOC token to use.
-     * @param _maxOraclesPerRound The maximum count of oracles selected to participate each round.
-     * @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles.
-     * @param _roundLockPeriod The minimum time span for each round before a new one can be started, in seconds.
-     * @param _maxMissedSigRounds Maximum consecutive rounds without valid signatures
+     * @param _roundConfig Round-level config values:
+     * maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
+     * @dev _roundConfig.maxMissedSigRounds defines maximum consecutive rounds without valid signatures
      * before automatic unsubscribe. Set to 0 to disable.
      * @param _oracleManager The contract of the oracle manager.
      * @param _registry The registry contract
@@ -85,23 +84,18 @@ contract TasksRunner is RoundManager {
         bytes32 _name,
         address[] calldata _tasks,
         address _tokenAddress,
-        uint256 _maxOraclesPerRound,
-        uint256 _maxSubscribedOraclesPerRound,
-        uint256 _roundLockPeriod,
-        uint256 _maxMissedSigRounds,
+        RoundConfig calldata _roundConfig,
         OracleManager _oracleManager,
         IRegistry _registry,
         uint256 _minOraclesPerRound,
         TasksRunnerParams calldata _tasksRunnerParams
     ) external initializer {
+        RoundConfig memory roundConfig = _roundConfig;
         __RoundManager_init(
             _governor,
             _name,
             _tokenAddress,
-            _maxOraclesPerRound,
-            _maxSubscribedOraclesPerRound,
-            _roundLockPeriod,
-            _maxMissedSigRounds,
+            roundConfig,
             _oracleManager,
             _registry
         );

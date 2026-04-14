@@ -31,11 +31,7 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress', async (accounts) => {
             [accounts[0]],
             COINPAIR,
             this.token.address,
-            minOraclesPerRound,
-            maxOraclesPerRound,
-            maxSubscribedOraclesPerRound,
-            5, // roundLockPeriodInSecs,
-            0, // maxMissedSigRounds
+            [maxOraclesPerRound, maxSubscribedOraclesPerRound, 5, 0], // roundConfig
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
