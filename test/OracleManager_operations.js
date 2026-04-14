@@ -39,6 +39,7 @@ contract('OracleManager operations', async (accounts) => {
             10, // maxOraclesPerRound
             30, // maxSubscribedOraclesPerRound
             60, // roundLockPeriodInSecs,
+            0, // maxMissedSigRounds
             3, // validPricePeriodInBlocks,
             2, // emergencyPublishingPeriodInBlocks,
             '100000000', // bootstrapPrice,

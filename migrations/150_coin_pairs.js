@@ -7,6 +7,7 @@ async function deploy({ config, ozParams, governor, token }, artifacts) {
     const OracleManagerPairChange = artifacts.require('@moc/oracles/OracleManagerPairChange');
     const infoGetterAddr = helpers.ozGetAddr('@moc/oracles/InfoGetter', ozParams);
     const oracleManagerAddr = helpers.ozGetAddr('@moc/oracles/OracleManager', ozParams);
+    const registryAddr = helpers.ozGetAddr('@moc/shared/Registry', ozParams);
     const proxyAdmin = await helpers.getProxyAdmin(config, ozParams);
 
     for (const coin of Object.keys(config.stakingMachine.coinPairs)) {
@@ -29,10 +30,16 @@ async function deploy({ config, ozParams, governor, token }, artifacts) {
                 Web3.utils.toBN(coinData.maxOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.maxSubscribedOraclesPerRound).toString(),
                 Web3.utils.toBN(coinData.roundLockPeriodInSecs).toString(),
+                Web3.utils.toBN(
+                    coinData.maxMissedSigRounds ||
+                        coinData.maxMissedSignatureRoundsForAutoUnsubscribe ||
+                        0,
+                ).toString(),
                 Web3.utils.toBN(coinData.validPricePeriodInBlocks).toString(),
                 Web3.utils.toBN(coinData.emergencyPublishingPeriodInBlocks).toString(),
                 coinData.bootstrapPrice,
                 oracleManagerAddr,
+                registryAddr,
             ],
             contractAlias: 'CoinPairPrice_' + coin,
             admin: proxyAdmin,

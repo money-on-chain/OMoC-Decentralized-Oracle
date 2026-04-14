@@ -38,6 +38,8 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
     /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
     /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
     /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
+    /// @param _maxMissedSigRounds Maximum consecutive rounds without valid signatures
+    ///        before automatic unsubscribe. Set to 0 to disable.
     /// @param _validPricePeriodInBlocks The time span for which the last published price is valid.
     /// @param _emergencyPublishingPeriodInBlocks The number of blocks that must pass after a publication after which
     //          an emergency publishing must be enabled
@@ -51,6 +53,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         uint256 _maxOraclesPerRound,
         uint256 _maxSubscribedOraclesPerRound,
         uint256 _roundLockPeriod,
+        uint256 _maxMissedSigRounds,
         uint256 _validPricePeriodInBlocks,
         uint256 _emergencyPublishingPeriodInBlocks,
         uint256 _bootstrapPrice,
@@ -64,6 +67,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
             _maxOraclesPerRound,
             _maxSubscribedOraclesPerRound,
             _roundLockPeriod,
+            _maxMissedSigRounds,
             _oracleManager,
             _registry
         );
