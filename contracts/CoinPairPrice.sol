@@ -279,13 +279,32 @@ contract CoinPairPrice is
             _blockNumber
         );
         bytes32 messageHash = keccak256(hData);
+        uint256 validSigs = _countValidOwnerSignatures(messageHash, _sigV, _sigR, _sigS);
 
+        require(
+            validSigs > roundInfo.length() / 2,
+            "Valid signatures count must exceed 50% of active oracles"
+        );
+
+        roundInfo.addPoints(ownerAddr, 1);
+        _publish(_price);
+
+        emit PricePublished(ownerAddr, _price, _votedOracle, _blockNumber);
+    }
+
+    function _countValidOwnerSignatures(
+        bytes32 _messageHash,
+        uint8[] memory _sigV,
+        bytes32[] memory _sigR,
+        bytes32[] memory _sigS
+    ) private view returns (uint256) {
         uint256 validSigs = 0;
         address lastAddr = address(0);
         address[] memory countedOwners = new address[](_sigS.length);
         uint256 countedOwnersLen = 0;
+
         for (uint256 i = 0; i < _sigS.length; i++) {
-            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], messageHash);
+            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], _messageHash);
             address ownerRec = oracleManager.getOracleOwner(rec);
             if (roundInfo.isSelected(ownerRec)) {
                 for (uint256 j = 0; j < countedOwnersLen; j++) {
@@ -299,15 +318,7 @@ contract CoinPairPrice is
             lastAddr = rec;
         }
 
-        require(
-            validSigs > roundInfo.length() / 2,
-            "Valid signatures count must exceed 50% of active oracles"
-        );
-
-        roundInfo.addPoints(ownerAddr, 1);
-        _publish(_price);
-
-        emit PricePublished(ownerAddr, _price, _votedOracle, _blockNumber);
+        return validSigs;
     }
 
     /// @notice Publish a price without signature validation (when there is an emergecy!!!).
