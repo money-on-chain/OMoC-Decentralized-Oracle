@@ -282,10 +282,19 @@ contract CoinPairPrice is
 
         uint256 validSigs = 0;
         address lastAddr = address(0);
+        address[] memory countedOwners = new address[](_sigS.length);
+        uint256 countedOwnersLen = 0;
         for (uint256 i = 0; i < _sigS.length; i++) {
             address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], messageHash);
             address ownerRec = oracleManager.getOracleOwner(rec);
-            if (roundInfo.isSelected(ownerRec)) validSigs += 1;
+            if (roundInfo.isSelected(ownerRec)) {
+                for (uint256 j = 0; j < countedOwnersLen; j++) {
+                    require(countedOwners[j] != ownerRec, "Oracle owner already signed");
+                }
+                countedOwners[countedOwnersLen] = ownerRec;
+                countedOwnersLen += 1;
+                validSigs += 1;
+            }
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
             lastAddr = rec;
         }

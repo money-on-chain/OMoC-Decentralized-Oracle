@@ -108,6 +108,10 @@ library IterableOraclesLib {
         require(owner != address(0), "Owner address cannot be 0x0");
         uint256 valueIndex = self._indexes[owner];
         require(valueIndex != 0, "Owner not registered");
+        address oldOracleAddr = self._values[valueIndex - 1].addr;
+        if (oldOracleAddr != address(0)) {
+            delete self.registeredOwners[oldOracleAddr];
+        }
         self._values[valueIndex - 1].addr = oracleAddr;
         self.registeredOwners[oracleAddr] = owner;
     }
