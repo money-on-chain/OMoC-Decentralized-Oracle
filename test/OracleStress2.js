@@ -29,14 +29,12 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             [accounts[0]],
             COINPAIR,
             this.token.address,
-            minOraclesPerRound,
-            maxOraclesPerRound,
-            maxSubscribedOraclesPerRound,
-            5, // roundLockPeriodInSecs,
+            [maxOraclesPerRound, maxSubscribedOraclesPerRound, 5, 0], // roundConfig
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
             this.oracleMgr.address,
+            constants.ZERO_ADDRESS,
         );
 
         this.coinPairPrice2 = await CoinPairPrice.new();
@@ -45,13 +43,12 @@ contract('[ @slow ] [ @skip-on-coverage ] OracleStress2', async (accounts) => {
             [accounts[0]],
             COINPAIR2,
             this.token.address,
-            minOraclesPerRound,
-            maxOraclesPerRound,
-            5, // roundLockPeriodInSecs,
+            [maxOraclesPerRound, maxSubscribedOraclesPerRound, 5, 0], // roundConfig
             3, // validPricePeriodInBlocks
             2, // emergencyPublishingPeriodInBlocks
             1000000000000000, // bootstrapPrice,
             this.oracleMgr.address,
+            constants.ZERO_ADDRESS,
         );
 
         await this.supporters.initialize(

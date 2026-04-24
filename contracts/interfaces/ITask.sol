@@ -10,7 +10,6 @@ interface ITask {
 
     /**
      * @notice Executes the task and returns points earned.
-     * @return uint256 points earned from executing the task
      */
-    function runTask() external returns (uint256);
+    function runTask() external;
 }
