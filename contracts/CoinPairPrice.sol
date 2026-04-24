@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
+pragma experimental ABIEncoderV2;
 
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
@@ -35,9 +36,10 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
     /// @param _wlist List of whitelisted contracts (those that can get the price).
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
-    /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
-    /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
-    /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
+    /// @param _roundConfig Round-level config values:
+    ///        maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
+    /// @dev _roundConfig.maxMissedSigRounds defines maximum consecutive rounds without valid signatures
+    ///        before automatic unsubscribe. Set to 0 to disable.
     /// @param _validPricePeriodInBlocks The time span for which the last published price is valid.
     /// @param _emergencyPublishingPeriodInBlocks The number of blocks that must pass after a publication after which
     //          an emergency publishing must be enabled
@@ -48,22 +50,19 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         address[] calldata _wlist,
         bytes32 _coinPair,
         address _tokenAddress,
-        uint256 _maxOraclesPerRound,
-        uint256 _maxSubscribedOraclesPerRound,
-        uint256 _roundLockPeriod,
+        RoundConfig calldata _roundConfig,
         uint256 _validPricePeriodInBlocks,
         uint256 _emergencyPublishingPeriodInBlocks,
         uint256 _bootstrapPrice,
         OracleManager _oracleManager,
         IRegistry _registry
     ) external initializer {
+        RoundConfig memory roundConfig = _roundConfig;
         __RoundManager_init(
             _governor,
             _coinPair,
             _tokenAddress,
-            _maxOraclesPerRound,
-            _maxSubscribedOraclesPerRound,
-            _roundLockPeriod,
+            roundConfig,
             _oracleManager,
             _registry
         );

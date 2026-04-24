@@ -66,9 +66,10 @@ contract TasksRunner is RoundManager {
      * @param _name The name used to identify the contract. Used same as coin pair identifier.
      * @param _tasks The initial list of task addresses to be added.
      * @param _tokenAddress The address of the MOC token to use.
-     * @param _maxOraclesPerRound The maximum count of oracles selected to participate each round.
-     * @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles.
-     * @param _roundLockPeriod The minimum time span for each round before a new one can be started, in seconds.
+     * @param _roundConfig Round-level config values:
+     * maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
+     * @dev _roundConfig.maxMissedSigRounds defines maximum consecutive rounds without valid signatures
+     * before automatic unsubscribe. Set to 0 to disable.
      * @param _oracleManager The contract of the oracle manager.
      * @param _registry The registry contract
      * @param _minOraclesPerRound The minimum number of oracles required to run tasks. If 0, use registry value.
@@ -83,21 +84,18 @@ contract TasksRunner is RoundManager {
         bytes32 _name,
         address[] calldata _tasks,
         address _tokenAddress,
-        uint256 _maxOraclesPerRound,
-        uint256 _maxSubscribedOraclesPerRound,
-        uint256 _roundLockPeriod,
+        RoundConfig calldata _roundConfig,
         OracleManager _oracleManager,
         IRegistry _registry,
         uint256 _minOraclesPerRound,
         TasksRunnerParams calldata _tasksRunnerParams
     ) external initializer {
+        RoundConfig memory roundConfig = _roundConfig;
         __RoundManager_init(
             _governor,
             _name,
             _tokenAddress,
-            _maxOraclesPerRound,
-            _maxSubscribedOraclesPerRound,
-            _roundLockPeriod,
+            roundConfig,
             _oracleManager,
             _registry
         );
@@ -353,11 +351,15 @@ contract TasksRunner is RoundManager {
      *  1. Oracles receive the gas spent to execute the tasks in Tokens
      *  2. Oracles shares are capped depending on their pct of stake
      */
-    function _distributeRewards() internal override {
+    function _distributeRewards(
+        address[] memory _selectedOwners,
+        uint256 _roundNumber,
+        uint256 _roundTotalPoints
+    ) internal override {
         uint256 availableRewardFees = token.balanceOf(address(this));
         if (availableRewardFees == 0) return;
 
-        uint256 roundInfoLength = roundInfo.length();
+        uint256 roundInfoLength = _selectedOwners.length;
         address[] memory oracleOwners = new address[](roundInfoLength);
         uint256[] memory gasRewardByOracle = new uint256[](roundInfoLength);
         uint256[] memory stakes = new uint256[](roundInfoLength);
@@ -365,7 +367,7 @@ contract TasksRunner is RoundManager {
         OracleManager localOracleManager = oracleManager;
         // cache oracle owners, compute per-oracle gas rewards, and aggregate total stake.
         for (uint256 i = 0; i < roundInfoLength; i++) {
-            address oracleOwnerAddr = roundInfo.at(i);
+            address oracleOwnerAddr = _selectedOwners[i];
             oracleOwners[i] = oracleOwnerAddr;
             uint256 gasReward = _getRewardTokensForGasUsed(oracleOwnerAddr, availableRewardFees);
             if (gasReward > 0) {
@@ -377,8 +379,8 @@ contract TasksRunner is RoundManager {
             totalStake = totalStake.add(oracleStake);
         }
 
-        uint256 totalPoints = roundInfo.totalPoints;
-        uint256 roundNumber = roundInfo.number;
+        uint256 totalPoints = _roundTotalPoints;
+        uint256 roundNumber = _roundNumber;
         uint256 localSharesCapMultiplier = sharesCapMultiplier;
         // distribute points rewards (capped by stake share) plus gas rewards.
         for (uint256 i = 0; i < roundInfoLength; i++) {

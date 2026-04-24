@@ -59,13 +59,23 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
 
     IRegistry internal registry;
 
+    // Maximum consecutive rounds without signature contribution before auto-unsubscribe.
+    // 0 disables the mechanism.
+    uint256 internal maxMissedSigRounds;
+
+    // Consecutive rounds where each selected oracle owner did not sign a valid publication/execution.
+    mapping(address => uint256) internal missedSignatureRoundsByOracle;
+
+    // Last round number where each oracle owner signed a valid publication/execution.
+    mapping(address => uint256) internal lastSignedRoundByOracle;
+
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
     // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
 
     // Reserved storage space to allow for layout changes in the future.
-    uint256[50] private ______gap;
+    uint256[47] private ______gap;
 
     /**
       @notice Modifier that protects the function

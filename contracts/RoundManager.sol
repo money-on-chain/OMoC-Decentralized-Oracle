@@ -20,6 +20,13 @@ abstract contract RoundManager is CoinPairPriceStorage {
     using SubscribedOraclesLib for SubscribedOraclesLib.SubscribedOracles;
     using SafeMath for uint256;
 
+    struct RoundConfig {
+        uint256 maxOraclesPerRound;
+        uint256 maxSubscribedOraclesPerRound;
+        uint256 roundLockPeriod;
+        uint256 maxMissedSigRounds;
+    }
+
     event OracleRewardTransfer(
         uint256 roundNumber,
         address oracleOwnerAddress,
@@ -34,23 +41,28 @@ abstract contract RoundManager is CoinPairPriceStorage {
         uint256 lockPeriodTimestamp,
         address[] selectedOracles
     );
+    event OracleAutoUnsubscribed(
+        address oracleOwnerAddr,
+        bytes32 coinPair,
+        uint256 roundNumber,
+        uint256 missedSignatureRounds
+    );
 
     /// @notice Initializer
     /// @param _governor The governor address.
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
-    /// @param _maxOraclesPerRound The maximum count of oracles selected to participate each round
-    /// @param _maxSubscribedOraclesPerRound The maximum count of subscribed oracles
-    /// @param _roundLockPeriod The minimum time span for each round before a new one can be started, in secs.
+    /// @param _roundConfig Round-level config values:
+    ///        maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
+    /// @dev _roundConfig.maxMissedSigRounds defines maximum consecutive rounds without valid signatures
+    ///        before automatic unsubscribe. Set to 0 to disable.
     /// @param _oracleManager The contract of the oracle manager.
     /// @param _registry The registry contract
     function __RoundManager_init(
         IGovernor _governor,
         bytes32 _coinPair,
         address _tokenAddress,
-        uint256 _maxOraclesPerRound,
-        uint256 _maxSubscribedOraclesPerRound,
-        uint256 _roundLockPeriod,
+        RoundConfig memory _roundConfig,
         OracleManager _oracleManager,
         IRegistry _registry
     ) internal {
@@ -65,8 +77,12 @@ abstract contract RoundManager is CoinPairPriceStorage {
         token = IERC20(_tokenAddress);
         oracleManager = _oracleManager;
         registry = _registry;
-        roundInfo = RoundInfoLib.initRoundInfo(_maxOraclesPerRound, _roundLockPeriod);
-        maxSubscribedOraclesPerRound = _maxSubscribedOraclesPerRound;
+        roundInfo = RoundInfoLib.initRoundInfo(
+            _roundConfig.maxOraclesPerRound,
+            _roundConfig.roundLockPeriod
+        );
+        maxSubscribedOraclesPerRound = _roundConfig.maxSubscribedOraclesPerRound;
+        maxMissedSigRounds = _roundConfig.maxMissedSigRounds;
         subscribedOracles = SubscribedOraclesLib.init();
     }
 
@@ -83,6 +99,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
 
         bool added = _addOrReplaceSubscribedOracle(oracleOwnerAddr);
         require(added, "Not enough stake to add");
+        _resetAutoUnsubscribeTracking(oracleOwnerAddr);
 
         // If the round is not full, then add
         if (!roundInfo.isFull() && !roundInfo.isSelected(oracleOwnerAddr)) {
@@ -99,7 +116,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
             "Oracle is not subscribed to this coin pair"
         );
 
-        subscribedOracles.remove(oracleOwnerAddr);
+        _removeSubscribedOracle(oracleOwnerAddr);
     }
 
     /// @notice The oracle owner has withdrawn some stake.
@@ -128,7 +145,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
         }
         // if not enough stake Unsubscribe directly
         if (ownerStake < minCPSubscriptionStake) {
-            subscribedOracles.remove(oracleOwnerAddr);
+            _removeSubscribedOracle(oracleOwnerAddr);
         }
 
         if (roundInfo.lockPeriodTimestamp > block.timestamp) {
@@ -146,7 +163,15 @@ abstract contract RoundManager is CoinPairPriceStorage {
         if (roundInfo.number > 0) {
             // Not before the first round
             require(roundInfo.isReadyToSwitch(), "The current round lock period is active");
-            _distributeRewards();
+            uint256 closingRoundNumber = roundInfo.number;
+            uint256 closingRoundTotalPoints = roundInfo.totalPoints;
+            address[] memory closingSelectedOwners = roundInfo.asArray();
+            _distributeRewards(
+                closingSelectedOwners,
+                closingRoundNumber,
+                closingRoundTotalPoints
+            );
+            _processAutoUnsubscribeBySignatures(closingSelectedOwners, closingRoundNumber);
         }
 
         // Setup new round parameters
@@ -245,6 +270,24 @@ abstract contract RoundManager is CoinPairPriceStorage {
         return maxSubscribedOraclesPerRound;
     }
 
+    /// @notice Returns the threshold of consecutive missed-signature rounds before auto-unsubscribe.
+    /// @dev A value of 0 disables the auto-unsubscribe mechanism.
+    function getMaxMissedSigRounds() external view returns (uint256) {
+        return maxMissedSigRounds;
+    }
+
+    /// @notice Returns the current count of consecutive rounds without valid signatures for an oracle owner.
+    /// @param oracleOwnerAddr Oracle owner address to query.
+    function getMissedSignatureRounds(address oracleOwnerAddr) external view returns (uint256) {
+        return missedSignatureRoundsByOracle[oracleOwnerAddr];
+    }
+
+    /// @notice Returns the last round number where an oracle owner signed a valid execution.
+    /// @param oracleOwnerAddr Oracle owner address to query.
+    function getLastSignedRound(address oracleOwnerAddr) external view returns (uint256) {
+        return lastSignedRoundByOracle[oracleOwnerAddr];
+    }
+
     // Public variable
     function getOracleManager() external view returns (IOracleManager) {
         return IOracleManager(oracleManager);
@@ -266,6 +309,15 @@ abstract contract RoundManager is CoinPairPriceStorage {
         return registry.getUint(RegistryConstantsLib.ORACLE_MIN_ORACLES_PER_ROUND());
     }
 
+    /// @notice Updates the missed-signature rounds threshold used for automatic unsubscription.
+    /// @dev Only governance authorized changers can update this value. A value of 0 disables auto-unsubscribe.
+    /// @param _maxMissedSigRounds New maximum of consecutive rounds without signature contribution.
+    function setMaxMissedSigRounds(
+        uint256 _maxMissedSigRounds
+    ) external onlyAuthorizedChanger {
+        maxMissedSigRounds = _maxMissedSigRounds;
+    }
+
     // ----------------------------------------------------------------------------------------------------------------
     // Internal functions
     // ----------------------------------------------------------------------------------------------------------------
@@ -278,7 +330,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
         (uint256 minStake, address minVal) = subscribedOracles.getMin(oracleManager.getStake);
         uint256 vStake = oracleManager.getStake(oracleOwnerAddr);
         if (vStake > minStake) {
-            if (subscribedOracles.remove(minVal)) {
+            if (_removeSubscribedOracle(minVal)) {
                 return subscribedOracles.add(oracleOwnerAddr);
             }
         }
@@ -286,22 +338,29 @@ abstract contract RoundManager is CoinPairPriceStorage {
     }
 
     /// @notice Distribute rewards to oracles, taking fees from this smart contract.
-    function _distributeRewards() internal virtual {
-        if (roundInfo.totalPoints == 0) return;
+    /// @param _selectedOwners Oracle owners selected in the round being closed.
+    /// @param _roundNumber Round number being closed.
+    /// @param _roundTotalPoints Total points accumulated in the round being closed.
+    function _distributeRewards(
+        address[] memory _selectedOwners,
+        uint256 _roundNumber,
+        uint256 _roundTotalPoints
+    ) internal virtual {
+        if (_roundTotalPoints == 0) return;
         uint256 availableRewardFees = token.balanceOf(address(this));
         if (availableRewardFees == 0) return;
 
         // Distribute according to points/TotalPoints ratio
-        for (uint256 i = 0; i < roundInfo.length(); i++) {
-            address oracleOwnerAddr = roundInfo.at(i);
+        for (uint256 i = 0; i < _selectedOwners.length; i++) {
+            address oracleOwnerAddr = _selectedOwners[i];
             uint256 points = roundInfo.getPoints(oracleOwnerAddr);
             if (points == 0) {
                 continue;
             }
-            uint256 distAmount = ((points).mul(availableRewardFees)).div(roundInfo.totalPoints);
+            uint256 distAmount = ((points).mul(availableRewardFees)).div(_roundTotalPoints);
             require(token.transfer(oracleOwnerAddr, distAmount), "Token transfer failed");
             emit OracleRewardTransfer(
-                roundInfo.number,
+                _roundNumber,
                 oracleOwnerAddr,
                 oracleOwnerAddr,
                 distAmount
@@ -338,6 +397,15 @@ abstract contract RoundManager is CoinPairPriceStorage {
         return ecrecover(hash, v0, r, s);
     }
 
+    /// @notice Validates a consensus execution payload and tracks selected signers for inactivity accounting.
+    /// @param _ownerAddr Oracle owner executing the transaction.
+    /// @param _version Signed payload version.
+    /// @param _votedOracle Oracle address selected by the network as executor.
+    /// @param _blockNumber Nonce block number tied to the last publication block.
+    /// @param _sigV Signature V values.
+    /// @param _sigR Signature R values.
+    /// @param _sigS Signature S values.
+    /// @param _messageHash EIP-191 signed message hash.
     function _validateExecution(
         address _ownerAddr,
         uint256 _version,
@@ -347,7 +415,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
         bytes32[] calldata _sigR,
         bytes32[] calldata _sigS,
         bytes32 _messageHash
-    ) internal view {
+    ) internal {
         require(roundInfo.number > 0, "Round not open");
         require(roundInfo.isSelected(_ownerAddr), "Voter oracle is not part of this round");
         require(
@@ -372,7 +440,13 @@ abstract contract RoundManager is CoinPairPriceStorage {
         for (uint256 i = 0; i < _sigS.length; i++) {
             address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], _messageHash);
             address ownerRec = oracleManager.getOracleOwner(rec);
-            if (roundInfo.isSelected(ownerRec)) validSigs += 1;
+            if (roundInfo.isSelected(ownerRec)) {
+                validSigs += 1;
+                // Reset here so signer activity is reflected even in rounds where auto-unsubscribe
+                // accounting is skipped (for example, when disabled or constrained by min subscribed floor).
+                missedSignatureRoundsByOracle[ownerRec] = 0;
+                lastSignedRoundByOracle[ownerRec] = roundInfo.number;
+            }
             require(lastAddr < rec, "Signatures are not unique or not ordered by address");
             lastAddr = rec;
         }
@@ -381,6 +455,61 @@ abstract contract RoundManager is CoinPairPriceStorage {
             validSigs > roundInfo.length() / 2,
             "Valid signatures count must exceed 50% of active oracles"
         );
+    }
+
+    /// @notice Updates missed-signature counters for the closing round and auto-unsubscribes inactive oracles.
+    /// @dev Evaluates only selected oracles of the current round. Emits OracleAutoUnsubscribed on removals.
+    ///      Auto-unsubscribe stops when subscribed oracles would fall below min oracles per round + 1.
+    /// @param _selectedOwners Oracle owners selected in the round being closed.
+    /// @param _roundNumber Round number being closed.
+    function _processAutoUnsubscribeBySignatures(
+        address[] memory _selectedOwners,
+        uint256 _roundNumber
+    ) internal {
+        uint256 maxMissed = maxMissedSigRounds;
+        if (maxMissed == 0) {
+            return;
+        }
+
+        uint256 minSubscribedAfterAutoUnsubscribe = getMinOraclesPerRound().add(1);
+        uint256 subscribedCount = subscribedOracles.length();
+        if (subscribedCount <= minSubscribedAfterAutoUnsubscribe) {
+            return;
+        }
+
+        for (uint256 i = 0; i < _selectedOwners.length; i++) {
+            address ownerAddr = _selectedOwners[i];
+            if (lastSignedRoundByOracle[ownerAddr] != _roundNumber) {
+                uint256 missed = missedSignatureRoundsByOracle[ownerAddr].add(1);
+                missedSignatureRoundsByOracle[ownerAddr] = missed;
+
+                if (
+                    missed >= maxMissed && subscribedCount > minSubscribedAfterAutoUnsubscribe
+                ) {
+                    _removeSubscribedOracle(ownerAddr);
+                    subscribedCount = subscribedCount.sub(1);
+                    emit OracleAutoUnsubscribed(ownerAddr, coinPair, _roundNumber, missed);
+                }
+            }
+        }
+    }
+
+    /// @notice Removes an oracle owner from subscribed set and clears inactivity-tracking state.
+    /// @param oracleOwnerAddr Oracle owner to remove.
+    /// @return removed True when the oracle was present and removed.
+    function _removeSubscribedOracle(address oracleOwnerAddr) internal returns (bool) {
+        bool removed = subscribedOracles.remove(oracleOwnerAddr);
+        if (removed) {
+            _resetAutoUnsubscribeTracking(oracleOwnerAddr);
+        }
+        return removed;
+    }
+
+    /// @notice Clears per-oracle inactivity tracking state.
+    /// @param oracleOwnerAddr Oracle owner whose tracking state is reset.
+    function _resetAutoUnsubscribeTracking(address oracleOwnerAddr) internal {
+        delete missedSignatureRoundsByOracle[oracleOwnerAddr];
+        delete lastSignedRoundByOracle[oracleOwnerAddr];
     }
 
     // Reserved storage space to allow for layout changes in the future.
