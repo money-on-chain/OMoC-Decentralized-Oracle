@@ -279,16 +279,7 @@ contract CoinPairPrice is
             _blockNumber
         );
         bytes32 messageHash = keccak256(hData);
-
-        uint256 validSigs = 0;
-        address lastAddr = address(0);
-        for (uint256 i = 0; i < _sigS.length; i++) {
-            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], messageHash);
-            address ownerRec = oracleManager.getOracleOwner(rec);
-            if (roundInfo.isSelected(ownerRec)) validSigs += 1;
-            require(lastAddr < rec, "Signatures are not unique or not ordered by address");
-            lastAddr = rec;
-        }
+        uint256 validSigs = _countValidOwnerSignatures(messageHash, _sigV, _sigR, _sigS);
 
         require(
             validSigs > roundInfo.length() / 2,
@@ -299,6 +290,35 @@ contract CoinPairPrice is
         _publish(_price);
 
         emit PricePublished(ownerAddr, _price, _votedOracle, _blockNumber);
+    }
+
+    function _countValidOwnerSignatures(
+        bytes32 _messageHash,
+        uint8[] memory _sigV,
+        bytes32[] memory _sigR,
+        bytes32[] memory _sigS
+    ) private view returns (uint256) {
+        uint256 validSigs = 0;
+        address lastAddr = address(0);
+        address[] memory countedOwners = new address[](_sigS.length);
+        uint256 countedOwnersLen = 0;
+
+        for (uint256 i = 0; i < _sigS.length; i++) {
+            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], _messageHash);
+            address ownerRec = oracleManager.getOracleOwner(rec);
+            if (roundInfo.isSelected(ownerRec)) {
+                for (uint256 j = 0; j < countedOwnersLen; j++) {
+                    require(countedOwners[j] != ownerRec, "Oracle owner already signed");
+                }
+                countedOwners[countedOwnersLen] = ownerRec;
+                countedOwnersLen += 1;
+                validSigs += 1;
+            }
+            require(lastAddr < rec, "Signatures are not unique or not ordered by address");
+            lastAddr = rec;
+        }
+
+        return validSigs;
     }
 
     /// @notice Publish a price without signature validation (when there is an emergecy!!!).
