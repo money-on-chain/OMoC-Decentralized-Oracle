@@ -85,6 +85,15 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         iterableWhitelistData._removeFromWhitelist(_whitelisted);
     }
 
+    /// @notice Clears the registered owner of an oracle address.
+    /// @dev In Legacy version, when an oracle called setOracleAddress, the registered owner of the old oracle address was not cleared,
+    /// allowing the same owner to have multiple registered oracles. This function allows to clear the registered owner to be called in a changer
+    /// and remove the old oracle address from the system, allowing to have only one registered oracle per owner.
+    /// @param oracleAddr Address of the Oracle to delete the registered owner for.
+    function clearRegisteredOwner(address oracleAddr) external onlyAuthorizedChanger {
+        registeredOracles._clearRegisteredOwner(oracleAddr);
+    }
+
     /// @notice Registers an oracle in the system.
     /// @param ownerAddr Address of the Oracle's owner.
     /// @param oracleAddr Address of the Oracle to register.
