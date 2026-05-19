@@ -3,8 +3,8 @@ pragma solidity 0.6.12;
 
 import {RoundManager} from "./RoundManager.sol";
 import {ITask} from "./interfaces/ITask.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
+import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 

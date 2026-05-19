@@ -1,6 +1,6 @@
 {
     "name": "@moneyonchain/oracles",
-    "version": "1.5.1-beta.12",
+    "version": "3.0.0",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "main": "index.js",
     "scripts": {
@@ -64,13 +64,8 @@
             "mocha": true,
             "truffle/globals": true
         },
-        "plugins": [
-            "truffle"
-        ],
-        "extends": [
-            "standard",
-            "prettier"
-        ],
+        "plugins": ["truffle"],
+        "extends": ["standard", "prettier"],
         "parserOptions": {
             "ecmaVersion": 11
         },
@@ -85,7 +80,10 @@
         "url": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle/issues"
     },
     "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle#readme",
-    "files": [
-        "contracts"
-    ]
+    "dependencies": {
+        "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.0",
+        "@moc/periphery": "https://github.com/money-on-chain/MoC-Periphery.git#v3.0.0",
+        "@openzeppelin/contracts": "4.9.3"
+    },
+    "files": ["contracts"]
 }

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {IDelayMachine} from "@moc/shared/contracts/IDelayMachine.sol";
+import {IDelayMachine} from "@moc/periphery/contracts/IDelayMachine.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
 import {Supporters} from "./Supporters.sol";
-import {IOracleManager} from "@moc/shared/contracts/IOracleManager.sol";
+import {IOracleManager} from "@moc/periphery/contracts/IOracleManager.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";

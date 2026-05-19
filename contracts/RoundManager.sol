@@ -3,15 +3,15 @@ pragma solidity 0.6.12;
 
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
-import {IOracleManager} from "@moc/shared/contracts/ICoinPairPrice.sol";
-import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
+import {IOracleManager} from "@moc/periphery/contracts/ICoinPairPrice.sol";
+import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {CoinPairPriceStorage} from "./CoinPairPriceStorage.sol";
-import {RegistryConstantsLib} from "@moc/shared/contracts/RegistryConstants.sol";
+import {RegistryConstantsLib} from "@moc/periphery/contracts/RegistryConstants.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
