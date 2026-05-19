@@ -82,7 +82,7 @@
     "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle#readme",
     "dependencies": {
         "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.0",
-        "@moc/periphery": "https://github.com/money-on-chain/MoC-Periphery.git#v3.0.0",
+        "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery.git#v3.0.0",
         "@openzeppelin/contracts": "4.9.3"
     },
     "files": ["contracts"]
