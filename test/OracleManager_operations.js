@@ -36,9 +36,7 @@ contract('OracleManager operations', async (accounts) => {
             [GOVERNOR_OWNER],
             COINPAIR_ID,
             ADDRESS_ONE, // token_address
-            10, // maxOraclesPerRound
-            30, // maxSubscribedOraclesPerRound
-            60, // roundLockPeriodInSecs,
+            [10, 30, 60, 0], // roundConfig
             3, // validPricePeriodInBlocks,
             2, // emergencyPublishingPeriodInBlocks,
             '100000000', // bootstrapPrice,
