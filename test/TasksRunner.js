@@ -105,6 +105,7 @@ contract('TasksRunner', (accounts) => {
             votedOracle: ORACLE_ACCOUNT,
             task: this.mockTask.address,
             blockNumber: lastPublicationBlock,
+            points: new BN(5),
             success: true,
         });
         expectEvent(receipt, 'TaskExecuted', {
@@ -112,6 +113,7 @@ contract('TasksRunner', (accounts) => {
             votedOracle: ORACLE_ACCOUNT,
             task: this.revertingTask.address,
             blockNumber: lastPublicationBlock,
+            points: new BN(0),
             success: false,
         });
 

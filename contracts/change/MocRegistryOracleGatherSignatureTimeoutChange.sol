@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import { ChangeContract } from "../moc-governance/Governance/ChangeContract.sol";
-import { IRegistry } from "../IRegistry.sol";
+import { ChangeContract } from "@moc-periphery/contracts/moc-governance/Governance/ChangeContract.sol";
+import { IRegistry } from "@moc-periphery/contracts/IRegistry.sol";
 
 /**
     @title MocRegistryOracleGatherSignatureTimeoutChange

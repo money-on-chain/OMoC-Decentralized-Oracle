@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import { ChangeContract } from "../moc-governance/Governance/ChangeContract.sol";
-import { IMintableERC20 } from "../IMintableERC20.sol";
+import { ChangeContract } from "@moc/periphery/contracts/moc-governance/Governance/ChangeContract.sol";
+import { IMintableERC20 } from "@moc/periphery/contracts/IMintableERC20.sol";
 
 /**
   @title MocRegistryInitChange
