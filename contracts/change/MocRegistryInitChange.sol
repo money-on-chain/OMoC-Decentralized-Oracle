@@ -24,7 +24,7 @@ contract MocRegistryInitChange is ChangeContract, RegistryConstants {
         address _delayMachine,
         address _oracleManager,
         address _supporters,
-        address _infoGetter,
+        address _infoGetter
     ) public {
         registry = _registry;
         delayMachine = _delayMachine;
