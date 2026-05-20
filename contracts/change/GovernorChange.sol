@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
+import {ChangeContract} from "@moc/periphery/contracts/moc-governance/Governance/ChangeContract.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
 
 /**
   @title GobernorChange

@@ -3,12 +3,11 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
-import {IOracleInfoGetter} from "@moc/shared/contracts/IOracleInfoGetter.sol";
-import {ICoinPairPrice} from "@moc/shared/contracts/ICoinPairPrice.sol";
-import {IOracleManager} from "@moc/shared/contracts/IOracleManager.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {IOracleInfoGetter} from "@moc/periphery/contracts/IOracleInfoGetter.sol";
+import {ICoinPairPrice} from "@moc/periphery/contracts/ICoinPairPrice.sol";
+import {IOracleManager} from "@moc/periphery/contracts/IOracleManager.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
 
 /// @title This contract provides an interface for feeding prices from oracles, and
 ///        get the current price. One contract must be instanced per supported coin pair,
