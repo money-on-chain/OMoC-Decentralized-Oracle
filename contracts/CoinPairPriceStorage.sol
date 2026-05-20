@@ -4,12 +4,12 @@ pragma solidity 0.6.12;
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
 import {IterableWhitelistLib, IIterableWhitelist} from "./libs/IterableWhitelistLib.sol";
 import {RoundInfoLib} from "./libs/RoundInfoLib.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
-import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 
 
 /*
@@ -59,13 +59,23 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
 
     IRegistry internal registry;
 
+    // Maximum consecutive rounds without signature contribution before auto-unsubscribe.
+    // 0 disables the mechanism.
+    uint256 internal maxMissedSigRounds;
+
+    // Consecutive rounds where each selected oracle owner did not sign a valid publication/execution.
+    mapping(address => uint256) internal missedSignatureRoundsByOracle;
+
+    // Last round number where each oracle owner signed a valid publication/execution.
+    mapping(address => uint256) internal lastSignedRoundByOracle;
+
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
     // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
 
     // Reserved storage space to allow for layout changes in the future.
-    uint256[50] private ______gap;
+    uint256[47] private ______gap;
 
     /**
       @notice Modifier that protects the function

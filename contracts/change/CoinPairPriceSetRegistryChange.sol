@@ -2,10 +2,10 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {ChangeContract} from "@moc/periphery/contracts/moc-governance/Governance/ChangeContract.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
-import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
+import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 
 /**
   @title CoinPairPriceAddCoinPairCalculatorChange

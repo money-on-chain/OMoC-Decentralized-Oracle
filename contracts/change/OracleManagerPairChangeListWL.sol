@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {ChangeContract} from "@moc/shared/contracts/moc-governance/Governance/ChangeContract.sol";
+import {ChangeContract} from "@moc/periphery/contracts/moc-governance/Governance/ChangeContract.sol";
 import {OracleManager} from "../OracleManager.sol";
 import {CoinPairPriceStorage} from "../CoinPairPriceStorage.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
 
 /**
   @title UpgraderTemplate
