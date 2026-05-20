@@ -2,12 +2,12 @@
 pragma solidity 0.6.12;
 
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import {IStakingMachine, IStakingMachineOracles} from "@moc/shared/contracts/IStakingMachine.sol";
-import {IDelayMachine} from "@moc/shared/contracts/IDelayMachine.sol";
-import {IOracleManager} from "@moc/shared/contracts/IOracleManager.sol";
+import {IStakingMachine, IStakingMachineOracles} from "@moc/periphery/contracts/IStakingMachine.sol";
+import {IDelayMachine} from "@moc/periphery/contracts/IDelayMachine.sol";
+import {IOracleManager} from "@moc/periphery/contracts/IOracleManager.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
 import {Supporters} from "./Supporters.sol";
 import {CoinPairPrice} from "./CoinPairPrice.sol";
 import {StakingStorage} from "./StakingStorage.sol";

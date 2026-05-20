@@ -4,8 +4,8 @@ pragma experimental ABIEncoderV2;
 
 import {RoundManager} from "./RoundManager.sol";
 import {ITask} from "./interfaces/ITask.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
+import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {IPriceProvider} from "./IPriceProvider.sol";
 import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
@@ -14,7 +14,7 @@ import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/
 /// @dev This contract manages a set of tasks that can be executed in batches.
 ///      It allows adding, removing, and executing tasks, as well as checking their availability.
 ///      Each task must implement the ITask interface, which requires a checkTask function to determine
-///      if the task should be executed, and a runTask function that performs the task and returns points earned.
+///      if the task should be executed, and a runTask function that performs the task.
 ///      The contract also manages the execution of tasks based on signatures from oracles,
 ///      ensuring that the execution is authorized and valid.
 ///      Checking task availability is expensive to do on-chain, so the list of tasks to be run is ultimately

@@ -54,12 +54,7 @@ contract('TasksRunner', (accounts) => {
             this.oracleMgr.address,
             this.registry,
             1,
-            [
-                10,
-                this.mockTokenToCoinbaseProvider.address,
-                this.mockBaseFeeProvider.address,
-                1,
-            ],
+            [10, this.mockTokenToCoinbaseProvider.address, this.mockBaseFeeProvider.address, 1],
             { from: GOVERNOR_OWNER },
         );
 
@@ -158,7 +153,11 @@ contract('TasksRunner', (accounts) => {
         assert(usedBefore.gt(new BN(0)));
 
         const initialOracleBalance = await this.token.balanceOf(ORACLE_OWNER);
-        await this.governor.mint(this.token.address, this.tasksRunner.address, MIN_STAKE.toString());
+        await this.governor.mint(
+            this.token.address,
+            this.tasksRunner.address,
+            MIN_STAKE.toString(),
+        );
         await helpers.mineUntilNextRound(this.tasksRunner);
         await this.tasksRunner.switchRound({ from: ORACLE_OWNER });
 

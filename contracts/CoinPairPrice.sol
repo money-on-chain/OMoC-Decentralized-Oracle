@@ -4,10 +4,10 @@ pragma experimental ABIEncoderV2;
 
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {IPriceProvider} from "@moc/shared/contracts/IPriceProvider.sol";
-import {IRegistry} from "@moc/shared/contracts/IRegistry.sol";
-import {IPriceProviderRegisterEntry} from "@moc/shared/contracts/IPriceProviderRegisterEntry.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
+import {IPriceProvider} from "@moc/periphery/contracts/IPriceProvider.sol";
+import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
+import {IPriceProviderRegisterEntry} from "@moc/periphery/contracts/IPriceProviderRegisterEntry.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {RoundManager} from "./RoundManager.sol";

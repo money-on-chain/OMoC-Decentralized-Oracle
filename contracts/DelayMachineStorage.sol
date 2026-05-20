@@ -6,9 +6,9 @@ import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/
 import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 import {Initializable} from "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import {Governed} from "@moc/shared/contracts/moc-governance/Governance/Governed.sol";
-import {IGovernor} from "@moc/shared/contracts/moc-governance/Governance/IGovernor.sol";
-import {IStakingMachine} from "@moc/shared/contracts/IStakingMachine.sol";
+import {Governed} from "@moc/periphery/contracts/moc-governance/Governance/Governed.sol";
+import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
+import {IStakingMachine} from "@moc/periphery/contracts/IStakingMachine.sol";
 
 contract DelayMachineStorage is Initializable, Governed {
     using SafeMath for uint256;
