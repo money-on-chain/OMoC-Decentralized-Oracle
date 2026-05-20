@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.6.12;
 
 contract Migrations {
@@ -15,10 +15,5 @@ contract Migrations {
 
     function setCompleted(uint256 completed) public restricted {
         lastCompletedMigration = completed;
-    }
-
-    function upgrade(address newAddress) public restricted {
-        Migrations upgraded = Migrations(newAddress);
-        upgraded.setCompleted(lastCompletedMigration);
     }
 }

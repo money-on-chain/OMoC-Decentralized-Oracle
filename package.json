@@ -64,8 +64,13 @@
             "mocha": true,
             "truffle/globals": true
         },
-        "plugins": ["truffle"],
-        "extends": ["standard", "prettier"],
+        "plugins": [
+            "truffle"
+        ],
+        "extends": [
+            "standard",
+            "prettier"
+        ],
         "parserOptions": {
             "ecmaVersion": 11
         },
@@ -85,5 +90,8 @@
         "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery.git#v3.0.0",
         "@openzeppelin/contracts": "4.9.3"
     },
-    "files": ["contracts"]
+    "files": [
+        "contracts"
+    ],
+    "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"
 }

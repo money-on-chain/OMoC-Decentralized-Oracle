@@ -37,7 +37,7 @@ contract('TasksRunner', (accounts) => {
 
         const MockTask = artifacts.require('MockTask');
         const MockRevertingRunTask = artifacts.require('MockRevertingRunTask');
-        this.mockTask = await MockTask.new(true, 5);
+        this.mockTask = await MockTask.new(true);
         this.revertingTask = await MockRevertingRunTask.new();
 
         const TasksRunner = artifacts.require('TasksRunner');
@@ -104,7 +104,6 @@ contract('TasksRunner', (accounts) => {
             votedOracle: ORACLE_ACCOUNT,
             task: this.mockTask.address,
             blockNumber: lastPublicationBlock,
-            points: new BN(5),
             success: true,
         });
         expectEvent(receipt, 'TaskExecuted', {
@@ -112,7 +111,6 @@ contract('TasksRunner', (accounts) => {
             votedOracle: ORACLE_ACCOUNT,
             task: this.revertingTask.address,
             blockNumber: lastPublicationBlock,
-            points: new BN(0),
             success: false,
         });
 

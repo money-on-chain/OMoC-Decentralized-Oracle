@@ -15,16 +15,13 @@ contract TaskExecuteQueueV3 is ITask {
     error TaskNotAvailable();
 
     MocMultiCollateralGuard public immutable mocMultiCollateralGuard;
-    uint256 public immutable points;
 
     /**
      * @notice Constructor
      * @param mocMultiCollateralGuard_ The address of the MocMultiCollateralGuard contract.
-     * @param points_ The points awarded for running this task.
      */
-    constructor(address payable mocMultiCollateralGuard_, uint256 points_) {
+    constructor(address payable mocMultiCollateralGuard_) {
         mocMultiCollateralGuard = MocMultiCollateralGuard(mocMultiCollateralGuard_);
-        points = points_;
     }
 
     /**
@@ -39,9 +36,8 @@ contract TaskExecuteQueueV3 is ITask {
     /**
      * @inheritdoc ITask
      */
-    function runTask() external returns (uint256) {
+    function runTask() external {
         mocMultiCollateralGuard.execute();
-        return points;
     }
 
     /**

@@ -5,16 +5,13 @@ import { ITask } from "../../../ITask.sol";
 
 contract TaskLiquidate is ITask {
     IBuffer public immutable buffer;
-    uint256 public immutable points;
 
     /**
      * @notice Constructor
      * @param buffer_ The address of the buffer contract.
-     * @param points_ The points awarded for running this task.
      */
-    constructor(address buffer_, uint256 points_) {
+    constructor(address buffer_) {
         buffer = IBuffer(buffer_);
-        points = points_;
     }
 
     /**
@@ -27,9 +24,8 @@ contract TaskLiquidate is ITask {
     /**
      * @inheritdoc ITask
      */
-    function runTask() external returns (uint256) {
+    function runTask() external {
         buffer.liquidate();
-        return points;
     }
 }
 

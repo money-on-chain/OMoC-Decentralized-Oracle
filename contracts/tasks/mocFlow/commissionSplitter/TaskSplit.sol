@@ -10,7 +10,6 @@ contract TaskSplit is ITask {
     error TaskNotAvailable();
 
     ICommissionSplitter public immutable commissionSplitter;
-    uint256 public immutable points;
     address token;
     address feeToken;
     uint256 public immutable tokenBalanceThreshold;
@@ -19,7 +18,6 @@ contract TaskSplit is ITask {
     /**
      * @notice Constructor
      * @param commissionSplitter_ The address of the commission splitter contract.
-     * @param points_ The points awarded for running this task.
      * @param token_ The address of the token to split. Use address(0) for coinbase.
      * @param feeToken_ The address of the fee token to split, can be zero if not applicable.
      * @param tokenBalanceThreshold_ The minimum balance of the token required to perform the split.
@@ -27,14 +25,12 @@ contract TaskSplit is ITask {
      */
     constructor(
         address commissionSplitter_,
-        uint256 points_,
         address token_,
         address feeToken_,
         uint256 tokenBalanceThreshold_,
         uint256 feeTokenBalanceThreshold_
     ) {
         commissionSplitter = ICommissionSplitter(commissionSplitter_);
-        points = points_;
         token = token_;
         feeToken = feeToken_;
         tokenBalanceThreshold = tokenBalanceThreshold_;
@@ -51,9 +47,8 @@ contract TaskSplit is ITask {
     /**
      * @inheritdoc ITask
      */
-    function runTask() external returns (uint256) {
+    function runTask() external {
         commissionSplitter.split();
-        return points;
     }
 
     /**

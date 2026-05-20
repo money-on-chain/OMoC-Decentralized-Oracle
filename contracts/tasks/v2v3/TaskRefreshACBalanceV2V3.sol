@@ -13,18 +13,15 @@ contract TaskRefreshACBalanceV2V3 is ITask {
     error TaskNotAvailable();
 
     MocOperations public immutable moc;
-    uint256 public immutable points;
     uint256 public immutable balanceThreshold;
 
     /**
      * @notice Constructor
      * @param moc_ The address of the Moc contract.
-     * @param points_ The points awarded for running this task.
      * @param balanceThreshold_ The threshold for the unaccounted AC balance to trigger the task.
      */
-    constructor(address moc_, uint256 points_, uint256 balanceThreshold_) {
+    constructor(address moc_, uint256 balanceThreshold_) {
         moc = MocOperations(moc_);
-        points = points_;
         balanceThreshold = balanceThreshold_;
     }
 
@@ -43,8 +40,7 @@ contract TaskRefreshACBalanceV2V3 is ITask {
     /**
      * @inheritdoc ITask
      */
-    function runTask() external returns (uint256) {
+    function runTask() external {
         moc.refreshACBalance();
-        return points;
     }
 }

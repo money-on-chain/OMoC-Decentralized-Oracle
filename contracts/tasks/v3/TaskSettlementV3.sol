@@ -11,16 +11,13 @@ import { Utils } from "../Utils.sol";
  */
 contract TaskSettlementV3 is ITask {
     MocOperations public immutable bucket;
-    uint256 public immutable points;
 
     /**
      * @notice Constructor
      * @param bucket_ The address of the MocOperations contract.
-     * @param points_ The points awarded for running this task.
      */
-    constructor(address bucket_, uint256 points_) {
+    constructor(address bucket_) {
         bucket = MocOperations(bucket_);
-        points = points_;
     }
 
     /**
@@ -36,8 +33,7 @@ contract TaskSettlementV3 is ITask {
     /**
      * @inheritdoc ITask
      */
-    function runTask() external returns (uint256) {
+    function runTask() external {
         bucket.execSettlement();
-        return points;
     }
 }

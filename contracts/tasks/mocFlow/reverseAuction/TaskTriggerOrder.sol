@@ -8,7 +8,6 @@ contract TaskTriggerOrder is ITask, Ownable {
     error TaskNotAvailable();
 
     IReverseAuction public immutable reverseAuction;
-    uint256 public immutable points;
     uint256 public revertSleepTime;
     uint256 public lastRevertTimestamp;
 
@@ -17,13 +16,11 @@ contract TaskTriggerOrder is ITask, Ownable {
     /**
      * @notice Constructor
      * @param reverseAuction_ The address of the reverse auction contract.
-     * @param points_ The points awarded for running this task.
      * @param revertSleepTime_ The delay in seconds applied after a revert.
      * @param owner_ The address allowed to update revertSleepTime.
      */
-    constructor(address reverseAuction_, uint256 points_, uint256 revertSleepTime_, address owner_) Ownable() {
+    constructor(address reverseAuction_, uint256 revertSleepTime_, address owner_) Ownable() {
         reverseAuction = IReverseAuction(reverseAuction_);
-        points = points_;
         revertSleepTime = revertSleepTime_;
         _transferOwnership(owner_);
     }
@@ -43,7 +40,7 @@ contract TaskTriggerOrder is ITask, Ownable {
     /**
      * @inheritdoc ITask
      */
-    function runTask() external returns (uint256) {
+    function runTask() external {
         try reverseAuction.triggerOrders() {} catch Error(string memory reason) {
             lastRevertTimestamp = block.timestamp;
             emit TriggerOrdersReverted(reason, "");
@@ -51,7 +48,6 @@ contract TaskTriggerOrder is ITask, Ownable {
             lastRevertTimestamp = block.timestamp;
             emit TriggerOrdersReverted("", data);
         }
-        return points;
     }
 }
 

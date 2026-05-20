@@ -9,8 +9,7 @@ interface ITask {
     function checkTask() external view returns (bool);
 
     /**
-     * @notice Executes the task and returns points earned.
-     * @return uint256 points earned from executing the task
+     * @notice Executes the task.
      */
-    function runTask() external returns (uint256);
+    function runTask() external;
 }

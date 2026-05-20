@@ -12,7 +12,7 @@ import {EnumerableSet} from "@openzeppelin/contracts-ethereum-package/contracts/
 /// @dev This contract manages a set of tasks that can be executed in batches.
 ///      It allows adding, removing, and executing tasks, as well as checking their availability.
 ///      Each task must implement the ITask interface, which requires a checkTask function to determine
-///      if the task should be executed, and a runTask function that performs the task and returns points earned.
+///      if the task should be executed, and a runTask function that performs the task.
 ///      The contract also manages the execution of tasks based on signatures from oracles,
 ///      ensuring that the execution is authorized and valid.
 ///      Checking task availability is expensive to do on-chain, so the list of tasks to be run is ultimately
@@ -38,7 +38,6 @@ contract TasksRunner is RoundManager {
         address votedOracle,
         address task,
         uint256 blockNumber,
-        uint256 points,
         bool success
     );
 
@@ -187,13 +186,12 @@ contract TasksRunner is RoundManager {
         uint256 _blockNumber,
         uint256 _tasksFlags
     ) internal {
-        (uint256 pointEarned, uint256 coinbaseEarned) = _runTasks(
+        uint256 coinbaseEarned = _runTasks(
             _ownerAddr,
             _votedOracle,
             _blockNumber,
             _tasksFlags
         );
-        roundInfo.addPoints(_ownerAddr, pointEarned);
         _transfer(_ownerAddr, coinbaseEarned);
     }
 
@@ -203,7 +201,6 @@ contract TasksRunner is RoundManager {
      * @param _votedOracle The address of the oracle voted as a publisher by the network.
      * @param _blockNumber The block number at which the tasks are being executed.
      * @param _tasksFlags Bitflags for tasks to be considered for execution.
-     * @return pointEarned The total points earned from executing the tasks.
      * @return coinbaseEarned The total coinbase earned from executing the tasks.
      */
     function _runTasks(
@@ -211,7 +208,7 @@ contract TasksRunner is RoundManager {
         address _votedOracle,
         uint256 _blockNumber,
         uint256 _tasksFlags
-    ) internal returns (uint256 pointEarned, uint256 coinbaseEarned) {
+    ) internal returns (uint256 coinbaseEarned) {
         lastPublicationBlock = block.number;
 
         uint256 startIndex = lastTaskIndex;
@@ -221,24 +218,19 @@ contract TasksRunner is RoundManager {
         // some tasks may pay the execution fee in coinbase
         uint256 coinbaseBalance = address(this).balance;
         bool success;
-        uint256 points;
         while (executed < maxTasksPerBatch && i != startIndex + taskLength) {
             if (((_tasksFlags >> (i % taskLength)) & 1) == 1) {
                 ITask task = ITask(tasks.at( i % taskLength));
-                try task.runTask() returns (uint256 result) {
+                try task.runTask() {
                     success = true;
-                    points = result;
-                    pointEarned = pointEarned.add(points);
                 } catch {
                     success = false;
-                    points = 0;
                 }
                 emit TaskExecuted(
                     _ownerAddr,
                     _votedOracle,
                     address(task),
                     _blockNumber,
-                    points,
                     success
                 );
                 executed++;
@@ -248,7 +240,7 @@ contract TasksRunner is RoundManager {
         }
 
         lastTaskIndex = i % taskLength;
-        return (pointEarned, address(this).balance.sub(coinbaseBalance));
+        return address(this).balance.sub(coinbaseBalance);
     }
 
     /**

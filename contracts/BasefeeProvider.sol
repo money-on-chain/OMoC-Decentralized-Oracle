@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-contract BasefeeProvider {
-    function getPrice() external view returns (uint256) {
-        return block.basefee;
+import { IPriceProvider } from "@moc/moc-main/contracts/interfaces/IPriceProvider.sol";
+
+contract BasefeeProvider is IPriceProvider {
+    function peek() external view returns (bytes32 price, bool valid) {
+        return (bytes32(uint256(block.basefee)), true);
     }
 
-    function peek() external view returns (bytes32, bool) {
-        return (bytes32(block.basefee), true);
+    function getLastPublicationBlock() external view returns (uint256 lastPublicationBlock) {
+        return block.number;
     }
 }

@@ -14,18 +14,15 @@ contract TaskExecuteMicroLiquidationV3 is ITask {
 
     MocMultiCollateralGuard public immutable mocMultiCollateralGuard;
     MocOperations public immutable bucket;
-    uint256 public immutable points;
 
     /**
      * @notice Constructor
      * @param mocMultiCollateralGuard_ The address of the MocMultiCollateralGuard contract.
      * @param bucket_ The address of the MocOperations contract.
-     * @param points_ The points awarded for running this task.
      */
-    constructor(address payable mocMultiCollateralGuard_, address bucket_, uint256 points_) {
+    constructor(address payable mocMultiCollateralGuard_, address bucket_) {
         mocMultiCollateralGuard = MocMultiCollateralGuard(mocMultiCollateralGuard_);
         bucket = MocOperations(bucket_);
-        points = points_;
     }
 
     /**
@@ -40,8 +37,7 @@ contract TaskExecuteMicroLiquidationV3 is ITask {
     /**
      * @inheritdoc ITask
      */
-    function runTask() external returns (uint256) {
+    function runTask() external {
         mocMultiCollateralGuard.execMicroLiquidation(bucket);
-        return points;
     }
 }
