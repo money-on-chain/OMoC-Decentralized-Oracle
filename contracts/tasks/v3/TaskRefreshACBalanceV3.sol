@@ -6,10 +6,10 @@ import { MocOperations } from "@moc/moc-main/contracts/core/MocOperations.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
- * @title TaskRefreshACBalanceV2V3
+ * @title TaskRefreshACBalanceV3
  * @notice This contract implements a task that refreshes the AC balance in the Moc contract.
  */
-contract TaskRefreshACBalanceV2V3 is ITask {
+contract TaskRefreshACBalanceV3 is ITask {
     error TaskNotAvailable();
 
     MocOperations public immutable moc;
