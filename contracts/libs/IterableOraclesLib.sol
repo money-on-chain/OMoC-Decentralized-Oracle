@@ -116,6 +116,13 @@ library IterableOraclesLib {
         self.registeredOwners[oracleAddr] = owner;
     }
 
+    /// @notice Clears the registered owner of an oracle address.
+    /// @param self IterableOraclesData struct to operate on.
+    /// @param oracleAddr Address of the Oracle to delete the registered owner for.
+    function _clearRegisteredOwner(IterableOraclesData storage self, address oracleAddr) internal {
+        delete self.registeredOwners[oracleAddr];
+    }
+
     /// @notice Returns the amount of owners registered.
     function _getLen(IterableOraclesData storage self) internal view returns (uint256) {
         return self._values.length;
