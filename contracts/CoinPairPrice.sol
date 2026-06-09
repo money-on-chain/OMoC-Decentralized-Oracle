@@ -9,6 +9,7 @@ import {IPriceProvider} from "@moc/periphery/contracts/IPriceProvider.sol";
 import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 import {IPriceProviderRegisterEntry} from "@moc/periphery/contracts/IPriceProviderRegisterEntry.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
+import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {RoundManager} from "./RoundManager.sol";
 
@@ -26,6 +27,8 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         address votedOracle,
         uint256 blockNumber
     );
+    event ForcedInvalidationSet(address indexed setter, bool enabled);
+    event ForcedRevertSet(address indexed setter, bool enabled);
 
     constructor() public initializer {
         // Avoid leaving the implementation contract uninitialized.
@@ -157,6 +160,104 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         emit EmergencyPricePublished(msg.sender, _price, msg.sender, lastPublicationBlock);
     }
 
+    modifier onlyGovernanceOrWhitelisted(
+        IterableWhitelistLib.IterableWhitelistData storage self
+    ) {
+        require(
+            governor.isAuthorizedChanger(msg.sender) || IterableWhitelistLib._isWhitelisted(self, msg.sender),
+            "Address is not authorized"
+        );
+        _;
+    }
+
+    /// @notice Set forced price invalidation on or off.
+    /// @param _enabled True to force invalidation, false to restore normal validity rules.
+    function setForcedInvalidation(bool _enabled)
+        external
+        onlyGovernanceOrWhitelisted(priceInvalidationWhitelistData)
+    {
+        forcedInvalidation = _enabled;
+        emit ForcedInvalidationSet(msg.sender, _enabled);
+    }
+
+    /// @notice Add an address to the list allowed to toggle forced invalidation.
+    /// @param _account Address to whitelist.
+    function addForcedInvalidationWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        priceInvalidationWhitelistData._addToWhitelist(_account);
+    }
+
+    /// @notice Remove an address from the list allowed to toggle forced invalidation.
+    /// @param _account Address to remove from whitelist.
+    function removeForcedInvalidationWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        priceInvalidationWhitelistData._removeFromWhitelist(_account);
+    }
+
+    /// @notice Set forced revert mode for price queries on or off.
+    /// @param _enabled True to force revert, false to restore normal query behavior.
+    function setForcedRevert(bool _enabled)
+        external
+        onlyGovernanceOrWhitelisted(priceRevertWhitelistData)
+    {
+        forcedRevert = _enabled;
+        emit ForcedRevertSet(msg.sender, _enabled);
+    }
+
+    /// @notice Add an address to the list allowed to toggle forced revert.
+    /// @param _account Address to whitelist.
+    function addForcedRevertWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        priceRevertWhitelistData._addToWhitelist(_account);
+    }
+
+    /// @notice Remove an address from the list allowed to toggle forced revert.
+    /// @param _account Address to remove from whitelist.
+    function removeForcedRevertWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        priceRevertWhitelistData._removeFromWhitelist(_account);
+    }
+
+    /// @notice Return whether forced invalidation is active.
+    function getForcedInvalidation() external view returns (bool) {
+        return forcedInvalidation;
+    }
+
+    /// @notice Return whether forced revert is active.
+    function getForcedRevert() external view returns (bool) {
+        return forcedRevert;
+    }
+
+    /// @notice Check if an address is allowed to toggle forced invalidation.
+    function isForcedInvalidationWhitelisted(address _account)
+        external
+        view
+        returns (bool)
+    {
+        return priceInvalidationWhitelistData._isWhitelisted(_account);
+    }
+
+    /// @notice Check if an address is allowed to toggle forced revert.
+    function isForcedRevertWhitelisted(address _account)
+        external
+        view
+        returns (bool)
+    {
+        return priceRevertWhitelistData._isWhitelisted(_account);
+    }
+
+    function _requireNotForcedRevert() private view {
+        require(!forcedRevert, "Forced revert active");
+    }
+
     // Legacy function compatible with old MOC Oracle.
     // returns a tuple (uint256, bool) that corresponds
     // to the price and if it is not expired.
@@ -167,6 +268,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (bytes32, bool)
     {
+        _requireNotForcedRevert();
         return (bytes32(currentPrice), _isValid());
     }
 
@@ -178,11 +280,13 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (uint256)
     {
+        _requireNotForcedRevert();
         return currentPrice;
     }
 
     // Return if the price is not expired.
     function getIsValid() external override view returns (bool) {
+        _requireNotForcedRevert();
         return _isValid();
     }
 
@@ -197,6 +301,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
             uint256
         )
     {
+        _requireNotForcedRevert();
         return (currentPrice, _isValid(), lastPublicationBlock);
     }
 
@@ -226,6 +331,9 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
 
     /// @notice return true if the price is valid
     function _isValid() private view returns (bool) {
+        if (forcedInvalidation) {
+            return false;
+        }
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
         return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
     }
