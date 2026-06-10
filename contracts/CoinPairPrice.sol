@@ -211,10 +211,6 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         return priceQueryModeWhitelistData._isWhitelisted(_account);
     }
 
-    function _requireNotForcedRevert() private view {
-        require(priceQueryMode != PriceQueryMode.Revert, "Forced revert active");
-    }
-
     // Legacy function compatible with old MOC Oracle.
     // returns a tuple (uint256, bool) that corresponds
     // to the price and if it is not expired.
@@ -225,8 +221,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (bytes32, bool)
     {
-        _requireNotForcedRevert();
-        return (bytes32(currentPrice), _isValid());
+        return (bytes32(currentPrice), _getPriceValidity());
     }
 
     /// @notice Return the current price
@@ -243,8 +238,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
 
     // Return if the price is not expired.
     function getIsValid() external override view returns (bool) {
-        _requireNotForcedRevert();
-        return _isValid();
+        return _getPriceValidity();
     }
 
     // Return the result of getPrice, getIsValid and getLastPublicationBlock at once.
@@ -258,8 +252,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
             uint256
         )
     {
-        _requireNotForcedRevert();
-        return (currentPrice, _isValid(), lastPublicationBlock);
+        return (currentPrice, _getPriceValidity(), lastPublicationBlock);
     }
 
     // Public variable
@@ -287,12 +280,22 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
     // ----------------------------------------------------------------------------------------------------------------
 
     /// @notice return true if the price is valid
-    function _isValid() private view returns (bool) {
-        if (priceQueryMode == PriceQueryMode.Invalid) {
+    function _requireNotForcedRevert() private view {
+        if (priceQueryMode == PriceQueryMode.Revert) {
+            revert("Forced revert active");
+        }
+    }
+
+    function _getPriceValidity() private view returns (bool) {
+        PriceQueryMode mode = priceQueryMode;
+        if (mode == PriceQueryMode.Ok) {
+            require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
+            return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
+        }
+        if (mode == PriceQueryMode.Invalid) {
             return false;
         }
-        require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
-        return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
+        revert("Forced revert active");
     }
 
     // @notice publish a price, called only after verification.
