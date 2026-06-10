@@ -35,6 +35,25 @@ contract('CoinPairPrice', async (accounts) => {
         expect(roundLockPeriod).to.be.bignumber.equal(new BN(60));
     });
 
+    it('Should expose price query mode whitelist entries', async () => {
+        expect(await this.coinPairPrice.getPriceQueryModeWhitelistLen()).to.be.bignumber.equal(
+            new BN(0),
+        );
+
+        await this.coinPairPrice.addPriceQueryModeWhitelist(accounts[6], { from: accounts[8] });
+        await this.coinPairPrice.addPriceQueryModeWhitelist(accounts[7], { from: accounts[8] });
+
+        expect(await this.coinPairPrice.getPriceQueryModeWhitelistLen()).to.be.bignumber.equal(
+            new BN(2),
+        );
+        expect(await this.coinPairPrice.getPriceQueryModeWhitelistAtIndex(0)).to.equal(accounts[6]);
+        expect(await this.coinPairPrice.getPriceQueryModeWhitelistAtIndex(1)).to.equal(accounts[7]);
+        await expectRevert(
+            this.coinPairPrice.getPriceQueryModeWhitelistAtIndex(2),
+            'index out of bounds',
+        );
+    });
+
     const oracleData = [
         {
             name: 'oracle-a.io',

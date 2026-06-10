@@ -211,6 +211,17 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         return priceQueryModeWhitelistData._isWhitelisted(_account);
     }
 
+    /// @notice Return the number of addresses allowed to change the forced price query mode.
+    function getPriceQueryModeWhitelistLen() external view returns (uint256) {
+        return priceQueryModeWhitelistData._getWhiteListLen();
+    }
+
+    /// @notice Return the address allowed to change the forced price query mode at index.
+    /// @param _idx Index to query.
+    function getPriceQueryModeWhitelistAtIndex(uint256 _idx) external view returns (address) {
+        return priceQueryModeWhitelistData._getWhiteListAtIndex(_idx);
+    }
+
     // Legacy function compatible with old MOC Oracle.
     // returns a tuple (uint256, bool) that corresponds
     // to the price and if it is not expired.
