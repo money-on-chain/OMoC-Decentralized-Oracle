@@ -27,8 +27,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         address votedOracle,
         uint256 blockNumber
     );
-    event ForcedInvalidationSet(address indexed setter, bool enabled);
-    event ForcedRevertSet(address indexed setter, bool enabled);
+    event ForcedPriceQueryModeSet(address indexed setter, PriceQueryMode mode);
 
     constructor() public initializer {
         // Avoid leaving the implementation contract uninitialized.
@@ -170,92 +169,50 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         _;
     }
 
-    /// @notice Set forced price invalidation on or off.
-    /// @param _enabled True to force invalidation, false to restore normal validity rules.
-    function setForcedInvalidation(bool _enabled)
+    /// @notice Set forced price query mode.
+    /// @param _mode 0 = Ok, 1 = Invalid, 2 = Revert.
+    function setPriceQueryMode(PriceQueryMode _mode)
         external
-        onlyGovernanceOrWhitelisted(priceInvalidationWhitelistData)
+        onlyGovernanceOrWhitelisted(priceQueryModeWhitelistData)
     {
-        forcedInvalidation = _enabled;
-        emit ForcedInvalidationSet(msg.sender, _enabled);
+        priceQueryMode = _mode;
+        emit ForcedPriceQueryModeSet(msg.sender, _mode);
     }
 
-    /// @notice Add an address to the list allowed to toggle forced invalidation.
+    /// @notice Add an address to the list allowed to change the forced price query mode.
     /// @param _account Address to whitelist.
-    function addForcedInvalidationWhitelist(address _account)
+    function addPriceQueryModeWhitelist(address _account)
         external
         onlyAuthorizedChanger
     {
-        priceInvalidationWhitelistData._addToWhitelist(_account);
+        priceQueryModeWhitelistData._addToWhitelist(_account);
     }
 
-    /// @notice Remove an address from the list allowed to toggle forced invalidation.
+    /// @notice Remove an address from the list allowed to change the forced price query mode.
     /// @param _account Address to remove from whitelist.
-    function removeForcedInvalidationWhitelist(address _account)
+    function removePriceQueryModeWhitelist(address _account)
         external
         onlyAuthorizedChanger
     {
-        priceInvalidationWhitelistData._removeFromWhitelist(_account);
+        priceQueryModeWhitelistData._removeFromWhitelist(_account);
     }
 
-    /// @notice Set forced revert mode for price queries on or off.
-    /// @param _enabled True to force revert, false to restore normal query behavior.
-    function setForcedRevert(bool _enabled)
-        external
-        onlyGovernanceOrWhitelisted(priceRevertWhitelistData)
-    {
-        forcedRevert = _enabled;
-        emit ForcedRevertSet(msg.sender, _enabled);
+    /// @notice Return the current forced price query mode.
+    function getPriceQueryMode() external view returns (PriceQueryMode) {
+        return priceQueryMode;
     }
 
-    /// @notice Add an address to the list allowed to toggle forced revert.
-    /// @param _account Address to whitelist.
-    function addForcedRevertWhitelist(address _account)
-        external
-        onlyAuthorizedChanger
-    {
-        priceRevertWhitelistData._addToWhitelist(_account);
-    }
-
-    /// @notice Remove an address from the list allowed to toggle forced revert.
-    /// @param _account Address to remove from whitelist.
-    function removeForcedRevertWhitelist(address _account)
-        external
-        onlyAuthorizedChanger
-    {
-        priceRevertWhitelistData._removeFromWhitelist(_account);
-    }
-
-    /// @notice Return whether forced invalidation is active.
-    function getForcedInvalidation() external view returns (bool) {
-        return forcedInvalidation;
-    }
-
-    /// @notice Return whether forced revert is active.
-    function getForcedRevert() external view returns (bool) {
-        return forcedRevert;
-    }
-
-    /// @notice Check if an address is allowed to toggle forced invalidation.
-    function isForcedInvalidationWhitelisted(address _account)
+    /// @notice Check if an address is allowed to change the forced price query mode.
+    function isPriceQueryModeWhitelisted(address _account)
         external
         view
         returns (bool)
     {
-        return priceInvalidationWhitelistData._isWhitelisted(_account);
-    }
-
-    /// @notice Check if an address is allowed to toggle forced revert.
-    function isForcedRevertWhitelisted(address _account)
-        external
-        view
-        returns (bool)
-    {
-        return priceRevertWhitelistData._isWhitelisted(_account);
+        return priceQueryModeWhitelistData._isWhitelisted(_account);
     }
 
     function _requireNotForcedRevert() private view {
-        require(!forcedRevert, "Forced revert active");
+        require(priceQueryMode != PriceQueryMode.Revert, "Forced revert active");
     }
 
     // Legacy function compatible with old MOC Oracle.
@@ -331,7 +288,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
 
     /// @notice return true if the price is valid
     function _isValid() private view returns (bool) {
-        if (forcedInvalidation) {
+        if (priceQueryMode == PriceQueryMode.Invalid) {
             return false;
         }
         require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");

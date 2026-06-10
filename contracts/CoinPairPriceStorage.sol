@@ -69,17 +69,17 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     // Last round number where each oracle owner signed a valid publication/execution.
     mapping(address => uint256) internal lastSignedRoundByOracle;
 
-    // Forced invalidation of price information.
-    bool internal forcedInvalidation;
+    enum PriceQueryMode {
+        Ok,
+        Invalid,
+        Revert
+    }
 
-    // Whitelist of addresses allowed to toggle forced invalidation.
-    IterableWhitelistLib.IterableWhitelistData internal priceInvalidationWhitelistData;
+    // Forced price query mode. 0 = Ok, 1 = Invalid, 2 = Revert.
+    PriceQueryMode internal priceQueryMode;
 
-    // Forced revert mode when querying price information.
-    bool internal forcedRevert;
-
-    // Whitelist of addresses allowed to toggle forced revert.
-    IterableWhitelistLib.IterableWhitelistData internal priceRevertWhitelistData;
+    // Whitelist of addresses allowed to change the forced price query mode.
+    IterableWhitelistLib.IterableWhitelistData internal priceQueryModeWhitelistData;
 
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
