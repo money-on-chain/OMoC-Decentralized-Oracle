@@ -87,7 +87,7 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     constructor() internal {}
 
     // Reserved storage space to allow for layout changes in the future.
-    uint256[47] private ______gap;
+    uint256[44] private ______gap;
 
     /**
       @notice Modifier that protects the function
