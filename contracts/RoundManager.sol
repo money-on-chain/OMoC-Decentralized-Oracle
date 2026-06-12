@@ -47,7 +47,6 @@ abstract contract RoundManager is CoinPairPriceStorage {
         uint256 roundNumber,
         uint256 missedSignatureRounds
     );
-
     /// @notice Initializer
     /// @param _governor The governor address.
     /// @param _coinPair The coinpair, ex: USDBTC.
@@ -122,28 +121,49 @@ abstract contract RoundManager is CoinPairPriceStorage {
     /// @notice The oracle owner has withdrawn some stake.
     /// Must check if the oracle is part of current round and if he lost his place with the
     /// new stake value (the stake is global and is saved in the supporters contract).
+    /// Also handles oracles that are subscribed but not selected: if their new stake is below
+    /// the minimum they are unsubscribed immediately so they cannot sign future publications.
     /// @param oracleOwnerAddr the oracle owner that is trying to withdraw
     function onWithdraw(address oracleOwnerAddr) external onlyOracleManager returns (uint256) {
-        if (!roundInfo.isSelected(oracleOwnerAddr)) {
-            // not participating in current round, its ok to withdraw.
+        bool isSubscribed = subscribedOracles.contains(oracleOwnerAddr);
+        bool isSelected = roundInfo.isSelected(oracleOwnerAddr);
+
+        if (!isSubscribed && !isSelected) {
+            // Not involved in this coin pair at all — nothing to do here.
             return 0;
         }
-        // If the current balance is lower than the unselected address that has the maximum stake
-        // or it has less than the needed minimum, then the oracle is replaced.
+
+        uint256 minCPSubscriptionStake = oracleManager.getMinCPSubscriptionStake();
+        uint256 ownerStake = oracleManager.getStake(oracleOwnerAddr);
+
+        if (isSubscribed && !isSelected) {
+            // Subscribed but not currently selected in this round.
+            // Still need to unsubscribe if stake dropped below minimum: without this the oracle
+            // would remain in the subscribed pool with zero stake and could get selected in a
+            // future round if the number of subscribed oracles drops to maxOraclesPerRound or below.
+            if (ownerStake < minCPSubscriptionStake) {
+                _removeSubscribedOracle(oracleOwnerAddr);
+            }
+            return 0;
+        }
+
+        // Oracle IS selected in the current round.
+        // Check if it has lost its place: either below min stake or outbid by an unselected oracle.
         (address addr, uint256 otherStake) = subscribedOracles.getMaxUnselectedStake(
             oracleManager.getMaxStake,
             roundInfo.selectedOracles
         );
-        uint256 minCPSubscriptionStake = oracleManager.getMinCPSubscriptionStake();
-        uint256 ownerStake = oracleManager.getStake(oracleOwnerAddr);
         if (ownerStake < minCPSubscriptionStake || otherStake > ownerStake) {
-            // The oracleOwnerAddr has lost his place in current round
+            // The oracleOwnerAddr has lost his place in current round.
+            // Any points accumulated so far are forfeited: removeOracleFromRound deletes them
+            // and does not adjust totalPoints, so the corresponding token share stays in the
+            // contract and is distributed in the next round among the remaining oracles.
             roundInfo.removeOracleFromRound(oracleOwnerAddr);
             if (addr != address(0)) {
                 roundInfo.addOracleToRound(addr);
             }
         }
-        // if not enough stake Unsubscribe directly
+        // If not enough stake, unsubscribe directly (loses accumulated points for this round)
         if (ownerStake < minCPSubscriptionStake) {
             _removeSubscribedOracle(oracleOwnerAddr);
         }
