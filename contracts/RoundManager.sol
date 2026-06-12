@@ -125,9 +125,6 @@ abstract contract RoundManager is CoinPairPriceStorage {
     /// the minimum they are unsubscribed immediately so they cannot sign future publications.
     /// @param oracleOwnerAddr the oracle owner that is trying to withdraw
     function onWithdraw(address oracleOwnerAddr) external onlyOracleManager returns (uint256) {
-        uint256 minCPSubscriptionStake = oracleManager.getMinCPSubscriptionStake();
-        uint256 ownerStake = oracleManager.getStake(oracleOwnerAddr);
-
         bool isSubscribed = subscribedOracles.contains(oracleOwnerAddr);
         bool isSelected = roundInfo.isSelected(oracleOwnerAddr);
 
@@ -135,6 +132,9 @@ abstract contract RoundManager is CoinPairPriceStorage {
             // Not involved in this coin pair at all — nothing to do here.
             return 0;
         }
+
+        uint256 minCPSubscriptionStake = oracleManager.getMinCPSubscriptionStake();
+        uint256 ownerStake = oracleManager.getStake(oracleOwnerAddr);
 
         if (isSubscribed && !isSelected) {
             // Subscribed but not currently selected in this round.
