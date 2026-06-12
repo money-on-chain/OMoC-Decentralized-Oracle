@@ -9,6 +9,7 @@ import {IPriceProvider} from "@moc/periphery/contracts/IPriceProvider.sol";
 import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 import {IPriceProviderRegisterEntry} from "@moc/periphery/contracts/IPriceProviderRegisterEntry.sol";
 import {SubscribedOraclesLib} from "./libs/SubscribedOraclesLib.sol";
+import {IterableWhitelistLib} from "./libs/IterableWhitelistLib.sol";
 import {OracleManager} from "./OracleManager.sol";
 import {RoundManager} from "./RoundManager.sol";
 
@@ -26,6 +27,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         address votedOracle,
         uint256 blockNumber
     );
+    event ForcedPriceQueryModeSet(address indexed setter, PriceQueryMode mode);
 
     constructor() public initializer {
         // Avoid leaving the implementation contract uninitialized.
@@ -157,6 +159,91 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         emit EmergencyPricePublished(msg.sender, _price, msg.sender, lastPublicationBlock);
     }
 
+    modifier onlyGovernanceOrWhitelisted(
+        IterableWhitelistLib.IterableWhitelistData storage self
+    ) {
+        require(
+            governor.isAuthorizedChanger(msg.sender) || IterableWhitelistLib._isWhitelisted(self, msg.sender),
+            "Address is not authorized"
+        );
+        _;
+    }
+
+    /// @notice Set forced price query mode.
+    /// @param _mode 0 = Ok, 1 = Invalid, 2 = Revert.
+    function setPriceQueryMode(PriceQueryMode _mode)
+        external
+        onlyGovernanceOrWhitelisted(priceQueryModeWhitelistData)
+    {
+        priceQueryMode = _mode;
+        emit ForcedPriceQueryModeSet(msg.sender, _mode);
+    }
+
+    /// @notice Add an address to the list allowed to change the forced price query mode.
+    /// @param _account Address to whitelist.
+    function addPriceQueryModeWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        priceQueryModeWhitelistData._addToWhitelist(_account);
+    }
+
+    /// @notice Remove an address from the list allowed to change the forced price query mode.
+    /// @param _account Address to remove from whitelist.
+    function removePriceQueryModeWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        priceQueryModeWhitelistData._removeFromWhitelist(_account);
+    }
+
+    /// @notice Return the current forced price query mode.
+    function getPriceQueryMode() external view returns (PriceQueryMode) {
+        return priceQueryMode;
+    }
+
+    /// @notice Check if an address is allowed to change the forced price query mode.
+    function isPriceQueryModeWhitelisted(address _account)
+        external
+        view
+        returns (bool)
+    {
+        return priceQueryModeWhitelistData._isWhitelisted(_account);
+    }
+
+    /// @notice Return the number of addresses allowed to change the forced price query mode.
+    function getPriceQueryModeWhitelistLen() external view returns (uint256) {
+        return priceQueryModeWhitelistData._getWhiteListLen();
+    }
+
+    /// @notice Return the address allowed to change the forced price query mode at index.
+    /// @param _idx Index to query.
+    function getPriceQueryModeWhitelistAtIndex(uint256 _idx) external view returns (address) {
+        return priceQueryModeWhitelistData._getWhiteListAtIndex(_idx);
+    }
+
+    /// @notice Return the number of addresses allowed to query price peek data.
+    function getPricePeekWhitelistLen() external view returns (uint256) {
+        return pricePeekWhitelistData._getWhiteListLen();
+    }
+
+    /// @notice Return the address allowed to query price peek data at index.
+    /// @param _idx Index to query.
+    function getPricePeekWhitelistAtIndex(uint256 _idx) external view returns (address) {
+        return pricePeekWhitelistData._getWhiteListAtIndex(_idx);
+    }
+
+    /// @notice Return the number of addresses allowed to emergency publish.
+    function getEmergencyPublishWhitelistLen() external view returns (uint256) {
+        return emergencyPublishWhitelistData._getWhiteListLen();
+    }
+
+    /// @notice Return the address allowed to emergency publish at index.
+    /// @param _idx Index to query.
+    function getEmergencyPublishWhitelistAtIndex(uint256 _idx) external view returns (address) {
+        return emergencyPublishWhitelistData._getWhiteListAtIndex(_idx);
+    }
+
     // Legacy function compatible with old MOC Oracle.
     // returns a tuple (uint256, bool) that corresponds
     // to the price and if it is not expired.
@@ -167,7 +254,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (bytes32, bool)
     {
-        return (bytes32(currentPrice), _isValid());
+        return (bytes32(currentPrice), _getPriceValidity());
     }
 
     /// @notice Return the current price
@@ -178,12 +265,13 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         whitelistedOrExternal(pricePeekWhitelistData)
         returns (uint256)
     {
+        _requireNotForcedRevert();
         return currentPrice;
     }
 
     // Return if the price is not expired.
     function getIsValid() external override view returns (bool) {
-        return _isValid();
+        return _getPriceValidity();
     }
 
     // Return the result of getPrice, getIsValid and getLastPublicationBlock at once.
@@ -197,7 +285,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
             uint256
         )
     {
-        return (currentPrice, _isValid(), lastPublicationBlock);
+        return (currentPrice, _getPriceValidity(), lastPublicationBlock);
     }
 
     // Public variable
@@ -225,9 +313,22 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
     // ----------------------------------------------------------------------------------------------------------------
 
     /// @notice return true if the price is valid
-    function _isValid() private view returns (bool) {
-        require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
-        return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
+    function _requireNotForcedRevert() private view {
+        if (priceQueryMode == PriceQueryMode.Revert) {
+            revert("Forced revert active");
+        }
+    }
+
+    function _getPriceValidity() private view returns (bool) {
+        PriceQueryMode mode = priceQueryMode;
+        if (mode == PriceQueryMode.Ok) {
+            require(block.number >= lastPublicationBlock, "Wrong lastPublicationBlock");
+            return (block.number - lastPublicationBlock) < validPricePeriodInBlocks;
+        }
+        if (mode == PriceQueryMode.Invalid) {
+            return false;
+        }
+        revert("Forced revert active");
     }
 
     // @notice publish a price, called only after verification.

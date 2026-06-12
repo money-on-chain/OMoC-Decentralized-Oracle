@@ -69,13 +69,25 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     // Last round number where each oracle owner signed a valid publication/execution.
     mapping(address => uint256) internal lastSignedRoundByOracle;
 
+    enum PriceQueryMode {
+        Ok,
+        Invalid,
+        Revert
+    }
+
+    // Forced price query mode. 0 = Ok, 1 = Invalid, 2 = Revert.
+    PriceQueryMode internal priceQueryMode;
+
+    // Whitelist of addresses allowed to change the forced price query mode.
+    IterableWhitelistLib.IterableWhitelistData internal priceQueryModeWhitelistData;
+
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
     // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
 
     // Reserved storage space to allow for layout changes in the future.
-    uint256[47] private ______gap;
+    uint256[44] private ______gap;
 
     /**
       @notice Modifier that protects the function
