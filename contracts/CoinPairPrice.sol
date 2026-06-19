@@ -233,6 +233,33 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         return pricePeekWhitelistData._getWhiteListAtIndex(_idx);
     }
 
+    /// @notice Add an address to the list allowed to query price peek data.
+    /// @param _account Address to whitelist.
+    function addPricePeekWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        pricePeekWhitelistData._addToWhitelist(_account);
+    }
+
+    /// @notice Remove an address from the list allowed to query price peek data.
+    /// @param _account Address to remove from whitelist.
+    function removePricePeekWhitelist(address _account)
+        external
+        onlyAuthorizedChanger
+    {
+        pricePeekWhitelistData._removeFromWhitelist(_account);
+    }
+
+    /// @notice Check if an address is allowed to query price peek data.
+    function isPricePeekWhitelisted(address _account)
+        external
+        view
+        returns (bool)
+    {
+        return pricePeekWhitelistData._isWhitelisted(_account);
+    }
+
     /// @notice Return the number of addresses allowed to emergency publish.
     function getEmergencyPublishWhitelistLen() external view returns (uint256) {
         return emergencyPublishWhitelistData._getWhiteListLen();
