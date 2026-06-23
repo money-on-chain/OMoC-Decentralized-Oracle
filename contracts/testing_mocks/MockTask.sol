@@ -25,8 +25,7 @@ contract MockTask is ITask {
         return shouldRun;
     }
 
-    function runTask() external override returns (uint256) {
+    function runTask() external override {
         runCount = runCount + 1;
-        return pointsToAward;
     }
 }

@@ -1,90 +1,104 @@
 {
-  "name": "@moneyonchain/oracles",
-  "version": "3.0.6",
-  "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
-  "main": "index.js",
-  "scripts": {
-    "rsk_testnet": "truffle migrate --network rsk_testnet",
-    "rsk_regtest": "truffle migrate --network rsk_regtest",
-    "test_rsk": "truffle test --network rsk_testnet",
-    "test": "truffle test",
-    "coverage": "rimraf ./coverage && truffle run coverage",
-    "prettier": "prettier --write *.{json,js} migrations/**/*.js test/**/*.js contracts/**/*.sol contracts/*.sol",
-    "lint:solidity": "solhint -f table  contracts/**/*.sol contracts/*.sol",
-    "lint:js": "eslint *.js migrations/**/*.js test/**/*.js",
-    "lint": "npm run lint:js && npm run lint:solidity",
-    "compile": "rimraf ./build && truffle compile",
-    "postcompile": "node scripts/flat_compile_and_save.js contracts/InfoGetter.sol",
-    "release": "standard-version",
-    "commit": "git-cz",
-    "deploy": "rimraf .openzeppelin ./build/contracts && truffle migrate",
-    "deploy_314": "truffle migrate -f 1000 --to 1001",
-    "migrate": "truffle migrate",
-    "deploy_staking_impl_testnet": "truffle --network rsk_testnet exec scripts/deploy_staking_impl.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/money-on-chain/OMoC-Decentralized-Oracle.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
-  "author": "",
-  "license": "ISC",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "post-commit": "git update-index --again",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "lint-staged": {
-    "*.{js,css,md,json,sol}": "prettier --write"
-  },
-  "prettier": {
-    "tabWidth": 4,
-    "printWidth": 100,
-    "singleQuote": true,
-    "trailingComma": "all",
-    "semi": true,
-    "overrides": [
-      {
-        "files": "*.sol",
-        "options": {
-          "singleQuote": false
+    "name": "@moneyonchain/oracles",
+    "version": "3.0.6",
+    "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "hh": "hardhat",
+        "hh:compile": "hardhat compile",
+        "hh:clean": "hardhat clean",
+        "hh:test": "hardhat test",
+        "rsk_testnet": "truffle migrate --network rsk_testnet",
+        "rsk_regtest": "truffle migrate --network rsk_regtest",
+        "test_rsk": "truffle test --network rsk_testnet",
+        "test": "truffle test",
+        "coverage": "rimraf ./coverage && truffle run coverage",
+        "prettier": "prettier --write *.{json,js} migrations/**/*.js test/**/*.js contracts/**/*.sol contracts/*.sol",
+        "lint:solidity": "solhint -f table  contracts/**/*.sol contracts/*.sol",
+        "lint:js": "eslint *.js migrations/**/*.js test/**/*.js",
+        "lint": "npm run lint:js && npm run lint:solidity",
+        "compile": "rimraf ./build && truffle compile",
+        "postcompile": "node scripts/flat_compile_and_save.js contracts/InfoGetter.sol",
+        "release": "standard-version",
+        "commit": "git-cz",
+        "deploy": "rimraf .openzeppelin ./build/contracts && truffle migrate",
+        "deploy_314": "truffle migrate -f 1000 --to 1001",
+        "migrate": "truffle migrate",
+        "deploy_staking_impl_testnet": "truffle --network rsk_testnet exec scripts/deploy_staking_impl.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/money-on-chain/OMoC-Decentralized-Oracle.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+    },
+    "author": "",
+    "license": "ISC",
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "post-commit": "git update-index --again",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
         }
-      }
-    ]
-  },
-  "eslintConfig": {
-    "env": {
-      "commonjs": true,
-      "es2020": true,
-      "node": true,
-      "mocha": true,
-      "truffle/globals": true
     },
-    "plugins": ["truffle"],
-    "extends": ["standard", "prettier"],
-    "parserOptions": {
-      "ecmaVersion": 11
+    "lint-staged": {
+        "*.{js,css,md,json,sol}": "prettier --write"
     },
-    "rules": {}
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
+    "prettier": {
+        "tabWidth": 4,
+        "printWidth": 100,
+        "singleQuote": true,
+        "trailingComma": "all",
+        "semi": true,
+        "overrides": [
+            {
+                "files": "*.sol",
+                "options": {
+                    "singleQuote": false
+                }
+            }
+        ]
+    },
+    "eslintConfig": {
+        "env": {
+            "commonjs": true,
+            "es2020": true,
+            "node": true,
+            "mocha": true,
+            "truffle/globals": true
+        },
+        "plugins": ["truffle"],
+        "extends": ["standard", "prettier"],
+        "parserOptions": {
+            "ecmaVersion": 11
+        },
+        "rules": {}
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    },
+    "bugs": {
+        "url": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle/issues"
+    },
+    "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle#readme",
+    "dependencies": {
+        "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.0",
+        "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery.git#v3.0.0",
+        "@openzeppelin/contracts": "4.9.3",
+        "@openzeppelin/contracts-upgradeable": "4.9.3"
+    },
+    "files": ["contracts"],
+    "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.7",
+        "@types/node": "^26.0.0",
+        "hardhat": "^3.9.0",
+        "mocha": "^11",
+        "tsx": "^4.22.4",
+        "typescript": "^6.0.3"
     }
-  },
-  "bugs": {
-    "url": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle/issues"
-  },
-  "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle#readme",
-  "dependencies": {
-    "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.0",
-    "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery.git#v3.0.0",
-    "@openzeppelin/contracts": "4.9.3"
-  },
-  "files": ["contracts"],
-  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"
 }
