@@ -36,6 +36,9 @@ importers:
       chai:
         specifier: ^6.2.2
         version: 6.2.2
+      ethers:
+        specifier: ^6.17.0
+        version: 6.17.0
       hardhat:
         specifier: ^3.9.0
         version: 3.9.0
