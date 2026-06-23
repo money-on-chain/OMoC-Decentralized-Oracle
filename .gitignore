@@ -34,3 +34,7 @@ moneyonchain-oracles-*-*.tgz
 package-lock.json
 soljson-latest.js
 .log
+artifacts/
+cache/
+types/
+typechain-types/
