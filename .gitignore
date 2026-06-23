@@ -31,7 +31,6 @@ build/
 moc-*-*.tgz
 moneyonchain-oracles-*-*.tgz
 
-package-lock.json
 soljson-latest.js
 .log
 artifacts/
