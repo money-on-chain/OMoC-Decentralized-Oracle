@@ -26,7 +26,7 @@ contract TaskSettlementV3 is ITask {
     function checkTask() external view returns (bool) {
         MocOperations bucket_ = bucket;
         bool areValidPrices = Utils._areValidPrices(address(bucket_));
-        if (bucket_.paused() || !areValidPrices) return false;
+        if (!areValidPrices || bucket_.paused() || bucket_.liquidated()) return false;
         return (block.timestamp >= bucket_.nextSettlementTime());
     }
 

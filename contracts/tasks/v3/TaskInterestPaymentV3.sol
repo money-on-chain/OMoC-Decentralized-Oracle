@@ -24,7 +24,7 @@ contract TaskInterestPaymentV3 is ITask {
      */
     function checkTask() external view returns (bool) {
         MocOperations bucket_ = bucket;
-        if (bucket_.paused()) return false;
+        if (bucket_.paused() || bucket_.liquidated()) return false;
         return block.timestamp >= bucket_.nextTCInterestPayment();
     }
 
