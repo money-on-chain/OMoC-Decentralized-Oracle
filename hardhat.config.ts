@@ -1,10 +1,21 @@
 import { defineConfig } from 'hardhat/config';
-import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import hardhatToolboxViemPlugin from '@nomicfoundation/hardhat-toolbox-viem';
+import hardhatMocha from '@nomicfoundation/hardhat-mocha';
+import tsTestHelperConf from 'ts-test-helpers/hardhat.config.ts';
 
 export default defineConfig({
-    plugins: [hardhatToolboxMochaEthers],
+    plugins: [hardhatToolboxViemPlugin, hardhatMocha],
     solidity: {
         compilers: [
+            {
+                version: '0.5.0',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200,
+                    },
+                },
+            },
             {
                 version: '0.6.12',
                 settings: {
@@ -24,6 +35,14 @@ export default defineConfig({
                     viaIR: true,
                 },
             },
+        ],
+        npmFilesToBuild: [
+            ...(tsTestHelperConf as any).solidity.npmFilesToBuild,
+            '@moc/periphery/contracts/moc-governance/Governance/Governor.sol',
+            '@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol',
+            '@moc/periphery/contracts/test-and-mocks/GovernedERC20.sol',
+            '@moc/periphery/contracts/test-and-mocks/MockGovernor.sol',
+            '@moc/periphery/contracts/GovernedRegistry.sol',
         ],
     },
 

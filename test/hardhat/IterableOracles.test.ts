@@ -1,118 +1,128 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { getAddress, toBeHex, zeroPadValue } from 'ethers';
+import { Address, getAddress, numberToHex } from 'viem';
+import {
+    assertSameAddress,
+    Deployer,
+    ContractOf,
+    Viem,
+    WalletClients,
+    ADDRESS_ZERO,
+    ADDRESS_ONE,
+} from 'ts-test-helpers';
+import { OracleDefinition } from './helpers.js';
 
-const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
-const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
-
-function addressFromNumber(value: number): string {
-    return getAddress(zeroPadValue(toBeHex(value), 20));
+function addressFromNumber(value: number): Address {
+    return getAddress(numberToHex(value, { size: 20 }));
 }
 
 describe('IterableOracles', function () {
-    let ethers: Awaited<ReturnType<typeof network.create>>['ethers'];
-    let accounts: Awaited<ReturnType<typeof ethers.getSigners>>;
-    let iterableOracles: any;
+    let deployer: Deployer;
+    let viem: Viem;
+    let accounts: WalletClients;
+    let iterableOracles: ContractOf<'IterableOraclesMock'>;
 
-    let dummy: string;
-    let invalid: string;
+    let dummy: Address;
+    let invalid: Address;
 
-    let ORACLES_DATA: Array<{
-        owner: string;
-        address: string;
-        url: string;
-    }>;
+    let ORACLES_DATA: OracleDefinition[];
 
     beforeEach(async function () {
-        ({ ethers } = await network.create());
+        ({ viem } = await network.create());
+        deployer = await Deployer.default(viem);
 
-        accounts = await ethers.getSigners();
+        accounts = await viem.getWalletClients();
 
-        dummy = accounts[0].address;
-        invalid = accounts[1].address;
+        dummy = accounts[0].account!.address;
+        invalid = accounts[1].account!.address;
 
         ORACLES_DATA = [
             {
-                owner: accounts[2].address,
+                owner: accounts[2],
                 address: addressFromNumber(11),
                 url: 'https://example.org/oracle11',
+                name: 'oracle11',
             },
             {
-                owner: accounts[3].address,
+                owner: accounts[3],
                 address: addressFromNumber(12),
                 url: 'https://example.org/oracle12',
+                name: 'oracle12',
             },
             {
-                owner: accounts[4].address,
+                owner: accounts[4],
                 address: addressFromNumber(13),
                 url: 'https://example.org/oracle13',
+                name: 'oracle13',
             },
             {
-                owner: accounts[5].address,
+                owner: accounts[5],
                 address: addressFromNumber(14),
                 url: 'https://example.org/oracle14',
+                name: 'oracle14',
             },
         ];
 
-        const IterableOracles = await ethers.getContractFactory('IterableOraclesMock');
-        iterableOracles = await IterableOracles.deploy();
-
-        expect(iterableOracles).to.not.be.undefined;
+        iterableOracles = await deployer.deploy('IterableOraclesMock');
     });
 
     async function registerOracles() {
-        for (const oracle of ORACLES_DATA) {
-            await iterableOracles.registerOracle(oracle.owner, oracle.address, oracle.url);
+        for (const { address, url, owner } of ORACLES_DATA) {
+            await iterableOracles.write.registerOracle([owner.account!.address, address, url!]);
         }
     }
 
     it('fail registration zero address', async function () {
-        await expect(
-            iterableOracles.registerOracle(
+        await viem.assertions.revertWith(
+            iterableOracles.write.registerOracle([
                 ADDRESS_ZERO,
                 ADDRESS_ONE,
                 'https://example.org/oracle0',
-            ),
-        ).to.be.revertedWith('Owner address cannot be 0x0');
+            ]),
+            'Owner address cannot be 0x0',
+        );
 
-        await expect(
-            iterableOracles.registerOracle(
+        await viem.assertions.revertWith(
+            iterableOracles.write.registerOracle([
                 ADDRESS_ONE,
                 ADDRESS_ZERO,
                 'https://example.org/oracle0',
-            ),
-        ).to.be.revertedWith('Oracle address cannot be 0x0');
+            ]),
+            'Oracle address cannot be 0x0',
+        );
     });
 
     it('registration success', async function () {
-        for (const oracle of ORACLES_DATA) {
-            await iterableOracles.registerOracle(oracle.owner, oracle.address, oracle.url);
+        for (const { owner, address, url } of ORACLES_DATA) {
+            const ownerAddr = owner.account!.address;
+            await iterableOracles.write.registerOracle([ownerAddr, address, url!]);
 
-            const oracleRegistered = await iterableOracles.isOracleRegistered(oracle.address);
+            const oracleRegistered = await iterableOracles.read.isOracleRegistered([address]);
             expect(oracleRegistered).to.equal(true);
 
-            const ownerRegistered = await iterableOracles.isOwnerRegistered(oracle.owner);
+            const ownerRegistered = await iterableOracles.read.isOwnerRegistered([ownerAddr]);
             expect(ownerRegistered).to.equal(true);
 
-            const { oracleAddress, url } = await iterableOracles.getOracleInfo(oracle.owner);
-            expect(oracleAddress).to.equal(oracle.address);
-            expect(url).to.equal(oracle.url);
+            const [oracleAddress, gotUrl] = await iterableOracles.read.getOracleInfo([ownerAddr]);
+            assertSameAddress(oracleAddress, address);
+            expect(gotUrl).to.equal(url);
 
-            const owner = await iterableOracles.getOwner(oracle.address);
-            expect(owner).to.equal(oracle.owner);
+            const gotOwner = await iterableOracles.read.getOwner([address]);
+            assertSameAddress(gotOwner, ownerAddr);
         }
 
-        const length = await iterableOracles.getLen();
+        const length = await iterableOracles.read.getLen();
         expect(length).to.equal(BigInt(ORACLES_DATA.length));
 
-        await expect(iterableOracles.getOracleAtIndex(Number(length))).to.be.revertedWith(
+        await viem.assertions.revertWith(
+            iterableOracles.read.getOracleAtIndex([length]),
             'Illegal index',
         );
 
-        const result = await iterableOracles.getOracleAtIndex(0);
-        expect(result.ownerAddress).to.equal(ORACLES_DATA[0].owner);
-        expect(result.oracleAddress).to.equal(ORACLES_DATA[0].address);
-        expect(result.url).to.equal(ORACLES_DATA[0].url);
+        const [owner, address, url] = await iterableOracles.read.getOracleAtIndex([0n]);
+        assertSameAddress(owner, ORACLES_DATA[0].owner.account!.address);
+        assertSameAddress(address, ORACLES_DATA[0].address);
+        expect(url).to.equal(ORACLES_DATA[0].url);
     });
 
     it('fail registration already registered', async function () {
@@ -120,85 +130,97 @@ describe('IterableOracles', function () {
 
         const oracle = ORACLES_DATA[0];
 
-        await expect(
-            iterableOracles.registerOracle(
-                oracle.owner,
+        await viem.assertions.revertWith(
+            iterableOracles.write.registerOracle([
+                oracle.owner.account!.address,
                 ADDRESS_ONE,
                 'https://example.org/oracle0',
-            ),
-        ).to.be.revertedWith('Owner already registered');
+            ]),
+            'Owner already registered',
+        );
 
-        await expect(
-            iterableOracles.registerOracle(dummy, oracle.address, 'https://example.org/oracle0'),
-        ).to.be.revertedWith('Oracle already registered');
+        await viem.assertions.revertWith(
+            iterableOracles.write.registerOracle([
+                dummy,
+                oracle.address,
+                'https://example.org/oracle0',
+            ]),
+            'Oracle already registered',
+        );
     });
 
     it('fail to change url', async function () {
-        await expect(
-            iterableOracles.setName(ADDRESS_ZERO, 'https://example.org/bad'),
-        ).to.be.revertedWith('Oracle owner is not registered');
+        await viem.assertions.revertWith(
+            iterableOracles.write.setName([ADDRESS_ZERO, 'https://example.org/bad']),
+            'Oracle owner is not registered',
+        );
     });
 
     it('change url', async function () {
         await registerOracles();
 
-        const oracle = ORACLES_DATA[0];
+        const { owner, url } = ORACLES_DATA[0];
         const newName = 'https://example.org/setName';
+        const ownerAddress = owner.account!.address;
 
-        const { found, url: oldName } = await iterableOracles.getInternetName(oracle.owner);
+        const [found, oldName] = await iterableOracles.read.getInternetName([ownerAddress]);
         expect(found).to.equal(true);
-        expect(oldName).to.equal(oracle.url);
+        expect(oldName).to.equal(url);
         expect(oldName).to.not.equal(newName);
 
-        await iterableOracles.setName(oracle.owner, newName);
+        await iterableOracles.write.setName([ownerAddress, newName]);
 
-        const { url: updatedName } = await iterableOracles.getInternetName(oracle.owner);
+        const [_, updatedName] = await iterableOracles.read.getInternetName([ownerAddress]);
         expect(updatedName).to.equal(newName);
     });
 
     it('fail to change oracle address', async function () {
         await registerOracles();
 
-        const oracle = ORACLES_DATA[0];
+        const { owner, address } = ORACLES_DATA[0];
 
-        await expect(
-            iterableOracles.setOracleAddress(ADDRESS_ZERO, ADDRESS_ONE),
-        ).to.be.revertedWith('Oracle owner is not registered');
+        await viem.assertions.revertWith(
+            iterableOracles.write.setOracleAddress([ADDRESS_ZERO, ADDRESS_ONE]),
+            'Oracle owner is not registered',
+        );
 
-        await expect(
-            iterableOracles.setOracleAddress(oracle.owner, oracle.address),
-        ).to.be.revertedWith('Oracle already registered');
+        await viem.assertions.revertWith(
+            iterableOracles.write.setOracleAddress([owner.account!.address, address]),
+            'Oracle already registered',
+        );
     });
 
     it('change oracle address', async function () {
         await registerOracles();
 
-        const oracle = ORACLES_DATA[0];
+        const { owner, address } = ORACLES_DATA[0];
         const newAddress = addressFromNumber(100);
+        const ownerAddress = owner.account!.address;
 
-        const oldAddress = await iterableOracles.getOracleAddress(oracle.owner);
-        expect(oldAddress).to.equal(oracle.address);
-        expect(oldAddress).to.not.equal(newAddress);
+        const oldAddress = await iterableOracles.read.getOracleAddress([ownerAddress]);
+        assertSameAddress(oldAddress, address);
 
-        await iterableOracles.setOracleAddress(oracle.owner, newAddress);
+        await iterableOracles.write.setOracleAddress([ownerAddress, newAddress]);
 
-        const updatedAddress = await iterableOracles.getOracleAddress(oracle.owner);
-        expect(updatedAddress).to.equal(newAddress);
+        const updatedAddress = await iterableOracles.read.getOracleAddress([ownerAddress]);
+        assertSameAddress(updatedAddress, newAddress);
     });
 
     it('fail to get an invalid owner', async function () {
-        expect(await iterableOracles.getOracleAddress(invalid)).to.equal(ADDRESS_ZERO);
+        expect(await iterableOracles.read.getOracleAddress([invalid])).to.equal(ADDRESS_ZERO);
 
-        const { found } = await iterableOracles.getInternetName(invalid);
+        const [found] = await iterableOracles.read.getInternetName([invalid]);
         expect(found).to.equal(false);
     });
 
     it('remove failure', async function () {
-        await expect(iterableOracles.removeOracle(ADDRESS_ZERO)).to.be.revertedWith(
+        await viem.assertions.revertWith(
+            iterableOracles.write.removeOracle([ADDRESS_ZERO]),
             'Owner address cannot be 0x0',
         );
 
-        await expect(iterableOracles.removeOracle(ADDRESS_ONE)).to.be.revertedWith(
+        await viem.assertions.revertWith(
+            iterableOracles.write.removeOracle([ADDRESS_ONE]),
             'Owner not registered',
         );
     });
@@ -206,23 +228,25 @@ describe('IterableOracles', function () {
     it('remove success', async function () {
         await registerOracles();
 
-        const oracle = ORACLES_DATA[0];
+        const { owner, address } = ORACLES_DATA[0];
+        const ownerAddress = owner.account!.address;
 
-        let oracleRegistered = await iterableOracles.isOracleRegistered(oracle.address);
+        let oracleRegistered = await iterableOracles.read.isOracleRegistered([address]);
         expect(oracleRegistered).to.equal(true);
 
-        let ownerRegistered = await iterableOracles.isOwnerRegistered(oracle.owner);
+        let ownerRegistered = await iterableOracles.read.isOwnerRegistered([ownerAddress]);
         expect(ownerRegistered).to.equal(true);
 
-        await iterableOracles.removeOracle(oracle.owner);
+        await iterableOracles.write.removeOracle([ownerAddress]);
 
-        oracleRegistered = await iterableOracles.isOracleRegistered(oracle.address);
+        oracleRegistered = await iterableOracles.read.isOracleRegistered([address]);
         expect(oracleRegistered).to.equal(false);
 
-        ownerRegistered = await iterableOracles.isOwnerRegistered(oracle.owner);
+        ownerRegistered = await iterableOracles.read.isOwnerRegistered([ownerAddress]);
         expect(ownerRegistered).to.equal(false);
 
-        await expect(iterableOracles.removeOracle(oracle.owner)).to.be.revertedWith(
+        await viem.assertions.revertWith(
+            iterableOracles.write.removeOracle([ownerAddress]),
             'Owner not registered',
         );
     });
