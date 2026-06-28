@@ -1,6 +1,5 @@
 import {
     concatHex,
-    hexToBytes,
     numberToHex,
     padHex,
     parseSignature,
@@ -8,6 +7,7 @@ import {
     Address,
     Hex,
     Account,
+    getAddress,
 } from 'viem';
 
 import { ContractOf, Deployer, Viem, WalletClient } from 'ts-test-helpers';
@@ -16,6 +16,10 @@ import { GetContractReturnType, Abi, ContractEventName } from 'viem';
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 export const MAX_UINT256 = (1n << 256n) - 1n;
+
+export function addressFromNumber(value: number): Address {
+    return getAddress(numberToHex(value, { size: 20 }));
+}
 
 export type OracleDefinition = {
     owner: WalletClient;
@@ -261,10 +265,10 @@ export async function initContracts(
     governorOwner: WalletClient,
     period = 20n,
     minSubscriptionStake = 10n ** 18n,
-    oracleManagerWhitelisted = [],
+    oracleManagerWhitelisted: Address[] = [],
     withdrawLockTime = 60n * 60n,
     governor = null,
-    wList = [],
+    wList: Address[] = [],
 ): Promise<{
     governor: Awaited<ReturnType<typeof createGovernor>>;
     token: ContractOf<'GovernedERC20'>;
@@ -289,15 +293,14 @@ export async function initContracts(
         token.address,
         staking.address,
     ]);
+    const whitelist = [...wList, staking.address, ...oracleManagerWhitelisted];
 
     const supporters = await deployer.deployProxy('Supporters', [
         activeGovernor.address,
-        [oracleMgr.address, staking.address],
+        [...whitelist, oracleMgr.address],
         token.address,
         period,
     ]);
-
-    const whitelist = [...wList, staking.address, ...oracleManagerWhitelisted];
 
     await oracleMgr.write.initialize([
         activeGovernor.address,
@@ -340,32 +343,42 @@ export async function initContracts(
     };
 }
 
-/*
-export async function initContractsWithCoinPairs({
-    viem,
-    governorOwner,
-    period = 3,
+export async function initContractsWithCoinPairs(
+    deployer: Deployer,
+    governorOwner: WalletClient,
+    period = 3n,
     minSubscriptionStake = 10n ** 18n,
-    whitelist,
-}: any) {
-    const contracts = await initContracts({
-        viem,
-        governorOwner,
-        period,
-        minSubscriptionStake,
-    });
+    whitelist = [],
+): Promise<
+    Awaited<ReturnType<typeof initContracts>> & {
+        coinPairPriceBTCUSD: ContractOf<'CoinPairPrice'>;
+        coinPairPriceRIFBTC: ContractOf<'CoinPairPrice'>;
+    }
+> {
+    const contracts = await initContracts(deployer, governorOwner, period, minSubscriptionStake);
 
-    const walletClients = await viem.getWalletClients();
-    const effectiveWhitelist = whitelist ?? [walletClients[0].account.address];
+    const walletClients = await deployer.viem.getWalletClients();
+    const effectiveWhitelist =
+        whitelist.length > 0 ? whitelist : [walletClients[0].account.address];
 
-    const coinPairPriceBTCUSD = await initCoinpair(viem, 'BTCUSD', {
-        ...contracts,
-        whitelist: effectiveWhitelist,
-    });
-    const coinPairPriceRIFBTC = await initCoinpair(viem, 'RIFBTC', {
-        ...contracts,
-        whitelist: effectiveWhitelist,
-    });
+    const coinPairPriceBTCUSD = await initCoinpair(
+        deployer,
+        'BTCUSD',
+        contracts.governor,
+        contracts.token,
+        contracts.oracleMgr,
+        contracts.registry,
+        effectiveWhitelist,
+    );
+    const coinPairPriceRIFBTC = await initCoinpair(
+        deployer,
+        'RIFBTC',
+        contracts.governor,
+        contracts.token,
+        contracts.oracleMgr,
+        contracts.registry,
+        effectiveWhitelist,
+    );
 
     return {
         ...contracts,
@@ -373,4 +386,3 @@ export async function initContractsWithCoinPairs({
         coinPairPriceRIFBTC,
     };
 }
-*/

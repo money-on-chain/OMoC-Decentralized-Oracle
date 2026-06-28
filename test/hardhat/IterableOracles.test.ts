@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { Address, getAddress, numberToHex } from 'viem';
+import { Address } from 'viem';
 import {
     assertSameAddress,
     Deployer,
@@ -10,11 +10,7 @@ import {
     ADDRESS_ZERO,
     ADDRESS_ONE,
 } from 'ts-test-helpers';
-import { OracleDefinition } from './helpers.js';
-
-function addressFromNumber(value: number): Address {
-    return getAddress(numberToHex(value, { size: 20 }));
-}
+import { OracleDefinition, addressFromNumber } from './helpers.js';
 
 describe('IterableOracles', function () {
     let deployer: Deployer;
