@@ -3,28 +3,27 @@ pragma solidity 0.6.12;
 
 import {ChangeContract} from "@moc/periphery/contracts/moc-governance/Governance/ChangeContract.sol";
 import {OracleManager} from "../OracleManager.sol";
-import {OracleManagerStorage} from "../OracleManagerStorage.sol";
 
 /**
-  @title UpgraderTemplate
+  @title OracleManagerPairChangeRemove
   @notice This contract is a ChangeContract intended to be used when
-  upgrading any contract upgradeable through the zos-lib upgradeability
-  system. This doesn't initialize the upgraded contract, that should be done extending
-  this one or taking it as a guide
+  unregistering a coin pair from the OracleManager.
  */
-contract OracleManagerPairChangeRemove is OracleManagerStorage, ChangeContract {
+contract OracleManagerPairChangeRemove is ChangeContract {
     OracleManager public oracleManager;
-    bytes public encodedData;
+    bytes32 public coinPair;
+    uint256 public hint;
 
     /**
       @notice Constructor
-      @param _oracleManager Address of oracle manager used to register the coin pair
-      @param _coinPair The coinpair to register
+      @param _oracleManager Address of oracle manager used to unregister the coin pair
+      @param _coinPair The coinpair to unregister
       @param _hint Optional hint to start traversing the coinPairList array, zero is to search all the array
     */
     constructor(OracleManager _oracleManager, bytes32 _coinPair, uint256 _hint) public {
         oracleManager = _oracleManager;
-        encodedData = abi.encode(_coinPair, _hint);
+        coinPair = _coinPair;
+        hint = _hint;
     }
 
     /**
@@ -35,16 +34,7 @@ contract OracleManagerPairChangeRemove is OracleManagerStorage, ChangeContract {
       redefine the _beforeUpgrade and _afterUpgrade to use this template
      */
     function execute() external override {
-        oracleManager.delegateCallToChanger(encodedData);
+        oracleManager.unregisterCoinPair(coinPair, hint);
         // TODO: Make it usable just once.
-    }
-
-    /**
-        Called by the Governed contract delegateCallToChanger method
-        This methods runs in the Governed contract storage.
-    */
-    function impersonate(bytes calldata data) external {
-        (bytes32 _coinPair, uint256 _hint) = abi.decode(data, (bytes32, uint256));
-        coinPairRegisterData._unRegisterCoinPair(_coinPair, _hint);
     }
 }
