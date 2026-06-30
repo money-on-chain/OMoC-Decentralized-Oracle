@@ -67,6 +67,32 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         coinPairRegisterData._registerCoinPair(coinPair, addr);
     }
 
+    /// @notice Unregister an existing coin pair contract.
+    /// @dev This function handles the full cleanup flow:
+    ///      1. Force-closes the current round, distributing any accumulated rewards.
+    ///      2. Unsubscribes all oracles from the coin pair.
+    ///      3. Removes the coin pair from the registry.
+    /// @param coinPair The bytes32-encoded coinpair string (e.g. BTCUSD)
+    /// @param hint Optional hint to start traversing the coinPairList array, zero is to search all the array.
+    function unregisterCoinPair(bytes32 coinPair, uint256 hint) external onlyAuthorizedChanger {
+        CoinPairPrice cp = _getCoinPairAddress(coinPair);
+
+        // 1. Distribute accumulated rewards and close the current round.
+        //    forceCloseRound bypasses the lock period check so this can always be called.
+        cp.forceCloseRound();
+
+        // 2. Unsubscribe all oracles from this coin pair.
+        //    Always read index 0 because each unsubscribe removes one element from the array.
+        uint256 len = cp.getSubscribedOraclesLen();
+        for (uint256 i = 0; i < len; i++) {
+            address ownerAddr = cp.getSubscribedOracleAtIndex(0);
+            cp.unsubscribe(ownerAddr);
+        }
+
+        // 3. Remove from the registry.
+        coinPairRegisterData._unRegisterCoinPair(coinPair, hint);
+    }
+
     /**
      @notice Add to the list of contracts that can stake in this contract
 

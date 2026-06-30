@@ -175,6 +175,31 @@ abstract contract RoundManager is CoinPairPriceStorage {
         }
     }
 
+    /// @notice Force close the current round, distributing accumulated rewards to selected oracles.
+    /// @dev Only callable by OracleManager. Does NOT require the lock period to have expired.
+    ///      Intended for use during coinpair unregistration to ensure rewards are distributed
+    ///      and round state is cleaned up before oracles are unsubscribed.
+    function forceCloseRound() external onlyOracleManager {
+        if (roundInfo.number > 0) {
+            // Distribute accumulated rewards to selected oracles before closing.
+            // All oracles will be unsubscribed by the caller (OracleManager.unregisterCoinPair) immediately after.
+            uint256 closingRoundNumber = roundInfo.number;
+            uint256 closingRoundTotalPoints = roundInfo.totalPoints;
+            address[] memory closingSelectedOwners = roundInfo.asArray();
+            _distributeRewards(closingSelectedOwners, closingRoundNumber, closingRoundTotalPoints);
+        }
+        roundInfo.switchRound();
+        // Note: no new oracles are selected — this is intentional since the pair is being unregistered.
+        emit NewRound(
+            msg.sender,
+            roundInfo.number,
+            roundInfo.totalPoints,
+            roundInfo.startBlock,
+            roundInfo.lockPeriodTimestamp,
+            new address[](0)
+        );
+    }
+
     //
     /// @notice Switch contract context to a new round. With the objective of
     /// being a decentralized solution, this can be called by *anyone* if current
