@@ -45,6 +45,14 @@ export default defineConfig({
             '@moc/periphery/contracts/GovernedRegistry.sol',
         ],
     },
+    networks: {
+        default: {
+            type: 'edr-simulated',
+            accounts: {
+                count: 60,
+            },
+        },
+    },
 
     paths: {
         sources: './contracts',
