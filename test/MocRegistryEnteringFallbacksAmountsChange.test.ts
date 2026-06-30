@@ -11,7 +11,9 @@ describe('MocRegistryEnteringFallbacksAmountsChange', function () {
         const contracts = await initContracts(deployer, accounts[8], 3n, 10n ** 18n);
 
         const registry = await deployer.deployUninitializedProxy('GovernedRegistry');
-        await registry.write.initialize([contracts.governor.address], { account: accounts[0].account! });
+        await registry.write.initialize([contracts.governor.address], {
+            account: accounts[0].account!,
+        });
 
         const change = await deployer.deploy('MocRegistryEnteringFallbacksAmountsChange', [
             registry.address,

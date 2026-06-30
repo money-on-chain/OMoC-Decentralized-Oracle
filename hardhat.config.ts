@@ -3,6 +3,12 @@ import hardhatToolboxViemPlugin from '@nomicfoundation/hardhat-toolbox-viem';
 import hardhatMocha from '@nomicfoundation/hardhat-mocha';
 import tsTestHelperConf from 'ts-test-helpers/hardhat.config.ts';
 
+const tsTestHelperHardhatConfig = tsTestHelperConf as {
+    solidity: {
+        npmFilesToBuild: string[];
+    };
+};
+
 export default defineConfig({
     plugins: [hardhatToolboxViemPlugin, hardhatMocha],
     solidity: {
@@ -37,7 +43,7 @@ export default defineConfig({
             },
         ],
         npmFilesToBuild: [
-            ...(tsTestHelperConf as any).solidity.npmFilesToBuild,
+            ...tsTestHelperHardhatConfig.solidity.npmFilesToBuild,
             '@moc/periphery/contracts/moc-governance/Governance/Governor.sol',
             '@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol',
             '@moc/periphery/contracts/test-and-mocks/GovernedERC20.sol',

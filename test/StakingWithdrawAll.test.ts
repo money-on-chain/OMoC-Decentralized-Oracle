@@ -34,7 +34,11 @@ describe('Staking-withdraw-all', function () {
         });
         expect(await contracts.staking.read.getBalance([user.account!.address])).to.equal(amount);
 
-        await contracts.governor.mint(contracts.token.address, contracts.supporters.address, rewardsAmount);
+        await contracts.governor.mint(
+            contracts.token.address,
+            contracts.supporters.address,
+            rewardsAmount,
+        );
         await contracts.supporters.write.distribute({ account: accounts[0].account! });
         await networkHelpers.mine(10);
 

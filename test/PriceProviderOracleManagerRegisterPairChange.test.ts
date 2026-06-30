@@ -10,8 +10,11 @@ describe('PriceProviderOracleManagerRegisterPairChange', function () {
         const accounts = await viem.getWalletClients();
         const contracts = await initContractsWithCoinPairs(deployer, accounts[8], 3n, 10n ** 18n);
 
-        const priceProviderRegister = await deployer.deployUninitializedProxy('PriceProviderRegister');
-        await priceProviderRegister.write.initialize([contracts.governor.address], { account: accounts[0].account! });
+        const priceProviderRegister =
+            await deployer.deployUninitializedProxy('PriceProviderRegister');
+        await priceProviderRegister.write.initialize([contracts.governor.address], {
+            account: accounts[0].account!,
+        });
 
         const change = await deployer.deploy('PriceProviderOracleManagerRegisterPairChange', [
             priceProviderRegister.address,

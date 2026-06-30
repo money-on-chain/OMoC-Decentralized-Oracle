@@ -221,25 +221,23 @@ describe('CoinPairPrice Signature', function () {
         describe(`Test for ${testGroup.oracles} oracles`, function () {
             for (const test of testGroup.tests) {
                 const signatures = test.signatures;
-                const succeeds = 'success' in test && Boolean(test.success) && testGroup.oracles >= 3;
+                const succeeds =
+                    'success' in test && Boolean(test.success) && testGroup.oracles >= 3;
                 const reason =
                     testGroup.oracles < 3
                         ? 'Minimum selected oracles required not reached'
                         : 'Valid signatures count must exceed 50% of active oracles';
 
-                it(
-                    `Should ${succeeds ? 'success' : 'fail'} with ${testGroup.oracles} oracle${testGroup.oracles === 1 ? '' : 's'}, ${signatures} signatures apart from owner`,
-                    async function () {
-                        const { viem, coinPairPrice, oracleData } = await setup(testGroup.oracles);
-                        const publish = signWithOwner(coinPairPrice, oracleData, signatures);
+                it(`Should ${succeeds ? 'success' : 'fail'} with ${testGroup.oracles} oracle${testGroup.oracles === 1 ? '' : 's'}, ${signatures} signatures apart from owner`, async function () {
+                    const { viem, coinPairPrice, oracleData } = await setup(testGroup.oracles);
+                    const publish = signWithOwner(coinPairPrice, oracleData, signatures);
 
-                        if (succeeds) {
-                            await publish;
-                        } else {
-                            await viem.assertions.revertWith(publish, reason);
-                        }
-                    },
-                );
+                    if (succeeds) {
+                        await publish;
+                    } else {
+                        await viem.assertions.revertWith(publish, reason);
+                    }
+                });
             }
         });
     }

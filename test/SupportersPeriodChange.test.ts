@@ -10,7 +10,12 @@ describe('SupportersPeriodChange', function () {
         const accounts = await viem.getWalletClients();
         const initialPeriod = 3n;
         const updatedPeriod = 9n;
-        const contracts = await initContractsWithCoinPairs(deployer, accounts[8], initialPeriod, 10n ** 18n);
+        const contracts = await initContractsWithCoinPairs(
+            deployer,
+            accounts[8],
+            initialPeriod,
+            10n ** 18n,
+        );
 
         expect(await contracts.supporters.read.period()).to.equal(initialPeriod);
 

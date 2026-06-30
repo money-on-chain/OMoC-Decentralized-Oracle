@@ -6,7 +6,6 @@ import {
     stringToHex,
     Address,
     Hex,
-    Account,
     getAddress,
 } from 'viem';
 

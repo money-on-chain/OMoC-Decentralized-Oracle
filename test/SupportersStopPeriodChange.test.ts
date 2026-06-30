@@ -88,7 +88,9 @@ describe('SupportersStopPeriodChange', function () {
 
         await depositEarnings();
 
-        expect(await token.read.balanceOf([supporters.address])).to.equal(toWei(earnings + sum(balances)));
+        expect(await token.read.balanceOf([supporters.address])).to.equal(
+            toWei(earnings + sum(balances)),
+        );
     });
 
     it('Creation', async function () {
@@ -182,7 +184,9 @@ describe('SupportersStopPeriodChange', function () {
         await checkBalances(earnings / 2n);
 
         await depositEarnings();
-        expect(await token.read.balanceOf([supporters.address])).to.equal(toWei(2n * earnings + sum(balances)));
+        expect(await token.read.balanceOf([supporters.address])).to.equal(
+            toWei(2n * earnings + sum(balances)),
+        );
         await checkBalances(earnings / 2n);
 
         await networkHelpers.mine(Number(10n * period));
@@ -244,7 +248,9 @@ describe('SupportersStopPeriodChange', function () {
         await checkBalances(afterSecondExecEarnings);
 
         await depositEarnings();
-        expect(await token.read.balanceOf([supporters.address])).to.equal(toWei(2n * earnings + sum(balances)));
+        expect(await token.read.balanceOf([supporters.address])).to.equal(
+            toWei(2n * earnings + sum(balances)),
+        );
 
         await checkBalances(afterSecondExecEarnings);
         await networkHelpers.mine(Number(10n * period));

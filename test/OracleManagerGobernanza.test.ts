@@ -39,8 +39,16 @@ describe('OracleManager by gobernanza', function () {
             owner: accounts[2],
         };
 
-        await contracts.governor.mint(contracts.token.address, accounts[0].account!.address, 800000000000000000000n);
-        await contracts.governor.mint(contracts.token.address, oracle.owner.account!.address, 800000000000000000000n);
+        await contracts.governor.mint(
+            contracts.token.address,
+            accounts[0].account!.address,
+            800000000000000000000n,
+        );
+        await contracts.governor.mint(
+            contracts.token.address,
+            oracle.owner.account!.address,
+            800000000000000000000n,
+        );
 
         return {
             viem,
@@ -80,7 +88,9 @@ describe('OracleManager by gobernanza', function () {
         expect(await coinPairPrice.read.isSubscribed([oracle.owner.account!.address])).to.equal(
             true,
         );
-        expect(await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address])).to.equal(true);
+        expect(
+            await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address]),
+        ).to.equal(true);
     });
 
     it('Should fail to unsubscribe oracle if not called by owner', async function () {
@@ -96,7 +106,8 @@ describe('OracleManager by gobernanza', function () {
     });
 
     it('Unsubscribe by gobernanza', async function () {
-        const { contracts, coinPairPrice, oracle, whitelistedCaller, deployer } = await setupFixture();
+        const { contracts, coinPairPrice, oracle, whitelistedCaller, deployer } =
+            await setupFixture();
 
         await contracts.token.write.approve([contracts.staking.address, oracle.stake], {
             account: oracle.owner.account!,
@@ -123,7 +134,9 @@ describe('OracleManager by gobernanza', function () {
         expect(await coinPairPrice.read.isSubscribed([oracle.owner.account!.address])).to.equal(
             false,
         );
-        expect(await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address])).to.equal(true);
+        expect(
+            await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address]),
+        ).to.equal(true);
     });
 
     it('Should fail to remove oracle if not called by owner', async function () {
@@ -151,9 +164,13 @@ describe('OracleManager by gobernanza', function () {
             { account: whitelistedCaller.account! },
         );
 
-        expect(await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address])).to.equal(true);
+        expect(
+            await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address]),
+        ).to.equal(true);
         await contracts.staking.write.withdraw([oracle.stake], { account: oracle.owner.account! });
-        expect(await contracts.staking.read.getBalance([oracle.owner.account!.address])).to.equal(0n);
+        expect(await contracts.staking.read.getBalance([oracle.owner.account!.address])).to.equal(
+            0n,
+        );
 
         const change = await deployer.deploy('OracleManagerRemoveChange', [
             contracts.oracleMgr.address,
@@ -161,6 +178,8 @@ describe('OracleManager by gobernanza', function () {
         ]);
         await contracts.governor.execute(change);
 
-        expect(await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address])).to.equal(false);
+        expect(
+            await contracts.oracleMgr.read.isOracleRegistered([oracle.owner.account!.address]),
+        ).to.equal(false);
     });
 });

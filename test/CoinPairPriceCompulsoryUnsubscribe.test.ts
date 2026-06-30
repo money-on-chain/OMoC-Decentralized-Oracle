@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 /**
  * Tests for the fix in onWithdraw: oracles that are subscribed but NOT selected in the current
  * round are now unsubscribed immediately when their stake drops below the minimum.
