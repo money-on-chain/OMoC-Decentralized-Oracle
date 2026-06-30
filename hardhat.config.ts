@@ -56,6 +56,6 @@ export default defineConfig({
 
     paths: {
         sources: './contracts',
-        tests: './test/hardhat',
+        tests: './test',
     },
 });
