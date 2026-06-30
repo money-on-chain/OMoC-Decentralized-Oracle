@@ -27,17 +27,19 @@
         "url": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle/issues"
     },
     "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle#readme",
-    "devDependencies": {
-        "@eslint/js": "^9.0.0",
+    "dependencies": {
         "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.0",
         "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.4",
-        "@nomicfoundation/hardhat-mocha": "^3.0.21",
-        "@nomicfoundation/hardhat-network-helpers": "^3.0.10",
-        "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
         "@openzeppelin/contracts": "4.9.3",
         "@openzeppelin/contracts-ethereum-package": "3.0.0",
         "@openzeppelin/contracts-upgradeable": "4.9.3",
-        "@openzeppelin/upgrades": "2.8.0",
+        "@openzeppelin/upgrades": "2.8.0"
+    },
+    "devDependencies": {
+        "@nomicfoundation/hardhat-mocha": "^3.0.21",
+        "@nomicfoundation/hardhat-network-helpers": "^3.0.10",
+        "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+        "@eslint/js": "^9.0.0",
         "@types/chai": "^5.2.3",
         "@types/mocha": "^10.0.10",
         "@types/node": "^26.0.1",
