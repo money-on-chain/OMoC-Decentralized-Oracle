@@ -8,7 +8,7 @@ contract MockRevertingRunTask is ITask {
         return true;
     }
 
-    function runTask() external override returns (uint256) {
+    function runTask() external override {
         revert("MockRevertingRunTask: runTask reverted");
     }
 }

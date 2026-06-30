@@ -550,17 +550,17 @@ contract TasksRunner is RoundManager {
     }
 
     // Legacy function compatible with old MOC Oracle.
-    function getValidPricePeriodInBlocks() external view returns (uint256) {
+    function getValidPricePeriodInBlocks() external pure returns (uint256) {
         return 0;
     }
 
     // Legacy function compatible with old MOC Oracle.
-    function peek() external view returns (bytes32, bool) {
+    function peek() external pure returns (bytes32, bool) {
         return (bytes32(0), true);
     }
 
     // Legacy function compatible with old MOC Oracle.
-    function getPrice() external view returns (uint256) {
+    function getPrice() external pure returns (uint256) {
         return 0;
     }
 
