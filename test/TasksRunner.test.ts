@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { expect } from 'chai';
 import { network } from 'hardhat';
 import { concatHex, numberToHex, parseSignature } from 'viem';
-import { encodeCoinPair, initContracts, mineUntilNextRound, waitForEvents } from './helpers.js';
+import {
+    encodeCoinPair,
+    initContracts,
+    mineUntilNextRound,
+    waitForEvents,
+} from '../src/helpers.js';
 import {
     assertSameAddress,
     ContractOf,

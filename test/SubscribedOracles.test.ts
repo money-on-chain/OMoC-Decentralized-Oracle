@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { network } from 'hardhat';
 import { Deployer } from 'ts-test-helpers';
 
-import { addressFromNumber } from './helpers.js';
+import { addressFromNumber } from '../src/helpers.js';
 
 const NUM_ORACLES = 50n;
 const MAX_SUBSCRIBED_ORACLES = 30n;

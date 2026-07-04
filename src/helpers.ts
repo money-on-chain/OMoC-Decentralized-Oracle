@@ -1,16 +1,7 @@
-import {
-    concatHex,
-    numberToHex,
-    padHex,
-    parseSignature,
-    stringToHex,
-    Address,
-    Hex,
-    getAddress,
-} from 'viem';
+import { concatHex, numberToHex, padHex, parseSignature, stringToHex, getAddress } from 'viem';
+import type { Address, Hex } from 'viem';
 
-import { ContractOf, Deployer, Viem, WalletClient } from 'ts-test-helpers';
-import { GetContractReturnType, Abi, ContractEventName } from 'viem';
+import type { Deployer, Viem, WalletClient } from 'ts-test-helpers';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
@@ -57,14 +48,10 @@ export function decodeCoinPair(value: string) {
     return bytes.subarray(0, end).toString('utf8');
 }
 
-export function bytes32ToBigInt(value: string) {
-    return BigInt(value);
-}
-
 export async function createGovernor(deployer: Deployer, owner: WalletClient) {
     const governor = await deployer.deployProxy('Governor', [owner.account!.address]);
 
-    const executeChange = async (contract: GetContractReturnType) =>
+    const executeChange = async (contract: { address: Address }) =>
         governor.write.executeChange([contract.address], { account: owner.account });
 
     const deployAndExec = async (contract: any, ...args: any[]) =>
@@ -83,21 +70,14 @@ export async function createGovernor(deployer: Deployer, owner: WalletClient) {
     };
 }
 
-export async function waitForEvents<
-    EventFn extends (...args: any[]) => Promise<any[]>,
-    Events extends Record<string, EventFn>,
-    Source extends { abi: Abi; getEvents: Events },
-    EventName extends ContractEventName<Source['abi']> & string,
-    Result extends Awaited<ReturnType<EventFn>>,
-    Item extends Result[number],
->(
+export async function waitForEvents(
     viem: Viem,
-    source: Source,
-    eventName: EventName,
+    source: any,
+    eventName: string,
     txHash?: Hex,
     fromBlock: bigint = 0n,
     toBlock?: bigint,
-): Promise<Result> {
+): Promise<any[]> {
     const publicClient = await viem.getPublicClient();
     const getEvents = source.getEvents[eventName];
 
@@ -108,25 +88,15 @@ export async function waitForEvents<
     if (txHash) {
         const tx = await publicClient.getTransactionReceipt({ hash: txHash });
         const events = await getEvents(undefined, { blockHash: tx.blockHash });
-        return events.filter((e: Item) => e.transactionHash === txHash) as Result;
-    } else {
-        return (await getEvents(undefined, { fromBlock, toBlock })) as Result;
+        return events.filter((e: any) => e.transactionHash === txHash);
     }
+
+    return await getEvents(undefined, { fromBlock, toBlock });
 }
 
 export async function getLatestBlock(viem: Viem) {
     const publicClient = await viem.getPublicClient();
     return BigInt(await publicClient.getBlockNumber());
-}
-
-export async function mineUntilBlock(networkHelpers: any, viem: Viem, target: number | bigint) {
-    const blockTarget = BigInt(target);
-    let latestBlock = await getLatestBlock(viem);
-
-    while (latestBlock < blockTarget) {
-        await networkHelpers.mine();
-        latestBlock = await getLatestBlock(viem);
-    }
 }
 
 export async function increaseTime(networkHelpers: any, seconds: number | bigint) {
@@ -175,8 +145,10 @@ export async function getDefaultEncodedMessage(
     };
 }
 
+export type ContractLike = any;
+
 export async function publishPrice(
-    coinPairPrice: ContractOf<'CoinPairPrice'>,
+    coinPairPrice: any,
     coinPairName: string,
     price: bigint,
     oracles: OracleDefinition[],
@@ -190,7 +162,9 @@ export async function publishPrice(
         return left > right ? -1 : left < right ? 1 : 0;
     }) as OracleDefinition[];
 
-    const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
+    const lastPublicationBlock = (await (
+        coinPairPrice.read.getLastPublicationBlock as any
+    )()) as bigint;
     const { msg, encMsg } = await getDefaultEncodedMessage(
         3,
         coinPairName,
@@ -241,9 +215,9 @@ export async function initCoinpair(
     deployer: Deployer,
     name: string,
     governor: Awaited<ReturnType<typeof createGovernor>>,
-    token: ContractOf<'GovernedERC20'>,
-    oracleMgr: ContractOf<'OracleManager'>,
-    registry: ContractOf<'GovernedRegistry'>,
+    token: any,
+    oracleMgr: any,
+    registry: any,
     whitelist: Address[],
     maxOraclesPerRound = 10n,
     maxSubscribedOraclesPerRound = 30n,
@@ -252,7 +226,7 @@ export async function initCoinpair(
     validPricePeriodInBlocks = 3n,
     emergencyPublishingPeriodInBlocks = 2n,
     bootstrapPrice = 100000000n,
-): Promise<ContractOf<'CoinPairPrice'>> {
+): Promise<any> {
     const coinPairPrice = await deployer.deployProxy('CoinPairPrice', [
         governor.addr,
         whitelist,
@@ -287,14 +261,14 @@ export async function initContracts(
     wList: Address[] = [],
 ): Promise<{
     governor: Awaited<ReturnType<typeof createGovernor>>;
-    token: ContractOf<'GovernedERC20'>;
-    oracleMgr: ContractOf<'OracleManager'>;
-    supporters: ContractOf<'Supporters'>;
-    delayMachine: ContractOf<'DelayMachine'>;
-    staking: ContractOf<'Staking'>;
-    stakingMock: ContractOf<'StakingMock'>;
-    votingMachine: ContractOf<'MockVotingMachine'>;
-    registry: ContractOf<'GovernedRegistry'>;
+    token: any;
+    oracleMgr: any;
+    supporters: any;
+    delayMachine: any;
+    staking: any;
+    stakingMock: any;
+    votingMachine: any;
+    registry: any;
 }> {
     const activeGovernor = governor ?? (await createGovernor(deployer, governorOwner));
     const token = await deployer.deployProxy('GovernedERC20', [activeGovernor.address]);
@@ -367,8 +341,8 @@ export async function initContractsWithCoinPairs(
     whitelist: Address[] = [],
 ): Promise<
     Awaited<ReturnType<typeof initContracts>> & {
-        coinPairPriceBTCUSD: ContractOf<'CoinPairPrice'>;
-        coinPairPriceRIFBTC: ContractOf<'CoinPairPrice'>;
+        coinPairPriceBTCUSD: any;
+        coinPairPriceRIFBTC: any;
     }
 > {
     const contracts = await initContracts(

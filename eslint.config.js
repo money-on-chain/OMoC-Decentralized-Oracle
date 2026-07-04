@@ -29,7 +29,7 @@ export default defineConfig([
     },
 
     {
-        files: ['hardhat.config.ts', 'test/**/*.ts'],
+        files: ['hardhat.config.ts', 'src/**/*.ts', 'test/**/*.ts'],
         extends: [tseslint.configs.recommended, prettierConfig],
         languageOptions: {
             globals: {

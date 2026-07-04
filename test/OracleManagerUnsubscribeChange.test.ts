@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { encodeCoinPair, initContractsWithCoinPairs } from './helpers.js';
+import { encodeCoinPair, initContractsWithCoinPairs } from '../src/helpers.js';
 import { Deployer } from 'ts-test-helpers';
 
 describe('OracleManagerUnsubscribeChange', function () {

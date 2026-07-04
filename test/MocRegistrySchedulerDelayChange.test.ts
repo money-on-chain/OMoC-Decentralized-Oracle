@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initContracts } from './helpers.js';
+import { initContracts } from '../src/helpers.js';
 import { Deployer, registryMocOracleKey as key } from 'ts-test-helpers';
 
 describe('MocRegistrySchedulerDelayChange', function () {

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { createGovernor, getLatestBlock, waitForEvents } from './helpers.js';
+import { createGovernor, getLatestBlock, waitForEvents } from '../src/helpers.js';
 import { ContractOf, Deployer, NetworkHelpers, Viem, WalletClients } from 'ts-test-helpers';
 
 const toWei = (value: bigint) => value * 10n ** 18n;

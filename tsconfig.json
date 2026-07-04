@@ -21,7 +21,9 @@
     "include": [
         "artifacts/**/*.d.ts",
         "hardhat.config.ts",
+        "index.ts",
         "scripts/**/*.ts",
-        "test/hardhat/**/*.ts"
+        "src/**/*.ts",
+        "test/**/*.ts"
     ]
 }

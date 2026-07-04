@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initCoinpair, initContracts, OracleDefinition, publishPrice } from './helpers.js';
+import { initCoinpair, initContracts, OracleDefinition, publishPrice } from '../src/helpers.js';
 import {
     assertAddressInList,
     assertAddressNotInList,

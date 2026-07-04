@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initCoinpair, initContracts, publishPrice, type OracleDefinition } from './helpers.js';
+import {
+    initCoinpair,
+    initContracts,
+    publishPrice,
+    type OracleDefinition,
+} from '../src/helpers.js';
 import { Deployer, type ContractOf, type Viem, type WalletClients } from 'ts-test-helpers';
 
 describe('InfoGetter', function () {

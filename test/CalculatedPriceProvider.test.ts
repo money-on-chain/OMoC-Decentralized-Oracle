@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { ADDRESS_ONE, MAX_UINT256 } from './helpers.js';
+import { ADDRESS_ONE, MAX_UINT256 } from '../src/helpers.js';
 import { assertSameAddress, ContractOf, Deployer, Viem, WalletClients } from 'ts-test-helpers';
 import type { Address } from 'viem';
 

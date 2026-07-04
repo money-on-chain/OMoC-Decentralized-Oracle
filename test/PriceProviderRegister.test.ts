@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { ADDRESS_ZERO, encodeCoinPair } from './helpers.js';
+import { ADDRESS_ZERO, encodeCoinPair } from '../src/helpers.js';
 import { assertSameAddress, Deployer, Viem } from 'ts-test-helpers';
 
 describe('PriceProviderRegister', function () {

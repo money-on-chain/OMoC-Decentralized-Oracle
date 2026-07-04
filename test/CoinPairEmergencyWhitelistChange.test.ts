@@ -1,5 +1,5 @@
 import { network } from 'hardhat';
-import { initContractsWithCoinPairs } from './helpers.js';
+import { initContractsWithCoinPairs } from '../src/helpers.js';
 import { Deployer } from 'ts-test-helpers';
 
 describe('CoinPairEmergencyWhitelistChange', function () {

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { increaseTime, increaseTimeTo, waitForEvents } from './helpers.js';
+import { increaseTime, increaseTimeTo, waitForEvents } from '../src/helpers.js';
 import {
     assertSameAddress,
     ContractOf,

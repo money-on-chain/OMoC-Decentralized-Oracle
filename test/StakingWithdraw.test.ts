@@ -6,7 +6,7 @@ import {
     OracleDefinition,
     OracleStakeData,
     publishPrice,
-} from './helpers.js';
+} from '../src/helpers.js';
 import { Deployer, type WalletClients } from 'ts-test-helpers';
 import { Address } from 'viem';
 

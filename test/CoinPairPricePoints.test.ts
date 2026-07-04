@@ -7,7 +7,7 @@ import {
     initContracts,
     mineUntilNextRound,
     OracleStakeData,
-} from './helpers.js';
+} from '../src/helpers.js';
 import {
     assertAddressInList,
     Deployer,

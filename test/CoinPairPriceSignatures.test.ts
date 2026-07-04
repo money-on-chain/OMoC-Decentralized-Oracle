@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
 import { parseSignature, type Address } from 'viem';
-import { getDefaultEncodedMessage, initCoinpair, initContracts } from './helpers.js';
+import { getDefaultEncodedMessage, initCoinpair, initContracts } from '../src/helpers.js';
 import { Deployer, type ContractOf, type WalletClient } from 'ts-test-helpers';
 
 const testsToRun = [

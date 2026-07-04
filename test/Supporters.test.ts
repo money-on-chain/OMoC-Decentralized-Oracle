@@ -6,7 +6,7 @@ import {
     initContractsWithCoinPairs,
     waitForEvents,
     type OracleStakeData,
-} from './helpers.js';
+} from '../src/helpers.js';
 import { assertSameAddress, Deployer, type WalletClients, type ContractOf } from 'ts-test-helpers';
 import type { Address } from 'viem';
 

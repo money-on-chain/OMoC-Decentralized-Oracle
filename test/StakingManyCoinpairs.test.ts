@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { encodeCoinPair, initCoinpair, initContracts } from './helpers.js';
+import { encodeCoinPair, initCoinpair, initContracts } from '../src/helpers.js';
 import {
     assertSameAddress,
     Deployer,

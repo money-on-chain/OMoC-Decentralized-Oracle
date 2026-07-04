@@ -31,6 +31,20 @@ This repository contains the **Smart Contracts**' source code _**only**_ and its
 - [test](./test): Tests for this contract system.
 - [scripts](./scripts): Tools to monitor and interact with the system when running over RSK network.
 
+## Package Exports
+
+This package publishes the Solidity contracts and the TypeScript helpers from [`src/helpers.ts`](./src/helpers.ts).
+
+```ts
+import { initContracts, publishPrice } from '@moneyonchain/oracles';
+```
+
+```ts
+import { initContracts, publishPrice } from '@moneyonchain/oracles/test/helpers';
+```
+
+Use the root import for the default helper surface, or the explicit subpath if you want to depend on the helper module directly.
+
 ## Smart Contracts Design
 
 ![Architecture](docs/contracts.png)

@@ -36,3 +36,4 @@ soljson-latest.js
 artifacts/
 cache/
 types/
+dist/test

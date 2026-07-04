@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initCoinpair, initContracts, publishPrice, waitForEvents } from './helpers.js';
+import { initCoinpair, initContracts, publishPrice, waitForEvents } from '../src/helpers.js';
 import { assertSameAddress, Deployer, NetworkHelpers, Viem, WalletClients } from 'ts-test-helpers';
 import { hexToBigInt } from 'viem';
 

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { encodeCoinPair, initCoinpair, initContracts, mineUntilNextRound } from './helpers.js';
+import { encodeCoinPair, initCoinpair, initContracts, mineUntilNextRound } from '../src/helpers.js';
 import {
     Deployer,
     type NetworkHelpers,

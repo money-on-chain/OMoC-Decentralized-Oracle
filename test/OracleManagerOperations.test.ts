@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { ADDRESS_ONE, ADDRESS_ZERO, addressFromNumber, encodeCoinPair } from './helpers.js';
+import { ADDRESS_ONE, ADDRESS_ZERO, addressFromNumber, encodeCoinPair } from '../src/helpers.js';
 import {
     assertSameAddress,
     Deployer,

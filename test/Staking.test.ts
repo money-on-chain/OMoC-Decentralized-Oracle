@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initCoinpair, initContracts, waitForEvents } from './helpers.js';
+import { initCoinpair, initContracts, waitForEvents } from '../src/helpers.js';
 import { getAddress } from 'viem';
 import {
     assertSameAddress,

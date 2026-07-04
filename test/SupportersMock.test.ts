@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import assert from 'node:assert/strict';
 import { parseEther } from 'viem';
 import { network } from 'hardhat';
-import { createGovernor, waitForEvents } from './helpers.js';
+import { createGovernor, waitForEvents } from '../src/helpers.js';
 import type { Account } from 'viem';
 import {
     Deployer,

@@ -14,7 +14,7 @@ export default defineConfig({
     solidity: {
         compilers: [
             {
-                version: '0.5.0',
+                version: '0.5.17',
                 settings: {
                     optimizer: {
                         enabled: true,
@@ -37,6 +37,12 @@ export default defineConfig({
                     optimizer: {
                         enabled: true,
                         runs: 200,
+                        details: {
+                            yulDetails: {
+                                optimizerSteps:
+                                    'dhfoDgvulfnTUtnIf[xa[r]EscLMcCTUtTOntnfDIulLculVcul[j]Tpeulxa[rul]xa[r]cLgvifCTUca[r]LSsTOtfDnca[r]Iulc]jmul[jul]VcTOculjmul',
+                            },
+                        },
                     },
                     viaIR: true,
                 },

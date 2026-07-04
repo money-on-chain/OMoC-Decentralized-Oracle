@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initContractsWithCoinPairs } from './helpers.js';
+import { initContractsWithCoinPairs } from '../src/helpers.js';
 import { Deployer } from 'ts-test-helpers';
 
 describe('OracleManagerRemoveChange', function () {

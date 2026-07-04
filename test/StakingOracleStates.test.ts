@@ -9,7 +9,7 @@ import {
     publishPrice,
     toOracleDefinition,
     type OracleDefinition,
-} from './helpers.js';
+} from '../src/helpers.js';
 import { Deployer, type WalletClients } from 'ts-test-helpers';
 
 const COINPAIR_NAME = 'BTCUSD';

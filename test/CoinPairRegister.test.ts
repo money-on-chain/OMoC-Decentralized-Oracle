@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { randomBytes } from 'crypto';
 import { network } from 'hardhat';
-import { createGovernor, decodeCoinPair, encodeCoinPair } from './helpers.js';
+import { createGovernor, decodeCoinPair, encodeCoinPair } from '../src/helpers.js';
 import { ContractOf, Deployer, Viem, WalletClients } from 'ts-test-helpers';
 import type { Address } from 'viem';
 

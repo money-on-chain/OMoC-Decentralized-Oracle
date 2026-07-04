@@ -10,7 +10,7 @@ import {
     ADDRESS_ZERO,
     ADDRESS_ONE,
 } from 'ts-test-helpers';
-import { OracleDefinition, addressFromNumber } from './helpers.js';
+import { OracleDefinition, addressFromNumber } from '../src/helpers.js';
 
 describe('IterableOracles', function () {
     let deployer: Deployer;

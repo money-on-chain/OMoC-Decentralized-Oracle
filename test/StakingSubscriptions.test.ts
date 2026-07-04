@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initCoinpair, initContracts } from './helpers.js';
+import { initCoinpair, initContracts } from '../src/helpers.js';
 import { ContractOf, Deployer, type WalletClient, type WalletClients } from 'ts-test-helpers';
 
 type OracleEntry = {

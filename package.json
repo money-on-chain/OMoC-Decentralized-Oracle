@@ -6,8 +6,8 @@
     "scripts": {
         "hh": "hardhat",
         "compile": "hardhat compile",
-        "clean": "hardhat clean",
-        "build": "pnpm clean && pnpm compile",
+        "clean": "hardhat clean && rm -rf dist",
+        "build": "pnpm clean && pnpm compile && pnpm exec tsc -p tsconfig.json",
         "debug": "node --inspect ./scripts/debug-hardhat.mjs test mocha",
         "format": "pnpm exec prettier ./test/* --write",
         "format:check": "pnpm exec prettier ./test/* --check",
@@ -15,7 +15,9 @@
         "lint:fix": "pnpm exec eslint . --fix --max-warnings 0",
         "precommit": "pnpm lint-staged && pnpm format:check",
         "prepare": "husky",
-        "test": "hardhat test mocha"
+        "test": "hardhat test mocha",
+        "quality": "pnpm format:check && pnpm lint && pnpm check",
+        "check": "pnpm exec tsc --noEmit -p tsconfig.json"
     },
     "repository": {
         "type": "git",
@@ -33,7 +35,9 @@
         "@openzeppelin/contracts": "4.9.3",
         "@openzeppelin/contracts-ethereum-package": "3.0.0",
         "@openzeppelin/contracts-upgradeable": "4.9.3",
-        "@openzeppelin/upgrades": "2.8.0"
+        "@openzeppelin/upgrades": "2.8.0",
+        "ts-test-helpers": "git+ssh://git@github.com/money-on-chain/ts-test-helpers#v0.1.0",
+        "viem": "2.53.1"
     },
     "devDependencies": {
         "@nomicfoundation/hardhat-mocha": "^3.0.21",
@@ -54,16 +58,25 @@
         "prettier": "^3.0.0",
         "prettier-plugin-solidity": "^1.4.3",
         "solc": "0.6.12",
-        "ts-test-helpers": "git+ssh://git@github.com/money-on-chain/ts-test-helpers#v0.1.0",
         "typescript": "6.0.3",
-        "typescript-eslint": "^8.0.0",
-        "viem": "2.53.1"
+        "typescript-eslint": "^8.0.0"
     },
     "files": [
-        "contracts"
+        "contracts",
+        "dist/index.*",
+        "dist/src/helpers.*"
     ],
-    "main": "index.js",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./test/helpers": {
+            "types": "./dist/src/helpers.d.ts",
+            "import": "./dist/src/helpers.js"
+        },
         "./contracts/*": "./contracts/*",
         "./package.json": "./package.json"
     },

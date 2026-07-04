@@ -1,5 +1,5 @@
 import { network } from 'hardhat';
-import { encodeCoinPair, initContractsWithCoinPairs } from './helpers.js';
+import { encodeCoinPair, initContractsWithCoinPairs } from '../src/helpers.js';
 import { assertSameAddress, Deployer } from 'ts-test-helpers';
 
 describe('OracleManagerPairChange', function () {

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initContracts } from './helpers.js';
+import { initContracts } from '../src/helpers.js';
 import { Deployer, type NetworkHelpers, type WalletClients } from 'ts-test-helpers';
 
 describe('Staking-withdraw-all', function () {
@@ -42,9 +42,8 @@ describe('Staking-withdraw-all', function () {
         await contracts.supporters.write.distribute({ account: accounts[0].account! });
         await networkHelpers.mine(10);
 
-        expect(await contracts.staking.read.getBalance([user.account!.address])).to.be.greaterThan(
-            amount,
-        );
+        const balance = await contracts.staking.read.getBalance([user.account!.address]);
+        expect(balance > amount).to.equal(true);
 
         return user;
     }

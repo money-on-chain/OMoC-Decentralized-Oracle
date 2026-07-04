@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
 import { Account, bytesToHex, getAddress, parseEther, stringToHex } from 'viem';
-import { initContractsWithCoinPairs, OracleStakeData, ADDRESS_ZERO } from './helpers.js';
+import { initContractsWithCoinPairs, OracleStakeData, ADDRESS_ZERO } from '../src/helpers.js';
 import {
     Deployer,
     WalletClient,
