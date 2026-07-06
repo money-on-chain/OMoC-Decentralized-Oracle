@@ -1,12 +1,13 @@
 import {
     concatHex,
+    type Hex,
     numberToHex,
     padHex,
     parseSignature,
     stringToHex,
     getAddress,
 } from 'viem';
-import type {Address } from 'viem';
+import type { Address } from 'viem';
 
 import type { ContractOf, Deployer, NetworkHelpers, Viem, WalletClient } from 'ts-test-helpers';
 
@@ -69,8 +70,11 @@ export async function createGovernor(deployer: Deployer, owner: WalletClient) {
         address: governor.address,
         governor,
 
-        registerCoinPair: async (manager: ContractOf<'OracleManager'>, coinPair: string, address: string) =>
-            deployAndExec('OracleManagerPairChange', manager.address, coinPair, address),
+        registerCoinPair: async (
+            manager: ContractOf<'OracleManager'>,
+            coinPair: string,
+            address: string,
+        ) => deployAndExec('OracleManagerPairChange', manager.address, coinPair, address),
         mint: async (tokenAddr: string, addr: string, quantity: bigint) =>
             deployAndExec('TestMOCMintChange', tokenAddr, addr, quantity),
         execute: executeChange,
@@ -138,40 +142,45 @@ export async function getDefaultEncodedMessage(
     };
 }
 
-export async function publishPrice(
-    coinPairPrice: ContractOf<'CoinPairPrice'>,
-    coinPairName: string,
-    price: bigint,
+export type OracleConsensusSignatures = {
+    publisher: OracleDefinition;
+    sortedOracles: OracleDefinition[];
+    sigV: number[];
+    sigR: Hex[];
+    sigS: Hex[];
+};
+
+export async function getOracleConsensusSignatures(
     oracles: OracleDefinition[],
+    rawMessage: Hex,
     publisher?: OracleDefinition,
-) {
+): Promise<OracleConsensusSignatures> {
     const selectedPublisher = publisher ?? oracles[0];
+    if (selectedPublisher === undefined) {
+        throw new Error('No oracle wallet clients available');
+    }
+
     const sortedOracles = [...oracles].sort((a, b) => {
         const left = BigInt(a.address);
         const right = BigInt(b.address);
 
-        return left > right ? -1 : left < right ? 1 : 0;
+        return left < right ? -1 : left > right ? 1 : 0;
     });
 
-    const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
-    const { msg, encMsg } = await getDefaultEncodedMessage(
-        3,
-        coinPairName,
-        price,
-        selectedPublisher.address,
-        lastPublicationBlock,
-    );
-
     const sigV: number[] = [];
-    const sigR: Address[] = [];
-    const sigS: Address[] = [];
+    const sigR: Hex[] = [];
+    const sigS: Hex[] = [];
 
-    for (const oracle of [...sortedOracles].reverse()) {
+    for (const oracle of sortedOracles) {
+        if (oracle.signer === undefined) {
+            throw new Error(`Missing signer for oracle ${oracle.address}`);
+        }
+
         const signature = parseSignature(
-            await oracle.signer!.signMessage({
-                account: oracle.signer!.account!,
+            await oracle.signer.signMessage({
+                account: oracle.signer.account!,
                 message: {
-                    raw: encMsg,
+                    raw: rawMessage,
                 },
             }),
         );
@@ -185,6 +194,38 @@ export async function publishPrice(
         sigS.push(signature.s);
     }
 
+    return {
+        publisher: selectedPublisher,
+        sortedOracles,
+        sigV,
+        sigR,
+        sigS,
+    };
+}
+
+export async function publishPrice(
+    coinPairPrice: ContractOf<'CoinPairPrice'>,
+    coinPairName: string,
+    price: bigint,
+    oracles: OracleDefinition[],
+    publisher?: OracleDefinition,
+) {
+    const selectedPublisher = publisher ?? oracles[0];
+    if (selectedPublisher === undefined) {
+        throw new Error('No oracle wallet clients available');
+    }
+
+    const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
+    const { msg, encMsg } = await getDefaultEncodedMessage(
+        3,
+        coinPairName,
+        price,
+        selectedPublisher.address,
+        lastPublicationBlock,
+    );
+
+    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(oracles, encMsg, publisher);
+
     await coinPairPrice.write.publishPrice(
         [
             msg.version,
@@ -196,6 +237,42 @@ export async function publishPrice(
             sigR,
             sigS,
         ],
+        { account: selectedPublisher.address },
+    );
+}
+
+export async function runTasks(
+    tasksRunner: ContractOf<'TasksRunner'>,
+    oracles: OracleDefinition[],
+    publisher?: OracleDefinition,
+) {
+    const selectedPublisher = publisher ?? oracles[0];
+    if (selectedPublisher === undefined) {
+        throw new Error('No oracle wallet clients available');
+    }
+
+    const [name, tasksFlags, lastPublicationBlock] = await Promise.all([
+        tasksRunner.read.getName(),
+        tasksRunner.read.getTasksAvailableAsFlags(),
+        tasksRunner.read.getLastPublicationBlock(),
+    ]);
+
+    const encMsg = concatHex([
+        padHex(numberToHex(3n), { size: 32 }),
+        name,
+        padHex(numberToHex(tasksFlags), { size: 32 }),
+        selectedPublisher.address,
+        padHex(numberToHex(lastPublicationBlock), { size: 32 }),
+    ]);
+
+    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(
+        oracles,
+        encMsg,
+        selectedPublisher,
+    );
+
+    await tasksRunner.write.runTasks(
+        [3n, name, tasksFlags, selectedPublisher.address, lastPublicationBlock, sigV, sigR, sigS],
         { account: selectedPublisher.address },
     );
 }

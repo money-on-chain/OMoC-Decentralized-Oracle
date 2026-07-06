@@ -72,23 +72,27 @@ export async function getDefaultEncodedMessage(version, coinPair, price, votedOr
         encMsg,
     };
 }
-export async function publishPrice(coinPairPrice, coinPairName, price, oracles, publisher) {
+export async function getOracleConsensusSignatures(oracles, rawMessage, publisher) {
     const selectedPublisher = publisher ?? oracles[0];
+    if (selectedPublisher === undefined) {
+        throw new Error('No oracle wallet clients available');
+    }
     const sortedOracles = [...oracles].sort((a, b) => {
         const left = BigInt(a.address);
         const right = BigInt(b.address);
-        return left > right ? -1 : left < right ? 1 : 0;
+        return left < right ? -1 : left > right ? 1 : 0;
     });
-    const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
-    const { msg, encMsg } = await getDefaultEncodedMessage(3, coinPairName, price, selectedPublisher.address, lastPublicationBlock);
     const sigV = [];
     const sigR = [];
     const sigS = [];
-    for (const oracle of [...sortedOracles].reverse()) {
+    for (const oracle of sortedOracles) {
+        if (oracle.signer === undefined) {
+            throw new Error(`Missing signer for oracle ${oracle.address}`);
+        }
         const signature = parseSignature(await oracle.signer.signMessage({
             account: oracle.signer.account,
             message: {
-                raw: encMsg,
+                raw: rawMessage,
             },
         }));
         if (signature.v === undefined) {
@@ -98,6 +102,22 @@ export async function publishPrice(coinPairPrice, coinPairName, price, oracles, 
         sigR.push(signature.r);
         sigS.push(signature.s);
     }
+    return {
+        publisher: selectedPublisher,
+        sortedOracles,
+        sigV,
+        sigR,
+        sigS,
+    };
+}
+export async function publishPrice(coinPairPrice, coinPairName, price, oracles, publisher) {
+    const selectedPublisher = publisher ?? oracles[0];
+    if (selectedPublisher === undefined) {
+        throw new Error('No oracle wallet clients available');
+    }
+    const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
+    const { msg, encMsg } = await getDefaultEncodedMessage(3, coinPairName, price, selectedPublisher.address, lastPublicationBlock);
+    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(oracles, encMsg, publisher);
     await coinPairPrice.write.publishPrice([
         msg.version,
         encodeCoinPair(coinPairName),
@@ -108,6 +128,26 @@ export async function publishPrice(coinPairPrice, coinPairName, price, oracles, 
         sigR,
         sigS,
     ], { account: selectedPublisher.address });
+}
+export async function runTasks(tasksRunner, oracles, publisher) {
+    const selectedPublisher = publisher ?? oracles[0];
+    if (selectedPublisher === undefined) {
+        throw new Error('No oracle wallet clients available');
+    }
+    const [name, tasksFlags, lastPublicationBlock] = await Promise.all([
+        tasksRunner.read.getName(),
+        tasksRunner.read.getTasksAvailableAsFlags(),
+        tasksRunner.read.getLastPublicationBlock(),
+    ]);
+    const encMsg = concatHex([
+        padHex(numberToHex(3n), { size: 32 }),
+        name,
+        padHex(numberToHex(tasksFlags), { size: 32 }),
+        selectedPublisher.address,
+        padHex(numberToHex(lastPublicationBlock), { size: 32 }),
+    ]);
+    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(oracles, encMsg, selectedPublisher);
+    await tasksRunner.write.runTasks([3n, name, tasksFlags, selectedPublisher.address, lastPublicationBlock, sigV, sigR, sigS], { account: selectedPublisher.address });
 }
 export async function initCoinpair(deployer, name, governor, token, oracleMgr, registry, whitelist, maxOraclesPerRound = 10n, maxSubscribedOraclesPerRound = 30n, roundLockPeriod = 60n, maxMissedSigRounds = 0n, validPricePeriodInBlocks = 3n, emergencyPublishingPeriodInBlocks = 2n, bootstrapPrice = 100000000n) {
     const coinPairPrice = await deployer.deployProxy('CoinPairPrice', [

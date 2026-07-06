@@ -1,3 +1,4 @@
+import { type Hex } from 'viem';
 import type { Address } from 'viem';
 import type { ContractOf, Deployer, NetworkHelpers, Viem, WalletClient } from 'ts-test-helpers';
 export declare const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
@@ -2976,7 +2977,16 @@ export declare function getDefaultEncodedMessage(version: number | bigint, coinP
     };
     encMsg: `0x${string}`;
 }>;
+export type OracleConsensusSignatures = {
+    publisher: OracleDefinition;
+    sortedOracles: OracleDefinition[];
+    sigV: number[];
+    sigR: Hex[];
+    sigS: Hex[];
+};
+export declare function getOracleConsensusSignatures(oracles: OracleDefinition[], rawMessage: Hex, publisher?: OracleDefinition): Promise<OracleConsensusSignatures>;
 export declare function publishPrice(coinPairPrice: ContractOf<'CoinPairPrice'>, coinPairName: string, price: bigint, oracles: OracleDefinition[], publisher?: OracleDefinition): Promise<void>;
+export declare function runTasks(tasksRunner: ContractOf<'TasksRunner'>, oracles: OracleDefinition[], publisher?: OracleDefinition): Promise<void>;
 export declare function initCoinpair(deployer: Deployer, name: string, governor: Awaited<ReturnType<typeof createGovernor>>, token: ContractOf<'GovernedERC20'>, oracleMgr: ContractOf<'OracleManager'>, registry: ContractOf<'GovernedRegistry'>, whitelist: Address[], maxOraclesPerRound?: bigint, maxSubscribedOraclesPerRound?: bigint, roundLockPeriod?: bigint, maxMissedSigRounds?: bigint, validPricePeriodInBlocks?: bigint, emergencyPublishingPeriodInBlocks?: bigint, bootstrapPrice?: bigint): Promise<ContractOf<'CoinPairPrice'>>;
 export declare function initContracts(deployer: Deployer, governorOwner: WalletClient, period?: bigint, minSubscriptionStake?: bigint, oracleManagerWhitelisted?: Address[], withdrawLockTime?: bigint, governor?: Awaited<ReturnType<typeof createGovernor>> | null, wList?: Address[]): Promise<{
     governor: Awaited<ReturnType<typeof createGovernor>>;
