@@ -1,5 +1,5 @@
-import type { Address, Hex } from 'viem';
-import type { Deployer, Viem, WalletClient } from 'ts-test-helpers';
+import type { Address } from 'viem';
+import type { ContractOf, Deployer, NetworkHelpers, Viem, WalletClient } from 'ts-test-helpers';
 export declare const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 export declare const ADDRESS_ONE = "0x0000000000000000000000000000000000000001";
 export declare const MAX_UINT256: bigint;
@@ -2951,17 +2951,21 @@ export declare function createGovernor(deployer: Deployer, owner: WalletClient):
             type: "function";
         }];
     };
-    registerCoinPair: (manager: any, coinPair: string, address: string) => Promise<`0x${string}`>;
+    registerCoinPair: (manager: ContractOf<"OracleManager">, coinPair: string, address: string) => Promise<`0x${string}`>;
     mint: (tokenAddr: string, addr: string, quantity: bigint) => Promise<`0x${string}`>;
     execute: (contract: {
         address: Address;
     }) => Promise<`0x${string}`>;
 }>;
-export declare function waitForEvents(viem: Viem, source: any, eventName: string, txHash?: Hex, fromBlock?: bigint, toBlock?: bigint): Promise<any[]>;
 export declare function getLatestBlock(viem: Viem): Promise<bigint>;
-export declare function increaseTime(networkHelpers: any, seconds: number | bigint): Promise<void>;
-export declare function increaseTimeTo(networkHelpers: any, timestamp: number | bigint): Promise<void>;
-export declare function mineUntilNextRound(networkHelpers: any, viem: Viem, coinPairPrice: any): Promise<void>;
+export declare function increaseTime(networkHelpers: NetworkHelpers, seconds: number | bigint): Promise<void>;
+export declare function increaseTimeTo(networkHelpers: NetworkHelpers, timestamp: number | bigint): Promise<void>;
+type RoundLockReadable = {
+    read: {
+        getRoundInfo: () => Promise<readonly unknown[]>;
+    };
+};
+export declare function mineUntilNextRound(networkHelpers: NetworkHelpers, viem: Viem, coinPairPrice: RoundLockReadable): Promise<void>;
 export declare function getDefaultEncodedMessage(version: number | bigint, coinPair: string, price: number | bigint, votedOracle: Address, blockNumber: number | bigint): Promise<{
     msg: {
         version: bigint;
@@ -2972,22 +2976,22 @@ export declare function getDefaultEncodedMessage(version: number | bigint, coinP
     };
     encMsg: `0x${string}`;
 }>;
-export type ContractLike = any;
-export declare function publishPrice(coinPairPrice: any, coinPairName: string, price: bigint, oracles: OracleDefinition[], publisher?: OracleDefinition): Promise<void>;
-export declare function initCoinpair(deployer: Deployer, name: string, governor: Awaited<ReturnType<typeof createGovernor>>, token: any, oracleMgr: any, registry: any, whitelist: Address[], maxOraclesPerRound?: bigint, maxSubscribedOraclesPerRound?: bigint, roundLockPeriod?: bigint, maxMissedSigRounds?: bigint, validPricePeriodInBlocks?: bigint, emergencyPublishingPeriodInBlocks?: bigint, bootstrapPrice?: bigint): Promise<any>;
-export declare function initContracts(deployer: Deployer, governorOwner: WalletClient, period?: bigint, minSubscriptionStake?: bigint, oracleManagerWhitelisted?: Address[], withdrawLockTime?: bigint, governor?: null, wList?: Address[]): Promise<{
+export declare function publishPrice(coinPairPrice: ContractOf<'CoinPairPrice'>, coinPairName: string, price: bigint, oracles: OracleDefinition[], publisher?: OracleDefinition): Promise<void>;
+export declare function initCoinpair(deployer: Deployer, name: string, governor: Awaited<ReturnType<typeof createGovernor>>, token: ContractOf<'GovernedERC20'>, oracleMgr: ContractOf<'OracleManager'>, registry: ContractOf<'GovernedRegistry'>, whitelist: Address[], maxOraclesPerRound?: bigint, maxSubscribedOraclesPerRound?: bigint, roundLockPeriod?: bigint, maxMissedSigRounds?: bigint, validPricePeriodInBlocks?: bigint, emergencyPublishingPeriodInBlocks?: bigint, bootstrapPrice?: bigint): Promise<ContractOf<'CoinPairPrice'>>;
+export declare function initContracts(deployer: Deployer, governorOwner: WalletClient, period?: bigint, minSubscriptionStake?: bigint, oracleManagerWhitelisted?: Address[], withdrawLockTime?: bigint, governor?: Awaited<ReturnType<typeof createGovernor>> | null, wList?: Address[]): Promise<{
     governor: Awaited<ReturnType<typeof createGovernor>>;
-    token: any;
-    oracleMgr: any;
-    supporters: any;
-    delayMachine: any;
-    staking: any;
-    stakingMock: any;
-    votingMachine: any;
-    registry: any;
+    token: ContractOf<'GovernedERC20'>;
+    oracleMgr: ContractOf<'OracleManager'>;
+    supporters: ContractOf<'Supporters'>;
+    delayMachine: ContractOf<'DelayMachine'>;
+    staking: ContractOf<'Staking'>;
+    stakingMock: ContractOf<'StakingMock'>;
+    votingMachine: ContractOf<'MockVotingMachine'>;
+    registry: ContractOf<'GovernedRegistry'>;
 }>;
 export declare function initContractsWithCoinPairs(deployer: Deployer, governorOwner: WalletClient, period?: bigint, minSubscriptionStake?: bigint, whitelist?: Address[]): Promise<Awaited<ReturnType<typeof initContracts>> & {
-    coinPairPriceBTCUSD: any;
-    coinPairPriceRIFBTC: any;
+    coinPairPriceBTCUSD: ContractOf<'CoinPairPrice'>;
+    coinPairPriceRIFBTC: ContractOf<'CoinPairPrice'>;
 }>;
+export {};
 //# sourceMappingURL=helpers.d.ts.map

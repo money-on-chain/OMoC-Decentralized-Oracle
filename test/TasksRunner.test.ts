@@ -2,12 +2,8 @@ import assert from 'node:assert/strict';
 import { expect } from 'chai';
 import { network } from 'hardhat';
 import { concatHex, numberToHex, parseSignature } from 'viem';
-import {
-    encodeCoinPair,
-    initContracts,
-    mineUntilNextRound,
-    waitForEvents,
-} from '../src/helpers.js';
+import { encodeCoinPair, initContracts, mineUntilNextRound } from '../src/helpers.js';
+import { getEvents } from 'ts-test-helpers';
 import {
     assertSameAddress,
     ContractOf,
@@ -171,27 +167,27 @@ describe('TasksRunner', function () {
             { account: accounts[ORACLE_ACCOUNT].account! },
         );
 
-        const events = await waitForEvents(viem, tasksRunner, 'TaskExecuted', tx);
+        const events = await getEvents(viem, tasksRunner, 'TaskExecuted', undefined, tx);
         expect(events).to.have.lengthOf(2);
         const successEvent = events.find((event) => event.args?.success === true);
         const revertingEvent = events.find((event) => event.args?.success === false);
         assert(successEvent);
         assert(revertingEvent);
-        assert.equal(successEvent.args?.blockNumber, lastPublicationBlock);
-        assert.equal(revertingEvent.args?.blockNumber, lastPublicationBlock);
+        assert.equal(successEvent.args!.blockNumber, lastPublicationBlock);
+        assert.equal(revertingEvent.args!.blockNumber, lastPublicationBlock);
 
-        assertSameAddress(successEvent.args?.sender, accounts[ORACLE_OWNER].account!.address);
+        assertSameAddress(successEvent.args!.sender!, accounts[ORACLE_OWNER].account!.address);
         assertSameAddress(
-            successEvent.args?.votedOracle,
+            successEvent.args!.votedOracle!,
             accounts[ORACLE_ACCOUNT].account!.address,
         );
-        assertSameAddress(revertingEvent.args?.sender, accounts[ORACLE_OWNER].account!.address);
+        assertSameAddress(revertingEvent.args!.sender!, accounts[ORACLE_OWNER].account!.address);
         assertSameAddress(
-            revertingEvent.args?.votedOracle,
+            revertingEvent.args!.votedOracle!,
             accounts[ORACLE_ACCOUNT].account!.address,
         );
-        assertSameAddress(successEvent.args?.task, mockTask.address);
-        assertSameAddress(revertingEvent.args?.task, revertingTask.address);
+        assertSameAddress(successEvent.args!.task!, mockTask.address);
+        assertSameAddress(revertingEvent.args!.task!, revertingTask.address);
 
         const roundInfo = await tasksRunner.read.getRoundInfo();
         const selectedOwners = roundInfo[4];

@@ -1,7 +1,14 @@
-import { concatHex, numberToHex, padHex, parseSignature, stringToHex, getAddress } from 'viem';
-import type { Address, Hex } from 'viem';
+import {
+    concatHex,
+    numberToHex,
+    padHex,
+    parseSignature,
+    stringToHex,
+    getAddress,
+} from 'viem';
+import type {Address } from 'viem';
 
-import type { Deployer, Viem, WalletClient } from 'ts-test-helpers';
+import type { ContractOf, Deployer, NetworkHelpers, Viem, WalletClient } from 'ts-test-helpers';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
@@ -54,15 +61,15 @@ export async function createGovernor(deployer: Deployer, owner: WalletClient) {
     const executeChange = async (contract: { address: Address }) =>
         governor.write.executeChange([contract.address], { account: owner.account });
 
-    const deployAndExec = async (contract: any, ...args: any[]) =>
-        executeChange(await deployer.deploy(contract, args));
+    const deployAndExec = async (contract: string, ...args: readonly unknown[]) =>
+        executeChange(await deployer.deploy(contract, [...args]));
 
     return {
         addr: governor.address,
         address: governor.address,
         governor,
 
-        registerCoinPair: async (manager: any, coinPair: string, address: string) =>
+        registerCoinPair: async (manager: ContractOf<'OracleManager'>, coinPair: string, address: string) =>
             deployAndExec('OracleManagerPairChange', manager.address, coinPair, address),
         mint: async (tokenAddr: string, addr: string, quantity: bigint) =>
             deployAndExec('TestMOCMintChange', tokenAddr, addr, quantity),
@@ -70,45 +77,31 @@ export async function createGovernor(deployer: Deployer, owner: WalletClient) {
     };
 }
 
-export async function waitForEvents(
-    viem: Viem,
-    source: any,
-    eventName: string,
-    txHash?: Hex,
-    fromBlock: bigint = 0n,
-    toBlock?: bigint,
-): Promise<any[]> {
-    const publicClient = await viem.getPublicClient();
-    const getEvents = source.getEvents[eventName];
-
-    if (getEvents === undefined) {
-        throw new Error(`Event ${eventName} not found on contract`);
-    }
-
-    if (txHash) {
-        const tx = await publicClient.getTransactionReceipt({ hash: txHash });
-        const events = await getEvents(undefined, { blockHash: tx.blockHash });
-        return events.filter((e: any) => e.transactionHash === txHash);
-    }
-
-    return await getEvents(undefined, { fromBlock, toBlock });
-}
-
 export async function getLatestBlock(viem: Viem) {
     const publicClient = await viem.getPublicClient();
     return BigInt(await publicClient.getBlockNumber());
 }
 
-export async function increaseTime(networkHelpers: any, seconds: number | bigint) {
+export async function increaseTime(networkHelpers: NetworkHelpers, seconds: number | bigint) {
     await networkHelpers.time.increase(Number(seconds));
 }
 
-export async function increaseTimeTo(networkHelpers: any, timestamp: number | bigint) {
+export async function increaseTimeTo(networkHelpers: NetworkHelpers, timestamp: number | bigint) {
     await networkHelpers.time.increaseTo(Number(timestamp));
 }
 
-export async function mineUntilNextRound(networkHelpers: any, viem: Viem, coinPairPrice: any) {
-    const lockPeriodTimestamp = (await coinPairPrice.read.getRoundInfo())[2];
+type RoundLockReadable = {
+    read: {
+        getRoundInfo: () => Promise<readonly unknown[]>;
+    };
+};
+
+export async function mineUntilNextRound(
+    networkHelpers: NetworkHelpers,
+    viem: Viem,
+    coinPairPrice: RoundLockReadable,
+) {
+    const lockPeriodTimestamp = (await coinPairPrice.read.getRoundInfo())[2] as bigint;
     const target = lockPeriodTimestamp + 1n;
     const publicClient = await viem.getPublicClient();
     const latestBlock = await publicClient.getBlock({ blockTag: 'latest' });
@@ -145,10 +138,8 @@ export async function getDefaultEncodedMessage(
     };
 }
 
-export type ContractLike = any;
-
 export async function publishPrice(
-    coinPairPrice: any,
+    coinPairPrice: ContractOf<'CoinPairPrice'>,
     coinPairName: string,
     price: bigint,
     oracles: OracleDefinition[],
@@ -160,11 +151,9 @@ export async function publishPrice(
         const right = BigInt(b.address);
 
         return left > right ? -1 : left < right ? 1 : 0;
-    }) as OracleDefinition[];
+    });
 
-    const lastPublicationBlock = (await (
-        coinPairPrice.read.getLastPublicationBlock as any
-    )()) as bigint;
+    const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
     const { msg, encMsg } = await getDefaultEncodedMessage(
         3,
         coinPairName,
@@ -215,9 +204,9 @@ export async function initCoinpair(
     deployer: Deployer,
     name: string,
     governor: Awaited<ReturnType<typeof createGovernor>>,
-    token: any,
-    oracleMgr: any,
-    registry: any,
+    token: ContractOf<'GovernedERC20'>,
+    oracleMgr: ContractOf<'OracleManager'>,
+    registry: ContractOf<'GovernedRegistry'>,
     whitelist: Address[],
     maxOraclesPerRound = 10n,
     maxSubscribedOraclesPerRound = 30n,
@@ -226,7 +215,7 @@ export async function initCoinpair(
     validPricePeriodInBlocks = 3n,
     emergencyPublishingPeriodInBlocks = 2n,
     bootstrapPrice = 100000000n,
-): Promise<any> {
+): Promise<ContractOf<'CoinPairPrice'>> {
     const coinPairPrice = await deployer.deployProxy('CoinPairPrice', [
         governor.addr,
         whitelist,
@@ -257,18 +246,18 @@ export async function initContracts(
     minSubscriptionStake = 10n ** 18n,
     oracleManagerWhitelisted: Address[] = [],
     withdrawLockTime = 60n * 60n,
-    governor = null,
+    governor: Awaited<ReturnType<typeof createGovernor>> | null = null,
     wList: Address[] = [],
 ): Promise<{
     governor: Awaited<ReturnType<typeof createGovernor>>;
-    token: any;
-    oracleMgr: any;
-    supporters: any;
-    delayMachine: any;
-    staking: any;
-    stakingMock: any;
-    votingMachine: any;
-    registry: any;
+    token: ContractOf<'GovernedERC20'>;
+    oracleMgr: ContractOf<'OracleManager'>;
+    supporters: ContractOf<'Supporters'>;
+    delayMachine: ContractOf<'DelayMachine'>;
+    staking: ContractOf<'Staking'>;
+    stakingMock: ContractOf<'StakingMock'>;
+    votingMachine: ContractOf<'MockVotingMachine'>;
+    registry: ContractOf<'GovernedRegistry'>;
 }> {
     const activeGovernor = governor ?? (await createGovernor(deployer, governorOwner));
     const token = await deployer.deployProxy('GovernedERC20', [activeGovernor.address]);
@@ -341,8 +330,8 @@ export async function initContractsWithCoinPairs(
     whitelist: Address[] = [],
 ): Promise<
     Awaited<ReturnType<typeof initContracts>> & {
-        coinPairPriceBTCUSD: any;
-        coinPairPriceRIFBTC: any;
+        coinPairPriceBTCUSD: ContractOf<'CoinPairPrice'>;
+        coinPairPriceRIFBTC: ContractOf<'CoinPairPrice'>;
     }
 > {
     const contracts = await initContracts(

@@ -18,12 +18,5 @@
         "declarationMap": true,
         "types": ["hardhat", "node", "mocha", "chai"]
     },
-    "include": [
-        "artifacts/**/*.d.ts",
-        "hardhat.config.ts",
-        "index.ts",
-        "scripts/**/*.ts",
-        "src/**/*.ts",
-        "test/**/*.ts"
-    ]
+    "include": ["artifacts/**/*.d.ts", "index.ts", "scripts/**/*.ts", "src/**/*.ts", "test/**/*.ts"]
 }

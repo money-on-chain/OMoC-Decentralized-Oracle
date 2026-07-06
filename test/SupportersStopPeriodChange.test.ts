@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { createGovernor, getLatestBlock, waitForEvents } from '../src/helpers.js';
+import { createGovernor, getLatestBlock } from '../src/helpers.js';
+import { getEvents } from 'ts-test-helpers';
 import { ContractOf, Deployer, NetworkHelpers, Viem, WalletClients } from 'ts-test-helpers';
 
 const toWei = (value: bigint) => value * 10n ** 18n;
@@ -102,7 +103,7 @@ describe('SupportersStopPeriodChange', function () {
     it('Distribute should succeed if contract is ready to distribute', async function () {
         const tx = await supporters.write.distribute({ account: caller.account! });
         const latestBlock = await getLatestBlock(viem);
-        const event = (await waitForEvents(viem, supporters, 'PayEarnings', tx))[0].args;
+        const event = (await getEvents(viem, supporters, 'PayEarnings', undefined, tx))[0].args!;
 
         expect(event.earnings).to.equal(toWei(earnings));
         expect(event.start).to.equal(latestBlock);
@@ -152,7 +153,7 @@ describe('SupportersStopPeriodChange', function () {
 
         const tx = await supporters.write.distribute({ account: caller.account! });
         const latestBlock = await getLatestBlock(viem);
-        const event = (await waitForEvents(viem, supporters, 'PayEarnings', tx))[0].args;
+        const event = (await getEvents(viem, supporters, 'PayEarnings', undefined, tx))[0].args!;
 
         expect(event.earnings).to.equal(toWei(earnings / 2n));
         expect(event.start).to.equal(latestBlock);
@@ -194,7 +195,7 @@ describe('SupportersStopPeriodChange', function () {
 
         const tx = await supporters.write.distribute({ account: caller.account! });
         const latestBlock = await getLatestBlock(viem);
-        const event = (await waitForEvents(viem, supporters, 'PayEarnings', tx))[0].args;
+        const event = (await getEvents(viem, supporters, 'PayEarnings', undefined, tx))[0].args!;
 
         expect(event.earnings).to.equal(toWei((3n * earnings) / 2n));
         expect(event.start).to.equal(latestBlock);
@@ -226,7 +227,7 @@ describe('SupportersStopPeriodChange', function () {
 
         const tx = await supporters.write.distribute({ account: caller.account! });
         const latestBlock = await getLatestBlock(viem);
-        const event = (await waitForEvents(viem, supporters, 'PayEarnings', tx))[0].args;
+        const event = (await getEvents(viem, supporters, 'PayEarnings', undefined, tx))[0].args!;
         const secondRoundEarnings = earnings - 2n * earningsPerBlock;
 
         expect(event.earnings).to.equal(toWei(secondRoundEarnings));
@@ -258,7 +259,7 @@ describe('SupportersStopPeriodChange', function () {
 
         const tx2 = await supporters.write.distribute({ account: caller.account! });
         const latestBlock2 = await getLatestBlock(viem);
-        const event2 = (await waitForEvents(viem, supporters, 'PayEarnings', tx2))[0].args;
+        const event2 = (await getEvents(viem, supporters, 'PayEarnings', undefined, tx2))[0].args!;
         const thirdRoundEarnings = 2n * earnings - afterSecondExecEarnings;
 
         expect(event2.earnings).to.equal(toWei(thirdRoundEarnings));

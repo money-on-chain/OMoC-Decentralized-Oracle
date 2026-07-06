@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import assert from 'node:assert/strict';
 import { parseEther } from 'viem';
 import { network } from 'hardhat';
-import { createGovernor, waitForEvents } from '../src/helpers.js';
+import { createGovernor } from '../src/helpers.js';
+import { getEvents } from 'ts-test-helpers';
 import type { Account } from 'viem';
 import {
     Deployer,
@@ -267,9 +268,9 @@ describe('SupportersMock', function () {
 
             const tx = await supporters.write.withdraw([BALANCE_USER1], { account: user1 });
 
-            const event = (await waitForEvents(viem, supporters, 'WithdrawStake', tx))[0];
+            const event = (await getEvents(viem, supporters, 'WithdrawStake', undefined, tx))[0];
 
-            const withdrawn = event.args.mocs;
+            const withdrawn = event.args.mocs!;
             const remaining = FINAL_BALANCE - withdrawn;
 
             mocs = await token.read.balanceOf([user1.address]);
@@ -407,9 +408,11 @@ describe('SupportersMock', function () {
                 const tokens = await supporters.read.getBalance([user.address]);
 
                 const tx = await supporters.write.withdraw([tokens], { account: user });
-                const event = (await waitForEvents(viem, supporters, 'WithdrawStake', tx))[0];
+                const event = (
+                    await getEvents(viem, supporters, 'WithdrawStake', undefined, tx)
+                )[0];
 
-                withdrawn += event.args.mocs;
+                withdrawn += event.args.mocs!;
             }
 
             let mocs = await supporters.read.getAvailableMOC();

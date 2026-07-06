@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { increaseTime, increaseTimeTo, waitForEvents } from '../src/helpers.js';
+import { increaseTime, increaseTimeTo } from '../src/helpers.js';
+import { getEvents } from 'ts-test-helpers';
 import {
     assertSameAddress,
     ContractOf,
@@ -66,7 +67,7 @@ describe('DelayMachine', function () {
         expect(await token.read.balanceOf([staking.address])).to.equal(0n);
         expect(await token.read.balanceOf([contract.address])).to.equal(prevBalance + amount);
 
-        const event = (await waitForEvents(viem, staking, 'PaymentDeposit', tx))[0];
+        const event = (await getEvents(viem, staking, 'PaymentDeposit', undefined, tx))[0];
 
         return event.args.id;
     }
@@ -139,9 +140,9 @@ describe('DelayMachine', function () {
                 true,
             );
 
-            const e = (await waitForEvents(viem, contract, 'PaymentDeposit', tx))[0].args;
-            assertSameAddress(e.source, sourceMocHolder.account!.address);
-            assertSameAddress(e.destination, destinationMocHolder.account!.address);
+            const e = (await getEvents(viem, contract, 'PaymentDeposit', undefined, tx))[0].args!;
+            assertSameAddress(e.source!, sourceMocHolder.account!.address);
+            assertSameAddress(e.destination!, destinationMocHolder.account!.address);
             expect(e.amount).to.eq(amount);
             expect(e.expiration).to.eq(expirationSecs);
         });
@@ -192,9 +193,9 @@ describe('DelayMachine', function () {
                 account: destinationMocHolder.account!,
             });
 
-            const e = (await waitForEvents(viem, contract, 'PaymentWithdraw', tx))[0].args;
-            assertSameAddress(e.source, sourceMocHolder.account!.address);
-            assertSameAddress(e.destination, destinationMocHolder.account!.address);
+            const e = (await getEvents(viem, contract, 'PaymentWithdraw', undefined, tx))[0].args!;
+            assertSameAddress(e.source!, sourceMocHolder.account!.address);
+            assertSameAddress(e.destination!, destinationMocHolder.account!.address);
             expect(e.amount).to.eq(amount);
 
             const endBalance = await token.read.balanceOf([destinationMocHolder.account!.address]);
@@ -224,11 +225,11 @@ describe('DelayMachine', function () {
         it('withdraw fail', async function () {
             const payId = await depositViaStaking(contract, token, staking, 250n, 3600n);
             await viem.assertions.revertWith(
-                contract.write.withdraw([payId], { account: sourceMocHolder.account! }),
+                contract.write.withdraw([payId!], { account: sourceMocHolder.account! }),
                 'Invalid ID',
             );
             await viem.assertions.revertWith(
-                contract.write.withdraw([payId], { account: destinationMocHolder.account! }),
+                contract.write.withdraw([payId!], { account: destinationMocHolder.account! }),
                 'Not expired',
             );
         });
@@ -240,12 +241,12 @@ describe('DelayMachine', function () {
                 destinationMocHolder.account!.address,
             ]);
             await increaseTime(networkHelpers, 3601n);
-            const tx = await contract.write.withdraw([payId], {
+            const tx = await contract.write.withdraw([payId!], {
                 account: destinationMocHolder.account!,
             });
-            const e = (await waitForEvents(viem, contract, 'PaymentWithdraw', tx))[0].args;
-            assertSameAddress(e.source, staking.address);
-            assertSameAddress(e.destination, destinationMocHolder.account!.address);
+            const e = (await getEvents(viem, contract, 'PaymentWithdraw', undefined, tx))[0].args!;
+            assertSameAddress(e.source!, staking.address);
+            assertSameAddress(e.destination!, destinationMocHolder.account!.address);
             expect(e.amount).to.eq(amount);
 
             const endBalance = await token.read.balanceOf([destinationMocHolder.account!.address]);
@@ -255,7 +256,7 @@ describe('DelayMachine', function () {
         it('cancel fail', async function () {
             const payId = await depositViaStaking(contract, token, staking, 250n, 3600n);
             await viem.assertions.revertWith(
-                contract.write.cancel([payId], { account: sourceMocHolder.account! }),
+                contract.write.cancel([payId!], { account: sourceMocHolder.account! }),
                 'Invalid ID',
             );
         });
@@ -266,12 +267,12 @@ describe('DelayMachine', function () {
 
             assertSameAddress(await staking.read.source(), sourceMocHolder.account!.address);
             const startBalance = await token.read.balanceOf([staking.address]);
-            const tx = await contract.write.cancel([payId], {
+            const tx = await contract.write.cancel([payId!], {
                 account: destinationMocHolder.account!,
             });
-            const e = (await waitForEvents(viem, contract, 'PaymentCancel', tx))[0].args;
-            assertSameAddress(e.source, staking.address);
-            assertSameAddress(e.destination, destinationMocHolder.account!.address);
+            const e = (await getEvents(viem, contract, 'PaymentCancel', undefined, tx))[0].args!;
+            assertSameAddress(e.source!, staking.address);
+            assertSameAddress(e.destination!, destinationMocHolder.account!.address);
             expect(e.amount).to.eq(amount);
 
             assertSameAddress(
@@ -307,17 +308,17 @@ describe('DelayMachine', function () {
                     contract,
                     token,
                     staking,
-                    amounts[i],
-                    expirations[i],
+                    amounts[i]!,
+                    expirations[i]!,
                 );
-                total += amounts[i];
+                total += amounts[i]!;
                 expect(
                     await contract.read.getBalance([destinationMocHolder.account!.address]),
                 ).to.equal(total);
                 const [, , txExpirations] = await contract.read.getTransactions([
                     destinationMocHolder.account!.address,
                 ]);
-                inserted.push({ id, amount: amounts[i], expiration: txExpirations[i] });
+                inserted.push({ id: id!, amount: amounts[i]!, expiration: txExpirations[i]! });
             }
 
             inserted.sort((a, b) => (a.expiration < b.expiration ? -1 : 1));
@@ -343,10 +344,11 @@ describe('DelayMachine', function () {
                         // TODO: replace this event assertion with a typed viem event decoder.
                         await tx;
 
-                        const e = (await waitForEvents(viem, contract, 'PaymentWithdraw', tx))[0]
-                            .args;
-                        assertSameAddress(e.source, staking.address);
-                        assertSameAddress(e.destination, destinationMocHolder.account!.address);
+                        const e = (
+                            await getEvents(viem, contract, 'PaymentWithdraw', undefined, tx)
+                        )[0].args!;
+                        assertSameAddress(e.source!, staking.address);
+                        assertSameAddress(e.destination!, destinationMocHolder.account!.address);
                         expect(e.amount).to.eq(inserted[j].amount);
 
                         const endBalance = await token.read.balanceOf([

@@ -4,9 +4,9 @@ import {
     createGovernor,
     getLatestBlock,
     initContractsWithCoinPairs,
-    waitForEvents,
     type OracleStakeData,
 } from '../src/helpers.js';
+import { getEvents } from 'ts-test-helpers';
 import { assertSameAddress, Deployer, type WalletClients, type ContractOf } from 'ts-test-helpers';
 import type { Address } from 'viem';
 
@@ -339,7 +339,7 @@ describe('Supporters', function () {
 
             const tx = await supporters.write.distribute({ account: accounts[2].account! });
             const latestBlock = await getLatestBlock(viem);
-            const events = await waitForEvents(viem, supporters, 'PayEarnings', tx);
+            const events = await getEvents(viem, supporters, 'PayEarnings', undefined, tx);
             const event = events[0].args;
 
             expect(event.earnings).to.equal(EARNINGS);

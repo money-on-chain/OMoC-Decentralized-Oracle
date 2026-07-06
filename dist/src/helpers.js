@@ -1,4 +1,4 @@
-import { concatHex, numberToHex, padHex, parseSignature, stringToHex, getAddress } from 'viem';
+import { concatHex, numberToHex, padHex, parseSignature, stringToHex, getAddress, } from 'viem';
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 export const MAX_UINT256 = (1n << 256n) - 1n;
@@ -25,7 +25,7 @@ export function decodeCoinPair(value) {
 export async function createGovernor(deployer, owner) {
     const governor = await deployer.deployProxy('Governor', [owner.account.address]);
     const executeChange = async (contract) => governor.write.executeChange([contract.address], { account: owner.account });
-    const deployAndExec = async (contract, ...args) => executeChange(await deployer.deploy(contract, args));
+    const deployAndExec = async (contract, ...args) => executeChange(await deployer.deploy(contract, [...args]));
     return {
         addr: governor.address,
         address: governor.address,
@@ -34,19 +34,6 @@ export async function createGovernor(deployer, owner) {
         mint: async (tokenAddr, addr, quantity) => deployAndExec('TestMOCMintChange', tokenAddr, addr, quantity),
         execute: executeChange,
     };
-}
-export async function waitForEvents(viem, source, eventName, txHash, fromBlock = 0n, toBlock) {
-    const publicClient = await viem.getPublicClient();
-    const getEvents = source.getEvents[eventName];
-    if (getEvents === undefined) {
-        throw new Error(`Event ${eventName} not found on contract`);
-    }
-    if (txHash) {
-        const tx = await publicClient.getTransactionReceipt({ hash: txHash });
-        const events = await getEvents(undefined, { blockHash: tx.blockHash });
-        return events.filter((e) => e.transactionHash === txHash);
-    }
-    return await getEvents(undefined, { fromBlock, toBlock });
 }
 export async function getLatestBlock(viem) {
     const publicClient = await viem.getPublicClient();
@@ -92,7 +79,7 @@ export async function publishPrice(coinPairPrice, coinPairName, price, oracles, 
         const right = BigInt(b.address);
         return left > right ? -1 : left < right ? 1 : 0;
     });
-    const lastPublicationBlock = (await coinPairPrice.read.getLastPublicationBlock());
+    const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
     const { msg, encMsg } = await getDefaultEncodedMessage(3, coinPairName, price, selectedPublisher.address, lastPublicationBlock);
     const sigV = [];
     const sigR = [];

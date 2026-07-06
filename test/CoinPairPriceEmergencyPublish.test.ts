@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initCoinpair, initContracts, publishPrice, waitForEvents } from '../src/helpers.js';
+import { initCoinpair, initContracts, publishPrice } from '../src/helpers.js';
+import { getEvents } from 'ts-test-helpers';
 import { assertSameAddress, Deployer, NetworkHelpers, Viem, WalletClients } from 'ts-test-helpers';
 import { hexToBigInt } from 'viem';
 
@@ -95,12 +96,13 @@ describe('CoinPairPrice Emergency Publish', function () {
             account: accounts[emergencyPublisher].account!,
         });
         const latestBlock = await viem.getPublicClient().then((pc) => pc.getBlockNumber());
-        const event = (await waitForEvents(viem, coinPairPrice, 'EmergencyPricePublished', tx))[0]
-            .args;
+        const event = (
+            await getEvents(viem, coinPairPrice, 'EmergencyPricePublished', undefined, tx)
+        )[0].args!;
 
-        assertSameAddress(event.sender, accounts[emergencyPublisher].account!.address);
+        assertSameAddress(event.sender!, accounts[emergencyPublisher].account!.address);
         expect(event.price).to.equal(1460n);
-        assertSameAddress(event.votedOracle, accounts[emergencyPublisher].account!.address);
+        assertSameAddress(event.votedOracle!, accounts[emergencyPublisher].account!.address);
         expect(event.blockNumber).to.equal(latestBlock);
 
         const post = await coinPairPrice.read.peek();

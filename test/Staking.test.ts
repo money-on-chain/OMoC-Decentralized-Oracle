@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { initCoinpair, initContracts, waitForEvents } from '../src/helpers.js';
+import { initCoinpair, initContracts } from '../src/helpers.js';
+import { getEvents } from 'ts-test-helpers';
 import { getAddress } from 'viem';
 import {
     assertSameAddress,
@@ -76,10 +77,11 @@ describe('Staking', function () {
             account: owner.account!,
         });
 
-        const event = (await waitForEvents(viem, contracts.oracleMgr, 'OracleRegistered', tx))[0]
-            .args;
-        assertSameAddress(event.caller, owner.account!.address);
-        assertSameAddress(event.addr, oracleAddr);
+        const event = (
+            await getEvents(viem, contracts.oracleMgr, 'OracleRegistered', undefined, tx)
+        )[0].args!;
+        assertSameAddress(event.caller!, owner.account!.address);
+        assertSameAddress(event.addr!, oracleAddr);
         expect(event.internetName).to.equal(entry.name);
     }
 

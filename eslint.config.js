@@ -29,7 +29,28 @@ export default defineConfig([
     },
 
     {
-        files: ['hardhat.config.ts', 'src/**/*.ts', 'test/**/*.ts'],
+        files: ['hardhat.config.ts', 'src/**/*.ts'],
+        extends: [tseslint.configs.recommended, prettierConfig],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+                ...globals.mocha,
+            },
+        },
+        rules: {
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                },
+            ],
+            'prefer-const': 'off',
+        },
+    },
+    {
+        files: ['test/**/*.ts'],
         extends: [tseslint.configs.recommended, prettierConfig],
         languageOptions: {
             globals: {
@@ -39,7 +60,6 @@ export default defineConfig([
         },
         rules: {
             '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-unused-expressions': 'off',
             '@typescript-eslint/no-unused-vars': [
                 'error',
                 {
