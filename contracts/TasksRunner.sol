@@ -24,6 +24,7 @@ contract TasksRunner is RoundManager {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     uint256 internal constant PRECISION = 10**18;
+    uint256 internal constant MAX_TASKS = 256;
 
     EnumerableSet.AddressSet private tasks;
     uint256 public maxTasksPerBatch;
@@ -100,6 +101,7 @@ contract TasksRunner is RoundManager {
             _registry
         );
 
+        require(_tasks.length <= MAX_TASKS, "TasksRunner: too many tasks");
         for (uint256 i = 0; i < _tasks.length; i++) {
             tasks.add(_tasks[i]);
         }
@@ -119,6 +121,7 @@ contract TasksRunner is RoundManager {
      * @dev Only callable by an authorized changer.
      */
     function addTask(address _task) external onlyAuthorizedChanger {
+        require(tasks.length() < MAX_TASKS, "TasksRunner: task limit reached");
         tasks.add(_task);
     }
 
