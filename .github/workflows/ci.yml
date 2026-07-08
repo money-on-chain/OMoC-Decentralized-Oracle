@@ -1,0 +1,70 @@
+name: CI
+
+on:
+    pull_request:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+env:
+    MAIN_SC_PROTOCOL_DEPLOY_KEY: ${{ secrets.MAIN_SC_PROTOCOL_DEPLOY_KEY }}
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Setup SSH for private repositories
+              run: |
+                  mkdir -p ~/.ssh
+
+                  echo "$MAIN_SC_PROTOCOL_DEPLOY_KEY" > ~/.ssh/main-sc-protocol-deploy-key
+                  chmod 600 ~/.ssh/*-deploy-key
+
+                  cat > ~/.ssh/config <<'EOF'
+                  Host github.com-main-sc-protocol
+                    HostName github.com
+                    IdentityFile ~/.ssh/main-sc-protocol-deploy-key
+                    StrictHostKeyChecking no
+                  EOF
+
+                  git config --global --add url."git@github.com-main-sc-protocol:money-on-chain/main-sc-protocol-v2".insteadOf "git@github.com:money-on-chain/main-sc-protocol-v2"
+                  git config --global --add url."git@github.com-main-sc-protocol:money-on-chain/main-sc-protocol-v2".insteadOf "git@github.com:money-on-chain/main-sc-protocol-v2.git"
+                  git config --global --add url."git@github.com-main-sc-protocol:money-on-chain/main-sc-protocol-v2".insteadOf "ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git"
+                  git config --global --add url."https://github.com/money-on-chain/MoC-Periphery".insteadOf "git@github.com:money-on-chain/MoC-Periphery"
+                  git config --global --add url."https://github.com/money-on-chain/MoC-Periphery".insteadOf "git@github.com:money-on-chain/MoC-Periphery.git"
+                  git config --global --add url."https://github.com/money-on-chain/MoC-Periphery".insteadOf "ssh://git@github.com/money-on-chain/MoC-Periphery"
+                  git config --global --add url."https://github.com/money-on-chain/MoC-Periphery".insteadOf "ssh://git@github.com/money-on-chain/MoC-Periphery.git"
+                  git config --global --add url."https://github.com/money-on-chain/ts-test-helpers".insteadOf "git@github.com:money-on-chain/ts-test-helpers"
+                  git config --global --add url."https://github.com/money-on-chain/ts-test-helpers".insteadOf "git@github.com:money-on-chain/ts-test-helpers.git"
+                  git config --global --add url."https://github.com/money-on-chain/ts-test-helpers".insteadOf "ssh://git@github.com/money-on-chain/ts-test-helpers"
+                  git config --global --add url."https://github.com/money-on-chain/ts-test-helpers".insteadOf "ssh://git@github.com/money-on-chain/ts-test-helpers.git"
+
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  run_install: false
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Compile
+              run: pnpm compile
+
+            - name: Test
+              run: pnpm test
