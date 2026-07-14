@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@moc/moc-main':
-        specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.0
-        version: main-sc-protocol-v2@git+https://git@github.com:money-on-chain/main-sc-protocol-v2.git#a5d9947ac588c3d9ec01581fa9250ec26a19bb4d(typescript@6.0.3)
+        specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.8
+        version: main-sc-protocol-v2@git+https://git@github.com:money-on-chain/main-sc-protocol-v2.git#703923fb31b3375eb21152358ea67178da18694e(typescript@6.0.3)
       '@moc/periphery':
         specifier: git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.4
         version: '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/bbc139cf30de686a4910ae307e97744f799057df'
@@ -63,6 +63,9 @@ importers:
       eslint-config-prettier:
         specifier: ^10.0.0
         version: 10.1.8(eslint@9.39.4)
+      eslint-plugin-chai-friendly:
+        specifier: ^1.2.1
+        version: 1.2.1(eslint@9.39.4)
       globals:
         specifier: ^16.0.0
         version: 16.5.0
@@ -1586,6 +1589,12 @@ packages:
     peerDependencies:
       eslint: '>=7.0.0'
 
+  eslint-plugin-chai-friendly@1.2.1:
+    resolution: {integrity: sha512-mV3EOJLDr8+L+LS8uCkP711fnNHz+4PsmPyz18xwkvjJwfLRlnx0Eu6CFnb5B+dW5ahoav2jVer2KFYsmIuv3A==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      eslint: '>=3.0.0'
+
   eslint-scope@8.4.0:
     resolution: {integrity: sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -2343,9 +2352,9 @@ packages:
   lru_map@0.3.3:
     resolution: {integrity: sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ==}
 
-  main-sc-protocol-v2@git+https://git@github.com:money-on-chain/main-sc-protocol-v2.git#a5d9947ac588c3d9ec01581fa9250ec26a19bb4d:
-    resolution: {commit: a5d9947ac588c3d9ec01581fa9250ec26a19bb4d, repo: git@github.com:money-on-chain/main-sc-protocol-v2.git, type: git}
-    version: 3.0.0
+  main-sc-protocol-v2@git+https://git@github.com:money-on-chain/main-sc-protocol-v2.git#703923fb31b3375eb21152358ea67178da18694e:
+    resolution: {commit: 703923fb31b3375eb21152358ea67178da18694e, repo: git@github.com:money-on-chain/main-sc-protocol-v2.git, type: git}
+    version: 3.0.8
 
   make-dir@1.3.0:
     resolution: {integrity: sha512-2w31R7SJtieJJnQtGc7RVL2StM2vGYVfqUOvUDxH6bC6aJTxPxTF0GnIgCyu7tjockiUWAYQRbxa7vKn34s5sQ==}
@@ -5372,6 +5381,10 @@ snapshots:
     dependencies:
       eslint: 9.39.4
 
+  eslint-plugin-chai-friendly@1.2.1(eslint@9.39.4):
+    dependencies:
+      eslint: 9.39.4
+
   eslint-scope@8.4.0:
     dependencies:
       esrecurse: 4.3.0
@@ -6382,7 +6395,7 @@ snapshots:
 
   lru_map@0.3.3: {}
 
-  main-sc-protocol-v2@git+https://git@github.com:money-on-chain/main-sc-protocol-v2.git#a5d9947ac588c3d9ec01581fa9250ec26a19bb4d(typescript@6.0.3):
+  main-sc-protocol-v2@git+https://git@github.com:money-on-chain/main-sc-protocol-v2.git#703923fb31b3375eb21152358ea67178da18694e(typescript@6.0.3):
     dependencies:
       hardhat: 2.26.3(typescript@6.0.3)
       hardhat-deploy: 0.14.0
