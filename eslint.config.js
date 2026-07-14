@@ -5,6 +5,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
+import chaiFriendly from 'eslint-plugin-chai-friendly';
 
 export default defineConfig([
     globalIgnores([
@@ -52,6 +53,9 @@ export default defineConfig([
     {
         files: ['test/**/*.ts'],
         extends: [tseslint.configs.recommended, prettierConfig],
+        plugins: {
+            'chai-friendly': chaiFriendly,
+        },
         languageOptions: {
             globals: {
                 ...globals.node,
@@ -60,6 +64,8 @@ export default defineConfig([
         },
         rules: {
             '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-expressions': 'off',
+            'chai-friendly/no-unused-expressions': 'error',
             '@typescript-eslint/no-unused-vars': [
                 'error',
                 {
