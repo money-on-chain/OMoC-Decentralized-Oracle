@@ -8,12 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@moc/moc-main':
-        specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9
-        version: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat-deploy@0.14.0(supports-color@8.1.1))(hardhat@3.9.0)
-      '@moc/periphery':
-        specifier: git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.5
-        version: '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/6be2d281a42cc17b8136184054dcb62f7c586a7b'
       '@openzeppelin/contracts':
         specifier: 4.9.3
         version: 4.9.3
@@ -23,9 +17,6 @@ importers:
       '@openzeppelin/contracts-upgradeable':
         specifier: 4.9.3
         version: 4.9.3
-      ts-test-helpers:
-        specifier: git+ssh://git@github.com/money-on-chain/ts-test-helpers#v0.1.2
-        version: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(0c9497af5286fe1541d96d8ec2ac7441))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76)
       viem:
         specifier: 2.53.1
         version: 2.53.1(typescript@6.0.3)(zod@3.25.76)
@@ -33,6 +24,12 @@ importers:
       '@eslint/js':
         specifier: ^9.0.0
         version: 9.39.4
+      '@moc/moc-main':
+        specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9
+        version: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat-deploy@0.14.0(supports-color@8.1.1))(hardhat@3.9.0)
+      '@moc/periphery':
+        specifier: git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.5
+        version: '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/6be2d281a42cc17b8136184054dcb62f7c586a7b'
       '@nomicfoundation/hardhat-mocha':
         specifier: ^3.0.21
         version: 3.0.21(hardhat@3.9.0)(mocha@11.7.6)
@@ -87,6 +84,9 @@ importers:
       solc:
         specifier: 0.6.12
         version: 0.6.12
+      ts-test-helpers:
+        specifier: git+ssh://git@github.com/money-on-chain/ts-test-helpers#v0.1.2
+        version: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(0c9497af5286fe1541d96d8ec2ac7441))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -1831,7 +1831,7 @@ packages:
       typescript: '>=4.8.4'
 
   ts-test-helpers@https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2}
+    resolution: {gitHosted: true, integrity: sha512-ZvjmZD7iEQAbsBtk/QaHEEAuRCeEykrHLcvtgjeztpVk/03Z5IwugGmMr360Htr9kgHDIDhYVvxaDHcmfQtAKQ==, tarball: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2}
     version: 0.1.2
     peerDependencies:
       '@nomicfoundation/hardhat-toolbox-viem': 5.0.7

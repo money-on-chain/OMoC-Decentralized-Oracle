@@ -1,6 +1,6 @@
 {
     "name": "@moneyonchain/oracles",
-    "version": "3.0.9",
+    "version": "3.0.10",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "type": "module",
     "scripts": {
@@ -30,16 +30,15 @@
     },
     "homepage": "https://github.com/money-on-chain/OMoC-Decentralized-Oracle#readme",
     "dependencies": {
-        "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
-        "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.5",
         "@openzeppelin/contracts": "4.9.3",
         "@openzeppelin/contracts-ethereum-package": "3.0.0",
         "@openzeppelin/contracts-upgradeable": "4.9.3",
-        "ts-test-helpers": "git+ssh://git@github.com/money-on-chain/ts-test-helpers#v0.1.2",
         "viem": "2.53.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.0.0",
+        "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
+        "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.5",
         "@nomicfoundation/hardhat-mocha": "^3.0.21",
         "@nomicfoundation/hardhat-network-helpers": "^3.0.10",
         "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
@@ -58,6 +57,7 @@
         "prettier": "^3.0.0",
         "prettier-plugin-solidity": "^1.4.3",
         "solc": "0.6.12",
+        "ts-test-helpers": "git+ssh://git@github.com/money-on-chain/ts-test-helpers#v0.1.2",
         "typescript": "6.0.3",
         "typescript-eslint": "^8.0.0"
     },
@@ -88,5 +88,10 @@
         "*.{json,md,yml,yaml}": [
             "pnpm exec prettier --write"
         ]
+    },
+    "peerDependencies": {
+        "@moc/moc-main": "3.0.9",
+        "@moc/periphery": "3.0.5",
+        "ts-test-helpers": "0.1.2"
     }
 }
