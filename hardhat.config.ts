@@ -51,7 +51,6 @@ export default defineConfig({
         npmFilesToBuild: [
             ...tsTestHelperHardhatConfig.solidity.npmFilesToBuild,
             '@moc/periphery/contracts/moc-governance/Governance/Governor.sol',
-            '@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol',
             '@moc/periphery/contracts/test-and-mocks/GovernedERC20.sol',
             '@moc/periphery/contracts/test-and-mocks/MockGovernor.sol',
             '@moc/periphery/contracts/GovernedRegistry.sol',
