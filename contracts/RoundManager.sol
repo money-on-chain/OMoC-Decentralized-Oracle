@@ -502,6 +502,44 @@ abstract contract RoundManager is CoinPairPriceStorage {
         );
     }
 
+    /// @notice Validates a V4 execution accepting both V4 and legacy V3 signatures.
+    /// @dev Each signature is checked against V4 first, then against V3 if needed.
+    function _validateExecutionWithExpiration(
+        uint8[] calldata _sigV,
+        bytes32[] calldata _sigR,
+        bytes32[] calldata _sigS,
+        bytes32 _messageHash,
+        bytes32 _legacyMessageHash
+    ) internal {
+        require(
+            _sigS.length == _sigR.length && _sigR.length == _sigV.length,
+            "Inconsistent signature count"
+        );
+
+        uint256 validSigs = 0;
+        address lastAddr = address(0);
+        for (uint256 i = 0; i < _sigS.length; i++) {
+            address rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], _messageHash);
+            address ownerRec = oracleManager.getOracleOwner(rec);
+            if (!roundInfo.isSelected(ownerRec)) {
+                rec = _recoverSigner(_sigV[i], _sigR[i], _sigS[i], _legacyMessageHash);
+                ownerRec = oracleManager.getOracleOwner(rec);
+            }
+            if (roundInfo.isSelected(ownerRec)) {
+                validSigs += 1;
+                missedSignatureRoundsByOracle[ownerRec] = 0;
+                lastSignedRoundByOracle[ownerRec] = roundInfo.number;
+                require(lastAddr < rec, "Signatures are not unique or not ordered by address");
+                lastAddr = rec;
+            }
+        }
+
+        require(
+            validSigs > roundInfo.length() / 2,
+            "Valid signatures count must exceed 50% of active oracles"
+        );
+    }
+
     /// @notice Updates missed-signature counters for the closing round and auto-unsubscribes inactive oracles.
     /// @dev Evaluates only selected oracles of the current round. Emits OracleAutoUnsubscribed on removals.
     ///      Auto-unsubscribe stops when subscribed oracles would fall below min oracles per round + 1.
