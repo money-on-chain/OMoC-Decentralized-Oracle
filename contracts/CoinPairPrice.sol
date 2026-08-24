@@ -142,6 +142,68 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         emit PricePublished(ownerAddr, _price, _votedOracle, _blockNumber);
     }
 
+    /// @notice Publish a price accepting V4 signatures with expiration and legacy V3 signatures.
+    function publishPriceWithExpiration(
+        uint256 _version,
+        bytes32 _coinpair,
+        uint256 _price,
+        address _votedOracle,
+        uint256 _blockNumber,
+        uint256 _expiration,
+        uint8[] calldata _sigV,
+        bytes32[] calldata _sigR,
+        bytes32[] calldata _sigS
+    ) external {
+        address ownerAddr = oracleManager.getOracleOwner(msg.sender);
+        require(_coinpair == coinPair, "Coin pair - contract mismatch");
+        require(_price > 0, "Price must be positive and non-zero");
+        require(block.timestamp <= _expiration, "Signature expired");
+        require(roundInfo.number > 0, "Round not open");
+        require(roundInfo.isSelected(ownerAddr), "Voter oracle is not part of this round");
+        require(
+            roundInfo.length() >= getMinOraclesPerRound(),
+            "Minimum selected oracles required not reached"
+        );
+        require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
+        require(
+            _version == PUBLISH_MESSAGE_VERSION_WITH_EXPIRATION,
+            "This contract accepts only V4 format"
+        );
+        require(
+            _blockNumber == lastPublicationBlock,
+            "Blocknumber does not match the last publication block"
+        );
+
+        bytes32 messageHash = keccak256(abi.encodePacked(
+            "\x19Ethereum Signed Message:\n180",
+            _version,
+            _coinpair,
+            _price,
+            _votedOracle,
+            _blockNumber,
+            _expiration
+        ));
+        bytes32 legacyMessageHash = keccak256(abi.encodePacked(
+            "\x19Ethereum Signed Message:\n148",
+            PUBLISH_MESSAGE_VERSION,
+            _coinpair,
+            _price,
+            _votedOracle,
+            _blockNumber
+        ));
+
+        _validateExecutionWithExpiration(
+            _sigV,
+            _sigR,
+            _sigS,
+            messageHash,
+            legacyMessageHash
+        );
+        _publish(_price);
+        roundInfo.addPoints(ownerAddr, 1);
+        emit PricePublished(ownerAddr, _price, _votedOracle, _blockNumber);
+    }
+
     /// @notice Publish a price without signature validation (when there is an emergecy!!!).
     /// @param _price Price to report.
     function emergencyPublish(uint256 _price)

@@ -1,6 +1,6 @@
 {
     "name": "@moneyonchain/oracles",
-    "version": "3.0.10",
+    "version": "3.0.12",
     "description": "Money On Chain Oracles and Beyond Oracle smart contracts",
     "type": "module",
     "scripts": {

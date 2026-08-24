@@ -22,6 +22,7 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
 
     // The publish message has a version field
     uint256 public constant PUBLISH_MESSAGE_VERSION = 3;
+    uint256 public constant PUBLISH_MESSAGE_VERSION_WITH_EXPIRATION = 4;
 
     // Maximum number of subscribed oracles.
     uint256 internal maxSubscribedOraclesPerRound;
