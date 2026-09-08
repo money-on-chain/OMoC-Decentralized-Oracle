@@ -39,6 +39,7 @@
         "@eslint/js": "^9.0.0",
         "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
         "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.5",
+        "@moc/lending": "git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc#011f09572449bfee086976a7745fdf0cfdb22dea",
         "@nomicfoundation/hardhat-mocha": "^3.0.21",
         "@nomicfoundation/hardhat-network-helpers": "^3.0.10",
         "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
@@ -90,6 +91,7 @@
         ]
     },
     "peerDependencies": {
+        "@moc/lending": "1.0.1",
         "@moc/moc-main": "3.0.9",
         "@moc/periphery": "3.0.5",
         "ts-test-helpers": "0.1.2"
