@@ -6,6 +6,8 @@ import {
     parseSignature,
     stringToHex,
     getAddress,
+    encodeAbiParameters,
+    keccak256,
 } from 'viem';
 import type { Address } from 'viem';
 
@@ -275,6 +277,87 @@ export async function runTasks(
         [3n, name, tasksFlags, selectedPublisher.address, lastPublicationBlock, sigV, sigR, sigS],
         { account: selectedPublisher.address },
     );
+}
+
+export type PayloadTaskCall = {
+    task: Address;
+    payload: Hex;
+};
+
+export type RunTasksV4MessageParams = {
+    name: Hex;
+    payloadCalls: PayloadTaskCall[];
+    votedOracle: Address;
+    lastPublicationBlock: bigint;
+};
+
+export function buildRunTasksV4Message(params: RunTasksV4MessageParams) {
+    const version = 4n;
+    const payloadCallsHash = keccak256(
+        encodeAbiParameters(
+            [
+                {
+                    type: 'tuple[]',
+                    components: [
+                        { name: 'task', type: 'address' },
+                        { name: 'payload', type: 'bytes' },
+                    ],
+                },
+            ],
+            [params.payloadCalls],
+        ),
+    );
+    const encMsg = concatHex([
+        padHex(numberToHex(version), { size: 32 }),
+        params.name,
+        payloadCallsHash,
+        params.votedOracle,
+        padHex(numberToHex(params.lastPublicationBlock), { size: 32 }),
+    ]);
+
+    return {
+        batch: {
+            version,
+            name: params.name,
+            payloadCalls: params.payloadCalls,
+            votedOracle: params.votedOracle,
+            blockNumber: params.lastPublicationBlock,
+        },
+        payloadCallsHash,
+        encMsg,
+    };
+}
+
+export async function runTasksV4(
+    tasksRunner: ContractOf<'TasksRunner'>,
+    payloadCalls: PayloadTaskCall[],
+    oracles: OracleDefinition[],
+    publisher?: OracleDefinition,
+) {
+    const selectedPublisher = publisher ?? oracles[0];
+    if (selectedPublisher === undefined) {
+        throw new Error('No oracle wallet clients available');
+    }
+
+    const [name, lastPublicationBlock] = await Promise.all([
+        tasksRunner.read.getName(),
+        tasksRunner.read.getLastPublicationBlock(),
+    ]);
+    const message = buildRunTasksV4Message({
+        name,
+        payloadCalls,
+        votedOracle: selectedPublisher.address,
+        lastPublicationBlock,
+    });
+    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(
+        oracles,
+        message.encMsg,
+        selectedPublisher,
+    );
+
+    await tasksRunner.write.runTasksV4([message.batch, sigV, sigR, sigS], {
+        account: selectedPublisher.address,
+    });
 }
 
 export async function initCoinpair(
