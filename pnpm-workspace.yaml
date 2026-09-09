@@ -1,3 +1,2 @@
 allowBuilds:
     esbuild: true
-    lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#011f09572449bfee086976a7745fdf0cfdb22dea: true
