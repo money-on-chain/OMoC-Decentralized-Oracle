@@ -24,9 +24,6 @@ importers:
       '@eslint/js':
         specifier: ^9.0.0
         version: 9.39.4
-      '@moc/lending':
-        specifier: git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc#011f09572449bfee086976a7745fdf0cfdb22dea
-        version: lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#011f09572449bfee086976a7745fdf0cfdb22dea
       '@moc/moc-main':
         specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9
         version: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat-deploy@0.14.0(supports-color@8.1.1))(hardhat@3.9.0)
@@ -1087,7 +1084,6 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -1428,10 +1424,6 @@ packages:
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
-
-  lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#011f09572449bfee086976a7745fdf0cfdb22dea:
-    resolution: {commit: 011f09572449bfee086976a7745fdf0cfdb22dea, repo: git@github.com:money-on-chain/lending-and-borrowing-sc.git, type: git}
-    version: 1.0.1
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -3611,8 +3603,6 @@ snapshots:
       graceful-fs: 4.2.11
 
   kleur@3.0.3: {}
-
-  lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#011f09572449bfee086976a7745fdf0cfdb22dea: {}
 
   levn@0.4.1:
     dependencies:

@@ -1,18 +1,13 @@
 import assert from 'node:assert/strict';
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { concatHex, encodeAbiParameters, numberToHex, parseSignature } from 'viem';
-import {
-    buildRunTasksV4Message,
-    encodeCoinPair,
-    initContracts,
-    mineUntilNextRound,
-} from '../src/helpers.js';
+import { concatHex, numberToHex, parseSignature } from 'viem';
+import { encodeCoinPair, initContracts, mineUntilNextRound } from '../src/helpers.js';
 import { getEvents } from 'ts-test-helpers';
 import {
     assertSameAddress,
+    ContractOf,
     Deployer,
-    type ContractOf,
     type NetworkHelpers,
     type Viem,
     type WalletClients,
@@ -57,12 +52,10 @@ describe('TasksRunner', function () {
     let tasksRunner: ContractOf<'TasksRunner'>;
     let mockTask: any;
     let revertingTask: any;
-    let mockPayloadTask: any;
-    let revertingPayloadTask: any;
     let mockTokenToCoinbaseProvider: any;
     let mockBaseFeeProvider: any;
 
-    async function deployFixture(maxTasksPerBatch = 10n) {
+    async function deployFixture() {
         ({ viem, networkHelpers } = await network.create());
         deployer = await Deployer.default(viem);
         accounts = await viem.getWalletClients();
@@ -73,8 +66,6 @@ describe('TasksRunner', function () {
 
         mockTask = await deployer.deploy('MockTask', [true, 5n]);
         revertingTask = await deployer.deploy('MockRevertingRunTask');
-        mockPayloadTask = await deployer.deploy('MockPayloadTask', [true, false]);
-        revertingPayloadTask = await deployer.deploy('MockPayloadTask', [true, true]);
         mockTokenToCoinbaseProvider = await deployer.deploy('MockIPriceProvider', [
             833333333333n,
             true,
@@ -86,7 +77,6 @@ describe('TasksRunner', function () {
             contracts.governor.address,
             TASKS_PAIR,
             [revertingTask.address, mockTask.address],
-            [mockPayloadTask.address, revertingPayloadTask.address],
             contracts.token.address,
             {
                 maxOraclesPerRound: 5n,
@@ -98,10 +88,10 @@ describe('TasksRunner', function () {
             contracts.registry.address,
             1n,
             {
-                maxTasksPerBatch,
+                maxTasksPerBatch: 10n,
                 tokenToCoinbasePriceProvider: mockTokenToCoinbaseProvider.address,
                 baseFeeProvider: mockBaseFeeProvider.address,
-                sharesCapMultiplier: 1n,
+                sharesCapMultiplier: 15n * 10n ** 17n,
             },
         ]);
 
@@ -140,28 +130,6 @@ describe('TasksRunner', function () {
         );
 
         await tasksRunner.write.switchRound({ account: accounts[ORACLE_OWNER].account! });
-    }
-
-    async function buildSignedV4Batch(
-        payloadCalls: { task: `0x${string}`; payload: `0x${string}` }[],
-    ) {
-        const message = buildRunTasksV4Message({
-            name: TASKS_PAIR,
-            payloadCalls,
-            votedOracle: accounts[ORACLE_ACCOUNT].account!.address,
-            lastPublicationBlock: await tasksRunner.read.getLastPublicationBlock(),
-        });
-        const signature = parseSignature(
-            await accounts[ORACLE_ACCOUNT].signMessage({
-                account: accounts[ORACLE_ACCOUNT].account!,
-                message: { raw: message.encMsg },
-            }),
-        );
-        assert(signature.v !== undefined);
-        return {
-            message,
-            signatures: [[Number(signature.v)], [signature.r], [signature.s]] as const,
-        };
     }
 
     it('runs tasks with a single selected oracle even when registry minimum is higher', async function () {
@@ -232,7 +200,7 @@ describe('TasksRunner', function () {
         assert(usedCoinbase > 0n);
     });
 
-    it('distributes token rewards equivalent to execution coinbase usage on switchRound', async function () {
+    it('distributes the full reward pool to an oracle with all of the selected stake', async function () {
         await deployFixture();
         const lastPublicationBlock = await tasksRunner.read.getLastPublicationBlock();
         const tasksFlags = await tasksRunner.read.getTasksAvailableAsFlags();
@@ -282,7 +250,8 @@ describe('TasksRunner', function () {
         const finalOracleBalance = await contracts.token.read.balanceOf([
             accounts[ORACLE_OWNER].account!.address,
         ]);
-        assert(finalOracleBalance > initialOracleBalance);
+        expect(finalOracleBalance - initialOracleBalance).to.equal(MIN_STAKE);
+        expect(await contracts.token.read.balanceOf([tasksRunner.address])).to.equal(0n);
 
         const usedAfter = await tasksRunner.read.oracleOwnerCoinbaseUsed([
             accounts[ORACLE_OWNER].account!.address,
@@ -294,85 +263,5 @@ describe('TasksRunner', function () {
         await deployFixture();
         const flags = await tasksRunner.read.getTasksAvailableAsFlags();
         expect(flags).to.equal(3n);
-    });
-
-    it('exposes the registered payload tasks', async function () {
-        await deployFixture();
-
-        const payloadTasks = await tasksRunner.read.getPayloadTasks();
-        expect(payloadTasks).to.have.lengthOf(2);
-        expect(await tasksRunner.read.getPayloadTaskCount()).to.equal(2n);
-        assertSameAddress(payloadTasks[0], mockPayloadTask.address);
-        assertSameAddress(payloadTasks[1], revertingPayloadTask.address);
-        assertSameAddress(await tasksRunner.read.getPayloadTaskAt([0n]), mockPayloadTask.address);
-        expect(await tasksRunner.read.containsPayloadTask([mockPayloadTask.address])).to.equal(
-            true,
-        );
-    });
-
-    it('runs only allowlisted payload tasks and continues when one call reverts', async function () {
-        await deployFixture();
-        const firstPayload = encodeAbiParameters(
-            [{ type: 'address' }],
-            [accounts[10].account!.address],
-        );
-        const secondPayload = encodeAbiParameters(
-            [{ type: 'address' }],
-            [accounts[11].account!.address],
-        );
-        const { message, signatures } = await buildSignedV4Batch([
-            { task: mockPayloadTask.address, payload: firstPayload },
-            { task: revertingPayloadTask.address, payload: secondPayload },
-        ]);
-
-        const tx = await tasksRunner.write.runTasksV4([message.batch, ...signatures], {
-            account: accounts[ORACLE_ACCOUNT].account!,
-        });
-
-        expect(await mockPayloadTask.read.runCount()).to.equal(1n);
-        expect(await revertingPayloadTask.read.runCount()).to.equal(0n);
-        const events = await getEvents(viem, tasksRunner, 'PayloadTaskExecuted', undefined, tx);
-        expect(events).to.have.lengthOf(2);
-        expect(events[0].args!.success).to.equal(true);
-        expect(events[1].args!.success).to.equal(false);
-
-        const roundInfo = await tasksRunner.read.getRoundInfo();
-        expect(roundInfo[3]).to.equal(1n);
-        const usedCoinbase = await tasksRunner.read.oracleOwnerCoinbaseUsed([
-            accounts[ORACLE_OWNER].account!.address,
-        ]);
-        expect(usedCoinbase > 0n).to.equal(true);
-    });
-
-    it('rejects a payload task outside the V4 allowlist', async function () {
-        await deployFixture();
-        const unknownTask = await deployer.deploy('MockPayloadTask', [true, false]);
-        const payload = encodeAbiParameters([{ type: 'address' }], [accounts[10].account!.address]);
-        const { message, signatures } = await buildSignedV4Batch([
-            { task: unknownTask.address, payload },
-        ]);
-
-        await viem.assertions.revertWith(
-            tasksRunner.write.runTasksV4([message.batch, ...signatures], {
-                account: accounts[ORACLE_ACCOUNT].account!,
-            }),
-            'Payload task not allowed',
-        );
-    });
-
-    it('uses maxTasksPerBatch as the payload-call batch limit', async function () {
-        await deployFixture(1n);
-        const payload = encodeAbiParameters([{ type: 'address' }], [accounts[10].account!.address]);
-        const { message, signatures } = await buildSignedV4Batch([
-            { task: mockPayloadTask.address, payload },
-            { task: revertingPayloadTask.address, payload },
-        ]);
-
-        await viem.assertions.revertWith(
-            tasksRunner.write.runTasksV4([message.batch, ...signatures], {
-                account: accounts[ORACLE_ACCOUNT].account!,
-            }),
-            'Batch too large',
-        );
     });
 });

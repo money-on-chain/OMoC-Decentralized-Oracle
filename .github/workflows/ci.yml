@@ -12,7 +12,6 @@ permissions:
 
 env:
     MAIN_SC_PROTOCOL_DEPLOY_KEY: ${{ secrets.MAIN_SC_PROTOCOL_DEPLOY_KEY }}
-    LENDING_AND_BORROWING_SC_DEPLOY_KEY: ${{ secrets.LENDING_AND_BORROWING_SC_DEPLOY_KEY }}
 
 jobs:
     test:
@@ -24,7 +23,6 @@ jobs:
                   mkdir -p ~/.ssh
 
                   echo "$MAIN_SC_PROTOCOL_DEPLOY_KEY" > ~/.ssh/main-sc-protocol-deploy-key
-                  echo "$LENDING_AND_BORROWING_SC_DEPLOY_KEY" > ~/.ssh/lending-and-borrowing-sc-deploy-key
                   chmod 600 ~/.ssh/*-deploy-key
 
                   cat > ~/.ssh/config <<'EOF'
@@ -32,20 +30,11 @@ jobs:
                     HostName github.com
                     IdentityFile ~/.ssh/main-sc-protocol-deploy-key
                     StrictHostKeyChecking no
-
-                  Host github.com-lending-and-borrowing-sc
-                    HostName github.com
-                    IdentityFile ~/.ssh/lending-and-borrowing-sc-deploy-key
-                    StrictHostKeyChecking no
                   EOF
 
                   git config --global --add url."git@github.com-main-sc-protocol:money-on-chain/main-sc-protocol-v2".insteadOf "git@github.com:money-on-chain/main-sc-protocol-v2"
                   git config --global --add url."git@github.com-main-sc-protocol:money-on-chain/main-sc-protocol-v2".insteadOf "git@github.com:money-on-chain/main-sc-protocol-v2.git"
                   git config --global --add url."git@github.com-main-sc-protocol:money-on-chain/main-sc-protocol-v2".insteadOf "ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git"
-                  git config --global --add url."git@github.com-lending-and-borrowing-sc:money-on-chain/lending-and-borrowing-sc".insteadOf "git@github.com:money-on-chain/lending-and-borrowing-sc"
-                  git config --global --add url."git@github.com-lending-and-borrowing-sc:money-on-chain/lending-and-borrowing-sc".insteadOf "git@github.com:money-on-chain/lending-and-borrowing-sc.git"
-                  git config --global --add url."git@github.com-lending-and-borrowing-sc:money-on-chain/lending-and-borrowing-sc".insteadOf "ssh://git@github.com/money-on-chain/lending-and-borrowing-sc"
-                  git config --global --add url."git@github.com-lending-and-borrowing-sc:money-on-chain/lending-and-borrowing-sc".insteadOf "ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git"
                   git config --global --add url."https://github.com/money-on-chain/MoC-Periphery".insteadOf "git@github.com:money-on-chain/MoC-Periphery"
                   git config --global --add url."https://github.com/money-on-chain/MoC-Periphery".insteadOf "git@github.com:money-on-chain/MoC-Periphery.git"
                   git config --global --add url."https://github.com/money-on-chain/MoC-Periphery".insteadOf "ssh://git@github.com/money-on-chain/MoC-Periphery"

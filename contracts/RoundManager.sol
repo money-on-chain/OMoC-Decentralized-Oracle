@@ -186,11 +186,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
             uint256 closingRoundNumber = roundInfo.number;
             uint256 closingRoundTotalPoints = roundInfo.totalPoints;
             address[] memory closingSelectedOwners = roundInfo.asArray();
-            _distributeRewards(
-                closingSelectedOwners,
-                closingRoundNumber,
-                closingRoundTotalPoints
-            );
+            _distributeRewards(closingSelectedOwners, closingRoundNumber, closingRoundTotalPoints);
         }
         roundInfo.switchRound();
         // Note: no new oracles are selected — this is intentional since the pair is being unregistered.
@@ -215,7 +211,11 @@ abstract contract RoundManager is CoinPairPriceStorage {
             uint256 closingRoundNumber = roundInfo.number;
             uint256 closingRoundTotalPoints = roundInfo.totalPoints;
             address[] memory closingSelectedOwners = roundInfo.asArray();
-            _distributeRewards(closingSelectedOwners, closingRoundNumber, closingRoundTotalPoints);
+            _distributeRewards(
+                closingSelectedOwners,
+                closingRoundNumber,
+                closingRoundTotalPoints
+            );
             _processAutoUnsubscribeBySignatures(closingSelectedOwners, closingRoundNumber);
         }
 
@@ -461,33 +461,6 @@ abstract contract RoundManager is CoinPairPriceStorage {
         bytes32[] calldata _sigS,
         bytes32 _messageHash
     ) internal {
-        require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
-        _validateExecutionForVersion(
-            _ownerAddr,
-            _version,
-            _votedOracle,
-            _blockNumber,
-            _sigV,
-            _sigR,
-            _sigS,
-            _messageHash,
-            PUBLISH_MESSAGE_VERSION
-        );
-    }
-
-    /// @notice Validates a consensus execution payload against an explicit message version.
-    /// @dev Used by TasksRunner V4 while preserving the V3 validation entry point above.
-    function _validateExecutionForVersion(
-        address _ownerAddr,
-        uint256 _version,
-        address _votedOracle,
-        uint256 _blockNumber,
-        uint8[] calldata _sigV,
-        bytes32[] calldata _sigR,
-        bytes32[] calldata _sigS,
-        bytes32 _messageHash,
-        uint256 _expectedVersion
-    ) internal {
         require(roundInfo.number > 0, "Round not open");
         require(roundInfo.isSelected(_ownerAddr), "Voter oracle is not part of this round");
         require(
@@ -495,7 +468,7 @@ abstract contract RoundManager is CoinPairPriceStorage {
             "Minimum selected oracles required not reached"
         );
         require(msg.sender == _votedOracle, "Your address does not match the voted oracle");
-        require(_version == _expectedVersion, "Unsupported message version");
+        require(_version == PUBLISH_MESSAGE_VERSION, "This contract accepts only V3 format");
         require(
             _blockNumber == lastPublicationBlock,
             "Blocknumber does not match the last publication block"
