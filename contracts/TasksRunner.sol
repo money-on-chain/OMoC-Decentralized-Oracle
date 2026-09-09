@@ -4,7 +4,6 @@ pragma experimental ABIEncoderV2;
 
 import {RoundManager} from "./RoundManager.sol";
 import {ITask} from "./interfaces/ITask.sol";
-import {IPayloadTask} from "./interfaces/IPayloadTask.sol";
 import {IGovernor} from "@moc/periphery/contracts/moc-governance/Governance/IGovernor.sol";
 import {IRegistry} from "@moc/periphery/contracts/IRegistry.sol";
 import {OracleManager} from "./OracleManager.sol";
@@ -26,7 +25,6 @@ contract TasksRunner is RoundManager {
 
     uint256 internal constant PRECISION = 10**18;
     uint256 internal constant MAX_TASKS = 256;
-    uint256 internal constant TASKS_MESSAGE_VERSION_V4 = 4;
 
     EnumerableSet.AddressSet private tasks;
     uint256 public maxTasksPerBatch;
@@ -36,22 +34,6 @@ contract TasksRunner is RoundManager {
     IPriceProvider public baseFeeProvider;
     uint256 public sharesCapMultiplier;
     mapping(address => uint256) public oracleOwnerCoinbaseUsed;
-
-    // V4 storage. These fields must remain after all V3 fields for proxy upgrade safety.
-    EnumerableSet.AddressSet private payloadTasks;
-
-    struct PayloadTaskCall {
-        address task;
-        bytes payload;
-    }
-
-    struct PayloadTasksBatch {
-        uint256 version;
-        bytes32 name;
-        PayloadTaskCall[] payloadCalls;
-        address votedOracle;
-        uint256 blockNumber;
-    }
 
     struct TasksRunnerParams {
         uint256 maxTasksPerBatch;
@@ -75,15 +57,6 @@ contract TasksRunner is RoundManager {
         bool success
     );
 
-    event PayloadTaskExecuted(
-        address indexed sender,
-        address indexed votedOracle,
-        address indexed task,
-        bytes32 payloadHash,
-        uint256 blockNumber,
-        bool success
-    );
-
     constructor() public initializer {
         // Avoid leaving the implementation contract uninitialized.
     }
@@ -93,7 +66,6 @@ contract TasksRunner is RoundManager {
      * @param _governor The governor address.
      * @param _name The name used to identify the contract. Used same as coin pair identifier.
      * @param _tasks The initial list of task addresses to be added.
-     * @param _payloadTasks The initial list of payload task addresses to be added.
      * @param _tokenAddress The address of the MOC token to use.
      * @param _roundConfig Round-level config values:
      * maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
@@ -112,7 +84,6 @@ contract TasksRunner is RoundManager {
         IGovernor _governor,
         bytes32 _name,
         address[] calldata _tasks,
-        address[] calldata _payloadTasks,
         address _tokenAddress,
         RoundConfig calldata _roundConfig,
         OracleManager _oracleManager,
@@ -134,10 +105,6 @@ contract TasksRunner is RoundManager {
         for (uint256 i = 0; i < _tasks.length; i++) {
             tasks.add(_tasks[i]);
         }
-        require(_payloadTasks.length <= MAX_TASKS, "Too many payload tasks");
-        for (uint256 i = 0; i < _payloadTasks.length; i++) {
-            payloadTasks.add(_payloadTasks[i]);
-        }
 
         lastPublicationBlock = block.number;
         lastTaskIndex = 0;
@@ -156,15 +123,6 @@ contract TasksRunner is RoundManager {
     function addTask(address _task) external onlyAuthorizedChanger {
         require(tasks.length() < MAX_TASKS, "TasksRunner: task limit reached");
         tasks.add(_task);
-    }
-
-    function addPayloadTask(address _task) external onlyAuthorizedChanger {
-        require(payloadTasks.length() < MAX_TASKS, "Payload task limit reached");
-        payloadTasks.add(_task);
-    }
-
-    function removePayloadTask(address _task) external onlyAuthorizedChanger {
-        payloadTasks.remove(_task);
     }
 
     /**
@@ -319,7 +277,7 @@ contract TasksRunner is RoundManager {
         );
 
         // do not pay gas if there was nothing to execute
-        if (_tasksFlags > 0) {
+        if(_tasksFlags > 0){
             uint256 baseFee = _getBaseFee();
             uint256 gasUsed = initialGas.sub(gasleft());
             uint256 coinbaseUsed = gasUsed.mul(baseFee);
@@ -327,108 +285,6 @@ contract TasksRunner is RoundManager {
         }
     }
 
-    /**
-     * @notice Executes a signed V4 batch containing only payload task calls.
-     * @dev Mirrors runTasks V3, replacing task flags with ordered payload calls.
-     */
-    function runTasksV4(
-        PayloadTasksBatch calldata _batch,
-        uint8[] calldata _sigV,
-        bytes32[] calldata _sigR,
-        bytes32[] calldata _sigS
-    ) external {
-        uint256 initialGas = gasleft();
-        require(_batch.name == coinPair, "Name - contract mismatch");
-        require(_batch.payloadCalls.length <= maxTasksPerBatch, "Batch too large");
-        _validatePayloadCalls(_batch.payloadCalls);
-        address ownerAddr = oracleManager.getOracleOwner(msg.sender);
-
-        bytes32 payloadCallsHash = keccak256(abi.encode(_batch.payloadCalls));
-        // Same 148-byte envelope used by V3, replacing tasksFlags with payloadCallsHash.
-        bytes32 h = keccak256(abi.encodePacked(
-            "\x19Ethereum Signed Message:\n148",
-            _batch.version, // 32
-            _batch.name, // 32
-            payloadCallsHash, // 32
-            _batch.votedOracle, // 20
-            _batch.blockNumber // 32
-        ));
-        _validateExecutionForVersion(
-            ownerAddr,
-            _batch.version,
-            _batch.votedOracle,
-            _batch.blockNumber,
-            _sigV,
-            _sigR,
-            _sigS,
-            h,
-            TASKS_MESSAGE_VERSION_V4
-        );
-        _runPayloadTasksAndPay(
-            ownerAddr,
-            _batch.votedOracle,
-            _batch.blockNumber,
-            _batch.payloadCalls
-        );
-
-        if (_batch.payloadCalls.length > 0) {
-            uint256 baseFee = _getBaseFee();
-            uint256 gasUsed = initialGas.sub(gasleft());
-            uint256 coinbaseUsed = gasUsed.mul(baseFee);
-            oracleOwnerCoinbaseUsed[ownerAddr] = oracleOwnerCoinbaseUsed[ownerAddr].add(
-                coinbaseUsed
-            );
-        }
-    }
-
-    function _validatePayloadCalls(PayloadTaskCall[] calldata _payloadCalls) internal view {
-        for (uint256 i = 0; i < _payloadCalls.length; i++) {
-            require(payloadTasks.contains(_payloadCalls[i].task), "Payload task not allowed");
-        }
-    }
-
-    function _runPayloadTasks(
-        address _ownerAddr,
-        address _votedOracle,
-        uint256 _blockNumber,
-        PayloadTaskCall[] calldata _payloadCalls
-    ) internal returns (uint256 points) {
-        lastPublicationBlock = block.number;
-
-        for (uint256 i = 0; i < _payloadCalls.length; i++) {
-            PayloadTaskCall calldata call = _payloadCalls[i];
-            bool success;
-            try IPayloadTask(call.task).runTask(call.payload) {
-                success = true;
-                points++;
-            } catch {
-                success = false;
-            }
-            emit PayloadTaskExecuted(
-                _ownerAddr,
-                _votedOracle,
-                call.task,
-                keccak256(call.payload),
-                _blockNumber,
-                success
-            );
-        }
-    }
-
-    function _runPayloadTasksAndPay(
-        address _ownerAddr,
-        address _votedOracle,
-        uint256 _blockNumber,
-        PayloadTaskCall[] calldata _payloadCalls
-    ) internal {
-        uint256 points = _runPayloadTasks(
-            _ownerAddr,
-            _votedOracle,
-            _blockNumber,
-            _payloadCalls
-        );
-        roundInfo.addPoints(_ownerAddr, points);
-    }
 
     function _runTasksAndPay(
         address _ownerAddr,
@@ -468,7 +324,7 @@ contract TasksRunner is RoundManager {
         bool success;
         while (executed < maxTasksPerBatch && i != startIndex + taskLength) {
             if (((_tasksFlags >> (i % taskLength)) & 1) == 1) {
-                ITask task = ITask(tasks.at(i % taskLength));
+                ITask task = ITask(tasks.at( i % taskLength));
                 try task.runTask() {
                     success = true;
                     ++points;
@@ -684,45 +540,6 @@ contract TasksRunner is RoundManager {
      */
     function containsTask(address _task) external view returns (bool) {
         return tasks.contains(_task);
-    }
-
-    /**
-     * @notice Returns a list of all payload tasks currently registered in the runner.
-     * @return An array of addresses representing the payload tasks.
-     */
-    function getPayloadTasks() external view returns (address[] memory) {
-        uint256 taskLength = payloadTasks.length();
-        address[] memory taskList = new address[](taskLength);
-        for (uint256 i = 0; i < taskLength; i++) {
-            taskList[i] = payloadTasks.at(i);
-        }
-        return taskList;
-    }
-
-    /**
-     * @notice Returns the number of payload tasks currently registered in the runner.
-     * @return The count of payload tasks.
-     */
-    function getPayloadTaskCount() external view returns (uint256) {
-        return payloadTasks.length();
-    }
-
-    /**
-     * @notice Returns the address of a payload task at a specific index.
-     * @param _index The index of the payload task to retrieve.
-     * @return The address of the payload task at the specified index.
-     */
-    function getPayloadTaskAt(uint256 _index) external view returns (address) {
-        return payloadTasks.at(_index);
-    }
-
-    /**
-     * @notice Checks if a specific payload task is registered in the runner.
-     * @param _task The address of the payload task to check.
-     * @return bool indicating whether the payload task is registered.
-     */
-    function containsPayloadTask(address _task) external view returns (bool) {
-        return payloadTasks.contains(_task);
     }
 
     // Public variable
