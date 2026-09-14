@@ -88,7 +88,7 @@ type OracleData = {
 
 describe('CoinPairPrice Signature', function () {
     async function setup(cantOracles: number) {
-        const { viem } = await network.create();
+        const { viem, networkHelpers } = await network.create();
         const deployer = await Deployer.default(viem);
         const accounts = await viem.getWalletClients();
         const contracts = await initContracts(deployer, accounts[0], 10n);
@@ -119,7 +119,7 @@ describe('CoinPairPrice Signature', function () {
 
         await register(contracts, coinPairPrice, oracleData, cantOracles);
 
-        return { viem, coinPairPrice, oracleData };
+        return { viem, networkHelpers, coinPairPrice, oracleData };
     }
 
     async function register(
@@ -216,6 +216,188 @@ describe('CoinPairPrice Signature', function () {
             { account: sender.account! },
         );
     }
+
+    async function buildExpiringPublication(
+        viem: Awaited<ReturnType<typeof network.create>>['viem'],
+        coinPairPrice: ContractOf<'CoinPairPrice'>,
+        oracleData: OracleData[],
+        signatureVersions: (3 | 4)[],
+        expirationOffset = 300n,
+        v4ExpirationOffsets: (bigint | undefined)[] = [],
+        signerIndexes?: number[],
+    ) {
+        const sender = oracleData[0].account;
+        const coinPair = await coinPairPrice.read.getCoinPair();
+        const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
+        const publicClient = await viem.getPublicClient();
+        const latestBlock = await publicClient.getBlock({ blockTag: 'latest' });
+        const expiration = BigInt(latestBlock.timestamp) + expirationOffset;
+        const legacyMessage = await getDefaultEncodedMessage(
+            3,
+            'BTCUSD',
+            10n ** 18n,
+            sender.account!.address,
+            lastPublicationBlock,
+        );
+        const expiringMessage = await getDefaultEncodedMessage(
+            4,
+            'BTCUSD',
+            10n ** 18n,
+            sender.account!.address,
+            lastPublicationBlock,
+            expiration,
+        );
+        const signatures = await Promise.all(
+            signatureVersions.map(async (signatureVersion, index) => {
+                const oracle = oracleData[signerIndexes?.[index] ?? index];
+                const expirationOffsetOverride = v4ExpirationOffsets[index];
+                const v4Message =
+                    expirationOffsetOverride === undefined
+                        ? expiringMessage
+                        : await getDefaultEncodedMessage(
+                              4,
+                              'BTCUSD',
+                              10n ** 18n,
+                              sender.account!.address,
+                              lastPublicationBlock,
+                              expiration + expirationOffsetOverride,
+                          );
+                return parseSignature(
+                    await oracle.account.signMessage({
+                        account: oracle.account.account!,
+                        message: {
+                            raw:
+                                signatureVersion === 4
+                                    ? v4Message.encMsg
+                                    : legacyMessage.encMsg,
+                        },
+                    }),
+                );
+            }),
+        );
+
+        for (const signature of signatures) {
+            if (signature.v === undefined) {
+                throw new Error('Signature.v is missing');
+            }
+        }
+
+        return {
+            sender,
+            expiration,
+            args: [
+                4n,
+                coinPair,
+                10n ** 18n,
+                sender.account!.address,
+                lastPublicationBlock,
+                expiration,
+                signatures.map((signature) => Number(signature.v)),
+                signatures.map((signature) => signature.r),
+                signatures.map((signature) => signature.s),
+            ] as const,
+        };
+    }
+
+    it('accepts V3 and V4 signatures in the same expiring publication', async function () {
+        const { viem, coinPairPrice, oracleData } = await setup(3);
+        const publication = await buildExpiringPublication(
+            viem,
+            coinPairPrice,
+            oracleData,
+            [3, 4, 3],
+        );
+
+        await coinPairPrice.write.publishPriceWithExpiration(publication.args, {
+            account: publication.sender.account!,
+        });
+    });
+
+    it('accepts an expiring publication with all V4 signatures', async function () {
+        const { viem, coinPairPrice, oracleData } = await setup(3);
+        const publication = await buildExpiringPublication(
+            viem,
+            coinPairPrice,
+            oracleData,
+            [4, 4, 4],
+        );
+
+        await coinPairPrice.write.publishPriceWithExpiration(publication.args, {
+            account: publication.sender.account!,
+        });
+    });
+
+    it('accepts an expiring publication with all legacy V3 signatures', async function () {
+        const { viem, coinPairPrice, oracleData } = await setup(3);
+        const publication = await buildExpiringPublication(
+            viem,
+            coinPairPrice,
+            oracleData,
+            [3, 3, 3],
+        );
+
+        await coinPairPrice.write.publishPriceWithExpiration(publication.args, {
+            account: publication.sender.account!,
+        });
+    });
+
+    it('does not combine V4 signatures with different expirations', async function () {
+        const { viem, coinPairPrice, oracleData } = await setup(3);
+        const publication = await buildExpiringPublication(
+            viem,
+            coinPairPrice,
+            oracleData,
+            [4, 4, 4],
+            300n,
+            [undefined, 1n, 2n],
+        );
+
+        await viem.assertions.revertWith(
+            coinPairPrice.write.publishPriceWithExpiration(publication.args, {
+                account: publication.sender.account!,
+            }),
+            'Valid signatures count must exceed 50% of active oracles',
+        );
+    });
+
+    it('does not count V3 and V4 signatures from the same oracle twice', async function () {
+        const { viem, coinPairPrice, oracleData } = await setup(3);
+        const publication = await buildExpiringPublication(
+            viem,
+            coinPairPrice,
+            oracleData,
+            [3, 4],
+            300n,
+            [],
+            [0, 0],
+        );
+
+        await viem.assertions.revertWith(
+            coinPairPrice.write.publishPriceWithExpiration(publication.args, {
+                account: publication.sender.account!,
+            }),
+            'Signatures are not unique or not ordered by address',
+        );
+    });
+
+    it('rejects an expiring publication after its deadline', async function () {
+        const { viem, networkHelpers, coinPairPrice, oracleData } = await setup(3);
+        const publication = await buildExpiringPublication(
+            viem,
+            coinPairPrice,
+            oracleData,
+            [3, 4, 3],
+            30n,
+        );
+
+        await networkHelpers.time.increaseTo(Number(publication.expiration + 1n));
+        await viem.assertions.revertWith(
+            coinPairPrice.write.publishPriceWithExpiration(publication.args, {
+                account: publication.sender.account!,
+            }),
+            'Signature expired',
+        );
+    });
 
     for (const testGroup of testsToRun) {
         describe(`Test for ${testGroup.oracles} oracles`, function () {
