@@ -91,7 +91,7 @@ describe('TasksRunner', function () {
                 maxTasksPerBatch: 10n,
                 tokenToCoinbasePriceProvider: mockTokenToCoinbaseProvider.address,
                 baseFeeProvider: mockBaseFeeProvider.address,
-                sharesCapMultiplier: 1n,
+                sharesCapMultiplier: 15n * 10n ** 17n,
             },
         ]);
 
@@ -200,7 +200,7 @@ describe('TasksRunner', function () {
         assert(usedCoinbase > 0n);
     });
 
-    it('distributes token rewards equivalent to execution coinbase usage on switchRound', async function () {
+    it('distributes the full reward pool to an oracle with all of the selected stake', async function () {
         await deployFixture();
         const lastPublicationBlock = await tasksRunner.read.getLastPublicationBlock();
         const tasksFlags = await tasksRunner.read.getTasksAvailableAsFlags();
@@ -250,7 +250,8 @@ describe('TasksRunner', function () {
         const finalOracleBalance = await contracts.token.read.balanceOf([
             accounts[ORACLE_OWNER].account!.address,
         ]);
-        assert(finalOracleBalance > initialOracleBalance);
+        expect(finalOracleBalance - initialOracleBalance).to.equal(MIN_STAKE);
+        expect(await contracts.token.read.balanceOf([tasksRunner.address])).to.equal(0n);
 
         const usedAfter = await tasksRunner.read.oracleOwnerCoinbaseUsed([
             accounts[ORACLE_OWNER].account!.address,

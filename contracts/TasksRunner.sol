@@ -348,7 +348,7 @@ contract TasksRunner is RoundManager {
         return points;
     }
 
-    /** 
+    /**
      * @notice Distribute rewards to oracles, taking fees from this smart contract.
      * @dev Overrides RoundManager to:
      *  1. Oracles receive the gas spent to execute the tasks in Tokens
