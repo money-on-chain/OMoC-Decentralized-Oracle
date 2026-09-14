@@ -250,6 +250,18 @@ abstract contract RoundManager is CoinPairPriceStorage {
         return roundInfo.roundLockPeriodSecs;
     }
 
+    /**
+     * @notice Sets the duration of a round's lock period.
+     * @dev Available to CoinPairPrice and TasksRunner through RoundManager and
+     *      restricted to the Governor's active changer.
+     * @param _roundLockPeriodSecs Lock period in seconds.
+     */
+    function setRoundLockPeriodSecs(
+        uint256 _roundLockPeriodSecs
+    ) external onlyAuthorizedChanger {
+        roundInfo.roundLockPeriodSecs = _roundLockPeriodSecs;
+    }
+
     function isRoundFull() external view returns (bool) {
         return roundInfo.isFull();
     }
