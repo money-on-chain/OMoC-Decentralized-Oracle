@@ -132,6 +132,28 @@ describe('TasksRunner', function () {
         await tasksRunner.write.switchRound({ account: accounts[ORACLE_OWNER].account! });
     }
 
+    it('rejects a stale publication block before other payload validation', async function () {
+        await deployFixture();
+        const lastPublicationBlock = await tasksRunner.read.getLastPublicationBlock();
+
+        await viem.assertions.revertWith(
+            tasksRunner.write.runTasks(
+                [
+                    0n,
+                    TASKS_PAIR,
+                    0n,
+                    accounts[ORACLE_ACCOUNT].account!.address,
+                    lastPublicationBlock - 1n,
+                    [],
+                    [],
+                    [],
+                ],
+                { account: accounts[ORACLE_ACCOUNT].account! },
+            ),
+            'Blocknumber does not match the last publication block',
+        );
+    });
+
     it('runs tasks with a single selected oracle even when registry minimum is higher', async function () {
         await deployFixture();
         const lastPublicationBlock = await tasksRunner.read.getLastPublicationBlock();
