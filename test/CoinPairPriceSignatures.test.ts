@@ -217,6 +217,28 @@ describe('CoinPairPrice Signature', function () {
         );
     }
 
+    it('rejects a stale publication block before other payload validation', async function () {
+        const { viem, coinPairPrice, oracleData } = await setup(1);
+        const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
+
+        await viem.assertions.revertWith(
+            coinPairPrice.write.publishPrice(
+                [
+                    0n,
+                    await coinPairPrice.read.getCoinPair(),
+                    0n,
+                    oracleData[0].address,
+                    lastPublicationBlock - 1n,
+                    [],
+                    [],
+                    [],
+                ],
+                { account: oracleData[0].account.account! },
+            ),
+            'Blocknumber does not match the last publication block',
+        );
+    });
+
     for (const testGroup of testsToRun) {
         describe(`Test for ${testGroup.oracles} oracles`, function () {
             for (const test of testGroup.tests) {
