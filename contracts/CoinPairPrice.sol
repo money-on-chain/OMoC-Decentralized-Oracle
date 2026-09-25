@@ -110,6 +110,12 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
         bytes32[] calldata _sigR,
         bytes32[] calldata _sigS
     ) external {
+        // Fail stale competing publications before performing any other validation.
+        // _validateExecution repeats this check to preserve its internal invariant.
+        require(
+            _blockNumber == lastPublicationBlock,
+            "Blocknumber does not match the last publication block"
+        );
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
         require(_coinpair == coinPair, "Coin pair - contract mismatch");
         require(_price > 0, "Price must be positive and non-zero");
