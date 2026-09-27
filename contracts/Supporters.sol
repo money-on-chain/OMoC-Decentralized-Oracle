@@ -121,6 +121,16 @@ contract Supporters is SupportersStorage, ISupporters {
     }
 
     /**
+     * @notice Sets the earnings distribution period.
+     * @dev Restricted to the Governor's active changer. This provides a governed
+     *      setter for the field historically changed through delegatecall.
+     * @param _period Number of blocks in one distribution period.
+     */
+    function setPeriod(uint256 _period) external onlyAuthorizedChanger {
+        supportersData._setPeriod(_period);
+    }
+
+    /**
       @notice Deposit earnings that will be credited to supporters.
       @dev Earnings will be credited periodically through several blocks.
     */

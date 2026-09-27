@@ -245,6 +245,12 @@ contract TasksRunner is RoundManager {
         bytes32[] calldata _sigS
     ) external {
         uint256 initialGas = gasleft();
+        // Fail stale competing executions before performing any other validation.
+        // _validateExecution repeats this check to preserve its internal invariant.
+        require(
+            _blockNumber == lastPublicationBlock,
+            "Blocknumber does not match the last publication block"
+        );
         require(_name == coinPair, "Name - contract mismatch");
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
         //
@@ -348,7 +354,7 @@ contract TasksRunner is RoundManager {
         return points;
     }
 
-    /** 
+    /**
      * @notice Distribute rewards to oracles, taking fees from this smart contract.
      * @dev Overrides RoundManager to:
      *  1. Oracles receive the gas spent to execute the tasks in Tokens

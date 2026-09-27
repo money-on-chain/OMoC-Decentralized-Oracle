@@ -29,7 +29,6 @@ describe('Staking', function () {
     let contracts: Awaited<ReturnType<typeof initContracts>>;
     let coinPairPriceBtcusd: Awaited<ReturnType<typeof initCoinpair>>;
     let coinPairPriceRifbtc: Awaited<ReturnType<typeof initCoinpair>>;
-    let untilTimestampLock: bigint;
 
     beforeEach(async function () {
         ({ viem, networkHelpers } = await network.create());
@@ -149,9 +148,8 @@ describe('Staking', function () {
 
     describe("Should not be able to lock mocs from an address other than the voting machine's", function () {
         it('reverts for direct calls', async function () {
-            untilTimestampLock = BigInt(
-                Math.round(Date.now() / 1000) + Number(secsUntilStakeRelease),
-            );
+            const untilTimestampLock =
+                BigInt(await networkHelpers.time.latest()) + secsUntilStakeRelease;
             await viem.assertions.revertWith(
                 contracts.staking.write.lockMocs(
                     [accounts[oracleData[1].owner].account!.address, untilTimestampLock],
@@ -164,11 +162,10 @@ describe('Staking', function () {
 
     describe('Should lock stake of oracle B', function () {
         it('locks oracle B stake through the voting machine', async function () {
-            untilTimestampLock = BigInt(
-                Math.round(Date.now() / 1000) + Number(secsUntilStakeRelease),
-            );
             await registerOracle(oracleData[1]);
             await depositOracle(oracleData[1]);
+            const untilTimestampLock =
+                BigInt(await networkHelpers.time.latest()) + secsUntilStakeRelease;
 
             const balance = await contracts.staking.read.getBalance([
                 accounts[oracleData[1].owner].account!.address,
@@ -187,11 +184,10 @@ describe('Staking', function () {
 
     describe('Should not be able to withdraw stake of oracle B until it is unlocked', function () {
         it('waits until unlock time', async function () {
-            untilTimestampLock = BigInt(
-                Math.round(Date.now() / 1000) + Number(secsUntilStakeRelease),
-            );
             await registerOracle(oracleData[1]);
             await depositOracle(oracleData[1]);
+            const untilTimestampLock =
+                BigInt(await networkHelpers.time.latest()) + secsUntilStakeRelease;
             await contracts.votingMachine.write.lockMocs(
                 [accounts[oracleData[1].owner].account!.address, untilTimestampLock],
                 { account: accounts[oracleData[1].owner].account! },
@@ -204,7 +200,7 @@ describe('Staking', function () {
                 'Stake not available for withdrawal.',
             );
 
-            await networkHelpers.time.increase(Number(secsUntilStakeRelease + 1n));
+            await networkHelpers.time.increaseTo(untilTimestampLock);
             await contracts.staking.write.withdraw([oracleData[1].stake], {
                 account: accounts[oracleData[1].owner].account!,
             });

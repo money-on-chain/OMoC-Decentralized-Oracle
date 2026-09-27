@@ -266,10 +266,7 @@ describe('CoinPairPrice Signature', function () {
                     await oracle.account.signMessage({
                         account: oracle.account.account!,
                         message: {
-                            raw:
-                                signatureVersion === 4
-                                    ? v4Message.encMsg
-                                    : legacyMessage.encMsg,
+                            raw: signatureVersion === 4 ? v4Message.encMsg : legacyMessage.encMsg,
                         },
                     }),
                 );
@@ -396,6 +393,28 @@ describe('CoinPairPrice Signature', function () {
                 account: publication.sender.account!,
             }),
             'Signature expired',
+        );
+    });
+
+    it('rejects a stale publication block before other payload validation', async function () {
+        const { viem, coinPairPrice, oracleData } = await setup(1);
+        const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
+
+        await viem.assertions.revertWith(
+            coinPairPrice.write.publishPrice(
+                [
+                    0n,
+                    await coinPairPrice.read.getCoinPair(),
+                    0n,
+                    oracleData[0].address,
+                    lastPublicationBlock - 1n,
+                    [],
+                    [],
+                    [],
+                ],
+                { account: oracleData[0].account.account! },
+            ),
+            'Blocknumber does not match the last publication block',
         );
     });
 
