@@ -25,6 +25,7 @@ export type OracleDefinition = {
     address: Address;
     url?: string;
     name: string;
+    signsPriceExpiration?: boolean;
 };
 
 export type OracleStakeData = {
@@ -121,6 +122,7 @@ export async function getDefaultEncodedMessage(
     price: number | bigint,
     votedOracle: Address,
     blockNumber: number | bigint,
+    expiration?: number | bigint,
 ) {
     const encVersion = padHex(numberToHex(version), { size: 32 });
     const encCoinPair = encodeCoinPair(coinPair);
@@ -128,7 +130,16 @@ export async function getDefaultEncodedMessage(
     const encOracle = votedOracle;
     const encBlockNumber = padHex(numberToHex(blockNumber), { size: 32 });
 
-    const encMsg = concatHex([encVersion, encCoinPair, encPrice, encOracle, encBlockNumber]);
+    const encMsg = concatHex([
+        encVersion,
+        encCoinPair,
+        encPrice,
+        encOracle,
+        encBlockNumber,
+        ...(expiration === undefined
+            ? []
+            : [padHex(numberToHex(expiration), { size: 32 })]),
+    ]);
 
     return {
         msg: {
@@ -137,6 +148,7 @@ export async function getDefaultEncodedMessage(
             price: BigInt(price),
             votedOracle,
             blockNumber: BigInt(blockNumber),
+            ...(expiration === undefined ? {} : { expiration: BigInt(expiration) }),
         },
         encMsg,
     };
@@ -154,6 +166,7 @@ export async function getOracleConsensusSignatures(
     oracles: OracleDefinition[],
     rawMessage: Hex,
     publisher?: OracleDefinition,
+    rawMessageWithExpiration?: Hex,
 ): Promise<OracleConsensusSignatures> {
     const selectedPublisher = publisher ?? oracles[0];
     if (selectedPublisher === undefined) {
@@ -180,7 +193,11 @@ export async function getOracleConsensusSignatures(
             await oracle.signer.signMessage({
                 account: oracle.signer.account!,
                 message: {
-                    raw: rawMessage,
+                    raw:
+                        oracle.signsPriceExpiration === true &&
+                        rawMessageWithExpiration !== undefined
+                            ? rawMessageWithExpiration
+                            : rawMessage,
                 },
             }),
         );
@@ -209,6 +226,7 @@ export async function publishPrice(
     price: bigint,
     oracles: OracleDefinition[],
     publisher?: OracleDefinition,
+    expiration?: bigint,
 ) {
     const selectedPublisher = publisher ?? oracles[0];
     if (selectedPublisher === undefined) {
@@ -216,23 +234,57 @@ export async function publishPrice(
     }
 
     const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
-    const { msg, encMsg } = await getDefaultEncodedMessage(
+    const legacyMessage = await getDefaultEncodedMessage(
         3,
         coinPairName,
         price,
         selectedPublisher.address,
         lastPublicationBlock,
     );
+    const expiringMessage =
+        expiration === undefined
+            ? undefined
+            : await getDefaultEncodedMessage(
+                  4,
+                  coinPairName,
+                  price,
+                  selectedPublisher.address,
+                  lastPublicationBlock,
+                  expiration,
+              );
 
-    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(oracles, encMsg, publisher);
+    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(
+        oracles,
+        legacyMessage.encMsg,
+        publisher,
+        expiringMessage?.encMsg,
+    );
+
+    if (expiration !== undefined && expiringMessage !== undefined) {
+        await coinPairPrice.write.publishPriceWithExpiration(
+            [
+                expiringMessage.msg.version,
+                encodeCoinPair(coinPairName),
+                expiringMessage.msg.price,
+                expiringMessage.msg.votedOracle,
+                expiringMessage.msg.blockNumber,
+                expiration,
+                sigV,
+                sigR,
+                sigS,
+            ],
+            { account: selectedPublisher.address },
+        );
+        return;
+    }
 
     await coinPairPrice.write.publishPrice(
         [
-            msg.version,
+            legacyMessage.msg.version,
             encodeCoinPair(coinPairName),
-            msg.price,
-            msg.votedOracle,
-            msg.blockNumber,
+            legacyMessage.msg.price,
+            legacyMessage.msg.votedOracle,
+            legacyMessage.msg.blockNumber,
             sigV,
             sigR,
             sigS,
