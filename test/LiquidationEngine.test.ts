@@ -208,6 +208,27 @@ describe('LiquidationEngine', function () {
         await viem.assertions.revertWith(deployEngine([pool0, pool0]), 'Pool already registered');
     });
 
+    it('rejects a stale publication block before other payload validation', async function () {
+        const authorization = await authorize();
+
+        await viem.assertions.revertWith(
+            engine.write.runLiquidations(
+                [
+                    authorization.version,
+                    zeroHash,
+                    [],
+                    authorization.votedOracle,
+                    authorization.blockNumber - 1n,
+                    [],
+                    [],
+                    [],
+                ],
+                { account: accounts[ORACLE_ACCOUNT].account! },
+            ),
+            'Blocknumber does not match the last publication block',
+        );
+    });
+
     it('requires a positive liquidation batch limit', async function () {
         await viem.assertions.revertWith(
             deployEngine([pool0], 0n),

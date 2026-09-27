@@ -165,6 +165,12 @@ contract LiquidationEngine is RoundManager {
         bytes32[] calldata _sigR,
         bytes32[] calldata _sigS
     ) external {
+        // Fail stale competing executions before performing any other validation.
+        // _validateExecution repeats this check to preserve its internal invariant.
+        require(
+            _blockNumber == lastPublicationBlock,
+            'Blocknumber does not match the last publication block'
+        );
         require(_name == coinPair, 'Name - contract mismatch');
         address ownerAddr = oracleManager.getOracleOwner(msg.sender);
 
