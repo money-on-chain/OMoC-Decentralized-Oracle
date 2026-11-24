@@ -30,6 +30,9 @@ importers:
       '@moc/periphery':
         specifier: git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.5
         version: '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/6be2d281a42cc17b8136184054dcb62f7c586a7b'
+      '@nomicfoundation/ignition-core':
+        specifier: ^3.1.8
+        version: 3.1.8
       '@nomicfoundation/hardhat-mocha':
         specifier: ^3.0.21
         version: 3.0.21(hardhat@3.9.0)(mocha@11.7.6)
