@@ -24,8 +24,9 @@ contract CoinPairPriceStorage is Initializable, Governed, IIterableWhitelist {
     uint256 public constant PUBLISH_MESSAGE_VERSION = 3;
     uint256 public constant PUBLISH_MESSAGE_VERSION_WITH_EXPIRATION = 4;
 
-    // Maximum number of subscribed oracles.
-    uint256 internal maxSubscribedOraclesPerRound;
+    // Deprecated: previously stored per-coinpair maxSubscribedOraclesPerRound.
+    // Kept to preserve proxy storage layout; bounded globally by OracleManager.maxRegisteredOracles.
+    uint256 internal deprecatedMaxSubscribedOraclesPerRound;
 
     // Round information.
     RoundInfoLib.RoundInfo internal roundInfo;

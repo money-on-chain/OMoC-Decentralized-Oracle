@@ -39,7 +39,7 @@ contract CoinPairPrice is RoundManager, IPriceProvider, IPriceProviderRegisterEn
     /// @param _coinPair The coinpair, ex: USDBTC.
     /// @param _tokenAddress The address of the MOC token to use.
     /// @param _roundConfig Round-level config values:
-    ///        maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
+    ///        roundLockPeriod, maxMissedSigRounds.
     /// @dev _roundConfig.maxMissedSigRounds defines maximum consecutive rounds without valid signatures
     ///        before automatic unsubscribe. Set to 0 to disable.
     /// @param _validPricePeriodInBlocks The time span for which the last published price is valid.

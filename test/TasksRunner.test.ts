@@ -79,8 +79,6 @@ describe('TasksRunner', function () {
             [revertingTask.address, mockTask.address],
             contracts.token.address,
             {
-                maxOraclesPerRound: 5n,
-                maxSubscribedOraclesPerRound: 10n,
                 roundLockPeriod: 60n,
                 maxMissedSigRounds: 0n,
             },

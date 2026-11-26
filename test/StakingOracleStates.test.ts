@@ -304,26 +304,42 @@ describe('Staking-Oracle-States', function () {
             });
         });
 
-        it("Can not subscribe to a coin pair if the subscription list is full and they don't have enough stake", async function () {
+        it("Can not register an oracle if the registered list is full and they don't have enough stake", async function () {
             await deployContracts();
             for (const data of otherOracles) {
                 await register(data);
                 await subscribe(data);
             }
-            await register(minOracle);
+            await contracts.governor.mint(
+                contracts.token.address,
+                minOracle.owner.account!.address,
+                minOracle.stake,
+            );
+            await contracts.token.write.approve([contracts.staking.address, minOracle.stake], {
+                account: minOracle.owner.account!,
+            });
+            await contracts.staking.write.deposit(
+                [minOracle.stake, minOracle.owner.account!.address],
+                {
+                    account: minOracle.owner.account!,
+                },
+            );
+
+            await viem.assertions.revertWith(
+                contracts.staking.write.registerOracle(
+                    [minOracle.account.account!.address, minOracle.name],
+                    {
+                        account: minOracle.owner.account!,
+                    },
+                ),
+                'Not enough stake to register',
+            );
 
             await checkState(minOracle, {
-                registered: true,
+                registered: false,
                 subscribed: false,
                 selected: false,
             });
-
-            await viem.assertions.revertWith(
-                contracts.staking.write.subscribeToCoinPair([coinPair], {
-                    account: minOracle.owner.account!,
-                }),
-                'Not enough stake to add',
-            );
         });
     });
 

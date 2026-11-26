@@ -45,10 +45,10 @@ describe('CoinPairPrice Subscribe', function () {
         await token.write.approve([staking.address, entry.stake], {
             account: entry.owner.account!,
         });
+        await staking.write.deposit([entry.stake, ownerAddr], { account: entry.owner.account! });
         await staking.write.registerOracle([entry.oracleAddr, entry.name], {
             account: entry.owner.account!,
         });
-        await staking.write.deposit([entry.stake, ownerAddr], { account: entry.owner.account! });
 
         const [registeredName, registeredStake] = await oracleMgr.read.getOracleRegistrationInfo([
             ownerAddr,
@@ -127,20 +127,24 @@ describe('CoinPairPrice Subscribe', function () {
 
         const getSelectedOracles = async () => (await coinPairPrice.read.getRoundInfo())[5];
 
-        it('Should subscribe oracleCant oracles and the first maxOraclesPerRound goes to current round', async function () {
+        it('Should subscribe oracleCant oracles and only the top maxOraclesPerRound go to current round', async function () {
             ({ contracts, coinPairPrice, oracleList } = await buildScenario());
             expect((await getSelectedOracles()).length).to.equal(0);
 
             await coinPairPrice.write.switchRound();
             expect((await getSelectedOracles()).length).to.equal(0);
 
+            const topStartIdx = ORACLE_QUANTITY - Number(MAX_ORACLES_PER_ROUND);
             oracleWithALotOfStake = oracleList[ORACLE_QUANTITY - 1];
             oracleWithALessLotOfStake = oracleList[ORACLE_QUANTITY - 2];
             oracleWithSmallStake = oracleList[2];
 
             expect((await getSelectedOracles()).length).to.equal(0);
 
-            for (const { owner } of oracleList) {
+            // oracleList[0] was evicted on registration when oracleList[20] registered (cap = 20).
+            // Subscribe all remaining registered oracles (indices 1..20).
+            for (let i = 1; i < oracleList.length; i += 1) {
+                const { owner } = oracleList[i];
                 const cantPrev = (await getSelectedOracles()).length;
 
                 await contracts.staking.write.subscribeToCoinPair([COINPAIR], {
@@ -151,18 +155,15 @@ describe('CoinPairPrice Subscribe', function () {
                 ).to.equal(true);
 
                 const cantPost = (await getSelectedOracles()).length;
-                if (cantPrev < Number(MAX_ORACLES_PER_ROUND)) {
+                if (i >= topStartIdx) {
                     expect(cantPost).to.equal(cantPrev + 1);
                 } else {
-                    expect(cantPost).to.equal(Number(MAX_ORACLES_PER_ROUND));
+                    expect(cantPost).to.equal(cantPrev);
                 }
             }
 
             expect(
-                await contracts.oracleMgr.read.isSubscribed([
-                    oracleList[0].owner.account!.address,
-                    COINPAIR,
-                ]),
+                await contracts.oracleMgr.read.isRegistered([oracleList[0].owner.account!.address]),
             ).to.equal(false);
             expect(
                 await contracts.oracleMgr.read.isSubscribed([
@@ -172,25 +173,35 @@ describe('CoinPairPrice Subscribe', function () {
             ).to.equal(true);
 
             await viem.assertions.revertWith(
+                contracts.staking.write.registerOracle(
+                    [oracleList[0].oracleAddr, oracleList[0].name],
+                    {
+                        account: oracleList[0].owner.account!,
+                    },
+                ),
+                'Not enough stake to register',
+            );
+            await viem.assertions.revertWith(
                 contracts.staking.write.subscribeToCoinPair([COINPAIR], {
                     account: oracleList[0].owner.account!,
                 }),
-                'Not enough stake to add',
+                'Oracle not registered',
             );
             expect(
                 await coinPairPrice.read.isOracleInCurrentRound([
                     oracleList[0].owner.account!.address,
                 ]),
-            ).to.equal(true);
+            ).to.equal(false);
             expect(
                 await coinPairPrice.read.isOracleInCurrentRound([
                     oracleWithALotOfStake.owner.account!.address,
                 ]),
-            ).to.equal(false);
+            ).to.equal(true);
 
             // Select two cases with different status for the current round
-            const idx1 = ORACLE_QUANTITY - Number(MAX_ORACLES_PER_ROUND) - 1;
-            const idx2 = ORACLE_QUANTITY - Number(MAX_ORACLES_PER_ROUND) - 2;
+            const idx1 = topStartIdx - 1; // subscribed, outside top 10
+            const idx2 = topStartIdx; // subscribed, inside top 10 (#10)
+            const expectedReplacement = oracleList[topStartIdx - 2]; // becomes new #10 after idx1 and idx2 withdraw
 
             // Both cases are subscribed
             expect(
@@ -224,7 +235,7 @@ describe('CoinPairPrice Subscribe', function () {
                 ]),
             ).to.equal(true);
 
-            // Both cases withdraws some amount with different behaviours
+            // Both cases withdraw all stake with different behaviours
             await contracts.staking.write.withdraw([oracleList[idx1].stake], {
                 account: oracleList[idx1].owner.account!,
             });
@@ -265,15 +276,14 @@ describe('CoinPairPrice Subscribe', function () {
                 ]),
             ).to.equal(false);
 
-            // The subscribed oracle with the max stake replaced the punished oracle in the current round
+            // The new #10 top registered subscribed oracle replaced the expelled oracle in the current round
             expect(
                 await coinPairPrice.read.isOracleInCurrentRound([
-                    oracleWithALotOfStake.owner.account!.address,
+                    expectedReplacement.owner.account!.address,
                 ]),
             ).to.equal(true);
 
-            // The oracles are added right away when we saturate the
-            // selected list the new ones even if have more stake must wait to next round
+            // Top-10 oracles stay selected; small-stake subscribed oracle stays unselected
             expect(
                 await contracts.oracleMgr.read.isSubscribed([
                     oracleWithSmallStake.owner.account!.address,
@@ -290,8 +300,10 @@ describe('CoinPairPrice Subscribe', function () {
                 ]),
             ).to.equal(true);
             expect(
-                (await getSelectedOracles()).indexOf(oracleWithALessLotOfStake.oracleAddr) >= 0,
-            ).to.equal(false);
+                await coinPairPrice.read.isOracleInCurrentRound([
+                    oracleWithALessLotOfStake.owner.account!.address,
+                ]),
+            ).to.equal(true);
 
             // It is ok to unsubscribes and subscribes again in the same round
             const { owner, oracleAddr } = oracleWithSmallStake;

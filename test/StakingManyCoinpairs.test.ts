@@ -130,13 +130,17 @@ describe('Staking-withdraw with many coin pairs', function () {
 
     it('withdraw', async function () {
         const coinPair = coinPairs[0];
-        const oracleOwner = oracles[0].owner.account!.address;
+        const lowestTopIndex = NUM_ORACLES - Number(MAX_SELECTED_ORACLES);
+        const oracleOwner = oracles[lowestTopIndex].owner.account!.address;
 
         expect(await coinPair.read.isOracleInCurrentRound([oracleOwner])).to.equal(true);
-        await contracts.staking.write.withdraw([1n], { account: oracles[0].owner.account! });
+        // Withdraw 2 wei so stake drops below oracles[lowestTopIndex - 1]
+        await contracts.staking.write.withdraw([2n], {
+            account: oracles[lowestTopIndex].owner.account!,
+        });
         expect(await coinPair.read.isOracleInCurrentRound([oracleOwner])).to.equal(false);
 
-        const newSelectedOwner = oracles[NUM_ORACLES - 1].owner.account!.address;
+        const newSelectedOwner = oracles[lowestTopIndex - 1].owner.account!.address;
         expect(await coinPair.read.isOracleInCurrentRound([newSelectedOwner])).to.equal(true);
     });
 });

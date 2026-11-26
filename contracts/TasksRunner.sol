@@ -68,7 +68,7 @@ contract TasksRunner is RoundManager {
      * @param _tasks The initial list of task addresses to be added.
      * @param _tokenAddress The address of the MOC token to use.
      * @param _roundConfig Round-level config values:
-     * maxOraclesPerRound, maxSubscribedOraclesPerRound, roundLockPeriod, maxMissedSigRounds.
+     * roundLockPeriod, maxMissedSigRounds.
      * @dev _roundConfig.maxMissedSigRounds defines maximum consecutive rounds without valid signatures
      * before automatic unsubscribe. Set to 0 to disable.
      * @param _oracleManager The contract of the oracle manager.

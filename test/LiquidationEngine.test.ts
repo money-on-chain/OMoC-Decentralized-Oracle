@@ -56,8 +56,6 @@ describe('LiquidationEngine', function () {
             pools,
             contracts.token.address,
             {
-                maxOraclesPerRound: 5n,
-                maxSubscribedOraclesPerRound: 10n,
                 roundLockPeriod: 60n,
                 maxMissedSigRounds: 0n,
             },

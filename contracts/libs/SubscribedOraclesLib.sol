@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import {AddressSetLib} from "@moc/periphery/contracts/lib/AddressSetLib.sol";
 
 /**
   @notice Based on EnumberableSet, but with the ability to clear all the contents.
  */
 library SubscribedOraclesLib {
-    using SafeMath for uint256;
     using AddressSetLib for AddressSetLib.AddressSet;
 
     /// Global registration information for each oracle, used by OracleManager
@@ -26,90 +24,6 @@ library SubscribedOraclesLib {
      */
     function clear(SubscribedOracles storage set) internal {
         set._inner.clear();
-    }
-
-    /**
-     * @dev Get the minimum value.
-     *
-     */
-    // prettier-ignore
-    function getMin(
-        SubscribedOracles storage set,
-        function(address) external view returns (uint256) getStake
-    ) internal view returns (uint256 minStake, address minVal) {
-        if (length(set) == 0) {
-            return (0, address(0));
-        }
-        minVal = at(set, 0);
-        minStake = getStake(minVal);
-        for (uint256 i = 1; i < length(set); i++) {
-            address v = at(set, i);
-            uint256 s = getStake(v);
-            if (s < minStake) {
-                minStake = s;
-                minVal = v;
-            }
-        }
-        return (minStake, minVal);
-    }
-
-    /**
-     * @dev return a list of indexes that sorts the set by stake.
-     *
-     * Returns true if the value was added to the set, that is if it was not
-     * already present.
-     */
-    // prettier-ignore
-    function sort(
-        SubscribedOracles storage set,
-        function(address) external view returns (uint256) getStake,
-        uint256 count
-    ) internal view returns (address[] memory selected) {
-        if (count > length(set)) {
-            count = length(set);
-        }
-        selected = new address[](count);
-        if (count == 0) {
-            return selected;
-        }
-        selected[0] = at(set, 0);
-        for (uint256 i = 1; i < length(set); i++) {
-            address v = at(set, i);
-            uint256 vStake = getStake(v);
-            uint256 j = i;
-            if (j >= count) {
-                j = count - 1;
-                if (vStake <= getStake(selected[j])) {
-                    continue;
-                }
-            }
-            while (j > 0 && vStake > getStake(selected[j - 1])) {
-                selected[j] = selected[j - 1];
-                j--;
-            }
-            selected[j] = v;
-        }
-        return selected;
-    }
-
-    // prettier-ignore
-    function getMaxUnselectedStake(
-        SubscribedOracles storage set,
-        function(address[] memory) external view returns (address, uint256) getMaxStake,
-        AddressSetLib.AddressSet storage selectedOracles
-    ) internal view returns (address, uint256) {
-        uint256 len = length(set);
-        address[] memory unselected = new address[](len);
-        uint256 j = 0;
-        for (uint256 i = 0; i < len; i++) {
-            address c = at(set, i);
-            if (selectedOracles.contains(c)) {
-                continue;
-            }
-            unselected[j] = c;
-            j += 1;
-        }
-        return getMaxStake(unselected);
     }
 
     /**

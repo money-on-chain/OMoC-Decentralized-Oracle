@@ -116,8 +116,6 @@ describe('OracleManager operations', function () {
             COINPAIR_ID,
             ADDRESS_ONE,
             {
-                maxOraclesPerRound: 10n,
-                maxSubscribedOraclesPerRound: 30n,
                 roundLockPeriod: 60n,
                 maxMissedSigRounds: 0n,
             },
