@@ -1,4 +1,4 @@
-import { concatHex, numberToHex, padHex, parseSignature, stringToHex, getAddress, } from 'viem';
+import { concatHex, encodeFunctionData, numberToHex, padHex, parseSignature, stringToHex, getAddress, } from 'viem';
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 export const MAX_UINT256 = (1n << 256n) - 1n;
@@ -32,6 +32,16 @@ export async function createGovernor(deployer, owner) {
         governor,
         registerCoinPair: async (manager, coinPair, address) => deployAndExec('OracleManagerPairChange', manager.address, coinPair, address),
         mint: async (tokenAddr, addr, quantity) => deployAndExec('TestMOCMintChange', tokenAddr, addr, quantity),
+        setMaxOraclesPerRound: async (manager, maxOraclesPerRound) => deployAndExec('MockCallChange', manager.address, encodeFunctionData({
+            abi: manager.abi,
+            functionName: 'setMaxOraclesPerRound',
+            args: [maxOraclesPerRound],
+        })),
+        setMaxRegisteredOracles: async (manager, maxRegisteredOracles) => deployAndExec('MockCallChange', manager.address, encodeFunctionData({
+            abi: manager.abi,
+            functionName: 'setMaxRegisteredOracles',
+            args: [maxRegisteredOracles],
+        })),
         execute: executeChange,
     };
 }
@@ -54,13 +64,22 @@ export async function mineUntilNextRound(networkHelpers, viem, coinPairPrice) {
         await increaseTime(networkHelpers, target - BigInt(latestBlock.timestamp));
     }
 }
-export async function getDefaultEncodedMessage(version, coinPair, price, votedOracle, blockNumber) {
+export async function getDefaultEncodedMessage(version, coinPair, price, votedOracle, blockNumber, expiration) {
     const encVersion = padHex(numberToHex(version), { size: 32 });
     const encCoinPair = encodeCoinPair(coinPair);
     const encPrice = padHex(numberToHex(price), { size: 32 });
     const encOracle = votedOracle;
     const encBlockNumber = padHex(numberToHex(blockNumber), { size: 32 });
-    const encMsg = concatHex([encVersion, encCoinPair, encPrice, encOracle, encBlockNumber]);
+    const encMsg = concatHex([
+        encVersion,
+        encCoinPair,
+        encPrice,
+        encOracle,
+        encBlockNumber,
+        ...(expiration === undefined
+            ? []
+            : [padHex(numberToHex(expiration), { size: 32 })]),
+    ]);
     return {
         msg: {
             version: BigInt(version),
@@ -68,11 +87,12 @@ export async function getDefaultEncodedMessage(version, coinPair, price, votedOr
             price: BigInt(price),
             votedOracle,
             blockNumber: BigInt(blockNumber),
+            ...(expiration === undefined ? {} : { expiration: BigInt(expiration) }),
         },
         encMsg,
     };
 }
-export async function getOracleConsensusSignatures(oracles, rawMessage, publisher) {
+export async function getOracleConsensusSignatures(oracles, rawMessage, publisher, rawMessageWithExpiration) {
     const selectedPublisher = publisher ?? oracles[0];
     if (selectedPublisher === undefined) {
         throw new Error('No oracle wallet clients available');
@@ -92,7 +112,10 @@ export async function getOracleConsensusSignatures(oracles, rawMessage, publishe
         const signature = parseSignature(await oracle.signer.signMessage({
             account: oracle.signer.account,
             message: {
-                raw: rawMessage,
+                raw: oracle.signsPriceExpiration === true &&
+                    rawMessageWithExpiration !== undefined
+                    ? rawMessageWithExpiration
+                    : rawMessage,
             },
         }));
         if (signature.v === undefined) {
@@ -110,20 +133,37 @@ export async function getOracleConsensusSignatures(oracles, rawMessage, publishe
         sigS,
     };
 }
-export async function publishPrice(coinPairPrice, coinPairName, price, oracles, publisher) {
+export async function publishPrice(coinPairPrice, coinPairName, price, oracles, publisher, expiration) {
     const selectedPublisher = publisher ?? oracles[0];
     if (selectedPublisher === undefined) {
         throw new Error('No oracle wallet clients available');
     }
     const lastPublicationBlock = await coinPairPrice.read.getLastPublicationBlock();
-    const { msg, encMsg } = await getDefaultEncodedMessage(3, coinPairName, price, selectedPublisher.address, lastPublicationBlock);
-    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(oracles, encMsg, publisher);
+    const legacyMessage = await getDefaultEncodedMessage(3, coinPairName, price, selectedPublisher.address, lastPublicationBlock);
+    const expiringMessage = expiration === undefined
+        ? undefined
+        : await getDefaultEncodedMessage(4, coinPairName, price, selectedPublisher.address, lastPublicationBlock, expiration);
+    const { sigV, sigR, sigS } = await getOracleConsensusSignatures(oracles, legacyMessage.encMsg, publisher, expiringMessage?.encMsg);
+    if (expiration !== undefined && expiringMessage !== undefined) {
+        await coinPairPrice.write.publishPriceWithExpiration([
+            expiringMessage.msg.version,
+            encodeCoinPair(coinPairName),
+            expiringMessage.msg.price,
+            expiringMessage.msg.votedOracle,
+            expiringMessage.msg.blockNumber,
+            expiration,
+            sigV,
+            sigR,
+            sigS,
+        ], { account: selectedPublisher.address });
+        return;
+    }
     await coinPairPrice.write.publishPrice([
-        msg.version,
+        legacyMessage.msg.version,
         encodeCoinPair(coinPairName),
-        msg.price,
-        msg.votedOracle,
-        msg.blockNumber,
+        legacyMessage.msg.price,
+        legacyMessage.msg.votedOracle,
+        legacyMessage.msg.blockNumber,
         sigV,
         sigR,
         sigS,
@@ -149,15 +189,28 @@ export async function runTasks(tasksRunner, oracles, publisher) {
     const { sigV, sigR, sigS } = await getOracleConsensusSignatures(oracles, encMsg, selectedPublisher);
     await tasksRunner.write.runTasks([3n, name, tasksFlags, selectedPublisher.address, lastPublicationBlock, sigV, sigR, sigS], { account: selectedPublisher.address });
 }
-export async function initCoinpair(deployer, name, governor, token, oracleMgr, registry, whitelist, maxOraclesPerRound = 10n, maxSubscribedOraclesPerRound = 30n, roundLockPeriod = 60n, maxMissedSigRounds = 0n, validPricePeriodInBlocks = 3n, emergencyPublishingPeriodInBlocks = 2n, bootstrapPrice = 100000000n) {
+export async function initCoinpair(deployer, name, governor, token, oracleMgr, registry, whitelist, maxOraclesPerRound, maxRegisteredOracles, roundLockPeriod = 60n, maxMissedSigRounds = 0n, validPricePeriodInBlocks = 3n, emergencyPublishingPeriodInBlocks = 2n, bootstrapPrice = 100000000n) {
+    if (maxOraclesPerRound !== undefined || maxRegisteredOracles !== undefined) {
+        const currentMaxOracles = await oracleMgr.read.getMaxOraclesPerRound();
+        const currentMaxRegistered = await oracleMgr.read.getMaxRegisteredOracles();
+        const targetMaxOracles = maxOraclesPerRound ?? currentMaxOracles;
+        const targetMaxRegistered = maxRegisteredOracles ?? currentMaxRegistered;
+        if (targetMaxRegistered > currentMaxRegistered) {
+            await governor.setMaxRegisteredOracles(oracleMgr, targetMaxRegistered);
+        }
+        if (targetMaxOracles !== currentMaxOracles) {
+            await governor.setMaxOraclesPerRound(oracleMgr, targetMaxOracles);
+        }
+        if (targetMaxRegistered < currentMaxRegistered) {
+            await governor.setMaxRegisteredOracles(oracleMgr, targetMaxRegistered);
+        }
+    }
     const coinPairPrice = await deployer.deployProxy('CoinPairPrice', [
         governor.addr,
         whitelist,
         encodeCoinPair(name),
         token.address,
         {
-            maxOraclesPerRound,
-            maxSubscribedOraclesPerRound,
             roundLockPeriod,
             maxMissedSigRounds,
         },

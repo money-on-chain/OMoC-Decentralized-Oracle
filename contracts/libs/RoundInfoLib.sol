@@ -21,8 +21,9 @@ library RoundInfoLib {
         uint256 startBlock;
         // The  timestamp where this round lock terminates (can be switched out).
         uint256 lockPeriodTimestamp;
-        // The maximum count of oracles selected to participate each round
-        uint256 maxOraclesPerRound;
+        // Deprecated: previously stored per-coinpair maxOraclesPerRound.
+        // Kept to preserve proxy storage layout; effective max is governed globally in OracleManager.
+        uint256 deprecatedMaxOraclesPerRound;
         // The duration in secs before a SwitchRound can occur.
         uint256 roundLockPeriodSecs;
         // The selected oracles that participate in this round.
@@ -35,10 +36,8 @@ library RoundInfoLib {
      * Initialize a register info structure
      */
     function initRoundInfo(
-        uint256 _maxOraclesPerRound,
         uint256 _roundLockPeriod
     ) internal pure returns (RoundInfo memory) {
-        require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
         require(_roundLockPeriod > 0, "The round lock period must be positive and non zero");
         return
             RoundInfo({
@@ -46,14 +45,17 @@ library RoundInfoLib {
                 totalPoints: 0,
                 startBlock: 0,
                 lockPeriodTimestamp: 0,
-                maxOraclesPerRound: _maxOraclesPerRound,
+                deprecatedMaxOraclesPerRound: 0,
                 roundLockPeriodSecs: _roundLockPeriod,
                 selectedOracles: AddressSetLib.init()
             });
     }
 
-    function isFull(RoundInfo storage _self) internal view returns (bool) {
-        return _self.selectedOracles.length() >= _self.maxOraclesPerRound;
+    function isFull(
+        RoundInfo storage _self,
+        uint256 _maxOraclesPerRound
+    ) internal view returns (bool) {
+        return _self.selectedOracles.length() >= _maxOraclesPerRound;
     }
 
     function isSelected(RoundInfo storage _self, address _ownerAddr) internal view returns (bool) {

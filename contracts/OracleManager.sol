@@ -15,11 +15,16 @@ import {OracleManagerStorage} from "./OracleManagerStorage.sol";
 contract OracleManager is OracleManagerStorage, IOracleManager {
     using SafeMath for uint256;
 
+    uint256 public constant DEFAULT_MAX_ORACLES_PER_ROUND = 10;
+    uint256 public constant DEFAULT_MAX_REGISTERED_ORACLES = 20;
+
     event OracleRegistered(address caller, address addr, string internetName);
     event OracleStakeAdded(address caller, address addr, uint256 stake);
     event OracleSubscribed(address caller, bytes32 coinpair);
     event OracleUnsubscribed(address caller, bytes32 coinpair);
     event OracleRemoved(address caller);
+    event MaxOraclesPerRoundSet(uint256 maxOraclesPerRound);
+    event MaxRegisteredOraclesSet(uint256 maxRegisteredOracles);
 
     // -------------------------------------------------------------------------------------------------------------
     //
@@ -52,6 +57,8 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         stakingContract = _stakingContract;
 
         minCPSubscriptionStake = _minCPSubscriptionStake;
+        maxOraclesPerRound = DEFAULT_MAX_ORACLES_PER_ROUND;
+        maxRegisteredOracles = DEFAULT_MAX_REGISTERED_ORACLES;
         for (uint256 i = 0; i < _wlist.length; i++) {
             iterableWhitelistData._addToWhitelist(_wlist[i]);
         }
@@ -121,6 +128,9 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     }
 
     /// @notice Registers an oracle in the system.
+    /// @dev If the global registered limit (`getMaxRegisteredOracles()`) is reached, replaces the
+    ///      lowest-stake removable registered oracle (not selected in any current round) provided the
+    ///      new operator has strictly greater stake.
     /// @param ownerAddr Address of the Oracle's owner.
     /// @param oracleAddr Address of the Oracle to register.
     /// @param internetName Public Internet name of this Oracle.
@@ -129,28 +139,54 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         address oracleAddr,
         string calldata internetName
     ) external override onlyWhitelisted(iterableWhitelistData) {
+        require(ownerAddr != address(0), "Owner address cannot be 0x0");
+        require(oracleAddr != address(0), "Oracle address cannot be 0x0");
+        require(!_isOwnerRegistered(ownerAddr), "Owner already registered");
+        require(!registeredOracles._isOracleRegistered(oracleAddr), "Oracle already registered");
+
+        if (registeredOracles._getLen() >= getMaxRegisteredOracles()) {
+            uint256 ownerStake = getStake(ownerAddr);
+            require(ownerStake > 0, "Not enough stake to register");
+            (bool found, address minOwner, ) = _getMinRemovableRegisteredOracle(ownerStake);
+            require(found, "Not enough stake to register");
+            _unsubscribeAll(minOwner);
+            registeredOracles._removeOracle(minOwner);
+            emit OracleRemoved(minOwner);
+        }
+
         registeredOracles._registerOracle(ownerAddr, oracleAddr, internetName);
         emit OracleRegistered(ownerAddr, oracleAddr, internetName);
     }
 
     /// @notice The oracle owner did a partial withdrawal of funds
-    /// 1. The oracle address is searched by the owner address.
-    /// 2. Each coin pair to which the oracle is subscribed is consulted to:
-    ///   - Check if the new amount is enough to stay in the current round.
-    ///       If not the oracle is replaced and lost his points.
-    ///   - Get the timestamp for the round end.
+    /// 1. Returns 0 immediately if the address is not a registered oracle owner.
+    /// 2. Computes the global top-N registered oracles at most once (only if selected in any coinpair).
+    /// 3. Each coin pair is consulted to update round membership / unsubscription and return lock time.
     /// The return value is the maximum timestamp from all the coin pairs.
     /// @param oracleOwnerAddr Address of oracle owner
     /// @return the timestamp until which the funds must be locked.
     function onWithdraw(
         address oracleOwnerAddr
     ) external override onlyWhitelisted(iterableWhitelistData) returns (uint256) {
+        if (!_isOwnerRegistered(oracleOwnerAddr)) {
+            return 0;
+        }
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         uint256 timestamp = 0;
         uint256 maxTimestamp = 0;
+        address[] memory topRegistered;
+        bool topComputed = false;
         for (uint256 i = 0; i < coinPairCount; i++) {
             CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
-            timestamp = cp.onWithdraw(oracleOwnerAddr);
+            if (cp.isOracleInCurrentRound(oracleOwnerAddr)) {
+                if (!topComputed) {
+                    topRegistered = getTopRegisteredOracles();
+                    topComputed = true;
+                }
+                timestamp = cp.onWithdraw(oracleOwnerAddr, topRegistered);
+            } else {
+                timestamp = cp.onWithdraw(oracleOwnerAddr);
+            }
             if (timestamp > maxTimestamp) {
                 maxTimestamp = timestamp;
             }
@@ -353,6 +389,161 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
         return minCPSubscriptionStake;
     }
 
+    /// @notice Updates the maximum number of top registered oracles eligible per round.
+    /// @dev Only governance authorized changers can update this value.
+    /// @param _maxOraclesPerRound New maximum count of top registered oracles (must be > 0 and <= maxRegisteredOracles).
+    function setMaxOraclesPerRound(
+        uint256 _maxOraclesPerRound
+    ) external onlyAuthorizedChanger {
+        require(_maxOraclesPerRound > 0, "The maximum oracles per round must be >0");
+        require(
+            _maxOraclesPerRound <= getMaxRegisteredOracles(),
+            "Max oracles per round must be <= max registered oracles"
+        );
+        maxOraclesPerRound = _maxOraclesPerRound;
+        emit MaxOraclesPerRoundSet(_maxOraclesPerRound);
+    }
+
+    /// @notice Returns the maximum number of top registered oracles eligible per round.
+    /// @dev Falls back to DEFAULT_MAX_ORACLES_PER_ROUND (10) if unset (e.g., on upgraded proxies).
+    function getMaxOraclesPerRound() public view returns (uint256) {
+        return maxOraclesPerRound == 0 ? DEFAULT_MAX_ORACLES_PER_ROUND : maxOraclesPerRound;
+    }
+
+    /// @notice Updates the global maximum number of registered oracles allowed in the system.
+    /// @dev Only governance authorized changers can update this value.
+    /// @param _maxRegisteredOracles New global maximum count of registered oracles (must be >= maxOraclesPerRound).
+    function setMaxRegisteredOracles(
+        uint256 _maxRegisteredOracles
+    ) external onlyAuthorizedChanger {
+        require(
+            _maxRegisteredOracles >= getMaxOraclesPerRound(),
+            "Max registered oracles must be >= max oracles per round"
+        );
+        maxRegisteredOracles = _maxRegisteredOracles;
+        emit MaxRegisteredOraclesSet(_maxRegisteredOracles);
+    }
+
+    /// @notice Returns the global maximum number of registered oracles allowed in the system.
+    /// @dev Falls back to DEFAULT_MAX_REGISTERED_ORACLES (20) if unset (e.g., on upgraded proxies).
+    function getMaxRegisteredOracles() public view returns (uint256) {
+        return
+            maxRegisteredOracles == 0 ? DEFAULT_MAX_REGISTERED_ORACLES : maxRegisteredOracles;
+    }
+
+    /// @notice Returns the top registered oracle owners with stake >= minCPSubscriptionStake,
+    ///         ordered by descending stake, up to getMaxOraclesPerRound().
+    /// @dev Tie-breaking rule: when two registered operators have equal stake, the one with the lower
+    ///      `ownerAddr` value takes precedence. This is deterministic and independent of registration/removal order.
+    ///      Ranking changes from stake deposits or oracle removals take effect on the next `switchRound()`
+    ///      (or on `subscribe()` if a top-ranked operator subscribes while the round has an empty slot).
+    function getTopRegisteredOracles() public view returns (address[] memory selected) {
+        uint256 total = registeredOracles._getLen();
+        uint256 count = getMaxOraclesPerRound();
+        if (count > total) {
+            count = total;
+        }
+        if (count == 0) {
+            return new address[](0);
+        }
+
+        uint256 minStake = minCPSubscriptionStake;
+        address[] memory top = new address[](count);
+        uint256[] memory topStakes = new uint256[](count);
+        uint256 filled = 0;
+
+        for (uint256 i = 0; i < total; i++) {
+            address candidate = registeredOracles._getOwnerAtIndex(i);
+            uint256 candidateStake = getStake(candidate);
+            if (candidateStake < minStake) {
+                continue;
+            }
+
+            uint256 j = filled;
+            if (j == count) {
+                j = count - 1;
+                if (!_ranksAhead(candidate, candidateStake, top[j], topStakes[j])) {
+                    continue;
+                }
+            } else {
+                filled += 1;
+            }
+
+            while (
+                j > 0 && _ranksAhead(candidate, candidateStake, top[j - 1], topStakes[j - 1])
+            ) {
+                top[j] = top[j - 1];
+                topStakes[j] = topStakes[j - 1];
+                j--;
+            }
+            top[j] = candidate;
+            topStakes[j] = candidateStake;
+        }
+
+        if (filled == count) {
+            return top;
+        }
+        selected = new address[](filled);
+        for (uint256 i = 0; i < filled; i++) {
+            selected[i] = top[i];
+        }
+        return selected;
+    }
+
+    /// @notice Returns true if `ownerAddr` is registered, meets `minCPSubscriptionStake`,
+    ///         and ranks within the top `getMaxOraclesPerRound()` registered operators by stake.
+    function isTopRegisteredOracle(address ownerAddr) public view returns (bool) {
+        if (!_isOwnerRegistered(ownerAddr) || getStake(ownerAddr) < minCPSubscriptionStake) {
+            return false;
+        }
+        if (registeredOracles._getLen() <= getMaxOraclesPerRound()) {
+            return true;
+        }
+        address[] memory top = getTopRegisteredOracles();
+        for (uint256 i = 0; i < top.length; i++) {
+            if (top[i] == ownerAddr) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function _ranksAhead(
+        address candidate,
+        uint256 candidateStake,
+        address existing,
+        uint256 existingStake
+    ) private pure returns (bool) {
+        return
+            candidateStake > existingStake ||
+            (candidateStake == existingStake && candidate < existing);
+    }
+
+    /// @dev Finds the lowest-stake registered oracle owner with stake strictly below `maxStakeExclusive`
+    ///      that is not currently in any active round.
+    ///      On equal stake, picks the higher owner address (consistent with lower address winning ties).
+    function _getMinRemovableRegisteredOracle(
+        uint256 maxStakeExclusive
+    ) private view returns (bool found, address minOwner, uint256 minStake) {
+        uint256 total = registeredOracles._getLen();
+        for (uint256 i = 0; i < total; i++) {
+            address candidate = registeredOracles._getOwnerAtIndex(i);
+            uint256 candidateStake = getStake(candidate);
+            if (candidateStake >= maxStakeExclusive) {
+                continue;
+            }
+            if (found && _ranksAhead(candidate, candidateStake, minOwner, minStake)) {
+                continue;
+            }
+            if (!_canRemoveOracle(candidate)) {
+                continue;
+            }
+            found = true;
+            minOwner = candidate;
+            minStake = candidateStake;
+        }
+    }
+
     /// @notice Returns true if an oracle satisfies conditions to be removed from system.
     /// @param ownerAddr the address of the owner of the oracle to lookup.
     function _canRemoveOracle(address ownerAddr) private view returns (bool) {
@@ -371,9 +562,11 @@ contract OracleManager is OracleManagerStorage, IOracleManager {
     function _unsubscribeAll(address ownerAddr) private {
         uint256 coinPairCount = coinPairRegisterData._getCoinPairCount();
         for (uint256 i = 0; i < coinPairCount; i++) {
-            CoinPairPrice cp = _getCoinPairAddress(coinPairRegisterData._getCoinPairAtIndex(i));
+            bytes32 coinPair = coinPairRegisterData._getCoinPairAtIndex(i);
+            CoinPairPrice cp = _getCoinPairAddress(coinPair);
             if (cp.isSubscribed(ownerAddr)) {
                 cp.unsubscribe(ownerAddr);
+                emit OracleUnsubscribed(ownerAddr, coinPair);
             }
         }
     }

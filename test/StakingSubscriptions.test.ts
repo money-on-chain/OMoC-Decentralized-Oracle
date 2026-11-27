@@ -74,10 +74,10 @@ describe('Staking-subscriptions', function () {
         await contracts.token.write.approve([contracts.staking.address, entry.stake], {
             account: entry.owner.account!,
         });
-        await contracts.staking.write.registerOracle([entry.oracle.account!.address, entry.name], {
+        await contracts.staking.write.deposit([entry.stake, entry.owner.account!.address], {
             account: entry.owner.account!,
         });
-        await contracts.staking.write.deposit([entry.stake, entry.owner.account!.address], {
+        await contracts.staking.write.registerOracle([entry.oracle.account!.address, entry.name], {
             account: entry.owner.account!,
         });
     }
@@ -85,7 +85,7 @@ describe('Staking-subscriptions', function () {
     async function setupInitialSubscriptions() {
         const coinPairId = await coinPairPrice.read.getCoinPair();
 
-        for (let i = 0; i < NUM_ORACLES; i += 1) {
+        for (let i = 0; i < Number(MAX_SUBSCRIBED_ORACLES); i += 1) {
             await prepareOracle(oracles[i]);
         }
 
@@ -102,6 +102,9 @@ describe('Staking-subscriptions', function () {
         const coinPairId = await setupInitialSubscriptions();
 
         expect(await coinPairPrice.read.isRoundFull()).to.equal(true);
+        expect((await coinPairPrice.read.getRoundInfo())[5].length).to.equal(
+            Number(MAX_SELECTED_ORACLES),
+        );
 
         for (let i = 0; i < Number(MAX_SUBSCRIBED_ORACLES); i += 1) {
             const oracle = oracles[i];
@@ -128,6 +131,9 @@ describe('Staking-subscriptions', function () {
                 false,
             );
 
+            // Registering a higher-stake oracle evicts the lowest-stake removable registered oracle
+            // and automatically unsubscribes it from all coinpairs.
+            await prepareOracle(oracle);
             await contracts.staking.write.subscribeToCoinPair([coinPairId], {
                 account: oracle.owner.account!,
             });

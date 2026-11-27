@@ -128,6 +128,16 @@ library IterableOraclesLib {
         return self._values.length;
     }
 
+    /// @notice Returns the oracle owner address at index without reading the URL string.
+    /// @param idx index to query.
+    function _getOwnerAtIndex(
+        IterableOraclesData storage self,
+        uint256 idx
+    ) internal view returns (address) {
+        require(idx < self._values.length, "Illegal index");
+        return self.registeredOwners[self._values[idx].addr];
+    }
+
     /// @notice Returns the oracle name and address at index.
     /// @param idx index to query.
     function _getOracleAtIndex(IterableOraclesData storage self, uint256 idx)

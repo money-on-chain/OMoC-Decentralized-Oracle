@@ -1,5 +1,6 @@
 import {
     concatHex,
+    encodeFunctionData,
     type Hex,
     numberToHex,
     padHex,
@@ -78,6 +79,32 @@ export async function createGovernor(deployer: Deployer, owner: WalletClient) {
         ) => deployAndExec('OracleManagerPairChange', manager.address, coinPair, address),
         mint: async (tokenAddr: string, addr: string, quantity: bigint) =>
             deployAndExec('TestMOCMintChange', tokenAddr, addr, quantity),
+        setMaxOraclesPerRound: async (
+            manager: ContractOf<'OracleManager'>,
+            maxOraclesPerRound: bigint,
+        ) =>
+            deployAndExec(
+                'MockCallChange',
+                manager.address,
+                encodeFunctionData({
+                    abi: manager.abi,
+                    functionName: 'setMaxOraclesPerRound',
+                    args: [maxOraclesPerRound],
+                }),
+            ),
+        setMaxRegisteredOracles: async (
+            manager: ContractOf<'OracleManager'>,
+            maxRegisteredOracles: bigint,
+        ) =>
+            deployAndExec(
+                'MockCallChange',
+                manager.address,
+                encodeFunctionData({
+                    abi: manager.abi,
+                    functionName: 'setMaxRegisteredOracles',
+                    args: [maxRegisteredOracles],
+                }),
+            ),
         execute: executeChange,
     };
 }
@@ -337,22 +364,37 @@ export async function initCoinpair(
     oracleMgr: ContractOf<'OracleManager'>,
     registry: ContractOf<'GovernedRegistry'>,
     whitelist: Address[],
-    maxOraclesPerRound = 10n,
-    maxSubscribedOraclesPerRound = 30n,
+    maxOraclesPerRound?: bigint,
+    maxRegisteredOracles?: bigint,
     roundLockPeriod = 60n,
     maxMissedSigRounds = 0n,
     validPricePeriodInBlocks = 3n,
     emergencyPublishingPeriodInBlocks = 2n,
     bootstrapPrice = 100000000n,
 ): Promise<ContractOf<'CoinPairPrice'>> {
+    if (maxOraclesPerRound !== undefined || maxRegisteredOracles !== undefined) {
+        const currentMaxOracles = await oracleMgr.read.getMaxOraclesPerRound();
+        const currentMaxRegistered = await oracleMgr.read.getMaxRegisteredOracles();
+        const targetMaxOracles = maxOraclesPerRound ?? currentMaxOracles;
+        const targetMaxRegistered = maxRegisteredOracles ?? currentMaxRegistered;
+
+        if (targetMaxRegistered > currentMaxRegistered) {
+            await governor.setMaxRegisteredOracles(oracleMgr, targetMaxRegistered);
+        }
+        if (targetMaxOracles !== currentMaxOracles) {
+            await governor.setMaxOraclesPerRound(oracleMgr, targetMaxOracles);
+        }
+        if (targetMaxRegistered < currentMaxRegistered) {
+            await governor.setMaxRegisteredOracles(oracleMgr, targetMaxRegistered);
+        }
+    }
+
     const coinPairPrice = await deployer.deployProxy('CoinPairPrice', [
         governor.addr,
         whitelist,
         encodeCoinPair(name),
         token.address,
         {
-            maxOraclesPerRound,
-            maxSubscribedOraclesPerRound,
             roundLockPeriod,
             maxMissedSigRounds,
         },

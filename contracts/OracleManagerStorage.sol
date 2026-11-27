@@ -31,13 +31,19 @@ contract OracleManagerStorage is Initializable, Governed, IIterableWhitelist {
     // Minimum coin pair subscription stake
     uint256 internal minCPSubscriptionStake;
 
+    // Maximum number of top registered oracles eligible per round (0 falls back to default 10)
+    uint256 internal maxOraclesPerRound;
+
+    // Maximum number of registered oracles allowed in the system (0 falls back to default 20)
+    uint256 internal maxRegisteredOracles;
+
     // Empty internal constructor, to prevent people from mistakenly deploying
     // an instance of this contract, which should be used via inheritance.
     // solhint-disable-next-line no-empty-blocks
     constructor() internal {}
 
     // Reserved storage space to allow for layout changes in the future.
-    uint256[50] private ______gap;
+    uint256[48] private ______gap;
 
     /**
     @notice Modifier that protects the function
